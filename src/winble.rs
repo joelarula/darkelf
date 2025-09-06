@@ -336,7 +336,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
         }
 
         let device_id = device_info.Id()?;
-        info!("Found Laser device: {} ({})", device_name, device_id);
+        info!("Found laser device: {} ({})", device_name, device_id);
         let ble_device = BluetoothLEDevice::FromIdAsync(&device_id)?.get()?;
         let services_result = ble_device.GetGattServicesAsync()?.get()?;
         for j in 0..services_result.Services()?.Size()? {
@@ -345,7 +345,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
             let service_uuid = service.Uuid()?;
             let str = format!("{:?}", service_uuid).to_uppercase();
             if ble::LASER_SERVICE_UUID.contains(&str.as_str()) {
-                info!("Found Laser service: ({:?}))", service_uuid);
+                info!("Found laser service: ({:?}))", service_uuid);
                 device_list.push(device_info.clone());
             }
         }
