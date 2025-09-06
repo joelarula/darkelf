@@ -1,0 +1,213 @@
+{
+    dmx: 0,         // DMX address
+    ch: 0,          // Channel
+    xy: 0,          // XY mode
+    light: 1,       // Light mode (1=single, 2=dual, 3=full color)
+    cfg: 0,         // Config/mode
+    lang: 0,        // Language
+    valArr: [1, 10, 10, 10, 10] // Array of values (address, size, color, etc.)
+}
+
+dmx: DMX address, usually an integer (e.g., 0–511).
+ch: Channel, integer (often 0–n, depending on device).
+xy: XY mode, integer (0–7; selects display/coordinate mode).
+light: Light mode, integer (1=single color, 2=dual color, 3=full color).
+cfg: Config/mode, integer (0–255; device-specific configuration).
+lang: Language, integer (0=default, other values for different languages).
+valArr: Array of 5 integers:
+[0]: Address (1–512)
+[1]: View size (10–100)
+[2], [3], [4]: Color or other device parameters (0–255)
+
+The provided JavaScript module, identified by the key "3b77", appears to be a minified and bundled utility file (likely from your UniApp project’s service.js) containing functions for generating commands and data structures, including what seems to be a protocol for a laser control library. Given your project to create a laser animation control library in Rust using a DMX USB serial port adapter, this module likely defines the communication protocol between the UniApp frontend and a laser device (e.g., TD5322A_V3.1.2BLE). Below, I’ll extract and explain the laser library protocol based on the functions and data formats, as of 01:24 AM EEST on Friday, September 05, 2025.
+Overview of the Module
+
+Purpose: The module exports utility functions for converting coordinates, generating command strings, and handling laser-related data (e.g., ILDA-like point sequences, DMX-like channel settings).
+Context: Functions like getXysCmd, getCmdStr, and getDrawCmdStr suggest a protocol for sending laser animation commands, aligning with the earlier deciphered ILDA points (e.g., [-399, 399, 0, 1]) and the TD5322A’s BLE service (0000FF00).
+Exported Functions: The e.exports object provides methods for command generation, data conversion, and feature extraction, which form the protocol.
+
+Extracted Laser Library Protocol
+The protocol involves sending structured command strings over a communication channel (likely BLE via TD5322A). These commands encode coordinates, colors, timing, and control data for laser animation. Key elements include:
+1. Command Structure
+
+General Format: Commands are hexadecimal strings with a fixed header, payload, and footer (e.g., A0A1A2A3...A4A5A6A7).
+Headers/Footers:
+
+Common patterns: A0A1A2A3 (start), A4A5A6A7 (end), c0c1c2c3...c4c5c6c7, d0d1d2d3...d4d5d6d7.
+These act as delimiters, ensuring data integrity over BLE or serial.
+
+
+Payload: Contains counts, coordinates, and parameters, encoded as 2- or 4-byte hexadecimal values.
+
+2. Key Functions and Protocol Details
+
+Function: i(e, t) (Line Helper):
+
+Converts a number e to a hexadecimal string of length t (padded with 0).
+Example: i(255, 2) → "FF", i(1000, 4) → "03E8".
+Used for all numeric fields in commands.
+
+
+Function: c(e, t) (Combine Bits):
+
+Combines two values into a single byte: e << 4 | (15 & t).
+Example: c(3, 5) → 3 << 4 | 5 → 48 + 5 → 53 (hex "35").
+Likely encodes control flags with data (e.g., blanking with intensity).
+
+
+Function: o(e, t) (Segment Points):
+
+Segments an array e into chunks not exceeding t (e.g., 800).
+Returns pairs [start, end] indices, used for splitting coordinate sequences.
+
+
+Function: s(e, t, r) (Generate Grid):
+
+Creates a grid of points from e (coordinate array) with scale t (e.g., 0.5) and direction r (0, 127, or other).
+Outputs [points, widthCmd, heightCmd, offset], where:
+
+points: Updated coordinate array with grid points.
+widthCmd, heightCmd: Hex strings for grid dimensions.
+offset: Adjustment value (e.g., -d * t / 2).
+
+
+Example: Adds 9 vertical or horizontal lines, used for text or patterns.
+
+
+Function: l(e, r, n, h, a) (Main Command Generator):
+
+Generates a laser command from e (point array), r (time), n (options), h (direction), a (version).
+Returns an object with:
+
+cnt: Total points.
+charCount: Character segments.
+cmd: Main data string (e.g., i(Q) + i(R) + i(c(I, v), 2)).
+charWidthCmd, charPointCmd: Segment dimensions.
+se1, se2: Width/height commands.
+ver: Version (e.g., i(a, 2)).
+time: Time value (e.g., i(Math.floor(r), 2)).
+
+
+Protocol:
+
+Coordinates Q, R are rounded and scaled by f (0.5).
+Control byte c(I, v) combines frame index I and flag v (e.g., 0, 1, 2, 3 for start, end, stop).
+Example output: ver + time + cnt + cmd + ....
+
+
+
+
+Function: getXysCmd(e, t) (XY Command):
+
+Generates a command for XY coordinates in e with version t.
+Output: A0A1A2A3 + i(r) + i(n, 2) + cmd + p + l + se + ver + A4A5A6A7.
+Protocol:
+
+r: Point count.
+n: Character count.
+cmd: Coordinate data (i(P) + i(u) + i(c(N, X), 2)).
+p: Width command.
+l: Point command.
+se: Combined se1 + se2.
+
+
+
+
+Function: getXysCmdArr(e, r, n, h) (Array Command):
+
+Processes an array e of XY data with options r, direction n, and version h.
+Aggregates l() outputs into a single command.
+Output: A0A1A2A3 + i(totalCnt) + i(totalChar, 2) + aggregatedCmd + ... + A4A5A6A7.
+
+
+Function: getCmdStr(e, t) (General Command):
+
+Generates a comprehensive command with mode, color, speed, and project data from e, with features t.
+Output: c0c1c2c3 + mode + ... + color + speed + prjData + padding + c4c5c6c7.
+Protocol:
+
+mode, color, speed: 2-byte hex values (e.g., i(e.textData.runSpeed / 100 * 255, 2)).
+prjData: Encoded project settings with bit manipulation (b()).
+padding: 44 bytes of 00.
+
+
+
+
+Function: getDrawCmdStr(e, t, r, n) (Draw Command):
+
+Wraps l() output with a header/footer via x().
+Output: x(l(e, t, r, -1, n), r) → f0f1f2f3...f4f5f6f7 or variant.
+Protocol: Adds framing for drawing commands.
+
+
+Function: getXtsCmd(e) (Text Command):
+
+Converts text coordinates to a command.
+Output: 55667788 + i(r, 2) + coordData + 88776655.
+Protocol: coordData is 4-byte pairs (x, y, color, flag).
+
+
+
+Protocol Summary
+
+Data Format: Hexadecimal strings with fixed headers/footers (e.g., A0A1A2A3...A4A5A6A7).
+Fields:
+
+Count: Point and character counts (e.g., i(r), i(n, 2)).
+Coordinates: 4-byte pairs (x, y) scaled and rounded.
+Control: 1-byte flags (e.g., c(I, v)).
+Metadata: Time, version, width/height commands.
+
+
+Transmission: Likely sent via BLE to 0000FF00 service on TD5322A_V3.1.2BLE.
+
+Rust Implementation
+
+Parse Coordinates:
+rustfn parse_coord(cmd: &str) -> (i16, i16, u8, u8) {
+    let x = i16::from_str_radix(&cmd[0..4], 16).unwrap();
+    let y = i16::from_str_radix(&cmd[4..8], 16).unwrap();
+    let ctrl = u8::from_str_radix(&cmd[8..10], 16).unwrap();
+    let color = ctrl & 0x0F; // Example extraction
+    (x, y, color, ctrl >> 4)
+}
+
+Send Command:
+rustlet cmd = "A0A1A2A3FF0203040506A4A5A6A7".to_string(); // Example
+let characteristic = peripheral.characteristics()
+    .iter()
+    .find(|c| c.service_uuid == uuid!("0000FF00-0000-1000-8000-00805F9B34FB"))
+    .unwrap();
+peripheral.write(&characteristic, &hex::decode(cmd.replace(|c: char| !c.is_ascii_hexdigit(), "")).unwrap(), btleplug::api::WriteType::WithoutResponse).await?;
+
+
+Conclusion
+The protocol extracts coordinates, controls, and metadata into hex commands, suitable for laser animation via TD5322A. Implement these in Rust to interface with the BLE service, aligning with your DMX adapter goal. Verify with Tudasemi for exact mappings.5.9s
+
+
+Found BLE device: TD5322A_V3.1.2BLE (BluetoothLE#BluetoothLE98:af:65:f7:d2:3e-83:40:09:7b:f0:68)
+  Service UUID: 00001800-0000-1000-8000-00805F9B34FB
+    Characteristic UUID: 00002A00-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [84, 68, 53, 51, 50, 50, 65, 95, 86, 51, 46, 49, 46, 50, 66, 76, 69]
+  Service UUID: 0000180A-0000-1000-8000-00805F9B34FB
+    Characteristic UUID: 00002A24-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [84, 68, 53, 51, 50, 50, 65]
+    Characteristic UUID: 00002A25-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [56, 51, 58, 52, 48, 58, 48, 57, 58, 55, 66, 58, 70, 48, 58, 54, 56]
+    Characteristic UUID: 00002A27-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [49, 46, 48, 46, 48]
+    Characteristic UUID: 00002A28-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [86, 51, 46, 49, 46, 50]
+    Characteristic UUID: 00002A29-0000-1000-8000-00805F9B34FB
+    Properties: GattCharacteristicProperties(2)
+    Value: [84, 68, 53, 51, 50, 50, 65, 95, 86, 51, 46, 49, 46, 50]
+  Service UUID: 0000FF00-0000-1000-8000-00805F9B34FB
+  
+  
+  
+  ServicesAdvertisement: PeripheralId(83:40:09:7B:F0:68), ["0xff00"]
