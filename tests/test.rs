@@ -27,7 +27,7 @@ async fn test_bluetooth_connection_async() -> Result<(), anyhow::Error> {
     let peripherals = adapter.peripherals().await?;
     let mut device = None;
     for p in peripherals {
-        println!("Peripheral: {:?}", p.id());
+        println!("Peripheral: {:?}", p.id())
         if let Some(props) = p.properties().await.unwrap() {
             if let Some(name) = props.local_name {
                

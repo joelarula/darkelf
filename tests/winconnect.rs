@@ -1,16 +1,23 @@
-
+use darkelf::ble;
 use windows::{
-    core::Result,
-    Devices::Bluetooth::BluetoothLEDevice,
-    Devices::Enumeration::DeviceInformation,
-    Devices::Bluetooth::GenericAttributeProfile::{GattDeviceService, GattCharacteristic}
-                    
+    Devices::{Bluetooth::{BluetoothLEDevice, GenericAttributeProfile::{GattCharacteristic, GattCharacteristicProperties, GattDeviceService}}, Enumeration::DeviceInformation}, core::{GUID, Result}
 };
+
+use log::{debug, info};
+
 
 #[test]
 fn test_windows_api_connect() -> Result<()> {
-
-    pretty_env_logger::init();
+    // Initialize with ANSI colors enabled, regardless of terminal detection
+    let env = pretty_env_logger::env_logger::Env::default()
+        .filter_or("RUST_LOG", "info");
+    
+    pretty_env_logger::env_logger::Builder::from_env(env)
+        .format_timestamp(None)
+        .format_module_path(false)
+        .format_target(false)
+        .write_style(pretty_env_logger::env_logger::WriteStyle::Always)
+        .init();
 
     let result = (|| {
         // Step 1: Find BLE devices
@@ -25,64 +32,69 @@ fn test_windows_api_connect() -> Result<()> {
             let device_info: DeviceInformation = devices.GetAt(i)?;
             let device_name = device_info.Name()?;
             let device_name_str = device_name.to_string_lossy();
-            if !device_name_str.starts_with("TD5322A") {
+            if !device_name_str.starts_with(ble::LASER_DEVICE_PREFIX) {
                 continue;
             }
             let device_id = device_info.Id()?;
-            let device_id_str = device_id.to_string_lossy();
-            if let Some(addr) = device_id_str.split('#').nth(1) {
-                info!("Device address: {}", addr);
-            }
-
-            println!("Found BLE device: {} ({})", device_name, device_id);
+            info!("Found Laser device: {} ({})", device_name, device_id);
             found_device = true;
 
             // Step 2: Connect to device
             let ble_device = BluetoothLEDevice::FromIdAsync(&device_id)?.get()?;
-
+            let mut laser_service_uuid:Option<GUID>   = None;
             // Step 3: Enumerate services
             let services_result = ble_device.GetGattServicesAsync()?.get()?;
             for j in 0..services_result.Services()?.Size()? {
                 let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
                 let service_uuid = service.Uuid()?;
-                println!("  Service UUID: {:?}", service_uuid);
-                if format!("{:?}", service_uuid).to_uppercase() == "0000FF00-0000-1000-8000-00805F9B34FB" {
+
+                let str = format!("{:?}", service_uuid).to_uppercase();
+                if ble::LASER_SERVICE_UUID.contains(&str.as_str()) {
                     found_service = true;
-                }
+                    laser_service_uuid = Some(service_uuid);
 
-                // Step 4: Enumerate characteristics
-                let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
-                let characteristics = characteristics_result.Characteristics()?;
-                for k in 0..characteristics.Size()? {
-                    let characteristic: GattCharacteristic = characteristics.GetAt(k)?;
-                    println!("    Characteristic UUID: {:?}", characteristic.Uuid()?);
-                    let props = characteristic.CharacteristicProperties()?;
-                    println!("    Properties: {:?}", props);
-                    println!("      Read: {}", (props & GattCharacteristicProperties::Read) == GattCharacteristicProperties::Read);
-                    println!("      Write: {}", (props & GattCharacteristicProperties::Write) == GattCharacteristicProperties::Write);
-                    println!("      WriteWithoutResponse: {}", (props & GattCharacteristicProperties::WriteWithoutResponse) == GattCharacteristicProperties::WriteWithoutResponse);
-                    println!("      Notify: {}", (props & GattCharacteristicProperties::Notify) == GattCharacteristicProperties::Notify);
-                    println!("      Indicate: {}", (props & GattCharacteristicProperties::Indicate) == GattCharacteristicProperties::Indicate);
-                    println!("      Broadcast: {}", (props & GattCharacteristicProperties::Broadcast) == GattCharacteristicProperties::Broadcast);
-                    println!("      AuthenticatedSignedWrites: {}", (props & GattCharacteristicProperties::AuthenticatedSignedWrites) == GattCharacteristicProperties::AuthenticatedSignedWrites);
-                    println!("      ExtendedProperties: {}", (props & GattCharacteristicProperties::ExtendedProperties) == GattCharacteristicProperties::ExtendedProperties);
-                    println!("      ReliableWrites: {}", (props & GattCharacteristicProperties::ReliableWrites) == GattCharacteristicProperties::ReliableWrites);
-                    println!("      WritableAuxiliaries: {}", (props & GattCharacteristicProperties::WritableAuxiliaries) == GattCharacteristicProperties::WritableAuxiliaries);
-                    found_characteristic = true;
+                    info!("    Service UUID: {:?} Found Laser Service uuid", service_uuid);     
+                    let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
+                    let chars = characteristics_result.Characteristics()?;
 
-                    // Step 5: Read value (if readable)
-                    use windows::Devices::Bluetooth::GenericAttributeProfile::GattCharacteristicProperties;
-                    let props = characteristic.CharacteristicProperties()?;
+            for k in 0..chars.Size()? {
+                let characteristic: GattCharacteristic = chars.GetAt(k)?;
+                let uuid = format!("{:?}", characteristic.Uuid()?).to_uppercase();
+                let props = characteristic.CharacteristicProperties()?;
+
+                    // If readable, read value
                     if props & GattCharacteristicProperties::Read == GattCharacteristicProperties::Read {
                         let value_result = characteristic.ReadValueAsync()?.get()?;
-                        let value_buffer = value_result.Value()?;
-                        use windows::Storage::Streams::DataReader;
-                        let data_reader = DataReader::FromBuffer(&value_buffer)?;
-                        let mut value = vec![0u8; value_buffer.Length()? as usize];
-                        data_reader.ReadBytes(&mut value)?;
-                        println!("    Value: {:?}", value);
+                        // ... process value_result ...
                     }
+
+                    // If writable and matches UUID, save for writing
+                    if props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write {
+                        if ble::WRITE_UUIDS.contains(&uuid.as_str()) {
+                            info!("            This is a writable characteristic for test");
+                            // Save or use as needed
+                        }
+                    }
+
+                    // If notifiable/indicatable and matches UUID, enable notifications
+                    if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
+                        props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) {
+                        if ble::NOTIFY_UUIDS.contains(&uuid.as_str()) {
+                            info!("            This is a notifiable/indicatable characteristic for test");
+                            // Enable notifications as needed
+                        }
+                    }
+
+                    info!("        Characteristic UUID: {:?}", characteristic.Uuid()?);
+                    //print_characteristic_info(&characteristic)?;
+                    found_characteristic = true;
+
+
                 }
+                }else{
+                    debug!("    Service UUID: {:?}", service_uuid);
+                }
+
             }
         }
 
@@ -97,3 +109,40 @@ fn test_windows_api_connect() -> Result<()> {
         other => other,
     }
 }
+
+/// Prints detailed information about a BLE characteristic including properties and value if readable
+fn print_characteristic_info(characteristic: &GattCharacteristic) -> Result<()> {
+    let uuid = characteristic.Uuid()?;
+   
+    
+    let props = characteristic.CharacteristicProperties()?;
+    debug!("    Properties: {:?}", props);
+    
+    // Print individual properties
+    debug!("      Read: {}", (props & GattCharacteristicProperties::Read) == GattCharacteristicProperties::Read);
+    debug!("      Write: {}", (props & GattCharacteristicProperties::Write) == GattCharacteristicProperties::Write);
+    debug!("      WriteWithoutResponse: {}", (props & GattCharacteristicProperties::WriteWithoutResponse) == GattCharacteristicProperties::WriteWithoutResponse);
+    debug!("      Notify: {}", (props & GattCharacteristicProperties::Notify) == GattCharacteristicProperties::Notify);
+    debug!("      Indicate: {}", (props & GattCharacteristicProperties::Indicate) == GattCharacteristicProperties::Indicate);
+    debug!("      Broadcast: {}", (props & GattCharacteristicProperties::Broadcast) == GattCharacteristicProperties::Broadcast);
+    debug!("      AuthenticatedSignedWrites: {}", (props & GattCharacteristicProperties::AuthenticatedSignedWrites) == GattCharacteristicProperties::AuthenticatedSignedWrites);
+    debug!("      ExtendedProperties: {}", (props & GattCharacteristicProperties::ExtendedProperties) == GattCharacteristicProperties::ExtendedProperties);
+    debug!("      ReliableWrites: {}", (props & GattCharacteristicProperties::ReliableWrites) == GattCharacteristicProperties::ReliableWrites);
+    debug!("      WritableAuxiliaries: {}", (props & GattCharacteristicProperties::WritableAuxiliaries) == GattCharacteristicProperties::WritableAuxiliaries);
+
+    // Read and print characteristic value if it's readable
+    if props & GattCharacteristicProperties::Read == GattCharacteristicProperties::Read {
+        let value_result = characteristic.ReadValueAsync()?.get()?;
+        let value_buffer = value_result.Value()?;
+        
+        use windows::Storage::Streams::DataReader;
+        let data_reader = DataReader::FromBuffer(&value_buffer)?;
+        let mut value = vec![0u8; value_buffer.Length()? as usize];
+        data_reader.ReadBytes(&mut value)?;
+        
+        println!("    Value: {:?}", value);
+    }
+    
+    Ok(())
+}
+

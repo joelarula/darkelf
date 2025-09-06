@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use log::{info, warn, error};
+use log::{info, warn, error,debug};
 use tokio::time::Instant;
 use windows::{
     core::{HSTRING, Result as WindowsResult},
@@ -14,6 +14,7 @@ use windows::{
     Storage::Streams::{DataWriter, Buffer},
     Foundation,
 };
+use crate::ble;
 
 pub type Characteristic = GattCharacteristic;
 
@@ -89,7 +90,6 @@ impl BleController {
             }
             
             let device_id = device_info.Id()?;
-            println!("Found BLE device: {} ({})", device_name, device_id);
             info!("Found BLE device: {} ({})", device_name, device_id);
 
             // Step 2: Connect to device
@@ -97,11 +97,9 @@ impl BleController {
                 Ok(ble_device) => {
                     self.device = Some(ble_device);
                     self.connected = true;
-                    break;
                     break; // Found and connected, exit loop
                 }
                 Err(e) => {
-                    println!("Failed to connect to device: {:?}", e);
                     error!("Failed to connect to device: {:?}", e);
                     continue;
                 }
@@ -126,7 +124,6 @@ impl BleController {
                 let service_uuid = service.Uuid()?;
                 let service_uuid_str = format!("{:?}", service_uuid).to_uppercase();
                 
-                println!("  Service UUID: {}", service_uuid_str);
                 info!("  Service UUID: {}", service_uuid_str);
                 
                 // If we found our target service
@@ -139,7 +136,6 @@ impl BleController {
                         let characteristic: GattCharacteristic = characteristics.GetAt(k)?;
                         let char_uuid = characteristic.Uuid()?;
                         let props = characteristic.CharacteristicProperties()?;
-                        println!("    Characteristic UUID: {:?}", char_uuid);
                         info!("    Characteristic UUID: {:?}", char_uuid);
                         
                         // Check for write characteristic
@@ -164,12 +160,10 @@ impl BleController {
         }
 
         if self.write_char.is_none() {
-            println!("Warning: No writable characteristic found");
             warn!("No writable characteristic found");
         }
         
         if self.notify_char.is_none() {
-            println!("Warning: No notify characteristic found");
             warn!("No notify characteristic found");
         }
 
@@ -201,7 +195,6 @@ impl BleController {
                             .map(|b| format!("{:02X}", b))
                             .collect::<String>();
                         
-                        println!("Notification received: {}", hex);
                         info!("Notification received: {}", hex);
                         
                         let mut buffer = buffer_clone.lock().unwrap();
@@ -217,7 +210,6 @@ impl BleController {
             windows::Devices::Bluetooth::GenericAttributeProfile::GattClientCharacteristicConfigurationDescriptorValue::Notify
         )?.get() {
             Ok(GattCommunicationStatus::Success) => {
-                println!("Successfully subscribed to notifications");
                 info!("Successfully subscribed to notifications");
                 
                 // Register the value changed event handler
@@ -227,12 +219,10 @@ impl BleController {
                 Ok(())
             },
             Ok(status) => {
-                println!("Failed to subscribe to notifications: {:?}", status);
                 error!("Failed to subscribe to notifications: {:?}", status);
                 Err(format!("Failed to subscribe to notifications: {:?}", status).into())
             },
             Err(e) => {
-                println!("Error subscribing to notifications: {:?}", e);
                 error!("Error subscribing to notifications: {:?}", e);
                 Err(e.into())
             }
@@ -329,33 +319,36 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, String> {
     Ok(result)
 }
 
-/// Helper function to find all BLE devices 
-pub async fn scan_devices(_timeout_seconds: u64) -> Result<Vec<(String, String)>, Box<dyn Error>> {
-    // TODO: Implement timeout functionality in the future
+
+pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Error>> {
+
     let selector = BluetoothLEDevice::GetDeviceSelector()?;
     let devices = DeviceInformation::FindAllAsyncAqsFilter(&selector)?.get()?;
-    
-    let mut device_list = Vec::new();
-    
+
+    let mut device_list: Vec<DeviceInformation> = Vec::new();
+
     for i in 0..devices.Size()? {
         let device_info: DeviceInformation = devices.GetAt(i)?;
         let device_name = device_info.Name()?;
+        let device_name_str = device_name.to_string_lossy();
+        if !device_name_str.starts_with(ble::LASER_DEVICE_PREFIX) {
+            continue;
+        }
+
         let device_id = device_info.Id()?;
-        let name_str = device_name.to_string_lossy().to_string();
-        let id_str = device_id.to_string_lossy().to_string();
-        
-        // Extract MAC address from device ID
-        let mac = if let Some(addr) = id_str.split('#').nth(1) {
-            if let Some(mac) = addr.split('-').nth(1) {
-                mac.to_string()
-            } else {
-                addr.to_string()
+        info!("Found Laser device: {} ({})", device_name, device_id);
+        let ble_device = BluetoothLEDevice::FromIdAsync(&device_id)?.get()?;
+        let services_result = ble_device.GetGattServicesAsync()?.get()?;
+        for j in 0..services_result.Services()?.Size()? {
+
+            let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
+            let service_uuid = service.Uuid()?;
+            let str = format!("{:?}", service_uuid).to_uppercase();
+            if ble::LASER_SERVICE_UUID.contains(&str.as_str()) {
+                info!("Found Laser service: ({:?}))", service_uuid);
+                device_list.push(device_info.clone());
             }
-        } else {
-            id_str.clone()
-        };
-        
-        device_list.push((name_str, mac));
+        }
     }
     
     Ok(device_list)
