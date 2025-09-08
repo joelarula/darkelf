@@ -1,6 +1,10 @@
+use crate::ble::BleController;
+use std::future::Future;
+use std::pin::Pin;
 use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::sync::{Mutex, Arc};
 use std::time::Duration;
+use tokio::sync::Mutex as TokioMutex;
 use log::{info, warn, error,debug};
 use tokio::time::Instant;
 use windows::{
@@ -18,8 +22,11 @@ use crate::ble;
 
 pub type Characteristic = GattCharacteristic;
 
+
+
 /// A structure to manage BLE connections using Windows API
-pub struct BleController {
+pub struct WinBleController {
+    device_info: Option<DeviceInformation>,
     device: Option<BluetoothLEDevice>,
     write_char: Option<GattCharacteristic>,
     notify_char: Option<GattCharacteristic>,
@@ -27,14 +34,15 @@ pub struct BleController {
     connected: bool,
     buffer: Arc<Mutex<String>>,
     last_send_time: Option<Instant>,
-    sending: Arc<Mutex<bool>>,
+    sending: Arc<TokioMutex<()>>,
     // Temporarily disable notification token to make the code compile
     notification_token: Option<()>, // TODO: Fix this to use proper Windows API type
 }
 
-impl BleController {
-    pub async fn new() -> Result<Self, Box<dyn Error>> {
+impl WinBleController {
+    pub async fn new(device_info: Option<&DeviceInformation> ) -> Result<Self, Box<dyn Error>> {
         Ok(Self {
+            device_info: device_info.cloned(),
             device: None,
             write_char: None,
             notify_char: None,
@@ -43,23 +51,11 @@ impl BleController {
             buffer: Arc::new(Mutex::new(String::new())),
             last_send_time: None,
             sending: Arc::new(Mutex::new(false)),
+            sending: Arc::new(TokioMutex::new(())),
             notification_token: None,
         })
     }
 
-    pub fn clone(&self) -> Self {
-        Self {
-            device: None, // Can't clone device reference
-            write_char: None, // Can't clone characteristic references
-            notify_char: None, // Can't clone characteristic references
-            service_uuid: self.service_uuid.clone(),
-            connected: self.connected,
-            buffer: self.buffer.clone(),
-            last_send_time: self.last_send_time,
-            sending: self.sending.clone(),
-            notification_token: None,
-        }
-    }
 
     /// Set target service UUID
     pub fn set_service_uuid(&mut self, uuid: &str) {
@@ -244,18 +240,17 @@ impl BleController {
     }
 
     pub async fn send(&mut self, bytes: &[u8]) -> Result<(), String> {
-        let mut guard = self.sending.lock().unwrap();
-        if *guard { return Err("Previous send in progress".to_string()); }
-        *guard = true;
+        // Acquire the async-aware mutex. This prevents multiple `send` operations
+        // from running concurrently. The lock is held for the duration of the `send_data` await.
+        let _guard = self.sending.lock().await;
 
-        if !self.is_connected() { return Err("Not connected".to_string()); }
+        if !self.is_connected() {
+            return Err("Not connected".to_string());
+        }
         
         self.last_send_time = Some(Instant::now());
 
-        let result = self.send_data(bytes).await;
-
-        *guard = false;
-        result
+        self.send_data(bytes).await
     }
 
     async fn send_data(&self, bytes: &[u8]) -> Result<(), String> {
@@ -298,6 +293,39 @@ impl BleController {
         Ok(())
     }
 }
+
+
+// Implementation of the common trait for btleplug
+impl BleController for WinBleController {
+    fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>> {
+        Box::pin(async move {
+            self.connect().await
+        })
+    }
+    
+    fn discover_characteristics<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>> {
+        Box::pin(async move {
+            self.discover_characteristics().await
+        })
+    }
+    
+    fn send<'a>(&'a mut self, bytes: &'a [u8]) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
+        Box::pin(async move {
+            self.send(bytes).await
+        })
+    }
+    
+    fn get_content(&self) -> String {
+        self.get_content()
+    }
+    
+    fn is_connected(&self) -> bool {
+        self.is_connected()
+    }
+}
+
+
+
 
 /// Helper function to decode hex string to bytes
 pub fn decode(hex: &str) -> Result<Vec<u8>, String> {

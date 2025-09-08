@@ -1,7 +1,8 @@
 use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::sync::{Mutex, Arc};
 use std::time::Duration;
 use futures::stream::StreamExt;
+use tokio::sync::Mutex as TokioMutex;
 use tokio::time::Instant;
 use btleplug::api::{Central, Peripheral as BtlePeripheral, Characteristic, WriteType};
 use btleplug::platform::{Adapter, Peripheral, Manager as PlatformManager};
@@ -17,7 +18,7 @@ pub struct BleController {
     connected: bool,
     buffer: Arc<Mutex<String>>,
     last_send_time: Option<Instant>,
-    sending: Arc<Mutex<bool>>,
+    sending: Arc<TokioMutex<()>>,
 }
 
 impl BleController {
@@ -31,7 +32,7 @@ impl BleController {
             connected: false,
             buffer: Arc::new(Mutex::new(String::new())),
             last_send_time: None,
-            sending: Arc::new(Mutex::new(false)),
+            sending: Arc::new(TokioMutex::new(())),
         })
     }
 
@@ -126,18 +127,17 @@ impl BleController {
     }
 
     pub async fn send(&mut self, bytes: &[u8]) -> Result<(), String> {
-        let mut guard = self.sending.lock().unwrap();
-        if *guard { return Err("Previous send in progress".to_string()); }
-        *guard = true;
+        // Acquire the async-aware mutex. This prevents multiple `send` operations
+        // from running concurrently. The lock is held for the duration of the `send_data` await.
+        let _guard = self.sending.lock().await;
 
-        if !self.is_connected() { return Err("Not connected".to_string()); }
+        if !self.is_connected() {
+            return Err("Not connected".to_string());
+        }
         
         self.last_send_time = Some(Instant::now());
 
-        let result = self.send_data(bytes).await;
-
-        *guard = false;
-        result
+        self.send_data(bytes).await
     }
 
     async fn send_data(&self, bytes: &[u8]) -> Result<(), String> {
