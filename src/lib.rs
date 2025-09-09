@@ -1,5 +1,7 @@
 pub mod laser;
-pub mod ble;
-pub mod winble;
+pub mod blue;
+pub mod winblue;
 pub mod blelib;
 pub mod util;
+pub mod dmx;
+pub mod devices;

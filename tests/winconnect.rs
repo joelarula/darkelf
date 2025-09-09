@@ -1,4 +1,4 @@
-use darkelf::{ble, util};
+use darkelf::{ blue, util};
 use windows::{
     Devices::{Bluetooth::{BluetoothLEDevice, GenericAttributeProfile::{GattCharacteristic, GattCharacteristicProperties, GattDeviceService}}, Enumeration::DeviceInformation}, core::{GUID, Result}
 };
@@ -24,7 +24,7 @@ fn test_windows_api_connect() -> Result<()> {
             let device_info: DeviceInformation = devices.GetAt(i)?;
             let device_name = device_info.Name()?;
             let device_name_str = device_name.to_string_lossy();
-            if !device_name_str.starts_with(ble::LASER_DEVICE_PREFIX) {
+            if !device_name_str.starts_with(blue::LASER_DEVICE_PREFIX) {
                 continue;
             }
             let device_id = device_info.Id()?;
@@ -33,7 +33,7 @@ fn test_windows_api_connect() -> Result<()> {
 
             // Step 2: Connect to device
             let ble_device = BluetoothLEDevice::FromIdAsync(&device_id)?.get()?;
-            let mut laser_service_uuid:Option<GUID>   = None;
+            let mut laser_service_uuid:Option<GUID>   = None; 
             // Step 3: Enumerate services
             let services_result = ble_device.GetGattServicesAsync()?.get()?;
             for j in 0..services_result.Services()?.Size()? {
@@ -41,7 +41,7 @@ fn test_windows_api_connect() -> Result<()> {
                 let service_uuid = service.Uuid()?;
 
                 let str = format!("{:?}", service_uuid).to_uppercase();
-                if ble::LASER_SERVICE_UUID.contains(&str.as_str()) {
+                if blue::LASER_SERVICE_UUID.contains(&str.as_str()) {
                     found_service = true;
                     laser_service_uuid = Some(service_uuid);
 
@@ -62,7 +62,7 @@ fn test_windows_api_connect() -> Result<()> {
 
                     // If writable and matches UUID, save for writing
                     if props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write {
-                        if ble::WRITE_UUIDS.contains(&uuid.as_str()) {
+                        if blue::WRITE_UUIDS.contains(&uuid.as_str()) {
                             info!("            This is a writable characteristic for test");
                             // Save or use as needed
                         }
@@ -71,7 +71,7 @@ fn test_windows_api_connect() -> Result<()> {
                     // If notifiable/indicatable and matches UUID, enable notifications
                     if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
                         props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) {
-                        if ble::NOTIFY_UUIDS.contains(&uuid.as_str()) {
+                        if blue::NOTIFY_UUIDS.contains(&uuid.as_str()) {
                             info!("            This is a notifiable/indicatable characteristic for test");
                             // Enable notifications as needed
                         }

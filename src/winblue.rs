@@ -1,4 +1,4 @@
-use crate::ble::BleController;
+use crate::blue::BlueController;
 use std::future::Future;
 use std::pin::Pin;
 use std::error::Error;
@@ -7,6 +7,7 @@ use std::time::Duration;
 use tokio::sync::Mutex as TokioMutex;
 use log::{info, warn, error,debug};
 use tokio::time::Instant;
+use windows::core::GUID;
 use windows::{
     core::{HSTRING, Result as WindowsResult},
     Devices::Bluetooth::BluetoothLEDevice,
@@ -18,19 +19,19 @@ use windows::{
     Storage::Streams::{DataWriter, Buffer},
     Foundation,
 };
-use crate::ble;
+use crate::blue;
 
 pub type Characteristic = GattCharacteristic;
 
 
 
 /// A structure to manage BLE connections using Windows API
-pub struct WinBleController {
+pub struct WinBlueController {
     device_info: Option<DeviceInformation>,
     device: Option<BluetoothLEDevice>,
     write_char: Option<GattCharacteristic>,
     notify_char: Option<GattCharacteristic>,
-    service_uuid: String,
+    service_uuid: Option<GUID>,
     connected: bool,
     buffer: Arc<Mutex<String>>,
     last_send_time: Option<Instant>,
@@ -39,71 +40,30 @@ pub struct WinBleController {
     notification_token: Option<()>, // TODO: Fix this to use proper Windows API type
 }
 
-impl WinBleController {
+impl WinBlueController {
     pub async fn new(device_info: Option<&DeviceInformation> ) -> Result<Self, Box<dyn Error>> {
         Ok(Self {
             device_info: device_info.cloned(),
             device: None,
             write_char: None,
             notify_char: None,
-            service_uuid: String::from("0000FF00-0000-1000-8000-00805F9B34FB"), // Default service UUID
+            service_uuid: None,            
             connected: false,
             buffer: Arc::new(Mutex::new(String::new())),
             last_send_time: None,
-            sending: Arc::new(Mutex::new(false)),
             sending: Arc::new(TokioMutex::new(())),
             notification_token: None,
         })
     }
 
 
-    /// Set target service UUID
-    pub fn set_service_uuid(&mut self, uuid: &str) {
-        self.service_uuid = uuid.to_uppercase();
-    }
 
-    /// Connect to a BLE device with optional name filter
+    /// Connect to a BLE device 
     pub async fn connect(&mut self) -> Result<(), Box<dyn Error>> {
-        self.connect_with_name_filter(None).await
-    }
-
-    /// Connect to a BLE device with specified name filter
-    pub async fn connect_with_name_filter(&mut self, name_filter: Option<&str>) -> Result<(), Box<dyn Error>> {
-        // Step 1: Find BLE devices
-        let selector = BluetoothLEDevice::GetDeviceSelector()?;
-        let devices = DeviceInformation::FindAllAsyncAqsFilter(&selector)?.get()?;
-
-        for i in 0..devices.Size()? {
-            let device_info: DeviceInformation = devices.GetAt(i)?;
-            let device_name = device_info.Name()?;
-            let device_name_str = device_name.to_string_lossy();
-            
-            // Apply name filter if provided
-            if let Some(filter) = name_filter {
-                if !device_name_str.starts_with(filter) {
-                    continue;
-                }
-            }
-            
+        if let Some(device_info) = self.device_info.as_ref() {
             let device_id = device_info.Id()?;
-            info!("Found BLE device: {} ({})", device_name, device_id);
-
-            // Step 2: Connect to device
-            match BluetoothLEDevice::FromIdAsync(&device_id)?.get() {
-                Ok(ble_device) => {
-                    self.device = Some(ble_device);
-                    self.connected = true;
-                    break; // Found and connected, exit loop
-                }
-                Err(e) => {
-                    error!("Failed to connect to device: {:?}", e);
-                    continue;
-                }
-            }
-        }
-
-        if self.device.is_none() {
-            return Err("No compatible BLE devices found".into());
+            self.device = Some(BluetoothLEDevice::FromIdAsync(&device_id)?.get()?);
+            self.connected = true;
         }
 
         Ok(())
@@ -119,48 +79,52 @@ impl WinBleController {
                 let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
                 let service_uuid = service.Uuid()?;
                 let service_uuid_str = format!("{:?}", service_uuid).to_uppercase();
-                
-                info!("  Service UUID: {}", service_uuid_str);
-                
-                // If we found our target service
-                if service_uuid_str == self.service_uuid {
-                    // Step 4: Enumerate characteristics
+                if blue::LASER_SERVICE_UUID.contains(&service_uuid_str.as_str()) {
+                    self.service_uuid = Some(service_uuid);
+                    info!("    Service UUID: {:?} Found Laser Service uuid", service_uuid);  
                     let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
                     let characteristics = characteristics_result.Characteristics()?;
-                    
+                   
+
                     for k in 0..characteristics.Size()? {
                         let characteristic: GattCharacteristic = characteristics.GetAt(k)?;
-                        let char_uuid = characteristic.Uuid()?;
                         let props = characteristic.CharacteristicProperties()?;
-                        info!("    Characteristic UUID: {:?}", char_uuid);
+                        let char_uuid: GUID = characteristic.Uuid()?;
+                        let char_uuid_str = format!("{:?}", char_uuid).to_uppercase();
                         
-                        // Check for write characteristic
+
+                        // If writable and matches UUID, save for writing
                         if props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write || 
                            props & GattCharacteristicProperties::WriteWithoutResponse == GattCharacteristicProperties::WriteWithoutResponse {
-                            self.write_char = Some(characteristic.clone());
+                            if blue::WRITE_UUIDS.contains(&char_uuid_str.as_str()) {
+                                info!("    Write UUID: {:?} Found Laser Service write uuid", char_uuid);  
+                                self.write_char = Some(characteristic.clone());
+                            }
                         }
-                        
-                        // Check for notify characteristic
-                        if props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify || 
-                           props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate {
-                            self.notify_char = Some(characteristic.clone());
-                            
-                            // Set up notification handler
-                            self.setup_notifications(&characteristic).await?;
+
+                        // If notifiable/indicatable and matches UUID, enable notifications
+                        if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
+                            props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) {
+                            if blue::NOTIFY_UUIDS.contains(&char_uuid_str.as_str()) {
+                                info!("    Write UUID: {:?} Found Laser Service notification uuid", char_uuid);  
+                                self.notify_char = Some(characteristic.clone());
+                            }
                         }
                     }
+
                 }
+
             }
         } else {
             return Err("Device not connected".into());
         }
 
         if self.write_char.is_none() {
-            warn!("No writable characteristic found");
+            return Err("No writable characteristic found".into());
         }
         
         if self.notify_char.is_none() {
-            warn!("No notify characteristic found");
+            return Err("No notify characteristic found".into());
         }
 
         Ok(())
@@ -296,16 +260,11 @@ impl WinBleController {
 
 
 // Implementation of the common trait for btleplug
-impl BleController for WinBleController {
+impl BlueController for WinBlueController {
+    
     fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>> {
         Box::pin(async move {
             self.connect().await
-        })
-    }
-    
-    fn discover_characteristics<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>> {
-        Box::pin(async move {
-            self.discover_characteristics().await
         })
     }
     
@@ -326,28 +285,6 @@ impl BleController for WinBleController {
 
 
 
-
-/// Helper function to decode hex string to bytes
-pub fn decode(hex: &str) -> Result<Vec<u8>, String> {
-    if hex.len() % 2 != 0 {
-        return Err("Hex string must have an even number of characters".into());
-    }
-    
-    let mut result = Vec::with_capacity(hex.len() / 2);
-    let mut chars = hex.chars();
-    
-    while let (Some(a), Some(b)) = (chars.next(), chars.next()) {
-        let byte = match (a.to_digit(16), b.to_digit(16)) {
-            (Some(high), Some(low)) => (high << 4) as u8 | low as u8,
-            _ => return Err(format!("Invalid hex character in {}", hex)),
-        };
-        result.push(byte);
-    }
-    
-    Ok(result)
-}
-
-
 pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Error>> {
 
     let selector = BluetoothLEDevice::GetDeviceSelector()?;
@@ -359,7 +296,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
         let device_info: DeviceInformation = devices.GetAt(i)?;
         let device_name = device_info.Name()?;
         let device_name_str = device_name.to_string_lossy();
-        if !device_name_str.starts_with(ble::LASER_DEVICE_PREFIX) {
+        if !device_name_str.starts_with(blue::LASER_DEVICE_PREFIX) {
             continue;
         }
 
@@ -372,7 +309,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
             let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
             let service_uuid = service.Uuid()?;
             let str = format!("{:?}", service_uuid).to_uppercase();
-            if ble::LASER_SERVICE_UUID.contains(&str.as_str()) {
+            if blue::LASER_SERVICE_UUID.contains(&str.as_str()) {
                 info!("Found laser service: ({:?}))", service_uuid);
                 device_list.push(device_info.clone());
             }

@@ -3,7 +3,6 @@ use std::error::Error;
 use std::future::Future;
 use std::pin::Pin;
 
-use crate::winble::WinBleController;
 
 pub const LASER_DEVICE_PREFIX: &str = "TD5322A";
 
@@ -27,12 +26,10 @@ pub const NOTIFY_UUIDS: [&str; 2] = [
 ];
 
 
-pub trait BleController: Send + Sync {
+pub trait BlueController: Send + Sync {
     
     fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>>;
-    
-    fn discover_characteristics<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>>;
-    
+        
     fn send<'a>(&'a mut self, bytes: &'a [u8]) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>>;
     
     fn get_content(&self) -> String;

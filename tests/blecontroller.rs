@@ -1,4 +1,4 @@
-use darkelf::{ble, winble,util};
+use darkelf::{blue::{self, BlueController}, util, winblue};
 use log::{error, info};
 use windows::Devices::Enumeration::DeviceInformation;
 use anyhow::{anyhow, Ok};
@@ -9,7 +9,7 @@ async fn test_connector_scan() -> Result<(), anyhow::Error> {
 
     util::setup_logging();
 
-    let devices: Vec<DeviceInformation> = winble::scan_laser_devices()
+    let devices: Vec<DeviceInformation> = winblue::scan_laser_devices()
         .await
         .map_err(|e| { 
             error!("Failed to scan for devices: {:?}", e); 
@@ -20,19 +20,56 @@ async fn test_connector_scan() -> Result<(), anyhow::Error> {
     Ok(())
 }
 
+#[tokio::main]
+#[test]
 async fn test_make_connection() -> Result<(), anyhow::Error> {
    util::setup_logging();
 
-    let devices: Vec<DeviceInformation> = winble::scan_laser_devices()
+    let devices: Vec<DeviceInformation> = winblue::scan_laser_devices()
         .await
         .map_err(|e| { 
             error!("Failed to scan for devices: {:?}", e); 
             anyhow!(e.to_string())
         })?;
 
-    let controller = crate::winble::WinBleController::new(devices.get(0));
-    controller.connect().await?;
+    let mut controller = crate::winblue::WinBlueController::new(devices.get(0))
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
+    controller.connect()
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
     assert!(controller.is_connected(), "Controller is not connected");
+
+
+   Ok(())
+}
+
+
+#[tokio::main]
+#[test]
+async fn test_read_characteristics() -> Result<(), anyhow::Error> {
+   
+    util::setup_logging();
+
+    let devices: Vec<DeviceInformation> = winblue::scan_laser_devices()
+        .await
+        .map_err(|e| { 
+            error!("Failed to scan for devices: {:?}", e); 
+            anyhow!(e.to_string())
+        })?;
+
+    let mut controller = crate::winblue::WinBlueController::new(devices.get(0))
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
+    controller.connect()
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
+    assert!(controller.is_connected(), "Controller is not connected");
+
+    controller.discover_characteristics()
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?; 
+
 
    Ok(())
 }

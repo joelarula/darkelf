@@ -1,6 +1,6 @@
 
-use laserport::dmx;
-use laserport::devices::ZQ03268::ZQ03268;
+use darkelf::dmx;
+use darkelf::devices::ZQ03268::ZQ03268;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

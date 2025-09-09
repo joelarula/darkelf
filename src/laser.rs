@@ -3,7 +3,7 @@ use std::time::{Instant, Duration};
 use hex::decode;
 use btleplug::api::Characteristic; // Still needed for type references
 use tokio; // For async handling
-use crate::ble::BleController;
+use crate::blue::BlueController;
 use std::error::Error;
 use std::collections::VecDeque; // For buffer
 use regex::Regex;
@@ -928,15 +928,11 @@ fn adjust_selected(e: &[u8], t: Vec<u8>) -> Vec<u8> {
 /// Main controller for laser device communication.
 pub struct LaserController {
     sending: Arc<Mutex<bool>>,
-    ble_controller: Option<Box<dyn BleController>>, // Unified BLE controller using trait
-    write_char: Option<Characteristic>, // Keep for compatibility
-    notify_char: Option<Characteristic>, // Keep for compatibility
-    is_ble: bool,
+    ble_controller: Option<Box<dyn BlueController>>, // Unified BLE controller using trait
     last_send_time: Option<Instant>,
     options: LaserOptions,
     project_data: ProjectData,
     connected: bool,
-    mock_mode: bool,
     blu_rec_content: VecDeque<String>,
     rec_device_msg_timer: Option<tokio::time::Instant>,
     discovery_started: bool,
@@ -950,9 +946,6 @@ impl Clone for LaserController {
         LaserController {
             sending: Arc::clone(&self.sending),
             ble_controller: None, // BLE controller can't be cloned directly
-            write_char: None,
-            notify_char: None,
-            is_ble: self.is_ble,
             last_send_time: self.last_send_time,
             options: self.options.clone(),
             project_data: ProjectData {
@@ -963,7 +956,6 @@ impl Clone for LaserController {
                 prj_item: self.project_data.prj_item.clone(),
             },
             connected: self.connected,
-            mock_mode: self.mock_mode,
             blu_rec_content: self.blu_rec_content.clone(),
             rec_device_msg_timer: self.rec_device_msg_timer,
             discovery_started: self.discovery_started,
@@ -976,7 +968,7 @@ impl Clone for LaserController {
 
 impl LaserController {
     /// Creates a new LaserController with a BLE controller passed directly
-    pub async fn new<T: BleController + 'static>(is_ble: bool, mock_mode: bool, ble_controller: T) -> Result<Self, Box<dyn Error>> {
+    pub async fn new<T: BlueController + 'static>(is_ble: bool, mock_mode: bool, ble_controller: T) -> Result<Self, Box<dyn Error>> {
         let sending = Arc::new(Mutex::new(false));
 
         
@@ -990,6 +982,7 @@ impl LaserController {
             rd_mode: 0,
             sound_val: 0,
         };
+
         let project_data = ProjectData {
             public: PublicSettings { rd_mode: 0, sound_val: 0 },
             prj_item: Vec::new(),
@@ -998,14 +991,10 @@ impl LaserController {
         let mut controller = LaserController {
             sending,
             ble_controller: Some(Box::new(ble_controller)),
-            write_char: None,
-            notify_char: None,
-            is_ble,
             last_send_time: None,
             options,
             project_data,
             connected: false,
-            mock_mode,
             blu_rec_content: VecDeque::new(),
             rec_device_msg_timer: None,
             discovery_started: false,
@@ -1013,60 +1002,10 @@ impl LaserController {
             not_pass: 0,
             pass_count: 0,
         };
-
-        controller.connect_ble().await?;
         controller.connected = controller.is_connected();
         Ok(controller)
     }
 
-    async fn connect_ble(&mut self) -> Result<(), Box<dyn Error>> {
-
-        if let Some(controller) = &mut self.ble_controller {
-            controller.connect().await?;
-            controller.discover_characteristics().await?;
-            self.connected = true;
-            
-            // Get write and notify characteristics for compatibility
-            // This will be done automatically in the BleController
-            // but we still keep track of them here for the interface
-            if let Some(characteristics) = self.get_characteristics_from_ble() {
-                for characteristic in characteristics {
-                    let uuid = characteristic.uuid.to_string();
-                    if uuid == "0000ffe2-0000-1000-8000-00805f9b34fb" || uuid == "0000ff02-0000-1000-8000-00805f9b34fb" {
-                        self.write_char = Some(characteristic.clone());
-                    } else if uuid == "0000ffe1-0000-1000-8000-00805f9b34fb" || uuid == "0000ff01-0000-1000-8000-00805f9b34fb" {
-                        self.notify_char = Some(characteristic.clone());
-                    }
-                }
-            }
-            
-            Ok(())
-        } else {
-            Err("Failed to initialize BLE controller".into())
-        }
-    }
-
-    /// Helper method to get characteristics from BleController
-    fn get_characteristics_from_ble(&self) -> Option<Vec<Characteristic>> {
-        if let Some(controller) = &self.ble_controller {
-            // This is a dummy implementation - in real code, you'd get this from the controller
-            // For now we'll just return an empty vec
-            Some(Vec::new())
-        } else {
-            None
-        }
-    }
-    
-    pub async fn discover_characteristics(&mut self) -> Result<(), Box<dyn Error>> {
-        if let Some(controller) = &mut self.ble_controller {
-            controller.discover_characteristics().await?;
-            self.connected = true;
-            Ok(())
-        } else {
-            Err("BLE controller not initialized".into())
-        }
-    }
-    
 
     pub async fn send(&mut self, cmd_hex: &str, show_loading: bool, callback: Option<&mut dyn FnMut(i8, u8)>) -> Result<(), String> {
         if cmd_hex.is_empty() { return Err("Empty command".to_string()); }
@@ -1083,7 +1022,7 @@ impl LaserController {
         if let Some(cb_ref) = cb.as_deref_mut() {
             cb_ref(0, 0);
         }
-        if show_loading && !self.mock_mode {
+        if show_loading {
             self.last_send_time = Some(Instant::now());
         }
 
@@ -1094,13 +1033,8 @@ impl LaserController {
             return Err("Invalid hex".to_string()); 
         }
 
-        let result = if self.mock_mode {
-            tokio::time::sleep(Duration::from_millis(20)).await;
-            Ok(())
-        } else {
-            self.send_ble(&bytes).await
-        };
-
+        let result = self.send_ble(&bytes).await;
+        
         let mut guard = self.sending.lock().unwrap();
         *guard = false;
         if let Some(cb_ref) = cb.as_deref_mut() {
