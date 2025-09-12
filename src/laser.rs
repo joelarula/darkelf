@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Instant, Duration};
+use log::debug;
 use hex::decode;
 use btleplug::api::Characteristic; // Still needed for type references
 use tokio; // For async handling
@@ -968,10 +969,9 @@ impl Clone for LaserController {
 
 impl LaserController {
     /// Creates a new LaserController with a BLE controller passed directly
-    pub async fn new<T: BlueController + 'static>(is_ble: bool, mock_mode: bool, ble_controller: T) -> Result<Self, Box<dyn Error>> {
+    pub async fn new<T: BlueController + 'static>(ble_controller: T) -> Result<Self, Box<dyn Error>> {
         let sending = Arc::new(Mutex::new(false));
-
-        
+ 
         let options = LaserOptions {
             text_decimal_time: false,
             text_stop_time: false,
@@ -1007,14 +1007,24 @@ impl LaserController {
     }
 
 
-    pub async fn send(&mut self, cmd_hex: &str, show_loading: bool, callback: Option<&mut dyn FnMut(i8, u8)>) -> Result<(), String> {
-        if cmd_hex.is_empty() { return Err("Empty command".to_string()); }
+    pub async fn send(&mut self, cmd_hex: &str, callback: Option<&mut dyn FnMut(i8, u8)>) -> Result<(), String> {
+        debug!("[LaserController] send() called with cmd_hex: {}", cmd_hex);
+        if cmd_hex.is_empty() {
+            debug!("[LaserController] send() failed: Empty command");
+            return Err("Empty command".to_string());
+        }
 
         let mut guard = self.sending.lock().unwrap();
-        if *guard { return Err("Previous send in progress".to_string()); }
+        if *guard {
+            debug!("[LaserController] send() failed: Previous send in progress");
+            return Err("Previous send in progress".to_string());
+        }
         *guard = true;
 
-        if !self.is_connected() { return Err("Not connected".to_string()); }
+        if !self.is_connected() {
+            debug!("[LaserController] send() failed: Not connected");
+            return Err("Not connected".to_string());
+        }
         drop(guard); // Drop the lock before mutable borrow
 
         let mut cb_result: Option<(i8, u8)> = None;
@@ -1022,31 +1032,50 @@ impl LaserController {
         if let Some(cb_ref) = cb.as_deref_mut() {
             cb_ref(0, 0);
         }
-        if show_loading {
-            self.last_send_time = Some(Instant::now());
-        }
 
-        let bytes = decode(cmd_hex).map_err(|e| e.to_string())?;
-        if bytes.is_empty() { 
+        let bytes = decode(cmd_hex).map_err(|e| {
+            debug!("[LaserController] send() failed: Invalid hex: {}", e);
+            e.to_string()
+        })?;
+        if bytes.is_empty() {
+            debug!("[LaserController] send() failed: Decoded bytes empty");
             let mut guard = self.sending.lock().unwrap();
-            *guard = false; 
-            return Err("Invalid hex".to_string()); 
+            *guard = false;
+            return Err("Invalid hex".to_string());
         }
 
+        debug!("[LaserController] send() sending BLE bytes: {:02X?}", bytes);
         let result = self.send_ble(&bytes).await;
-        
+
         let mut guard = self.sending.lock().unwrap();
         *guard = false;
         if let Some(cb_ref) = cb.as_deref_mut() {
-            if result.is_ok() { cb_ref(1, 100); } else { cb_ref(-1, 0); }
+            if result.is_ok() {
+                cb_ref(1, 100);
+            } else {
+                cb_ref(-1, 0);
+            }
+        }
+        if let Err(ref e) = result {
+            debug!("[LaserController] send() BLE send failed: {}", e);
+        } else {
+            debug!("[LaserController] send() BLE send succeeded");
         }
         result
     }
 
     async fn send_ble(&mut self, bytes: &[u8]) -> Result<(), String> {
+        debug!("[LaserController] send_ble() called with bytes: {:02X?}", bytes);
         if let Some(controller) = &mut self.ble_controller {
-            controller.send(bytes).await
+            let result = controller.send(bytes).await;
+            if let Err(ref e) = result {
+                debug!("[LaserController] send_ble() failed: {}", e);
+            } else {
+                debug!("[LaserController] send_ble() succeeded");
+            }
+            result
         } else {
+            debug!("[LaserController] send_ble() failed: BLE controller not initialized");
             Err("BLE controller not initialized".to_string())
         }
     }

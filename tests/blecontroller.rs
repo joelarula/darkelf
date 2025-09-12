@@ -1,4 +1,4 @@
-use darkelf::{blue::{self, BlueController}, util, winblue};
+use darkelf::{ util, winblue};
 use log::{error, info};
 use windows::Devices::Enumeration::DeviceInformation;
 use anyhow::{anyhow, Ok};
