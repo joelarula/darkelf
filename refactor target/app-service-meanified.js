@@ -9459,7 +9459,7 @@
                 }
             }
         },
-        "289d": function(e, t, r) {
+        "jsfeatCVLib": function(e, t, r) {
             var n = n || {
                 REVISION: "ALPHA"
             };
@@ -11725,7 +11725,7 @@
                 "undefined" === typeof e.exports ? window.jsfeat = t : e.exports = t
             }(n)
         },
-        "28e3": function(t, r, n) {
+        "bleAutoTestPageComponent": function(t, r, n) {
             "use strict";
             (function(t) {
                 Object.defineProperty(r, "__esModule", {
@@ -24774,7 +24774,7 @@
         "652e": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("28e3"),
+            var n = r("bleAutoTestPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -26733,7 +26733,7 @@
         },
         "780d": function(e, t, r) {
             (function(t) {
-                var n = r("289d"),
+                var n = r("jsfeatCVLib"),
                     h = r("cefd"),
                     a = r("4137");
 
