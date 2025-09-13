@@ -1629,7 +1629,7 @@
         },
         "textLineVectorizer ": function(e, t, r) {
             (function(t) {
-                var n = r("34cf"),
+                var n = r("spreadToArrayHelper"),
                     h = r("af34"),
                     a = r("35ce");
 
@@ -2740,7 +2740,7 @@
                     c = r("c4ce"),
                     o = r("handwritingCanvasHelper"),
                     s = r("720d"),
-                    l = r("3315"),
+                    l = r("codePointAt"),
                     p = r("textLineVectorizer "),
                     d = r("fontGeometryUtils "),
                     b = {
@@ -12172,7 +12172,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        3315: function(t, r, n) {
+        "codePointAt": function(t, r, n) {
             (function(h, a) {
                 var i, c, o, s = n("3b2d");
                 (function(e, n) {
@@ -19704,7 +19704,7 @@
                 }))
             }).call(this, n("f3b9")["default"], n("buffer").Buffer)
         },
-        "34cf": function(e, t, r) {
+        "spreadToArrayHelper": function(e, t, r) {
             var n = r("ed45"),
                 h = r("7172"),
                 a = r("6382"),
@@ -20993,7 +20993,7 @@
                     value: !0
                 }), t.default = void 0;
                 var a = getApp(),
-                    i = (r("3315"), r("e458")),
+                    i = (r("codePointAt"), r("e458")),
                     c = r("3b77"),
                     o = (r("720d"), r("c4ce")),
                     s = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
@@ -24928,7 +24928,7 @@
         },
         "720d": function(t, r, n) {
             (function(r) {
-                var h = n("34cf");
+                var h = n("spreadToArrayHelper");
 
                 function a(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
@@ -25406,7 +25406,7 @@
                 }), t.default = void 0;
                 var h = n(r("762b")),
                     a = getApp(),
-                    i = r("3315"),
+                    i = r("codePointAt"),
                     c = r("textLineVectorizer "),
                     o = r("3b77"),
                     s = r("720d"),
@@ -45755,7 +45755,7 @@
         },
         bbc7: function(e, t, r) {
             (function(t) {
-                var n = r("34cf"),
+                var n = r("spreadToArrayHelper"),
                     h = r("720d"),
                     a = r("fontGeometryUtils "),
                     i = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"];
@@ -58979,7 +58979,7 @@
         cefd: function(e, t, r) {
             (function(t) {
                 var n = r("af34"),
-                    h = r("34cf");
+                    h = r("spreadToArrayHelper");
 
                 function a(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
