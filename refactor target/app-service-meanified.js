@@ -585,41 +585,41 @@
             }(a);
             t["default"] = h.a
         },
-        "061c": function(e, t, r) {
+        "fontRegistryModule ": function(e, t, r) {
             var n = r("4e7c"),
                 h = [{
-                    name: "\u5355\u7ebf\u5b57\u4f53",
+                    name: "Single Line Font",
                     file: n.DrawFonts,
                     mode: 2,
                     sn: 1004,
                     note: "font_note_1004",
-                    msg: "\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528"
+                    msg: "Minimal strokes, no flicker, recommended for use"
                 }, {
-                    name: "\u5b8b\u4f53",
+                    name: "SimSun",
                     file: "simsun_0.woff",
                     mode: 1,
                     sn: 1003,
                     note: "font_note_1003"
                 }, {
-                    name: "\u601d\u6e90\u9ed1\u4f531",
+                    name: "Source Han Sans 1",
                     file: "latin.woff",
                     mode: 1,
                     sn: 1002,
                     note: "font_note_1002"
                 }, {
-                    name: "\u601d\u6e90\u9ed1\u4f532",
+                    name: "Source Han Sans 2",
                     file: "china.woff",
                     mode: 1,
                     sn: 1005,
                     note: "font_note_1005"
                 }, {
-                    name: "\u601d\u6e90\u9ed1\u4f533",
+                    name: "Source Han Sans 3",
                     file: "japan_korea.woff",
                     mode: 1,
                     sn: 1006,
                     note: "font_note_1006"
                 }, {
-                    name: "\u601d\u6e90\u9ed1\u4f534",
+                    name: "Source Han Sans 4",
                     file: "arabic.woff",
                     mode: 1,
                     sn: 1007,
@@ -2863,7 +2863,7 @@
                             }
                         },
                         onLoad: function() {
-                            var e = r("061c");
+                            var e = r("fontRegistryModule ");
                             this.fontNameList = e.getFontNameList();
                             var t = a.globalData.getCmdData("textData");
                             this.textData = t;
@@ -2937,7 +2937,7 @@
                                 var t = this,
                                     n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
                                 if (this.fontLoadIdex != e) {
-                                    var h = r("061c"),
+                                    var h = r("fontRegistryModule "),
                                         a = h.getFontList(this),
                                         i = a[e].file,
                                         c = a[e].mode,
@@ -25799,7 +25799,7 @@
                         onLoad: function() {
                             var e = r("5945");
                             this.objCount = e.picArray.length;
-                            var t = r("061c");
+                            var t = r("fontRegistryModule ");
                             this.fontNameList = t.getFontNameList();
                             var n = a.globalData.getCmdData("drawData");
                             this.pisObj = n.pisObj, s.clearDrawPointsHis()
@@ -25897,7 +25897,7 @@
                             },
                             readFontBase64: function() {
                                 var e = this,
-                                    t = r("061c"),
+                                    t = r("fontRegistryModule "),
                                     n = t.getFontList(this),
                                     h = n[this.fontIdex].file,
                                     a = n[this.fontIdex].mode,
@@ -45412,7 +45412,7 @@
                 value: !0
             }), t.default = void 0;
             var n = getApp(),
-                h = r("061c"),
+                h = r("fontRegistryModule "),
                 a = {
                     data: function() {
                         var e = h.getFontList(this);
