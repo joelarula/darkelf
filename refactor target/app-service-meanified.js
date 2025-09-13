@@ -12155,10 +12155,10 @@
                 r.default = a
             }).call(this, n("f3b9")["default"])
         },
-        "2a89": function(e, t, r) {
+        "arrowLeftPng ": function(e, t, r) {
             e.exports = r.p + "static/imgs/text/arrow-left.png"
         },
-        "32bf": function(e, t, r) {
+        "fontPageComponentExport": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("7010"),
@@ -27516,7 +27516,7 @@
                         }
                     }), n("image", {
                         attrs: {
-                            src: e._$s(63, "a-src", r("2a89")),
+                            src: e._$s(63, "a-src", r("arrowLeftPng ")),
                             _i: 63
                         }
                     })]), e._$s(64, "i", e.features.arbPlay) ? n("label", {
@@ -66399,7 +66399,7 @@
             })), __definePage("sub/pages/cover/cover", (function() {
                 return Vue.extend(r("eacd").default)
             })), __definePage("sub/pages/font/font", (function() {
-                return Vue.extend(r("32bf").default)
+                return Vue.extend(r("fontPageComponentExport").default)
             })), __definePage("sub/pages/files/files", (function() {
                 return Vue.extend(r("c0a6").default)
             })), __definePage("sub/pages/playList/playList", (function() {
