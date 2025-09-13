@@ -642,7 +642,7 @@
                 }
             }
         },
-        "072a": function(e, t, r) {
+        "deviceConfigPageComponent ": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -62221,7 +62221,7 @@
         d281: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("072a"),
+            var n = r("deviceConfigPageComponent "),
                 h = r("bbfb");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
