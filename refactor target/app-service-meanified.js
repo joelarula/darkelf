@@ -3715,7 +3715,7 @@
                 t.default = b
             }).call(this, r("f3b9")["default"])
         },
-        "0ee4": function(t, r) {
+        "getGlobalObject": function(t, r) {
             var n;
             n = function() {
                 return this
@@ -4764,7 +4764,7 @@
                     }
                     return h
                 }
-            }).call(this, n("0ee4"))
+            }).call(this, n("getGlobalObject"))
         },
         "179d": function(e, t, r) {
             e.exports = r.p + "static/imgs/text/arrow-down.png"
