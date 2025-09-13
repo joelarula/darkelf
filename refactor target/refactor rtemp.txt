@@ -1,0 +1,533 @@
+use std::sync::{Arc, Mutex};
+use std::time::{Instant, Duration};
+use log::{debug, error};
+use hex::decode;
+use tokio::time::sleep;
+use std::error::Error;
+use std::collections::VecDeque;
+use regex::Regex;
+use std::fmt::Write;
+use serialport::{SerialPort, SerialPortType};
+use windows::Foundation::TypedEventHandler;
+use windows::Devices::Bluetooth::BluetoothLEDevice;
+use windows::Devices::Bluetooth::GenericAttributeProfile::{
+    GattCharacteristic, GattValueChangedEventArgs, GattWriteOption,
+    GattClientCharacteristicConfigurationDescriptorValue,
+};
+use windows::Storage::Streams::{DataWriter, IBuffer};
+use windows::core::{Result as WinResult, HSTRING};
+
+// BlueController trait
+pub trait BlueController: Clone {
+    fn new(muuid_sel: u8) -> Self where Self: Sized;
+    async fn connect(&mut self, device_address: &str) -> Result<(), String>;
+    async fn disconnect(&mut self) -> Result<(), String>;
+    async fn send(&mut self, data: &[u8]) -> Result<(), String>;
+    fn is_connected(&self) -> bool;
+    fn set_notification_handler(&mut self, handler: Option<TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs>>);
+}
+
+#[derive(Clone)]
+pub struct WinBlueController {
+    muuid_sel: u8,
+    service_uuid: HSTRING,
+    notify_uuid: HSTRING,
+    write_uuid: HSTRING,
+    device: Option<BluetoothLEDevice>,
+    write_characteristic: Option<GattCharacteristic>,
+    notify_characteristic: Option<GattCharacteristic>,
+    connected: bool,
+}
+
+impl WinBlueController {
+    async fn find_characteristics(&mut self) -> Result<(), String> {
+        if let Some(device) = &self.device {
+            let services_result = device
+                .GetGattServicesAsync(None)
+                .map_err(|e| format!("Failed to get GATT services: {}", e))?;
+            let services = services_result
+                .await
+                .map_err(|e| format!("Service discovery failed: {}", e))?;
+            for service in services.Services().map_err(|e| e.to_string())?.into_iter() {
+                if service.ServiceUuid()?.to_string().to_uppercase() == self.service_uuid.to_string() {
+                    let characteristics_result = service
+                        .GetCharacteristicsAsync(None)
+                        .map_err(|e| format!("Failed to get characteristics: {}", e))?;
+                    let characteristics = characteristics_result
+                        .await
+                        .map_err(|e| format!("Characteristic discovery failed: {}", e))?;
+                    for characteristic in characteristics.Characteristics().map_err(|e| e.to_string())?.into_iter() {
+                        let uuid = characteristic.CharacteristicUuid()?.to_string().to_uppercase();
+                        if uuid == self.write_uuid.to_string() {
+                            self.write_characteristic = Some(characteristic.clone());
+                        }
+                        if uuid == self.notify_uuid.to_string() {
+                            self.notify_characteristic = Some(characteristic);
+                        }
+                    }
+                }
+            }
+            if self.write_characteristic.is_some() && self.notify_characteristic.is_some() {
+                Ok(())
+            } else {
+                Err("Required characteristics not found".to_string())
+            }
+        } else {
+            Err("Device not initialized".to_string())
+        }
+    }
+
+    async fn enable_notifications(&mut self) -> Result<(), String> {
+        if let Some(notify_char) = &self.notify_characteristic {
+            notify_char
+                .WriteClientCharacteristicConfigurationDescriptorAsync(
+                    GattClientCharacteristicConfigurationDescriptorValue::Notify,
+                )
+                .map_err(|e| format!("Failed to enable notifications: {}", e))?
+                .await
+                .map_err(|e| format!("Notification setup failed: {}", e))?;
+            Ok(())
+        } else {
+            Err("Notify characteristic not initialized".to_string())
+        }
+    }
+}
+
+impl BlueController for WinBlueController {
+    fn new(muuid_sel: u8) -> Self {
+        let (service_uuid, notify_uuid, write_uuid) = match muuid_sel {
+            0 => (
+                HSTRING::from("0000FF00-0000-1000-8000-00805F9B34FB"),
+                HSTRING::from("0000FF01-0000-1000-8000-00805F9B34FB"),
+                HSTRING::from("0000FF02-0000-1000-8000-00805F9B34FB"),
+            ),
+            1 => (
+                HSTRING::from("0000180A-0000-1000-8000-00805F9B34FB"),
+                HSTRING::from("00002A05-0000-1000-8000-00805F9B34FB"),
+                HSTRING::from("00002A04-0000-1000-8000-00805F9B34FB"),
+            ),
+            _ => panic!("Invalid muuid_sel: {}", muuid_sel),
+        };
+        WinBlueController {
+            muuid_sel,
+            service_uuid,
+            notify_uuid,
+            write_uuid,
+            device: None,
+            write_characteristic: None,
+            notify_characteristic: None,
+            connected: false,
+        }
+    }
+
+    async fn connect(&mut self, device_address: &str) -> Result<(), String> {
+        let device = BluetoothLEDevice::FromIdAsync(&HSTRING::from(device_address))
+            .map_err(|e| format!("Failed to create BluetoothLEDevice: {}", e))?
+            .await
+            .map_err(|e| format!("Device connection failed: {}", e))?;
+        self.device = Some(device);
+        self.find_characteristics().await?;
+        self.enable_notifications().await?;
+        self.connected = true;
+        debug!("Connected with muuid_sel: {}", self.muuid_sel);
+        Ok(())
+    }
+
+    async fn disconnect(&mut self) -> Result<(), String> {
+        if let Some(device) = self.device.take() {
+            device.Close().map_err(|e| format!("Failed to close device: {}", e))?;
+        }
+        self.write_characteristic = None;
+        self.notify_characteristic = None;
+        self.connected = false;
+        Ok(())
+    }
+
+    async fn send(&mut self, data: &[u8]) -> Result<(), String> {
+        if !self.connected || self.write_characteristic.is_none() {
+            return Err("Not connected or write characteristic not initialized".to_string());
+        }
+        let writer = DataWriter::new().map_err(|e| format!("Failed to create DataWriter: {}", e))?;
+        writer.WriteBytes(data).map_err(|e| format!("Failed to write bytes: {}", e))?;
+        let buffer = writer.DetachBuffer().map_err(|e| format!("Failed to detach buffer: {}", e))?;
+        if let Some(characteristic) = &self.write_characteristic {
+            characteristic
+                .WriteValueWithResultAsync(&buffer, GattWriteOption::WriteWithoutResponse)
+                .map_err(|e| format!("Failed to write value: {}", e))?
+                .await
+                .map_err(|e| format!("Write operation failed: {}", e))?;
+            Ok(())
+        } else {
+            Err("Write characteristic not initialized".to_string())
+        }
+    }
+
+    fn is_connected(&self) -> bool {
+        self.connected
+    }
+
+    fn set_notification_handler(&mut self, handler: Option<TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs>>) {
+        if let Some(notify_char) = &self.notify_characteristic {
+            if let Some(handler) = handler {
+                if let Err(e) = notify_char.ValueChanged(&handler) {
+                    error!("Failed to set notification handler: {}", e);
+                } else {
+                    debug!("Notification handler set for notify_uuid: {}", self.notify_uuid);
+                }
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct LaserPoint {
+    x: i16,
+    y: i16,
+    z: u8,
+    rgb: [u8; 3],
+}
+
+impl LaserPoint {
+    pub fn new(x: i16, y: i16, z: u8, rgb: [u8; 3]) -> Self {
+        LaserPoint { x, y, z, rgb }
+    }
+}
+
+#[derive(Debug)]
+pub struct LaserCommand {
+    point_count: u16,
+    char_count: u16,
+    command_data: String,
+    char_width_cmd: String,
+    char_point_cmd: String,
+    segment1: String,
+    segment2: String,
+    version: String,
+    time: String,
+    points: Vec<LaserPoint>,
+    points_right: Option<Vec<LaserPoint>>,
+    points_up: Option<Vec<LaserPoint>>,
+    points_down: Option<Vec<LaserPoint>>,
+}
+
+impl LaserCommand {
+    pub fn new() -> Self {
+        LaserCommand {
+            point_count: 0,
+            char_count: 0,
+            command_data: String::new(),
+            char_width_cmd: String::new(),
+            char_point_cmd: String::new(),
+            segment1: String::new(),
+            segment2: String::new(),
+            version: "00".to_string(),
+            time: "00".to_string(),
+            points: Vec::new(),
+            points_right: None,
+            points_up: None,
+            points_down: None,
+        }
+    }
+
+    pub fn to_hex_string(&self) -> String {
+        format!(
+            "A0A1A2A3{}{}{}{}{}{}{}A4A5A6A7",
+            format!("{:04x}", self.point_count),
+            format!("{:04x}", self.char_count),
+            self.command_data,
+            format!("{:04x}", self.char_count),
+            self.char_width_cmd,
+            self.char_point_cmd,
+            self.segment1.clone() + &self.segment2 + &self.version + &self.time
+        ).to_uppercase()
+    }
+
+    pub fn to_ble_command(&self) -> Vec<Vec<u8>> {
+        self.points.iter().map(|point| {
+            vec![
+                0xE0, 0xE1, 0xE2, 0xE3,
+                0xC0, 0xC1, 0xC2, 0xC3,
+                (point.x & 0xFF) as u8, (point.x >> 8) as u8,
+                (point.y & 0xFF) as u8, (point.y >> 8) as u8,
+                point.rgb[0], point.rgb[1], point.rgb[2],
+                point.z,
+                0x00, 0x00, 0x00, 0x00,
+            ]
+        }).collect()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct LaserOptions {
+    text_decimal_time: bool,
+    text_stop_time: bool,
+    tx_color: u8,
+    tx_size: u8,
+    run_speed: u8,
+    tx_dist: u8,
+    rd_mode: u8,
+    sound_val: u8,
+}
+
+impl LaserOptions {
+    pub fn new() -> Self {
+        LaserOptions {
+            text_decimal_time: false,
+            text_stop_time: false,
+            tx_color: 0,
+            tx_size: 60,
+            run_speed: 128,
+            tx_dist: 60,
+            rd_mode: 0,
+            sound_val: 0,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct ProjectData {
+    public: PublicSettings,
+    prj_item: Vec<PrjItem>,
+}
+
+#[derive(Debug)]
+pub struct PublicSettings {
+    rd_mode: u8,
+    sound_val: u8,
+}
+
+#[derive(Debug, Clone)]
+pub struct PrjItem {
+    py_mode: u8,
+    prj_selected: Vec<u8>,
+}
+
+#[derive(Debug, Default)]
+pub struct Features {
+    group_list: Option<Vec<Group>>,
+    text_stop_time: bool,
+    animation_fix: bool,
+    arb_play: bool,
+    pics_play: bool,
+    sel_index: Option<u8>,
+}
+
+#[derive(Debug)]
+pub struct Group {
+    color: u8,
+}
+
+#[derive(Debug)]
+pub struct XYValue {
+    value: u8,
+}
+
+#[derive(Debug)]
+pub struct XYConfig {
+    auto: bool,
+    auto_value: u8,
+    phase: u8,
+    xy: Vec<XYValue>,
+}
+
+#[derive(Debug)]
+pub struct SubsetData {
+    xy_cnf: XYConfig,
+}
+
+#[derive(Debug)]
+pub struct ShakeData {
+    subset_data: SubsetData,
+}
+
+#[derive(Debug)]
+pub struct ShakeOptions {
+    xy_cnf_save: Option<bool>,
+}
+
+impl ShakeOptions {
+    pub fn new(xy_cnf_save: Option<bool>) -> Self {
+        ShakeOptions { xy_cnf_save }
+    }
+}
+
+#[derive(Debug)]
+pub struct SettingParams {
+    val_arr: [u8; 5],
+    ch: u8,
+    xy: u8,
+    light: u8,
+    cfg: u8,
+    lang: u8,
+}
+
+impl SettingParams {
+    pub fn new(val_arr: [u8; 5], ch: u8, xy: u8, light: u8, cfg: u8, lang: u8) -> Self {
+        SettingParams {
+            val_arr,
+            ch,
+            xy,
+            light,
+            cfg,
+            lang,
+        }
+    }
+}
+
+pub struct CommandGenerator {
+    scale_factor: f32,
+    cur_mode: u8,
+    text_data: TextData,
+    prj_data: ProjectData,
+}
+
+impl CommandGenerator {
+    pub fn new() -> Self {
+        CommandGenerator {
+            scale_factor: 0.5,
+            cur_mode: 0,
+            text_data: TextData {
+                tx_color: 0,
+                tx_size: 60,
+                run_speed: 128,
+                tx_dist: 60,
+                tx_point_time: 50,
+                run_dir: 0,
+            },
+            prj_data: ProjectData {
+                public: PublicSettings { rd_mode: 0, sound_val: 0 },
+                prj_item: Vec::new(),
+            },
+        }
+    }
+
+    fn to_hex(&self, value: u16, length: usize) -> String {
+        format!("{:0width$x}", value, width = length).to_uppercase()
+    }
+
+    fn combine_control(&self, frame: u8, flag: u8) -> u8 {
+        (frame << 4) | (0x0F & flag)
+    }
+
+    pub fn generate_command(
+        &self,
+        points: Vec<(u8, Vec<LaserPoint>)>,
+        time: f32,
+        options: LaserOptions,
+        direction: u8,
+        version: u8,
+    ) -> Option<LaserCommand> {
+        if points.is_empty() {
+            return None;
+        }
+
+        let mut cmd = LaserCommand::new();
+        let (new_points, se1, se2, offset) = self.generate_grid(
+            points.iter().flat_map(|(_, p)| p.clone()).collect(),
+            direction,
+        );
+        cmd.point_count = new_points.len() as u16;
+        cmd.char_count = (new_points.len() / 2) as u16;
+        cmd.version = self.to_hex(version as u16, 2);
+        cmd.time = if options.text_decimal_time {
+            self.to_hex((time * 10.0) as u16, 2)
+        } else {
+            self.to_hex(time as u16, 2)
+        };
+        cmd.points = new_points.clone();
+
+        for (i, point) in new_points.iter().enumerate() {
+            let frame = (i / 8) as u8;
+            let flag = if i == 0 || i == new_points.len() - 1 { 1 } else { point.z };
+            let ctrl = self.combine_control(frame, flag);
+            cmd.command_data += &self.to_hex((point.x as f32 * self.scale_factor).round() as u16 + offset as u16, 4);
+            cmd.command_data += &self.to_hex((point.y as f32 * self.scale_factor).round() as u16, 4);
+            cmd.command_data += &self.to_hex(ctrl as u16, 2);
+        }
+
+        cmd.char_width_cmd = se1.clone();
+        cmd.char_point_cmd = se2.clone();
+        cmd.segment1 = se1;
+        cmd.segment2 = se2;
+        Some(cmd)
+    }
+
+    pub fn generate_ble_command(&self, points: &[LaserPoint]) -> Vec<Vec<u8>> {
+        points.iter().map(|point| {
+            vec![
+                0xE0, 0xE1, 0xE2, 0xE3,
+                0xC0, 0xC1, 0xC2, 0xC3,
+                (point.x & 0xFF) as u8, (point.x >> 8) as u8,
+                (point.y & 0xFF) as u8, (point.y >> 8) as u8,
+                point.rgb[0], point.rgb[1], point.rgb[2],
+                point.z,
+                0x00, 0x00, 0x00, 0x00,
+            ]
+        }).collect()
+    }
+
+    pub fn get_cmd_str(&self, features: Option<Features>) -> String {
+        let mut cmd = String::new();
+        let r = self.to_hex(self.cur_mode as u16, 2);
+        let h = self.to_hex(0, 2);
+        let a = self.to_hex(self.text_data.tx_color as u16, 2);
+        let c = self.to_hex((self.text_data.tx_size as f32 / 100.0 * 255.0) as u16, 2);
+        let o = self.to_hex((self.text_data.tx_size as f32 / 100.0 * 255.0) as u16, 2);
+        let s = self.to_hex((self.text_data.run_speed as f32 / 100.0 * 255.0) as u16, 2);
+        let l = "00".to_string();
+        let p = self.to_hex((self.text_data.tx_dist as f32 / 100.0 * 255.0) as u16, 2);
+        let d = self.to_hex(self.prj_data.public.rd_mode as u16, 2);
+        let j = self.to_hex((self.prj_data.public.sound_val as f32 / 100.0 * 255.0) as u16, 2);
+
+        let mut x = "FFFFFFFF0000".to_string();
+        if let Some(ref f) = features {
+            x = String::new();
+            if let Some(groups) = &f.group_list {
+                for group in groups {
+                    x.push_str(&self.to_hex(group.color as u16, 2));
+                }
+            }
+            x.push_str("FFFFFFFF");
+            x.truncate(8);
+            if f.text_stop_time {
+                x.push_str(&self.to_hex(self.text_data.tx_point_time as u16, 2));
+            }
+            x.push_str("0000");
+            x.truncate(12);
+        }
+
+        let mut f_str = String::new();
+        for (idx, item) in self.prj_data.prj_item.iter().enumerate() {
+            let mut p = if item.py_mode == 0 { 0 } else { 128 };
+            if let Some(f) = features.as_ref() {
+                if idx == 3 && f.animation_fix {
+                    p |= 50 - f.sel_index.unwrap_or(0);
+                } else if p != 0 {
+                    p |= f.sel_index.unwrap_or(0);
+                }
+            }
+            let u = self.to_hex(p as u16, 2);
+            let mut x_item = String::new();
+            let mut n = process_selected(&item.prj_selected);
+            if idx == 3 && features.as_ref().map_or(false, |f| f.animation_fix) {
+                n = adjust_selected(&[2, 4, 11, 13, 19], n);
+            }
+            for val in n.iter().rev() {
+                x_item.push_str(&self.to_hex(*val as u16, 2));
+            }
+            f_str.push_str(&u);
+            f_str.push_str(&x_item);
+        }
+
+        let mut z = String::new();
+        if features.as_ref().map_or(false, |f| f.arb_play) {
+            z.push_str(&self.to_hex(self.text_data.run_dir as u16, 2));
+        }
+
+        let mut q = String::new();
+        let r_len = z.len() / 2;
+        for _ in r_len..44 {
+            q.push_str("00");
+        }
+
+        cmd.push_str("C0C1C2C3");

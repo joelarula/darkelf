@@ -1,0 +1,3692 @@
+No.     Time           Source                Destination           Protocol Length Info
+    209 4.883090       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Database Hash, Handles: 0x0001..0xffff
+
+Frame 209: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:15.932401000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:15.932401000 UTC
+    Epoch Arrival Time: 1757637015.932401000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000263000 seconds]
+    [Time delta from previous displayed frame: 0.000000000 seconds]
+    [Time since reference or first frame: 4.883090000 seconds]
+    Frame Number: 209
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0001
+    Ending Handle: 0xffff
+    UUID: Database Hash (0x2b2a)
+
+No.     Time           Source                Destination           Protocol Length Info
+    212 4.971927       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0001 (Unknown)
+
+Frame 212: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.021238000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.021238000 UTC
+    Epoch Arrival Time: 1757637016.021238000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.044352000 seconds]
+    [Time delta from previous displayed frame: 0.088837000 seconds]
+    [Time since reference or first frame: 4.971927000 seconds]
+    Frame Number: 212
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x0001 (Unknown)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Database Hash (0x2b2a)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    213 4.972398       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Group Type Request, Primary Service, Handles: 0x0001..0xffff
+
+Frame 213: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.021709000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.021709000 UTC
+    Epoch Arrival Time: 1757637016.021709000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000471000 seconds]
+    [Time delta from previous displayed frame: 0.000471000 seconds]
+    [Time since reference or first frame: 4.972398000 seconds]
+    Frame Number: 213
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Group Type Request (0x10)
+    Starting Handle: 0x0001
+    Ending Handle: 0xffff
+    UUID: Primary Service (0x2800)
+
+No.     Time           Source                Destination           Protocol Length Info
+    215 5.062036       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      23     Rcvd Read By Group Type Response, Attribute List Length: 2, GAP, Device Information
+
+Frame 215: 23 bytes on wire (184 bits), 23 bytes captured (184 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.111347000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.111347000 UTC
+    Epoch Arrival Time: 1757637016.111347000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.045091000 seconds]
+    [Time delta from previous displayed frame: 0.089638000 seconds]
+    [Time since reference or first frame: 5.062036000 seconds]
+    Frame Number: 215
+    Frame Length: 23 bytes (184 bits)
+    Capture Length: 23 bytes (184 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 18
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 14
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Group Type Response (0x11)
+    Length: 6
+    Attribute Data, Handle: 0x0001, Group End Handle: 0x0003, UUID: GAP
+    Attribute Data, Handle: 0x0004, Group End Handle: 0x000e, UUID: Device Information
+    [UUID: Primary Service (0x2800)]
+    [Request in Frame: 213]
+
+No.     Time           Source                Destination           Protocol Length Info
+    216 5.062291       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Group Type Request, Primary Service, Handles: 0x000f..0xffff
+
+Frame 216: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.111602000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.111602000 UTC
+    Epoch Arrival Time: 1757637016.111602000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000255000 seconds]
+    [Time delta from previous displayed frame: 0.000255000 seconds]
+    [Time since reference or first frame: 5.062291000 seconds]
+    Frame Number: 216
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Group Type Request (0x10)
+    Starting Handle: 0x000f
+    Ending Handle: 0xffff
+    UUID: Primary Service (0x2800)
+
+No.     Time           Source                Destination           Protocol Length Info
+    218 5.152132       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      31     Rcvd Read By Group Type Response, Attribute List Length: 1, Unknown
+
+Frame 218: 31 bytes on wire (248 bits), 31 bytes captured (248 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.201443000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.201443000 UTC
+    Epoch Arrival Time: 1757637016.201443000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.045109000 seconds]
+    [Time delta from previous displayed frame: 0.089841000 seconds]
+    [Time since reference or first frame: 5.152132000 seconds]
+    Frame Number: 218
+    Frame Length: 31 bytes (248 bits)
+    Capture Length: 31 bytes (248 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 26
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 22
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Group Type Response (0x11)
+    Length: 20
+    Attribute Data, Handle: 0x000f, Group End Handle: 0x0015, UUID128: Unknown
+    [UUID: Primary Service (0x2800)]
+    [Request in Frame: 216]
+
+No.     Time           Source                Destination           Protocol Length Info
+    219 5.152408       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Group Type Request, Primary Service, Handles: 0x0016..0xffff
+
+Frame 219: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.201719000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.201719000 UTC
+    Epoch Arrival Time: 1757637016.201719000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000276000 seconds]
+    [Time delta from previous displayed frame: 0.000276000 seconds]
+    [Time since reference or first frame: 5.152408000 seconds]
+    Frame Number: 219
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Group Type Request (0x10)
+    Starting Handle: 0x0016
+    Ending Handle: 0xffff
+    UUID: Primary Service (0x2800)
+
+No.     Time           Source                Destination           Protocol Length Info
+    221 5.241962       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0016 (Unknown: Unknown)
+
+Frame 221: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.291273000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.291273000 UTC
+    Epoch Arrival Time: 1757637016.291273000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.044927000 seconds]
+    [Time delta from previous displayed frame: 0.089554000 seconds]
+    [Time since reference or first frame: 5.241962000 seconds]
+    Frame Number: 221
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Group Type Request (0x10)
+    Handle in Error: 0x0016 (Unknown: Unknown)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Primary Service (0x2800)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    222 5.242437       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Include, Handles: 0x0001..0x0003
+
+Frame 222: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.291748000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.291748000 UTC
+    Epoch Arrival Time: 1757637016.291748000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000475000 seconds]
+    [Time delta from previous displayed frame: 0.000475000 seconds]
+    [Time since reference or first frame: 5.242437000 seconds]
+    Frame Number: 222
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0001
+    Ending Handle: 0x0003
+    UUID: Include (0x2802)
+
+No.     Time           Source                Destination           Protocol Length Info
+    224 5.331970       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0001 (GAP)
+
+Frame 224: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.381281000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.381281000 UTC
+    Epoch Arrival Time: 1757637016.381281000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.045022000 seconds]
+    [Time delta from previous displayed frame: 0.089533000 seconds]
+    [Time since reference or first frame: 5.331970000 seconds]
+    Frame Number: 224
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x0001 (GAP)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Include (0x2802)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    226 5.332347       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x0001..0x0003
+
+Frame 226: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.381658000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.381658000 UTC
+    Epoch Arrival Time: 1757637016.381658000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000118000 seconds]
+    [Time delta from previous displayed frame: 0.000377000 seconds]
+    [Time since reference or first frame: 5.332347000 seconds]
+    Frame Number: 226
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0001
+    Ending Handle: 0x0003
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    228 5.347013       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      18     Rcvd Read By Type Response, Attribute List Length: 1, Device Name
+
+Frame 228: 18 bytes on wire (144 bits), 18 bytes captured (144 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.396324000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.396324000 UTC
+    Epoch Arrival Time: 1757637016.396324000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007566000 seconds]
+    [Time delta from previous displayed frame: 0.014666000 seconds]
+    [Time since reference or first frame: 5.347013000 seconds]
+    Frame Number: 228
+    Frame Length: 18 bytes (144 bits)
+    Capture Length: 18 bytes (144 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 13
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 9
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Response (0x09)
+    Length: 7
+    Attribute Data, Handle: 0x0002, Characteristic Handle: 0x0003, UUID: Device Name
+    [UUID: Characteristic (0x2803)]
+    [Request in Frame: 226]
+
+No.     Time           Source                Destination           Protocol Length Info
+    229 5.347354       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x0003..0x0003
+
+Frame 229: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.396665000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.396665000 UTC
+    Epoch Arrival Time: 1757637016.396665000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000341000 seconds]
+    [Time delta from previous displayed frame: 0.000341000 seconds]
+    [Time since reference or first frame: 5.347354000 seconds]
+    Frame Number: 229
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0003
+    Ending Handle: 0x0003
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    231 5.361960       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0003 (GAP: Device Name)
+
+Frame 231: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.411271000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.411271000 UTC
+    Epoch Arrival Time: 1757637016.411271000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007506000 seconds]
+    [Time delta from previous displayed frame: 0.014606000 seconds]
+    [Time since reference or first frame: 5.361960000 seconds]
+    Frame Number: 231
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x0003 (GAP: Device Name)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Characteristic (0x2803)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    232 5.362290       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Include, Handles: 0x0004..0x000e
+
+Frame 232: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.411601000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.411601000 UTC
+    Epoch Arrival Time: 1757637016.411601000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000330000 seconds]
+    [Time delta from previous displayed frame: 0.000330000 seconds]
+    [Time since reference or first frame: 5.362290000 seconds]
+    Frame Number: 232
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0004
+    Ending Handle: 0x000e
+    UUID: Include (0x2802)
+
+No.     Time           Source                Destination           Protocol Length Info
+    234 5.376930       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0004 (Device Information)
+
+Frame 234: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.426241000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.426241000 UTC
+    Epoch Arrival Time: 1757637016.426241000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007494000 seconds]
+    [Time delta from previous displayed frame: 0.014640000 seconds]
+    [Time since reference or first frame: 5.376930000 seconds]
+    Frame Number: 234
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x0004 (Device Information)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Include (0x2802)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    235 5.377209       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x0004..0x000e
+
+Frame 235: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.426520000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.426520000 UTC
+    Epoch Arrival Time: 1757637016.426520000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000279000 seconds]
+    [Time delta from previous displayed frame: 0.000279000 seconds]
+    [Time since reference or first frame: 5.377209000 seconds]
+    Frame Number: 235
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0004
+    Ending Handle: 0x000e
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    237 5.392201       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Read By Type Response, Attribute List Length: 3, Model Number String, Serial Number String, Hardware Revision String
+
+Frame 237: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.441512000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.441512000 UTC
+    Epoch Arrival Time: 1757637016.441512000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007761000 seconds]
+    [Time delta from previous displayed frame: 0.014992000 seconds]
+    [Time since reference or first frame: 5.392201000 seconds]
+    Frame Number: 237
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Response (0x09)
+    Length: 7
+    Attribute Data, Handle: 0x0005, Characteristic Handle: 0x0006, UUID: Model Number String
+    Attribute Data, Handle: 0x0007, Characteristic Handle: 0x0008, UUID: Serial Number String
+    Attribute Data, Handle: 0x0009, Characteristic Handle: 0x000a, UUID: Hardware Revision String
+    [UUID: Characteristic (0x2803)]
+    [Request in Frame: 235]
+
+No.     Time           Source                Destination           Protocol Length Info
+    238 5.392652       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x000a..0x000e
+
+Frame 238: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.441963000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.441963000 UTC
+    Epoch Arrival Time: 1757637016.441963000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000451000 seconds]
+    [Time delta from previous displayed frame: 0.000451000 seconds]
+    [Time since reference or first frame: 5.392652000 seconds]
+    Frame Number: 238
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x000a
+    Ending Handle: 0x000e
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    240 5.407068       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      25     Rcvd Read By Type Response, Attribute List Length: 2, Software Revision String, Manufacturer Name String
+
+Frame 240: 25 bytes on wire (200 bits), 25 bytes captured (200 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.456379000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.456379000 UTC
+    Epoch Arrival Time: 1757637016.456379000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007631000 seconds]
+    [Time delta from previous displayed frame: 0.014416000 seconds]
+    [Time since reference or first frame: 5.407068000 seconds]
+    Frame Number: 240
+    Frame Length: 25 bytes (200 bits)
+    Capture Length: 25 bytes (200 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 20
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 16
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Response (0x09)
+    Length: 7
+    Attribute Data, Handle: 0x000b, Characteristic Handle: 0x000c, UUID: Software Revision String
+    Attribute Data, Handle: 0x000d, Characteristic Handle: 0x000e, UUID: Manufacturer Name String
+    [UUID: Characteristic (0x2803)]
+    [Request in Frame: 238]
+
+No.     Time           Source                Destination           Protocol Length Info
+    241 5.407354       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x000e..0x000e
+
+Frame 241: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.456665000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.456665000 UTC
+    Epoch Arrival Time: 1757637016.456665000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000286000 seconds]
+    [Time delta from previous displayed frame: 0.000286000 seconds]
+    [Time since reference or first frame: 5.407354000 seconds]
+    Frame Number: 241
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x000e
+    Ending Handle: 0x000e
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    243 5.421940       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x000e (Device Information: Manufacturer Name String)
+
+Frame 243: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.471251000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.471251000 UTC
+    Epoch Arrival Time: 1757637016.471251000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007443000 seconds]
+    [Time delta from previous displayed frame: 0.014586000 seconds]
+    [Time since reference or first frame: 5.421940000 seconds]
+    Frame Number: 243
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x000e (Device Information: Manufacturer Name String)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Characteristic (0x2803)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    244 5.422321       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Include, Handles: 0x000f..0x0015
+
+Frame 244: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.471632000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.471632000 UTC
+    Epoch Arrival Time: 1757637016.471632000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000381000 seconds]
+    [Time delta from previous displayed frame: 0.000381000 seconds]
+    [Time since reference or first frame: 5.422321000 seconds]
+    Frame Number: 244
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x000f
+    Ending Handle: 0x0015
+    UUID: Include (0x2802)
+
+No.     Time           Source                Destination           Protocol Length Info
+    246 5.437003       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x000f (Unknown)
+
+Frame 246: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.486314000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.486314000 UTC
+    Epoch Arrival Time: 1757637016.486314000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007571000 seconds]
+    [Time delta from previous displayed frame: 0.014682000 seconds]
+    [Time since reference or first frame: 5.437003000 seconds]
+    Frame Number: 246
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x000f (Unknown)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Include (0x2802)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    247 5.437348       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x000f..0x0015
+
+Frame 247: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.486659000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.486659000 UTC
+    Epoch Arrival Time: 1757637016.486659000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000345000 seconds]
+    [Time delta from previous displayed frame: 0.000345000 seconds]
+    [Time since reference or first frame: 5.437348000 seconds]
+    Frame Number: 247
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x000f
+    Ending Handle: 0x0015
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    249 5.452160       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Read By Type Response, Attribute List Length: 1, Unknown
+
+Frame 249: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.501471000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.501471000 UTC
+    Epoch Arrival Time: 1757637016.501471000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007640000 seconds]
+    [Time delta from previous displayed frame: 0.014812000 seconds]
+    [Time since reference or first frame: 5.452160000 seconds]
+    Frame Number: 249
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Response (0x09)
+    Length: 21
+    Attribute Data, Handle: 0x0010, Characteristic Handle: 0x0011, UUID128: Unknown
+    [UUID: Characteristic (0x2803)]
+    [Request in Frame: 247]
+
+No.     Time           Source                Destination           Protocol Length Info
+    250 5.452415       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x0011..0x0015
+
+Frame 250: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.501726000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.501726000 UTC
+    Epoch Arrival Time: 1757637016.501726000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000255000 seconds]
+    [Time delta from previous displayed frame: 0.000255000 seconds]
+    [Time since reference or first frame: 5.452415000 seconds]
+    Frame Number: 250
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0011
+    Ending Handle: 0x0015
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    252 5.467143       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Read By Type Response, Attribute List Length: 1, Unknown
+
+Frame 252: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.516454000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.516454000 UTC
+    Epoch Arrival Time: 1757637016.516454000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007697000 seconds]
+    [Time delta from previous displayed frame: 0.014728000 seconds]
+    [Time since reference or first frame: 5.467143000 seconds]
+    Frame Number: 252
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Response (0x09)
+    Length: 21
+    Attribute Data, Handle: 0x0013, Characteristic Handle: 0x0014, UUID128: Unknown
+    [UUID: Characteristic (0x2803)]
+    [Request in Frame: 250]
+
+No.     Time           Source                Destination           Protocol Length Info
+    253 5.467398       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Read By Type Request, Characteristic, Handles: 0x0014..0x0015
+
+Frame 253: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.516709000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.516709000 UTC
+    Epoch Arrival Time: 1757637016.516709000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000255000 seconds]
+    [Time delta from previous displayed frame: 0.000255000 seconds]
+    [Time since reference or first frame: 5.467398000 seconds]
+    Frame Number: 253
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Read By Type Request (0x08)
+    Starting Handle: 0x0014
+    Ending Handle: 0x0015
+    UUID: Characteristic (0x2803)
+
+No.     Time           Source                Destination           Protocol Length Info
+    255 5.481929       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Error Response - Attribute Not Found, Handle: 0x0014 (Unknown: Unknown)
+
+Frame 255: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.531240000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.531240000 UTC
+    Epoch Arrival Time: 1757637016.531240000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.006811000 seconds]
+    [Time delta from previous displayed frame: 0.014531000 seconds]
+    [Time since reference or first frame: 5.481929000 seconds]
+    Frame Number: 255
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Error Response (0x01)
+    Request Opcode in Error: Read By Type Request (0x08)
+    Handle in Error: 0x0014 (Unknown: Unknown)
+    Error Code: Attribute Not Found (0x0a)
+    [UUID: Characteristic (0x2803)]
+
+No.     Time           Source                Destination           Protocol Length Info
+    256 5.482260       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      14     Sent Find Information Request, Handles: 0x0012..0x0012
+
+Frame 256: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.531571000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.531571000 UTC
+    Epoch Arrival Time: 1757637016.531571000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000331000 seconds]
+    [Time delta from previous displayed frame: 0.000331000 seconds]
+    [Time since reference or first frame: 5.482260000 seconds]
+    Frame Number: 256
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Find Information Request (0x04)
+    Starting Handle: 0x0012
+    Ending Handle: 0x0012
+
+No.     Time           Source                Destination           Protocol Length Info
+    258 5.496971       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      15     Rcvd Find Information Response, Handle: 0x0012 (Unknown: Unknown: Client Characteristic Configuration)
+
+Frame 258: 15 bytes on wire (120 bits), 15 bytes captured (120 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.546282000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.546282000 UTC
+    Epoch Arrival Time: 1757637016.546282000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.007541000 seconds]
+    [Time delta from previous displayed frame: 0.014711000 seconds]
+    [Time since reference or first frame: 5.496971000 seconds]
+    Frame Number: 258
+    Frame Length: 15 bytes (120 bits)
+    Capture Length: 15 bytes (120 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 10
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 6
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Find Information Response (0x05)
+    UUID Format: 16-bit UUIDs (0x01)
+    Information Data, Handle: 0x0012, UUID: Client Characteristic Configuration
+    [Request in Frame: 256]
+
+No.     Time           Source                Destination           Protocol Length Info
+    259 5.497298       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      14     Sent Find Information Request, Handles: 0x0015..0x0015
+
+Frame 259: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.546609000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.546609000 UTC
+    Epoch Arrival Time: 1757637016.546609000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000327000 seconds]
+    [Time delta from previous displayed frame: 0.000327000 seconds]
+    [Time since reference or first frame: 5.497298000 seconds]
+    Frame Number: 259
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Find Information Request (0x04)
+    Starting Handle: 0x0015
+    Ending Handle: 0x0015
+
+No.     Time           Source                Destination           Protocol Length Info
+    261 5.513035       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      15     Rcvd Find Information Response, Handle: 0x0015 (Unknown: Unknown: Client Characteristic Configuration)
+
+Frame 261: 15 bytes on wire (120 bits), 15 bytes captured (120 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.562346000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.562346000 UTC
+    Epoch Arrival Time: 1757637016.562346000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.008449000 seconds]
+    [Time delta from previous displayed frame: 0.015737000 seconds]
+    [Time since reference or first frame: 5.513035000 seconds]
+    Frame Number: 261
+    Frame Length: 15 bytes (120 bits)
+    Capture Length: 15 bytes (120 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 10
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 6
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Find Information Response (0x05)
+    UUID Format: 16-bit UUIDs (0x01)
+    Information Data, Handle: 0x0015, UUID: Client Characteristic Configuration
+    [Request in Frame: 259]
+
+No.     Time           Source                Destination           Protocol Length Info
+    265 5.948633       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      14     Sent Write Request, Handle: 0x0012 (Unknown: Unknown: Client Characteristic Configuration)
+
+Frame 265: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:16.997944000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:16.997944000 UTC
+    Epoch Arrival Time: 1757637016.997944000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.345363000 seconds]
+    [Time delta from previous displayed frame: 0.435598000 seconds]
+    [Time since reference or first frame: 5.948633000 seconds]
+    Frame Number: 265
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Request (0x12)
+    Handle: 0x0012 (Unknown: Unknown: Client Characteristic Configuration)
+    Characteristic Configuration Client: 0x0001, Notification
+
+No.     Time           Source                Destination           Protocol Length Info
+    267 6.006817       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      10     Rcvd Write Response, Handle: 0x0012 (Unknown: Unknown: Client Characteristic Configuration)
+
+Frame 267: 10 bytes on wire (80 bits), 10 bytes captured (80 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:17.056128000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:17.056128000 UTC
+    Epoch Arrival Time: 1757637017.056128000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.042452000 seconds]
+    [Time delta from previous displayed frame: 0.058184000 seconds]
+    [Time since reference or first frame: 6.006817000 seconds]
+    Frame Number: 267
+    Frame Length: 10 bytes (80 bits)
+    Capture Length: 10 bytes (80 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 5
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 1
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Response (0x13)
+    [Handle: 0x0012 (Unknown: Unknown: Client Characteristic Configuration)]
+    [Request in Frame: 265]
+
+No.     Time           Source                Destination           Protocol Length Info
+    268 6.007600       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) L2CAP    21     Rcvd Connection Parameter Update Request
+
+Frame 268: 21 bytes on wire (168 bits), 21 bytes captured (168 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:17.056911000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:17.056911000 UTC
+    Epoch Arrival Time: 1757637017.056911000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000783000 seconds]
+    [Time delta from previous displayed frame: 0.000783000 seconds]
+    [Time since reference or first frame: 6.007600000 seconds]
+    Frame Number: 268
+    Frame Length: 21 bytes (168 bits)
+    Capture Length: 21 bytes (168 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 16
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 12
+    CID: Low Energy L2CAP Signaling Channel (0x0005)
+    Command: Connection Parameter Update Request
+
+No.     Time           Source                Destination           Protocol Length Info
+    270 6.008267       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  L2CAP    15     Sent Connection Parameter Update Response (Accepted)
+
+Frame 270: 15 bytes on wire (120 bits), 15 bytes captured (120 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:17.057578000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:17.057578000 UTC
+    Epoch Arrival Time: 1757637017.057578000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000301000 seconds]
+    [Time delta from previous displayed frame: 0.000667000 seconds]
+    [Time since reference or first frame: 6.008267000 seconds]
+    Frame Number: 270
+    Frame Length: 15 bytes (120 bits)
+    Capture Length: 15 bytes (120 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 10
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 6
+    CID: Low Energy L2CAP Signaling Channel (0x0005)
+    Command: Connection Parameter Update Response
+
+No.     Time           Source                Destination           Protocol Length Info
+    272 6.037663       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      24     Sent Write Command, Handle: 0x0014 (Unknown)
+
+Frame 272: 24 bytes on wire (192 bits), 24 bytes captured (192 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:17.086974000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:17.086974000 UTC
+    Epoch Arrival Time: 1757637017.086974000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.026584000 seconds]
+    [Time delta from previous displayed frame: 0.029396000 seconds]
+    [Time since reference or first frame: 6.037663000 seconds]
+    Frame Number: 272
+    Frame Length: 24 bytes (192 bits)
+    Capture Length: 24 bytes (192 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 19
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 15
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+    Handle: 0x0014 (Unknown)
+    Value: e0e1e2e3c36e55e3e4e5e6e7
+
+No.     Time           Source                Destination           Protocol Length Info
+    277 9.027391       Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      24     Sent Write Command, Handle: 0x0014 (Unknown)
+
+Frame 277: 24 bytes on wire (192 bits), 24 bytes captured (192 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.076702000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.076702000 UTC
+    Epoch Arrival Time: 1757637020.076702000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 1.158793000 seconds]
+    [Time delta from previous displayed frame: 2.989728000 seconds]
+    [Time since reference or first frame: 9.027391000 seconds]
+    Frame Number: 277
+    Frame Length: 24 bytes (192 bits)
+    Capture Length: 24 bytes (192 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 19
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 15
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+    Handle: 0x0014 (Unknown)
+    Value: e0e1e2e3c36e55e3e4e5e6e7
+
+No.     Time           Source                Destination           Protocol Length Info
+    279 9.072042       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 279: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.121353000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.121353000 UTC
+    Epoch Arrival Time: 1757637020.121353000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.024800000 seconds]
+    [Time delta from previous displayed frame: 0.044651000 seconds]
+    [Time since reference or first frame: 9.072042000 seconds]
+    Frame Number: 279
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: e0e1e2e3b0b1b2b3ffb4b5b6b7c0c1c2c3030009
+
+No.     Time           Source                Destination           Protocol Length Info
+    280 9.072736       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      19     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 280: 19 bytes on wire (152 bits), 19 bytes captured (152 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.122047000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.122047000 UTC
+    Epoch Arrival Time: 1757637020.122047000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000694000 seconds]
+    [Time delta from previous displayed frame: 0.000694000 seconds]
+    [Time since reference or first frame: 9.072736000 seconds]
+    Frame Number: 280
+    Frame Length: 19 bytes (152 bits)
+    Capture Length: 19 bytes (152 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 14
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 10
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: cfcf0000e20070
+
+No.     Time           Source                Destination           Protocol Length Info
+    281 9.084576       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 281: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.133887000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.133887000 UTC
+    Epoch Arrival Time: 1757637020.133887000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011840000 seconds]
+    [Time delta from previous displayed frame: 0.011840000 seconds]
+    [Time since reference or first frame: 9.084576000 seconds]
+    Frame Number: 281
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 000000003c2e80000000000000000280ffffffff
+
+No.     Time           Source                Destination           Protocol Length Info
+    282 9.085201       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 282: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.134512000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.134512000 UTC
+    Epoch Arrival Time: 1757637020.134512000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000625000 seconds]
+    [Time delta from previous displayed frame: 0.000625000 seconds]
+    [Time since reference or first frame: 9.085201000 seconds]
+    Frame Number: 282
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: ffffffff80ffffffffffffffff80000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    283 9.085922       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      20     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 283: 20 bytes on wire (160 bits), 20 bytes captured (160 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.135233000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.135233000 UTC
+    Epoch Arrival Time: 1757637020.135233000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000721000 seconds]
+    [Time delta from previous displayed frame: 0.000721000 seconds]
+    [Time since reference or first frame: 9.085922000 seconds]
+    Frame Number: 283
+    Frame Length: 20 bytes (160 bits)
+    Capture Length: 20 bytes (160 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 15
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 11
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0001000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    284 9.109575       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 284: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.158886000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.158886000 UTC
+    Epoch Arrival Time: 1757637020.158886000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.023653000 seconds]
+    [Time delta from previous displayed frame: 0.023653000 seconds]
+    [Time since reference or first frame: 9.109575000 seconds]
+    Frame Number: 284
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    285 9.110213       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      25     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 285: 25 bytes on wire (200 bits), 25 bytes captured (200 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.159524000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.159524000 UTC
+    Epoch Arrival Time: 1757637020.159524000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000638000 seconds]
+    [Time delta from previous displayed frame: 0.000638000 seconds]
+    [Time since reference or first frame: 9.110213000 seconds]
+    Frame Number: 285
+    Frame Length: 25 bytes (200 bits)
+    Capture Length: 25 bytes (200 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 20
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 16
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    286 9.122038       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 286: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.171349000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.171349000 UTC
+    Epoch Arrival Time: 1757637020.171349000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011825000 seconds]
+    [Time delta from previous displayed frame: 0.011825000 seconds]
+    [Time since reference or first frame: 9.122038000 seconds]
+    Frame Number: 286
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000c4c5c6c70001020300010032006464
+
+No.     Time           Source                Destination           Protocol Length Info
+    287 9.122596       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      13     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 287: 13 bytes on wire (104 bits), 13 bytes captured (104 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.171907000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.171907000 UTC
+    Epoch Arrival Time: 1757637020.171907000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000558000 seconds]
+    [Time delta from previous displayed frame: 0.000558000 seconds]
+    [Time since reference or first frame: 9.122596000 seconds]
+    Frame Number: 287
+    Frame Length: 13 bytes (104 bits)
+    Capture Length: 13 bytes (104 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 8
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 4
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 64
+
+No.     Time           Source                Destination           Protocol Length Info
+    288 9.147778       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 288: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.197089000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.197089000 UTC
+    Epoch Arrival Time: 1757637020.197089000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.025182000 seconds]
+    [Time delta from previous displayed frame: 0.025182000 seconds]
+    [Time since reference or first frame: 9.147778000 seconds]
+    Frame Number: 288
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 030000000000000004050607d0d1d2d38100f520
+
+No.     Time           Source                Destination           Protocol Length Info
+    289 9.148044       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      25     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 289: 25 bytes on wire (200 bits), 25 bytes captured (200 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.197355000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.197355000 UTC
+    Epoch Arrival Time: 1757637020.197355000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000266000 seconds]
+    [Time delta from previous displayed frame: 0.000266000 seconds]
+    [Time since reference or first frame: 9.148044000 seconds]
+    Frame Number: 289
+    Frame Length: 25 bytes (200 bits)
+    Capture Length: 25 bytes (200 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 20
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 16
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000000000000000003200
+
+No.     Time           Source                Destination           Protocol Length Info
+    290 9.159551       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 290: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.208862000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.208862000 UTC
+    Epoch Arrival Time: 1757637020.208862000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011507000 seconds]
+    [Time delta from previous displayed frame: 0.011507000 seconds]
+    [Time since reference or first frame: 9.159551000 seconds]
+    Frame Number: 290
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: ffd4d5d6d7000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    291 9.160173       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      20     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 291: 20 bytes on wire (160 bits), 20 bytes captured (160 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.209484000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.209484000 UTC
+    Epoch Arrival Time: 1757637020.209484000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000622000 seconds]
+    [Time delta from previous displayed frame: 0.000622000 seconds]
+    [Time since reference or first frame: 9.160173000 seconds]
+    Frame Number: 291
+    Frame Length: 20 bytes (160 bits)
+    Capture Length: 20 bytes (160 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 15
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 11
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    292 9.184580       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 292: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.233891000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.233891000 UTC
+    Epoch Arrival Time: 1757637020.233891000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.024407000 seconds]
+    [Time delta from previous displayed frame: 0.024407000 seconds]
+    [Time since reference or first frame: 9.184580000 seconds]
+    Frame Number: 292
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    293 9.185176       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 293: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.234487000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.234487000 UTC
+    Epoch Arrival Time: 1757637020.234487000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000596000 seconds]
+    [Time delta from previous displayed frame: 0.000596000 seconds]
+    [Time since reference or first frame: 9.185176000 seconds]
+    Frame Number: 293
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    294 9.185971       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      16     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 294: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.235282000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.235282000 UTC
+    Epoch Arrival Time: 1757637020.235282000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000795000 seconds]
+    [Time delta from previous displayed frame: 0.000795000 seconds]
+    [Time since reference or first frame: 9.185971000 seconds]
+    Frame Number: 294
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    295 9.197437       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 295: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.246748000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.246748000 UTC
+    Epoch Arrival Time: 1757637020.246748000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011466000 seconds]
+    [Time delta from previous displayed frame: 0.011466000 seconds]
+    [Time since reference or first frame: 9.197437000 seconds]
+    Frame Number: 295
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    296 9.197659       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      25     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 296: 25 bytes on wire (200 bits), 25 bytes captured (200 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.246970000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.246970000 UTC
+    Epoch Arrival Time: 1757637020.246970000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000222000 seconds]
+    [Time delta from previous displayed frame: 0.000222000 seconds]
+    [Time since reference or first frame: 9.197659000 seconds]
+    Frame Number: 296
+    Frame Length: 25 bytes (200 bits)
+    Capture Length: 25 bytes (200 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 20
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 16
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    297 9.209565       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      23     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 297: 23 bytes on wire (184 bits), 23 bytes captured (184 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.258876000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.258876000 UTC
+    Epoch Arrival Time: 1757637020.258876000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011906000 seconds]
+    [Time delta from previous displayed frame: 0.011906000 seconds]
+    [Time since reference or first frame: 9.209565000 seconds]
+    Frame Number: 297
+    Frame Length: 23 bytes (184 bits)
+    Capture Length: 23 bytes (184 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 18
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 14
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    298 9.235027       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 298: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.284338000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.284338000 UTC
+    Epoch Arrival Time: 1757637020.284338000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.025462000 seconds]
+    [Time delta from previous displayed frame: 0.025462000 seconds]
+    [Time since reference or first frame: 9.235027000 seconds]
+    Frame Number: 298
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    299 9.235302       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 299: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.284613000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.284613000 UTC
+    Epoch Arrival Time: 1757637020.284613000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000275000 seconds]
+    [Time delta from previous displayed frame: 0.000275000 seconds]
+    [Time since reference or first frame: 9.235302000 seconds]
+    Frame Number: 299
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    300 9.235965       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      19     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 300: 19 bytes on wire (152 bits), 19 bytes captured (152 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.285276000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.285276000 UTC
+    Epoch Arrival Time: 1757637020.285276000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000663000 seconds]
+    [Time delta from previous displayed frame: 0.000663000 seconds]
+    [Time since reference or first frame: 9.235965000 seconds]
+    Frame Number: 300
+    Frame Length: 19 bytes (152 bits)
+    Capture Length: 19 bytes (152 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 14
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 10
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    301 9.247198       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 301: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.296509000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.296509000 UTC
+    Epoch Arrival Time: 1757637020.296509000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.011233000 seconds]
+    [Time delta from previous displayed frame: 0.011233000 seconds]
+    [Time since reference or first frame: 9.247198000 seconds]
+    Frame Number: 301
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    302 9.259632       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      17     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 302: 17 bytes on wire (136 bits), 17 bytes captured (136 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.308943000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.308943000 UTC
+    Epoch Arrival Time: 1757637020.308943000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.012434000 seconds]
+    [Time delta from previous displayed frame: 0.012434000 seconds]
+    [Time since reference or first frame: 9.259632000 seconds]
+    Frame Number: 302
+    Frame Length: 17 bytes (136 bits)
+    Capture Length: 17 bytes (136 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 12
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 8
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    303 9.272059       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 303: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.321370000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.321370000 UTC
+    Epoch Arrival Time: 1757637020.321370000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.012427000 seconds]
+    [Time delta from previous displayed frame: 0.012427000 seconds]
+    [Time since reference or first frame: 9.272059000 seconds]
+    Frame Number: 303
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    304 9.272858       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 304: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.322169000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.322169000 UTC
+    Epoch Arrival Time: 1757637020.322169000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000799000 seconds]
+    [Time delta from previous displayed frame: 0.000799000 seconds]
+    [Time since reference or first frame: 9.272858000 seconds]
+    Frame Number: 304
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    306 9.284458       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 306: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.333769000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.333769000 UTC
+    Epoch Arrival Time: 1757637020.333769000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000691000 seconds]
+    [Time delta from previous displayed frame: 0.011600000 seconds]
+    [Time since reference or first frame: 9.284458000 seconds]
+    Frame Number: 306
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    307 9.285127       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 307: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.334438000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.334438000 UTC
+    Epoch Arrival Time: 1757637020.334438000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000669000 seconds]
+    [Time delta from previous displayed frame: 0.000669000 seconds]
+    [Time since reference or first frame: 9.285127000 seconds]
+    Frame Number: 307
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    308 9.285885       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      13     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 308: 13 bytes on wire (104 bits), 13 bytes captured (104 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.335196000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.335196000 UTC
+    Epoch Arrival Time: 1757637020.335196000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000758000 seconds]
+    [Time delta from previous displayed frame: 0.000758000 seconds]
+    [Time since reference or first frame: 9.285885000 seconds]
+    Frame Number: 308
+    Frame Length: 13 bytes (104 bits)
+    Capture Length: 13 bytes (104 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 8
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 4
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00
+
+No.     Time           Source                Destination           Protocol Length Info
+    309 9.309666       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      24     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 309: 24 bytes on wire (192 bits), 24 bytes captured (192 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.358977000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.358977000 UTC
+    Epoch Arrival Time: 1757637020.358977000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.023781000 seconds]
+    [Time delta from previous displayed frame: 0.023781000 seconds]
+    [Time since reference or first frame: 9.309666000 seconds]
+    Frame Number: 309
+    Frame Length: 24 bytes (192 bits)
+    Capture Length: 24 bytes (192 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 19
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 15
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    310 9.322114       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      32     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 310: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.371425000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.371425000 UTC
+    Epoch Arrival Time: 1757637020.371425000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.012448000 seconds]
+    [Time delta from previous displayed frame: 0.012448000 seconds]
+    [Time since reference or first frame: 9.322114000 seconds]
+    Frame Number: 310
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 0000000000000000000000000000000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    311 9.322886       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      30     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 311: 30 bytes on wire (240 bits), 30 bytes captured (240 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.372197000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.372197000 UTC
+    Epoch Arrival Time: 1757637020.372197000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000772000 seconds]
+    [Time delta from previous displayed frame: 0.000772000 seconds]
+    [Time since reference or first frame: 9.322886000 seconds]
+    Frame Number: 311
+    Frame Length: 30 bytes (240 bits)
+    Capture Length: 30 bytes (240 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 25
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 21
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: 00000000d4d5d6d7735b6a89ff000200e4e5
+
+No.     Time           Source                Destination           Protocol Length Info
+    312 9.334998       83:40:09:7b:f0:68 ()  Sony_e5:bb:81 (Xperia_9466) ATT      14     Rcvd Handle Value Notification, Handle: 0x0011 (Unknown: Unknown)
+
+Frame 312: 14 bytes on wire (112 bits), 14 bytes captured (112 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:20.384309000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:20.384309000 UTC
+    Epoch Arrival Time: 1757637020.384309000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.012112000 seconds]
+    [Time delta from previous displayed frame: 0.012112000 seconds]
+    [Time since reference or first frame: 9.334998000 seconds]
+    Frame Number: 312
+    Frame Length: 14 bytes (112 bits)
+    Capture Length: 14 bytes (112 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Received (1)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+Bluetooth HCI H4
+    [Direction: Rcvd (0x01)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..10 .... .... .... = PB Flag: First Automatically Flushable Packet (2)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 9
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Source Device Name: ]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination Device Name: Xperia_9466]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 5
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Handle Value Notification (0x1b)
+    Handle: 0x0011 (Unknown: Unknown)
+    Value: e6e7
+
+No.     Time           Source                Destination           Protocol Length Info
+    327 25.560062      Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      32     Sent Write Command, Handle: 0x0014 (Unknown)
+
+Frame 327: 32 bytes on wire (256 bits), 32 bytes captured (256 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:36.609373000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:36.609373000 UTC
+    Epoch Arrival Time: 1757637036.609373000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.262376000 seconds]
+    [Time delta from previous displayed frame: 16.225064000 seconds]
+    [Time since reference or first frame: 25.560062000 seconds]
+    Frame Number: 327
+    Frame Length: 32 bytes (256 bits)
+    Capture Length: 32 bytes (256 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 27
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 23
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+    Handle: 0x0014 (Unknown)
+    Value: 000102030001003700ffffff0300000000000000
+
+No.     Time           Source                Destination           Protocol Length Info
+    328 25.572842      Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      16     Sent Write Command, Handle: 0x0014 (Unknown)
+
+Frame 328: 16 bytes on wire (128 bits), 16 bytes captured (128 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:36.622153000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:36.622153000 UTC
+    Epoch Arrival Time: 1757637036.622153000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.012780000 seconds]
+    [Time delta from previous displayed frame: 0.012780000 seconds]
+    [Time since reference or first frame: 25.572842000 seconds]
+    Frame Number: 328
+    Frame Length: 16 bytes (128 bits)
+    Capture Length: 16 bytes (128 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 11
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 7
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+    Handle: 0x0014 (Unknown)
+    Value: 04050607
+
+No.     Time           Source                Destination           Protocol Length Info
+    333 30.405927      Sony_e5:bb:81 (Xperia_9466) 83:40:09:7b:f0:68 ()  ATT      21     Sent Write Command, Handle: 0x0014 (Unknown)
+
+Frame 333: 21 bytes on wire (168 bits), 21 bytes captured (168 bits)
+    Encapsulation type: Bluetooth H4 with linux header (99)
+    Arrival Time: Sep 12, 2025 03:30:41.455238000 FLE Summer Time
+    UTC Arrival Time: Sep 12, 2025 00:30:41.455238000 UTC
+    Epoch Arrival Time: 1757637041.455238000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 1.418466000 seconds]
+    [Time delta from previous displayed frame: 4.833085000 seconds]
+    [Time since reference or first frame: 30.405927000 seconds]
+    Frame Number: 333
+    Frame Length: 21 bytes (168 bits)
+    Capture Length: 21 bytes (168 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    Point-to-Point Direction: Sent (0)
+    [Protocols in frame: bluetooth:hci_h4:bthci_acl:btl2cap:btatt]
+Bluetooth
+    [Source: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Destination: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+Bluetooth HCI H4
+    [Direction: Sent (0x00)]
+    HCI Packet Type: ACL Data (0x02)
+Bluetooth HCI ACL Packet
+    .... 0000 0000 0011 = Connection Handle: 0x003
+    ..00 .... .... .... = PB Flag: First Non-automatically Flushable Packet (0)
+    00.. .... .... .... = BC Flag: Point-To-Point (0)
+    Data Total Length: 16
+    Data
+    [Connect in frame: 191]
+    [Disconnect in frame: 341]
+    [Source BD_ADDR: Sony_e5:bb:81 (3c:38:f4:e5:bb:81)]
+    [Source Device Name: Xperia_9466]
+    [Source Role: Unknown (0)]
+    [Destination BD_ADDR: 83:40:09:7b:f0:68 (83:40:09:7b:f0:68)]
+    [Destination Device Name: ]
+    [Destination Role: Unknown (0)]
+    [Current Mode: Unknown (-1)]
+Bluetooth L2CAP Protocol
+    Length: 12
+    CID: Attribute Protocol (0x0004)
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+    Handle: 0x0014 (Unknown)
+    Value: b0b1b2b300b4b5b6b7

@@ -1,9 +1,10 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Instant, Duration};
-use log::debug;
+use log::{debug, error};
 use hex::decode;
 use btleplug::api::Characteristic; // Still needed for type references
-use tokio; // For async handling
+use tokio;
+use tokio::time::sleep; // For async handling
 use crate::blue::BlueController;
 use std::error::Error;
 use std::collections::VecDeque; // For buffer
@@ -66,6 +67,8 @@ impl LaserCommand {
             points_up: None,
             points_down: None,
         }
+
+        
     }
 
     pub fn to_hex_string(&self) -> String {
@@ -80,8 +83,28 @@ impl LaserCommand {
             self.segment1.clone() + &self.segment2 + &self.version + &self.time
         ).to_uppercase()
     }
+
 }
 
+impl LaserCommand {
+    pub fn to_ble_command(&self) -> Vec<Vec<u8>> {
+        let mut result = Vec::new();
+        // Convert the hex string to bytes first
+        let cmd_bytes = match hex::decode(&self.command_data) {
+            Ok(bytes) => bytes,
+            Err(_) => Vec::new(),
+        };
+        for chunk in cmd_bytes.chunks(16) { // 16 bytes + 4-byte header = 20 bytes
+            let mut packet = vec![0xE0, 0xE1, 0xE2, 0xE3];
+            packet.extend_from_slice(chunk);
+            if packet.len() < 20 {
+                packet.extend(vec![0x00; 20 - packet.len()]); // Pad to 20 bytes
+            }
+            result.push(packet);
+        }
+        result
+    }
+}
 /// Configuration options for laser control.
 #[derive(Debug, Clone)]
 pub struct LaserOptions {
@@ -606,7 +629,7 @@ impl CommandGenerator {
         let mut cmd = String::new();
         write!(
             cmd,
-            "00010203{}{}{}{}{}{}{}{}{}{}000000000004050607",
+            "E0E1E2E3{}{}{}{}{}{}{}{}{}{}000000000000",  // Need 6 bytes (12 chars) of padding to make 20 bytes total
             t, r, n, h, a, c, o, s, l, p
         )
         .expect("Failed to write to string");
@@ -934,7 +957,7 @@ pub struct LaserController {
     options: LaserOptions,
     project_data: ProjectData,
     connected: bool,
-    blu_rec_content: VecDeque<String>,
+    pub blu_rec_content: VecDeque<String>,
     rec_device_msg_timer: Option<tokio::time::Instant>,
     discovery_started: bool,
     testing_idx: usize,
@@ -1080,6 +1103,33 @@ impl LaserController {
         }
     }
 
+ //   pub async fn send_animation(&mut self, points: &[LaserPoint]) -> Result<(), String> {
+ //   if points.is_empty() {
+ //       return Err("No points provided".to_string());
+ //   }
+//    let generator = CommandGenerator::new();
+//    let options = self.options.clone();
+//    let mut cmd = generator.generate_command(
+//        vec![(0, points.to_vec())],
+//        1.0,
+//        options,
+//        self.project_data.public.prj_selected,
+ //       self.project_data.public.prj_item,
+//    );
+//    let cmd = cmd.unwrap();
+//    debug!("Sending animation with {} points", cmd.point_count);
+//    for ble_cmd in cmd.to_ble_command() {
+//        let hex_cmd = hex::encode(&ble_cmd);
+//        debug!("[LaserController] Sending BLE command: {}", hex_cmd);
+//        let result = self.send(&hex_cmd, None).await;
+//        if let Err(e) = result {
+//            error!("Failed to send BLE command: {}", e);
+//            return Err(e);
+//        }
+//        sleep(Duration::from_millis(20)).await;
+//    }
+//    Ok(())
+//}
 
     pub fn is_connected(&self) -> bool {
         self.ble_controller.is_some() && self.ble_controller.as_ref().unwrap().is_connected()
@@ -1135,37 +1185,35 @@ impl LaserController {
         Ok(())
     }
 
-    fn add_content(&mut self, hex: String) {
-        println!("addContent: {}", hex);
-        let mut content = self.blu_rec_content.back().cloned().unwrap_or_else(String::new);
-        if content.is_empty() && hex.starts_with("E0E1E2E3") {
-            content = hex;
-        } else {
-            content.push_str(&hex);
-        }
-
-        if !content.is_empty() {
-            let last_start = content.rfind("E0E1E2E3").unwrap_or(0);
-            let last_end = content.rfind("E4E5E6E7").unwrap_or(0);
-            let mut processed = content.clone();
-
-            if last_end > 0 {
-                if last_end == content.len() - 8 {
-                    let packet = content[last_start..last_end + 8].to_string();
-                    self.data_received(packet);
-                    processed = String::new();
-                } else {
-                    processed = content[last_start..].to_string();
-                }
-            }
-            self.blu_rec_content.clear();
-            self.blu_rec_content.push_back(processed);
-        }
+    pub fn get_last_response(&self) -> String {
+        // Return all accumulated responses from the buffer joined together
+        self.blu_rec_content.iter().cloned().collect()
     }
 
-    fn data_received(&mut self, packet: String) {
-        println!("Data received: {}", packet);
-        // Placeholder: implement actual packet handling logic here.
+    fn add_content(&mut self, hex: String) {
+        debug!("addContent: {}", hex);
+        
+        // Always add new content to maintain fragment history
+        // For initialization and regular messages
+        if hex.contains("E0E1E2E3") || hex.contains("B0B1B2B3") {
+            debug!("Adding response fragment containing control sequence: {}", hex);
+        }
+
+        // Buffer maintenance - keep last 10 fragments maximum
+        if self.blu_rec_content.len() >= 10 {
+            self.blu_rec_content.pop_front();
+        }
+        
+        self.blu_rec_content.push_back(hex);
+        
+        // Log the current accumulated content for debugging
+        let full_response = self.get_last_response();
+        debug!("Current accumulated response: {}", full_response);
+    }
+
+    pub fn data_received(&mut self, packet: String) {
+        debug!("Notification received: {}", packet);
+        self.add_content(packet);
     }
 
 
