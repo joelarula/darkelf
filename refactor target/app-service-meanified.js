@@ -586,7 +586,7 @@
             t["default"] = h.a
         },
         "fontRegistryModule ": function(e, t, r) {
-            var n = r("4e7c"),
+            var n = r("mergedDrawFontsUtils"),
                 h = [{
                     name: "Single Line Font",
                     file: n.DrawFonts,
@@ -2671,7 +2671,7 @@
                 h = []
         },
         "defineClassHelper ": function(e, t, r) {
-            var n = r("d551");
+            var n = r("safeToString");
 
             function h(e, t) {
                 for (var r = 0; r < t.length; r++) {
@@ -23683,7 +23683,7 @@
                 }
             }), Z.install = A, Z.version = "8.28.2", r["default"] = Z
         },
-        "4e7c": function(e, t, r) {
+        "mergedDrawFontsUtils": function(e, t, r) {
             var n = r("defineOrAssignPropertyHelper");
 
             function h(e, t) {
@@ -26911,7 +26911,7 @@
             "use strict";
             r.r(t);
             var n = r("placeholderComponent"),
-                h = r("d8a6");
+                h = r("NavigationBarManagerExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -26965,7 +26965,7 @@
             t["default"] = h.a
         },
         "defineOrAssignPropertyHelper": function(e, t, r) {
-            var n = r("d551");
+            var n = r("safeToString");
             e.exports = function(e, t, r) {
                 return t = n(t), t in e ? Object.defineProperty(e, t, {
                     value: r,
@@ -45219,11 +45219,11 @@
             }(a);
             t["default"] = h.a
         },
-        d902ComponentExportWrapper: function(e, t, r) {
+        scenePatternEditorPageComponentExportWrapperComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("d3b8"),
-                h = r("d902");
+            var n = r("DeviceConfigPageRender "),
+                h = r("scenePatternEditorPageComponentExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -46365,10 +46365,10 @@
                 }
             }).call(this, r("f3b9")["default"])
         },
-        d2daExportWrapper: function(e, t, r) {
+        DeviceConfigPageControllerExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("d2da"),
+            var n = r("DeviceConfigPageController"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -62218,11 +62218,11 @@
                 }
             }
         },
-        d281: function(e, t, r) {
+        DeviceConfigPageComponent: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("deviceConfigPageComponent "),
-                h = r("d2daExportWrapper");
+                h = r("DeviceConfigPageControllerExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -62232,7 +62232,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        d2da: function(e, t, r) {
+        DeviceConfigPageController: function(e, t, r) {
             "use strict";
             (function(e) {
                 var n = r("esModuleInteropHelper");
@@ -62503,7 +62503,7 @@
                 t.default = o
             }).call(this, r("f3b9")["default"])
         },
-        d3b8: function(e, t, r) {
+        DeviceConfigPageRender : function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -63812,7 +63812,7 @@
                 t.default = g
             }).call(this, r("f3b9")["default"])
         },
-        d551: function(e, t, r) {
+        safeToString: function(e, t, r) {
             var n = r("typeofHelper")["default"],
                 h = r("e6db");
             e.exports = function(e) {
@@ -63820,7 +63820,7 @@
                 return "symbol" == n(t) ? t : t + ""
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        d6f4: function(e, t, r) {
+        NavigationBarManager: function(e, t, r) {
             "use strict";
             Object.defineProperty(t, "__esModule", {
                 value: !0
@@ -63950,10 +63950,10 @@
                 };
             t.default = h
         },
-        d8a6: function(e, t, r) {
+        NavigationBarManagerExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("d6f4"),
+            var n = r("NavigationBarManager"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -63962,7 +63962,7 @@
             }(a);
             t["default"] = h.a
         },
-        d902: function(e, t, r) {
+        scenePatternEditorPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("scenePatternEditorPageComponent "),
@@ -66381,7 +66381,7 @@
             })), __definePage("pages/prj/prj", (function() {
                 return Vue.extend(r("fc20").default)
             })), __definePage("pages/setting/setting", (function() {
-                return Vue.extend(r("d281").default)
+                return Vue.extend(r("DeviceConfigPageComponent").default)
             })), __definePage("pages/cnn/cnn", (function() {
                 return Vue.extend(r("drawFontsComponentExportWrapper").default)
             })), __definePage("pages/setuuid/setuuid", (function() {
@@ -66409,7 +66409,7 @@
             })), __definePage("sub2/pages/pgs/pgs", (function() {
                 return Vue.extend(r("f7c2").default)
             })), __definePage("sub2/pages/pis/pis", (function() {
-                return Vue.extend(r("d902ComponentExportWrapper").default)
+                return Vue.extend(r("scenePatternEditorPageComponentExportWrapperComponentExportWrapper").default)
             }))
         },
         ffb9: function(e, t, r) {
