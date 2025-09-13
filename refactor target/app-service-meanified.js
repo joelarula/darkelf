@@ -4042,7 +4042,7 @@
                 t.default = d
             }).call(this, r("f3b9")["default"])
         },
-        "12e3": function(t, r, n) {
+        "buffer": function(t, r, n) {
             "use strict";
             (function(t) {
                 /*!
@@ -19702,7 +19702,7 @@
                         value: !0
                     })
                 }))
-            }).call(this, n("f3b9")["default"], n("12e3").Buffer)
+            }).call(this, n("f3b9")["default"], n("buffer").Buffer)
         },
         "34cf": function(e, t, r) {
             var n = r("ed45"),
