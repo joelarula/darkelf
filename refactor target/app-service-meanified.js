@@ -23710,7 +23710,7 @@
             }
             var i = r("e5e7"),
                 c = r("glyphs"),
-                o = r("cfa8"),
+                o = r("gylphs2"),
                 s = a(a(a({}, i.DrawFonts), c.DrawFonts), o.DrawFonts);
             e.exports = {
                 DrawFonts: s
@@ -26734,7 +26734,7 @@
         "imageToVectorLinesUtils": function(e, t, r) {
             (function(t) {
                 var n = r("jsfeatCVLib"),
-                    h = r("cefd"),
+                    h = r("extractLinesFromMatrix"),
                     a = r("findContoursModule");
 
                 function i(e) {
@@ -58976,7 +58976,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        cefd: function(e, t, r) {
+        extractLinesFromMatrix: function(e, t, r) {
             (function(t) {
                 var n = r("arrayConversionHelper"),
                     h = r("spreadToArrayHelper");
@@ -59276,7 +59276,7 @@
                 }
             }).call(this, r("f3b9")["default"])
         },
-        cfa8: function(e, t) {
+        gylphs2: function(e, t) {
             e.exports = {
                 DrawFonts: {
                     5363: "izlh,pWxD,mYSj,mY67,e7Gh,e8kz,9J7z,9Itn,iz/t,5kQP,5jID,iyTn,iz/z",
