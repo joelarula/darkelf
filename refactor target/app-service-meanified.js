@@ -405,7 +405,7 @@
                         }
                     }, [n("view", [n("image", {
                         attrs: {
-                            src: e._$s(67, "a-src", r("ffb9")),
+                            src: e._$s(67, "a-src", r("tipsGifImagePath")),
                             _i: 67
                         }
                     }), n("view", [n("text", [e._v(e._$s(69, "t0-0", e._s(e.$t("hand_draw_tips"))))])]), n("view", [n("checkbox-group", {
@@ -2689,7 +2689,7 @@
             "use strict";
             var n = r("esModuleInteropHelper"),
                 h = n(r("defineOrAssignPropertyHelper"));
-            r("ff59");
+            r("appPageRegistrationAndPolyfill");
             var a = n(r("appStateManagerComponentExportWrapper")),
                 i = n(r("languagePacks")),
                 c = n(r("vueInstanceExport")),
@@ -19847,7 +19847,7 @@
         "vueSfcExportWrapper ": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("fe8a"),
+            var n = r("xyAxisControlPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -46380,7 +46380,7 @@
         handDrawAndTextFileManagerPageComponentSfcExport: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("fc1c"),
+            var n = r("handDrawAndTextFileManagerPageComponent"),
                 h = r("handDrawAndTextFileManagerPageComponentExportWrapper ");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -65277,11 +65277,11 @@
             }(a);
             t["default"] = h.a
         },
-        f7c2: function(e, t, r) {
+        sceneListEditorPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("sceneListEditorPageComponent"),
-                h = r("fba0");
+                h = r("sceneManagerPageComponentExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -65291,7 +65291,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        fba0: function(e, t, r) {
+        sceneManagerPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("sceneManagerPageComponent"),
@@ -65303,7 +65303,7 @@
             }(a);
             t["default"] = h.a
         },
-        fc1c: function(e, t, r) {
+        handDrawAndTextFileManagerPageComponent: function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -66052,7 +66052,7 @@
                 },
                 a = []
         },
-        fc20: function(e, t, r) {
+        bleDeviceProjectConfigPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("colorDisplayConfigPageComponent"),
@@ -66066,7 +66066,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        fe8a: function(e, t, r) {
+        xyAxisControlPageComponent: function(e, t, r) {
             "use strict";
             (function(e) {
                 function n(e, t) {
@@ -66360,7 +66360,7 @@
                 t.default = s
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-        ff59: function(e, t, r) {
+        appPageRegistrationAndPolyfill: function(e, t, r) {
             if ("undefined" === typeof Promise || Promise.prototype.finally || (Promise.prototype.finally = function(e) {
                     var t = this.constructor;
                     return this.then((function(r) {
@@ -66379,7 +66379,7 @@
             uni.restoreGlobal && uni.restoreGlobal(weex, plus, setTimeout, clearTimeout, setInterval, clearInterval), __definePage("pages/main/main", (function() {
                 return Vue.extend(r("deviceControlPageComponentExportWrapper").default)
             })), __definePage("pages/prj/prj", (function() {
-                return Vue.extend(r("fc20").default)
+                return Vue.extend(r("bleDeviceProjectConfigPageComponentExportWrapper").default)
             })), __definePage("pages/setting/setting", (function() {
                 return Vue.extend(r("DeviceConfigPageComponent").default)
             })), __definePage("pages/cnn/cnn", (function() {
@@ -66407,12 +66407,12 @@
             })), __definePage("sub/pages/listMaster/listMaster", (function() {
                 return Vue.extend(r("someFeaturePageExport").default)
             })), __definePage("sub2/pages/pgs/pgs", (function() {
-                return Vue.extend(r("f7c2").default)
+                return Vue.extend(r("sceneListEditorPageComponentExportWrapper").default)
             })), __definePage("sub2/pages/pis/pis", (function() {
                 return Vue.extend(r("scenePatternEditorPageComponentExportWrapperComponentExportWrapper").default)
             }))
         },
-        ffb9: function(e, t, r) {
+        tipsGifImagePath: function(e, t, r) {
             e.exports = r.p + "static/imgs/tips.gif"
         }
     },
