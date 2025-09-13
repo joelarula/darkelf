@@ -12,7 +12,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -2734,12 +2734,12 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
                     c = r("c4ce"),
                     o = r("handwritingCanvasHelper"),
-                    s = r("720d"),
+                    s = r("handDrawFileManager"),
                     l = r("codePointAt"),
                     p = r("textLineVectorizer "),
                     d = r("fontGeometryUtils "),
@@ -3779,9 +3779,9 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
-                    i = r("720d"),
+                    i = r("handDrawFileManager"),
                     c = r("deviceCommandUtils "),
                     o = r("c4ce"),
                     s = r("bbc7"),
@@ -7661,7 +7661,7 @@
                     6740: "or5z,loaF,j5Xh,gPEN,g1Uj,ikD1,orQx,dLfX,dMu9,6713,bta1,hA1z,5mNF,3QX9,aIQb,68c9",
                     "65f6": "66ZX,m8n1,m8M1,7F11,7EE1,g1KX,g281,ikJb,ils9,fhvr,aIK1,pcFr,5n7x,3Rh1",
                     "542e": "8psX,m8n1,m8FN,bt3N,bsN1,orAP,g2b9,gPEN,lotj,fi51,g2nz,9aTx,67q9,3QKF,g2Db,67Sh,5n4p,4Cix,4CrV,6V19",
-                    "762b": "jRQP,hzvh,cdvH,ewep,4BgP,9Xgp,m8wp,m9B9,pcdj,mVTN,iktz,ikMp,aIl1,67ax,ewnH,7Fdx,dLOj,gPfN,kDv1,kDEj,ilfF,hA7P,hAD9,dMqX,dLXN,9XOH,9Yi1,5nn3,5mQN,gPfH,3RaN,hAnr,5n7x",
+                    "uniPopupComponentExportWrapper": "jRQP,hzvh,cdvH,ewep,4BgP,9Xgp,m8wp,m9B9,pcdj,mVTN,iktz,ikMp,aIl1,67ax,ewnH,7Fdx,dLOj,gPfN,kDv1,kDEj,ilfF,hA7P,hAD9,dMqX,dLXN,9XOH,9Yi1,5nn3,5mQN,gPfH,3RaN,hAnr,5n7x",
                     6345: "jRNH,jSh1,pbQj,5mip,3Qv1,bsGH,ewqV,orlb,orZV,jSJ9,loaz,il6h,3R1j,ikMp,ils9,68c9,3RzN,dLOj,dMu9,9Yl3,9XFp,il6b,4Cch",
                     "4f2a": "fgSP,jS4x,or8N,jS4r,3QHx,orlb,loaF,j5rX,j6e1,685V,4Cfp,9Y5r,c/g9,pcw3,fhEV,9XIx,4BFV",
                     "5ab3": "j4/P,j5v9,cdXV,6TYp,4BgV,or5z,cdC1,7F49,pcw3,m95V,m8Yx,cebx,ceJV,m9uV,m95V,j5Er,j6aV,g2SP,g2kx,5mxX,9XFp,9XLz,5mNF,4B/N,4ClF,6UTN,aIN3,8qop,9YbH,68fh",
@@ -12161,7 +12161,7 @@
         "fontPageComponentExport": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("7010"),
+            var n = r("fontSelectorPageRender"),
                 h = r("interop");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -19706,7 +19706,7 @@
         },
         "spreadToArrayHelper": function(e, t, r) {
             var n = r("ed45"),
-                h = r("7172"),
+                h = r("iterableToArrayLimitHelper"),
                 a = r("toConsumableArrayHelper"),
                 i = r("dd3e");
             e.exports = function(e, t) {
@@ -19866,7 +19866,7 @@
                 return clearTimeout(t.timer), new s(e, t)
             };
             var h = n(r("7ca3")),
-                a = n(r("67ad")),
+                a = n(r("classCallCheckHelper")),
                 i = n(r("defineClassHelper "));
 
             function c(e, t) {
@@ -19970,9 +19970,9 @@
                     value: !0
                 }), t.default = void 0;
                 var h = n(r("af34")),
-                    a = n(r("762b")),
+                    a = n(r("uniPopupComponentExportWrapper")),
                     i = getApp(),
-                    c = r("720d"),
+                    c = r("handDrawFileManager"),
                     o = (r("deviceCommandUtils "), r("c4ce")),
                     s = r("bbc7"),
                     l = {
@@ -20891,7 +20891,7 @@
                 value: !0
             }), t.default = void 0;
             var h = n(r("db01")),
-                a = n(r("6b9a")),
+                a = n(r("frLocaleStrings ")),
                 i = n(r("ea21")),
                 c = n(r("viLocaleStrings ")),
                 o = n(r("e82e")),
@@ -20995,7 +20995,7 @@
                 var a = getApp(),
                     i = (r("codePointAt"), r("e458")),
                     c = r("deviceCommandUtils "),
-                    o = (r("720d"), r("c4ce")),
+                    o = (r("handDrawFileManager"), r("c4ce")),
                     s = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
                     l = {
                         data: function() {
@@ -21896,7 +21896,7 @@
         "esModuleReexportHelper": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("75a8"),
+            var n = r("handDrawPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -21912,7 +21912,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
                     c = r("c4ce"),
@@ -23728,7 +23728,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -24771,7 +24771,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        "652e": function(e, t, r) {
+        "bleAutoTestPageComponentExport": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("bleAutoTestPageComponent"),
@@ -24783,12 +24783,12 @@
             }(a);
             t["default"] = h.a
         },
-        "67ad": function(e, t) {
+        "classCallCheckHelper": function(e, t) {
             e.exports = function(e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        "6a03": function(e, t, r) {
+        "uniPopupComponentExport": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("uniPopupComponent"),
@@ -24800,10 +24800,10 @@
             }(a);
             t["default"] = h.a
         },
-        "6b9a": function(e) {
+        "frLocaleStrings ": function(e) {
             e.exports = JSON.parse('{"\u8fde\u63a5\u84dd\u7259":"Connecter Bluetooth","\u968f\u673a\u64ad\u653e":"Al\xe9atoire","\u5df2\u8fde\u63a5":"Connect\xe9","\u672a\u8fde\u63a5":"D\xe9connect\xe9","\u6237\u5916\u64ad\u653e":"Ext\xe9rieur","\u6b63\u5728\u8bfb\u53d6\u8bbe\u5907\u53c2\u6570...":"Chargement ...","\u8bfb\u8bbe\u5907\u53c2\u6570\u5931\u8d25":"\xc9chec de la lecture des param\xe8tres de l\'appareil","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Actualiser la liste","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Arr\xeater la recherche","\u641c\u7d22\u84dd\u7259\u8bbe\u5907":"Rechercher des appareils Bluetooth","\u5df2\u53d1\u73b0":"D\xe9couvert","\u7ea2":"Rouge","\u7eff":"Vert","\u84dd":"Bleu","\u9ec4":"Jaune","\u9752":"Cyan","\u7d2b":"Violet","\u767d":"Blanc","\u8df3\u53d8":"Clign.","\u5168\u5f69":"Multicol.","\u64ad\u653e\u6a21\u5f0f":"Mode","\u81ea\u8d70":"Autonome","\u58f0\u63a7":"Vocal","\u81ea\u8d70\u901f\u5ea6":"Vitesse","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensibilit\xe9","\u56fe\u6848\u989c\u8272":"Couleur du motif","\u5f53\u524d\u989c\u8272":"Couleur actuelle","\u5faa\u73af\u64ad\u653e":"Lecture en boucle","\u52fe\u9009\u64ad\u653e":"Lecture coch\xe9e","\u5730\u5740\u7801":"Adresse","\u663e\u793a\u8303\u56f4":"Afficher","\u56fe\u6848\u76f8\u4f4d":"Phase du motif","\u6b63\u5e38\u663e\u793a":"Affichage normal","XY\u4e92\u6362":"Inversion XY","\u8c03\u5149\u8bbe\u7f6e":"R\xe9glage de la luminosit\xe9","\u7ea2\u5149\u8c03\u5149":"Rouge","\u7eff\u5149\u8c03\u5149":"Verte","\u84dd\u5149\u8c03\u5149":"Bleue","\u6fc0\u5149\u5149\u6e90":"Laser","\u5355\u8272":"Monoch.","\u53cc\u8272":"Bicol.","\u8c03\u5236\u6a21\u5f0f":"Modulation","\u7cfb\u7edf\u8bed\u8a00":"Langue","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Lecture de la police en cours...","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"G\xe9n\xe9ration des points de coordonn\xe9es en cours...","\u6587\u672c\u989c\u8272":"Couleur du texte","\u6587\u5b57\u5927\u5c0f":"Taille","\u663e\u793a\u89c6\u8ddd":"Distance","\u6d41\u6c34\u901f\u5ea6":"Vitesse","\u6295\u5c04\u65b9\u5411":"Direction de projection","\u6c34\u5e73\u6295\u5c04":"Projection horizontale","\u5782\u76f4\u6295\u5c04":"Projection verticale","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"D\xe9passement du nombre maximal de points","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Une partie sera perdue","\u7ebf\u6761\u989c\u8272":"Couleur de la ligne","\u6e05\u7a7a":"Effacer","\u56de\u9000":"Retour","\u53d1\u9001":"Envoyer","\u6700\u591a20\u4e2a\u573a\u666f":"Jusqu\'\xe0 20 sc\xe8nes","\u63d0\u793a":"Avertissement","\u662f\u5426\u5220\u9664\u573a\u666f":"Voulez-vous supprimer cette sc\xe8ne ?","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"Utilisateur a annul\xe9","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- Aucune sc\xe8ne disponible --","\u573a\u666f":"Sc\xe8ne","\u79d2":"sec","\u5220\u9664":"Supprimer","\u7f16\u8f91":"Modifier","\u65b0\u589e\u573a\u666f":"Ajouter une sc\xe8ne","\u56fe\u6848\u9009\u62e9":"Motif","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Lin\xe9aires","\u5706\u5f27\u7c7b\u56fe\u6848":"Cercle","\u4eae\u70b9\u56fe\u6848":"Points","\u6253\u70b9\u56fe\u6848":"Points","\u5723\u8bde\u56fe\u6848":"No\xebl","\u52a8\u753b\u7ec4\u522b1":"Animation 1","\u52a8\u753b\u7ec4\u522b2":"Animation 2","\u52a8\u753b\u7ec4\u522b3":"Animation 3","\u52a8\u753b\u7ec4\u522b4":"Animation 4","\u52a8\u753b\u7ec4\u522b5":"Animation 5","\u767d\u8272":"Blanc","\u7ea2\u8272":"Rouge","\u84dd\u8272":"Bleu","\u7c89\u8272":"Rose","\u9752\u8272":"Cyan","\u9ec4\u8272":"Jaune","\u7eff\u8272":"Vert","\u6574\u4f53\u989c\u8272\u6362\u8272":"Changement","\u4e03\u5f69\u8679\u989c\u8272":"Arc-en-ciel","2\u5206\u6bb5\u989c\u8272":"2 segments","3\u5206\u6bb5\u989c\u8272":"3 segments","4\u5206\u6bb5\u989c\u8272":"4 segments","8\u5206\u6bb5\u989c\u8272":"8 segments","16\u5206\u6bb5\u989c\u8272":"16 segments","32\u5206\u6bb5\u989c\u8272":"32 segments","\u989c\u8272\u6e10\u7ed8":"Progression","\u4e0d\u6d41\u6c34":"Pas de","\u6b63\u5411\u6d41\u6c34":"D\xe9fil. avant","\u53cd\u5411\u6d41\u6c34":"D\xe9fil. arri\xe8re","\u56fe\u6848\u5927\u5c0f":"Taille du motif","\u7f29\u653e\u624b\u52a8\u9009\u62e9":"Manuelle","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Agran. progr.","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"R\xe9tr\xe9. progr.","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Cycle AR","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Agra. irr\xe9g. 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Agra. irr\xe9g. 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Agra. irr\xe9g. 3","\u65cb\u8f6c\u89d2\u5ea6":"Angle","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Rotat. positive","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Rotat. inverse","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"Posit. horiz.","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"Retou. horiz.","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"Posit. verti.","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"Vites. verti.","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"Rotat. horiz.","\u6c34\u5e73\u79fb\u52a8":"Mouve.H","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"Rotat. verti.","\u5782\u76f4\u79fb\u52a8":"Mouve.V","\u65e0\u6ce2\u6d6a":"Pas de vague","\u6ce2\u6d6a\u5e45\u5ea61":"Amplitude 1","\u6ce2\u6d6a\u5e45\u5ea62":"Amplitude 2","\u6ce2\u6d6a\u5e45\u5ea63":"Amplitude 3","\u6ce2\u6d6a\u5e45\u5ea64":"Amplitude 4","\u6ce2\u6d6a\u5e45\u5ea65":"Amplitude 5","\u6ce2\u6d6a\u5e45\u5ea66":"Amplitude 6","\u6ce2\u6d6a\u5e45\u5ea67":"Amplitude 7","\u6ce2\u6d6a\u5e45\u5ea68":"Amplitude 8","\u65e0\u6e10\u7ed8":"Pas de d\xe9grad\xe9","\u624b\u52a8\u6e10\u7ed81":"Manuel 1","\u624b\u52a8\u6e10\u7ed82":"Manuel 2","\u81ea\u52a8\u6e10\u7ed81":"Automatique 1","\u81ea\u52a8\u6e10\u7ed82":"Automatique 2","\u81ea\u52a8\u6e10\u7ed83":"Automatique 3","\u81ea\u52a8\u6e10\u7ed84":"Automatique 4","\u56fe\u5f62\u5206\u7ec4":"Groupe","\u56fe\u5f62":"Forme","\u989c\u8272":"Couleur","\u989c\u8272\u6d41\u6c34":"D\xe9grad\xe9","\u56fe\u5f62\u5927\u5c0f":"Taille","\u56fe\u5f62\u7f29\u653e":"\xc9chelle","\u56fe\u5f62\u65cb\u8f6c":"Rotation","\u6c34\u5e73\u7ffb\u8f6c":"Horizontal","\u5782\u76f4\u7ffb\u8f6c":"Vertical","\u6ce2\u6d6a":"Ondulation","\u6e10\u7ed8":"Peinture","\u64ad\u653e\u65f6\u957f":"Le temps","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Chargement du motif en cours...","\u53d6\u6d88":"Annuler","\u786e\u5b9a":"OK","\u9009\u62e9\u56fe\u5f62":"S\xe9lec.","\u901a\u9053\u590d\u4f4d":"R\xe9ini.","\u5b8b\u4f53":"SimSun","\u76f4\u7ebf":"Ligne","\u5706\u5f27":"Arc","\u4eae\u70b9":"Point","\u6253\u70b9":"Point","\u5723\u8bde":"No\xebl","\u52a8\u753bA":"Anima.A","\u52a8\u753bB":"Anima.B","\u5f69\u8679":"Rainbow","\u9ed8\u8ba4":"D\xe9faut","\u8f6f\u4ef6\u7248\u672c":"Version","\u8fde\u63a5":"Connecter","\u8bbe\u7f6e":"Param.","\u624b\u7ed8\u6d82\u9e26":"Dessin","\u6587\u672c\u64ad\u653e":"Texte","\u4e2a\u6027\u7f16\u7a0b":"Progr.","\u52a8\u753b\u64ad\u653e":"Animation","\u7ebf\u6761\u64ad\u653e":"Lignes","\u5723\u8bde\u64ad\u653e":"No\xebl","DMX":"DMX","\u914d\u7f6e":"Confi.","\u8fd4\u56de":"Retour","\u70b9\u6211\u8fde\u63a5":"Me connecter","\u84dd\u7259\u672a\u8fde\u63a5":"Bluetooth d\xe9connect\xe9","\u8bbe\u5907":"\xc9quip.","\u8bf7\u8f93\u5165\u6587\u5b57":"Entrer du texte","\u9884\u7559\u65e0\u529f\u80fd":"R\xe9serv\xe9","\u91cd\u7f6e":"R\xe9initialiser","\u84dd\u7259\u8fde\u63a5":"Connexion Bluetooth","\u5168\u9009":"Tout","\u53cd\u9009":"Inver.","\u6e05\u9664":"Effac.","\u5b57\u6570":"Mots","\u70b9\u6570":"Points","\u9884\u89c8":"Aper\xe7u","\u573a\u666f\u7ba1\u7406":"Gestion des sc\xe8nes","\u52a0\u8f7d\u4e2d":"Chargement en cours","\u573a\u666f\u7f16\u8f91":"\xc9dition de sc\xe8ne","\u8bf7\u5148\u8fde\u63a5\u84dd\u7259":"Veuillez connecter Bluetooth","\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b":"L\'appareil actuel n\'est pas reconnu","DMX\u5730\u5740\u7801":"Adresse","\u8bf7\u5148\u6253\u5f00\u8bbe\u5907":"Veuillez ouvrir l\'appareil","\u5355\u7ebf\u5b57\u4f53":"Simplicit\xe9","\u6b63\u5728\u53d1\u9001":"Envoi en cours","\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528":"Veuillez v\xe9rifier si le Bluetooth de votre t\xe9l\xe9phone est activ\xe9","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"Cette police ne prend pas en charge l\'affichage en chinois","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"En raison des limitations de capacit\xe9, certains caract\xe8res chinois ne sont pas inclus dans la police, veuillez t\xe9l\xe9charger la version compl\xe8te sur l\'application","\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Veuillez autoriser l\'acc\xe8s \xe0 la position de l\'application","\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650":"Veuillez autoriser l\'acc\xe8s Bluetooth de l\'application","\u8bfb\u8bbe\u5907\u53c2\u6570\u5f02\u5e38":"\xc9chec de la lecture des param\xe8tres de l\'appareil","\u9009\u62e9":"S\xe9lectionner","\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247":"D\xe9finir l\'image d\'arri\xe8re-plan","\u53d1\u9001\u5931\u8d25":"\xc9chec de l\'envoi","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"La longueur du texte d\xe9passe 100, veuillez r\xe9essayer","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"Le nombre de points du texte d\xe9passe 2048, veuillez r\xe9essayer","\u7b2c":"Groupe","\u7ec4\u6587\u5b57":"texte","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Veuillez modifier la police ou le texte et r\xe9essayer","\u4e0d\u652f\u6301\u6587\u672c":"Texte non pris en charge","\u7ec4\u5b57\u4f53":"Groupe de polices","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":"Le groupe de texte est vide, veuillez entrer du texte avant d\'envoyer","\u662f\u5426\u5220\u9664\u7b2c":"Voulez-vous supprimer","\u7ec4":"Groupes","\u6700\u591a4\u4e2a\u5206\u7ec4":"Maximum de 4 groupes","\u6b63\u5728\u8fde\u63a5...":"de liaison...","\u8fde\u63a5\u5931\u8d25":"\xc9chec de la connexion","\u5b57\u4f53\u9009\u62e9":"S\xe9lection de police","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans 1","\u601d\u6e90\u9ed1\u4f532":"NotoSans 2","\u601d\u6e90\u9ed1\u4f533":"NotoSans 3","\u601d\u6e90\u9ed1\u4f534":"NotoSans 4","\u601d\u6e90\u9ed1\u4f535":"NotoSans 5","\u601d\u6e90\u9ed1\u4f536":"NotoSans 6","\u601d\u6e90\u9ed1\u4f537":"NotoSans 7","font_note_1001":"Chinois, anglais, espagnol, portugais, allemand, fran\xe7ais","font_note_1002":"Anglais, espagnol, russe, portugais, allemand, fran\xe7ais, vietnamien, hindi, bengali","font_note_1003":"Anglais, chinois, espagnol, russe, portugais, japonais, allemand","font_note_1004":"Chinois, Anglais, espagnol, portugais, allemand, fran\xe7ais","font_note_1005":"Anglais, chinois","font_note_1006":"Anglais, japonais, cor\xe9en","font_note_1007":"Arabe","\u4fdd\u7559":"R\xe9serv\xe9","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Couleur initiale du motif","\u6df7\u8272":"M\xe9langer les couleurs","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Pas de scintillement, recommand\xe9","\u5df2\u65ad\u5f00\u8fde\u63a5":"D\xe9connect\xe9","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"Gamme de 1 - 255","\u6587\u5b57\u7cbe\u5ea6":"Effets","\u6587\u672c\u56fe\u5f62\u7cbe\u5ea6":"Effects","\u7cbe\u5ea6":"Effets","\u9009\u62e9\u56fe\u7247":"Seleccionar","\u8bbe\u4e3a\u80cc\u666f":"Fondo","\u8bc6\u522b\u56fe\u6848":"Reconocer","\u63cf\u8fb9":"Contorno","\u6b63\u5728\u5904\u7406\u4e2d":"En curso","\u5f53\u524d\u673a\u578b":"Mod\xe8le","hand_draw_tips":" ** Veuillez glisser de la zone vide vers le motif cible pour le s\xe9lectionner.\\n ** Vous pouvez effectuer des op\xe9rations telles que le zoom avant, le zoom arri\xe8re, le d\xe9placement, le changement de couleur et la suppression sur le motif s\xe9lectionn\xe9.","\u4e0d\u518d\u63d0\u793a":"Ne pas afficher","out_door_tips1":"1-30 Point de rep\xe8re","out_door_tips2":"31-40 Aurores bor\xe9ales","out_door_tips3":"41-50 Tunnel temporel","\u6587\u4ef6\u540d":"Nom de fichier","\u4fdd\u5b58\u6587\u4ef6":"Enregistrer le fichier","\u9009\u62e9\u6587\u4ef6":"S\xe9lectionner un fichier","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Nom de fichier","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Nouveau nom de fichier","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Le nom de fichier ne peut pas \xeatre vide","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"Le fichier existe d\xe9j\xe0, veuillez r\xe9essayer","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"Le fichier existe d\xe9j\xe0, continuer ?","\u4fdd\u5b58\u6210\u529f":"Sauvegarde r\xe9ussie","\u4fdd\u5b58\u5931\u8d25":"\xc9chec de la sauvegarde","\u4fee\u6539\u6210\u529f":"Modification r\xe9ussie","\u4fee\u6539\u5931\u8d25":"Modification \xe9chou\xe9e","\u5220\u9664\u6210\u529f":"Suppression r\xe9ussie","\u5220\u9664\u5931\u8d25":"Suppression \xe9chou\xe9e","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"Le mod\xe8le actuel ne le prend pas en charge","text_time_range":"Plage 1-25,5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"\xc9chec de la reconnaissance","\u8bf7\u9009\u62e9\u6587\u4ef6":"Veuillez s\xe9lectionner un fichier","\u6587\u4ef6\u6570":"Fichier","\u53e6\u5b58\u6587\u4ef6":"Enregistrer sous","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Supprimer le fichier s\xe9lectionn\xe9","Select-File":"S\xe9lec.","\u6447\u5934\u8bbe\u7f6e":"Param\xe8tres de Mouvement","\u6447\u5934\u6a21\u5f0f":"Mode","\u6447\u5934\u76f8\u4f4d":"Phase","\u81ea\u52a8":"Automatique","\u624b\u52a8":"Manuel","X\u7c97\u8c03":"Grossier X","X\u7ec6\u8c03":"Fin X","Y\u7c97\u8c03":"Grossier Y","Y\u7ec6\u8c03":"Fin Y","\u6c34\u5e73\u7535\u673a":"Mot. H","\u6c34\u5e73\u5fae\u8c03":"Fin Hor","\u5782\u76f4\u7535\u673a":"Mot. V","\u5782\u76f4\u5fae\u8c03":"Fin Ver","\u7535\u673a\u901f\u5ea6":"Vitesse","\u6d41\u6c34\u65b9\u5411":"Direction","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabe","\u9ed8\u8ba4\u65b9\u5411":"Par d\xe9faut","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Enregistrer dans le dossier","\u9009\u62e9\u5217\u8868":"S\xe9le. liste","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Nom du groupe","\u64ad\u653e\u5217\u8868":"Liste de lecture","\u4fdd\u5b58":"Enregistrer","\u6dfb\u52a0":"Ajouter","\u6279\u91cf\u8bbe\u7f6e":"Par lots","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Nom de la liste","ALL":"Tout","\u5217\u8868\u7f16\u8f91":"\xc9dition de la liste","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Veuillez entrer un nombre entre 0.1 et 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Nouvelle liste","\u7acb\u5373\u64ad\u653e":"Jouer maint.","\u76f8\u5e94\u7684\u64ad\u653e\u5217\u8868\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"La playlist correspondante sera supprim\xe9e, continuer","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- La liste est vide --"}')
         },
-        7010: function(e, t, r) {
+        "fontSelectorPageRender": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -24897,7 +24897,7 @@
                 },
                 a = []
         },
-        7172: function(e, t) {
+        iterableToArrayLimitHelper: function(e, t) {
             e.exports = function(e, t) {
                 var r = null == e ? null : "undefined" != typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
                 if (null != r) {
@@ -24923,10 +24923,10 @@
                 }
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        "717a": function(e, t, r) {
+        "arrowRightPng": function(e, t, r) {
             e.exports = r.p + "static/imgs/text/arrow-right.png"
         },
-        "720d": function(t, r, n) {
+        "handDrawFileManager": function(t, r, n) {
             (function(r) {
                 var h = n("spreadToArrayHelper");
 
@@ -25394,22 +25394,22 @@
                 }
             }).call(this, n("f3b9")["default"])
         },
-        "74ed": function(e, t, r) {
+        "arrowDownPng": function(e, t, r) {
             e.exports = r.p + "static/imgs/arrow-down.png"
         },
-        "75a8": function(e, t, r) {
+        "handDrawPageComponent": function(e, t, r) {
             "use strict";
             (function(e) {
                 var n = r("esModuleInteropHelper");
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("codePointAt"),
                     c = r("textLineVectorizer "),
                     o = r("deviceCommandUtils "),
-                    s = r("720d"),
+                    s = r("handDrawFileManager"),
                     l = r("c4ce"),
                     p = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
                     d = r("fontGeometryUtils "),
@@ -26717,11 +26717,11 @@
                 t.default = x
             }).call(this, r("f3b9")["default"])
         },
-        "762b": function(e, t, r) {
+        "uniPopupComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("91e0"),
-                h = r("6a03");
+                h = r("uniPopupComponentExport");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -27137,7 +27137,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -27533,7 +27533,7 @@
                         }
                     }), n("image", {
                         attrs: {
-                            src: e._$s(66, "a-src", r("717a")),
+                            src: e._$s(66, "a-src", r("arrowRightPng")),
                             _i: 66
                         }
                     }), n("text", {
@@ -44215,7 +44215,7 @@
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
                     HMDragSorts: r("vueComponentExportWrapper").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -44887,7 +44887,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp();
                 var i = {
                     data: function() {
@@ -45756,7 +45756,7 @@
         bbc7: function(e, t, r) {
             (function(t) {
                 var n = r("spreadToArrayHelper"),
-                    h = r("720d"),
+                    h = r("handDrawFileManager"),
                     a = r("fontGeometryUtils "),
                     i = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"];
 
@@ -58966,7 +58966,7 @@
             "use strict";
             r.r(t);
             var n = r("deviceTestingPageComponent"),
-                h = r("652e");
+                h = r("bleAutoTestPageComponentExport");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -59299,7 +59299,7 @@
                     "6a8e": "3QzX,oqX1,3QWr,9kux,9lbx,5dwx,3RxV,3Rsh,7Z1z,6Beh,6ATN,aIK1,gccj,dsBF,dsqj,gcnF,hAmh,hz/N,hAaX,iY41,eQFP,c4TV,c4m9,eQ89,hzQr,n3L1,hAxx,iXbH,iXyh,c3KH,gbvp,dr+b,ePNF",
                     "66be": "ePNz,ePwN,ds3P,dsqp,aIt9,5cV9,3QWx,5cJV,9kQX,9kjh,3RgX,7ZcV,lI6V,lHXz,lIcx,kjYX,orJF,lHpP,lHMp,orhr,n3u9,hAgz,7Z1F,3RDx,lGZH,lHeF,7YkF,7Y3N,lGZN,gbRP,gccp,iX+p,iXDV,gbRV",
                     "80dd": "hzFb,hzop,c3Qj,c45h,3QoH,5cnp,n2Yp,n3dh,5cEh,3QFF,7YXX,5c+N,5cV9,n3u9,or+x,lHXz,9kWF,3RDx,6Bpx,5d9X,3RmF,eQLr,eQdN",
-                    "717a": "oqWX,6Am1,3QoN,3QLb,7YkF,5cJP,6AIx,gbXx,gbMh,kjrb,hzu1,n3iP,kjCx,ePwH,iXbN,6AIr,3R5N,3RDx,7Z1z,6B31,6AZp,n3Fp,n3/V,hArV,hA5p,kkdP,kjTp,eQuz,dsBF,7Zix,dsSr,aIVh",
+                    "arrowRightPng": "oqWX,6Am1,3QoN,3QLb,7YkF,5cJP,6AIx,gbXx,gbMh,kjrb,hzu1,n3iP,kjCx,ePwH,iXbN,6AIr,3R5N,3RDx,7Z1z,6B31,6AZp,n3Fp,n3/V,hArV,hA5p,kkdP,kjTp,eQuz,dsBF,7Zix,dsSr,aIVh",
                     "789a": "or7L,oqLN,fCNX,or1V,h4TP,h4dJ,k0MZ,izVD,izDp,k0j3,mYSj,mYcd,pWVL,orO1,h3Lt,h41H,8g3X,8fNP,h3Lz,cF6J,cFAP,5kQP,5kmP,cF6P",
                     "94ab": "gbpH,or0F,kjwP,kjg1,oryj,lHS1,kkjr,kjI9,kjTj,7YSp,3QWx,5d9X,3RmF,3Rsh,5dqV,eQFV,eQjp,gbAX,gbRV,gbGz,3QFF,6ACV,aHRH,aIhV",
                     "954e": "gbpH,or0F,kjwP,kjg1,lHvr,lHB9,n3Fp,orE1,n3QF,lI6V,lIcx,lHMj,lHXF,gbAX,gbRV,c4aP,c3KN,dsSr,dsf9,aIyH,aI+V,7Zir,7YH9,5d4j,3Rh1,5dfF,dsBF,6ACP,3QFF,gbGF,iXP3,iYkV,gcyV,gc19,iXP9",
@@ -59976,7 +59976,7 @@
                     "9a88": "n2SH,n3dh,gbMh,kjaj,ePCp,ePYV,5cJV,3QLh,3QFF,5ct1,aIcb,9jYN,3QWr,6ATN,kjNN,kkjr,kjCx,ds9r,dsSx,kk8b,3Rsh,orUP,lHXF,lHGH,orhx",
                     "73b3": "n3db,n2SN,orsH,iXyh,orDX,c4D1,7Z1F,3RDx,6Bpx,iXUH,iYqx,3QWr,kjCx,7Yqb,6Am1,6AaN,n31X,6Am1,gbMb,gbpN",
                     "681d": "3QFz,or0F,lHRX,aIK1,n3/P,lHB9,gbXr,gcEx,ds3P,ePTh,aHRH,gbB1,iXDP,iXbN,5cV3,aIt9,aI+V,5dqV,5cV9",
-                    "6b9a": "n3iP,n2Yp,c3KH,n321,c45b,ePI1,iXmX,iXDV,ds3V,6ArF,3Qup,lHRX,3Rh1,orPb,n3QF,n3zH,orn9,hArP,hzW9,aInr,aJ4x,lHB3,dsf9,dsMV,lI6V,lHB9",
+                    "frLocaleStrings ": "n3iP,n2Yp,c3KH,n321,c45b,ePI1,iXmX,iXDV,ds3V,6ArF,3Qup,lHRX,3Rh1,orPb,n3QF,n3zH,orn9,hArP,hzW9,aInr,aJ4x,lHB3,dsf9,dsMV,lI6V,lHB9",
                     "89ca": "n2Yj,iXhp,iXDV,n3iV,iXsz,or0F,gbpH,gbRV,c4aV,c3Qp,5cnp,5ct1,7Yqh,3QLb,3QQV,5cV9,9kR1,iY41,6Bpr,3RDx,3Rsh,5dfF,9kWF,aI+P,n3/V,n3u9,aIt9",
                     8174: "hzFb,hzop,c3Qj,c45h,3QoH,5cnp,n2Yp,n3dh,5cEh,3QFF,3QWr,aIK1,orE1,lHMj,kjI9,c4m9,c4TV,kkdV,kk8h,gc13,gcyV,3RDr,aIK1",
                     6249: "n3zH,orn9,iXmX,iYkV,lI6V,lH91,7Yf1,3QoN,gc13,3R09,3RgX,gci1,6B2X,6Bpx,6Arz,6AO9,aIt3,aIch,aI+P,aIK1,eQoX,eQLx,ePNz,eQ89",
@@ -60136,7 +60136,7 @@
                     "8ff3": "lH8X,oqRp,hziH,hzu1,6Am1,3QoN,6AlX,3QLh,3RDx,6Axb,6Bpx,c4xj,6AZp,c4gr,c4Oh,ePTb,ePYV,gc19,hA5p,lI1h,n3Wh,n3dh,eQFP,iY41",
                     "5ad4": "oqRj,aHXp,5cJV,3QoH,9kjh,iXyh,iXbN,n3KX,oryp,iYkP,lIcx,lHvx,iXDV,iY9z,hzW9,9kA9,9lbr,9koV,eQuz,9kWF,eQ83,eQFV,3QQP,7YMN,3RxP,7YY1",
                     "7f1f": "n37z,hziN,gbpN,gbMh,hzFh,gbMb,aHRN,aIch,5chH,6Axh,3QQP,ds3V,dsMV,5dqV,3Rsh,3RmF,5da1,lIcr,lHpV,n3Fj,orsN,7YH3,aIt9,aIPF,7Z1F,7YH9,gbXr,iXJx,iYfh,gcth,gbXx",
-                    "67ad": "lHpP,orn9,iXP3,iXJx,hA5j,hAb1,iY9F,lHXF,lHeF,gbGF,gcyV,c4TV,aIVh,aIPF,c3VX,c4D1,3R03,dsf9,5dwr,5dqV,6B8F,aIyN,aInr,6ArF,5cnp,5chN",
+                    "classCallCheckHelper": "lHpP,orn9,iXP3,iXJx,hA5j,hAb1,iY9F,lHXF,lHeF,gbGF,gcyV,c4TV,aIVh,aIPF,c3VX,c4D1,3R03,dsf9,5dwr,5dqV,6B8F,aIyN,aInr,6ArF,5cnp,5chN",
                     "6a2f": "3QzX,oqX1,ePNz,dr+h,c3KH,gbvp,iXyb,iXbN,hzW3,iXJx,iYfb,hAgF,gbRP,gcEx,oryj,gccp,lHvr,lI1h,5cPr,ds9x,dsMV,5dqV,5cPx,7YMH,aIyN,aIPF,7Z1F,7YMN",
                     "80b7": "hzKP,hzop,c3Qj,c4aV,3QoH,5cnp,n2Yp,n3iV,5cJV,3QLh,3QWr,dsw1,hAb1,oryj,hzW9,kjNH,kkjx,iYqx,hArV,3RDr,dsw1",
                     7110: "or0z,7YkF,3QoN,5cJP,7Yqh,ds9r,dsSx,n3Fj,dsf9,n3/P,n3ox,iXP3,iYfh,dsHh,hzzz,kjwV,ePCj,iXhp,5c+H,aIyN,aIVh,5dlh,5c+N",
@@ -61012,7 +61012,7 @@
                     5889: "oqWX,6Am1,6AaN,7Yqb,6Am1,hziH,hzFh,orJz,orE1,n45r,n3iV,5cJV,3QLh,3R03,c4m9,c4TV,3RxV,3Rsh,lHRX,3Rh1,kjI3,kkdV,eQFV,eQ89,hAxr,hzW9,9kA3,9l5V,6BjP,6AO9",
                     "83aa": "lIcr,lGZN,oryj,kjTp,kjwP,orbV,gbvj,hzQx,gbMb,5cEh,3QFF,5ct1,9kur,7Y3N,3QWr,3R09,5d4p,aI+V,5dwr,3RDx,3RxV,9kLp,hA5p,eQAb,gcnF,drDH,dsSx",
                     8572: "n45r,n2SN,oryj,lHMp,lHpP,orbV,iXJr,kjI9,kjfX,iXsF,eQ83,ePCp,3QLb,hzFh,9jYH,9kFN,3R03,5c+N,7YSp,hA5p,iYkV,dsqj,dsSx,3Rsb,dsHh,hzoj,hzW9,c4m9,c3Qp,hzop",
-                    "652e": "oqWX,5ct1,3Qup,5chN,ePTb,aHRN,iXbH,iXyh,n3/P,n3iV,hA5j,oryp,eQLr,hAxx,hzKV,ePYV,9kFH,dskN,9kWz,dsBF,9kur,9l5V,aIVb,aIt9,c4gr,c4TV,9kLj,3QQV,3QLh,6ATH,3R5N,3Rbp,5da1,7Z1z,6B8F,3RxV,3RDx,5dlb,6BjV,lI1b,lHvx,kjCx,kk8h,lI1h,eQ83,eQjp,gccp,gc19,eQ89,gchX,eQp1,eQAh,gcth,gci1",
+                    "bleAutoTestPageComponentExport": "oqWX,5ct1,3Qup,5chN,ePTb,aHRN,iXbH,iXyh,n3/P,n3iV,hA5j,oryp,eQLr,hAxx,hzKV,ePYV,9kFH,dskN,9kWz,dsBF,9kur,9l5V,aIVb,aIt9,c4gr,c4TV,9kLj,3QQV,3QLh,6ATH,3R5N,3Rbp,5da1,7Z1z,6B8F,3RxV,3RDx,5dlb,6BjV,lI1b,lHvx,kjCx,kk8h,lI1h,eQ83,eQjp,gccp,gc19,eQ89,gchX,eQp1,eQAh,gcth,gci1",
                     "55b9": "lIcr,lHpV,oryj,lHMp,ePTh,eQAb,eQ2x,lHMj,eQLx,c4xj,hA5p,3Rbj,9kLp,3QLb,3RDx,7ZcP,7YvV,c4aP,c4TV,lGZH,lHeF,c3/F,c3KN,drDN,lGZN",
                     "5c98": "6AlX,oqX1,hzFb,6Axh,6AaN,hziN,aInr,lHvx,lI1h,aIVh,9kQX,5da1,3RmF,3RDx,6Bpx,3QLb,3QQV,5cV9,9kLp,hA5p",
                     7338: "n2SH,iXsF,6ArF,3Qup,5chN,ePNz,aHRN,or6b,hziN,kjYX,n3L1,kjCr,kkjx,n45x,n3ox,6AIx,3QLh,9lbr,9kLp,dsqj,dsSx,5d4j,hA5p,hAxx,5dwx,5d4p",
@@ -61673,7 +61673,7 @@
                     "6a50": "n3/P,n2Yp,hAxr,iYqx,iXhp,hziN,hAgz,hzzF,hzQr,drUF,c3Qp,c3KN,3R03,aIt9,3RDr,3RxV,5dfF,7YSp,7YvP,5cyF,3Qup,3QoN,9lbr,9jYN,orn3,kjI9,iXP9,lHXz,lHeF,kjlF,kk2F,lHXF,ePTb,c45h,c4IF,eQuF,ePTh",
                     "668c": "fD43,fCO1,fDg5,lvwP,orw3,ordX,k0cT,lvkD,orH/,mYul,k0B1,fE6p,lw4P,izVD,lvOH,or+3,fDs7,fDWn,bcVj,bc3b,fDE9,9Jdv,3QSX,3QMR,9Jdp,3RD3,3RJ9,mXxX,8fBN,8fTV,mXQ9,mXy1",
                     "80cd": "hzFb,hzop,c3Qj,c45h,3QoH,5cnp,n2Yp,n3dh,5cEh,3QFF,3QQP,6AO9,n3u9,orPh,lHXz,dsBF,3RDx,5dlb,6B8F,5da1,5d4p,lHMp",
-                    7172: "or6b,lGZN,ePHX,lH91,ePTb,ePYV,gc19,hz/N,hAaX,gcnF,eQFV,eQLx,iXDP,iYqx,eQjj,lHMp,dsf3,9kA9,6ACV,3Qup,3QoN,aIcb,9kdF,7YMH,aIK1,9kA3,6AZp,3RxV,3RDx,lHB3,orn9,orsN,orJF,lHXF,lHB9",
+                    iterableToArrayLimitHelper: "or6b,lGZN,ePHX,lH91,ePTb,ePYV,gc19,hz/N,hAaX,gcnF,eQFV,eQLx,iXDP,iYqx,eQjj,lHMp,dsf3,9kA9,6ACV,3Qup,3QoN,aIcb,9kdF,7YMH,aIK1,9kA3,6AZp,3RxV,3RDx,lHB3,orn9,orsN,orJF,lHXF,lHB9",
                     "786a": "n3iP,n2SN,ePwH,n37F,n3Fj,lHvx,lHGH,5c+N,3R09,5cPx,gchX,aInx,iYqr,iXJx,n3/P,lI6V,orJz,7Z1F,3RDx,7Zix,5d4j,c4Zx,gbAX,gbRV,7YvV,7Yf1,gbB1",
                     "949c": "gbpH,or0F,kjCr,kjg1,gbAX,gbRV,aIhP,aHRN,6ACP,3QFF,gbGF,gc6H,gcyV,aI+V,aIyN,5dwr,5c+N,lHGN,lIcx",
                     9546: "gbpH,or0F,kjwP,kjg1,lIcr,lHvx,orPb,kk8h,kjNH,orsN,eQFP,eQ89,9kur,9lbx,6ACP,3QFF,gbGF,gbAX,gbRV,c4aP,c3KN,aIJX,9kR1,3QWx,3RDr,9kR1,hzW3,hArV,c4TV,c4m9,hzW9",
@@ -62239,7 +62239,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b")),
+                var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
                     c = r("c4ce"),
@@ -62515,7 +62515,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -62963,7 +62963,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("762b"));
+                var h = n(r("uniPopupComponentExportWrapper"));
 
                 function a(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
@@ -63026,7 +63026,7 @@
                     return n
                 }
                 var c = getApp(),
-                    o = r("720d"),
+                    o = r("handDrawFileManager"),
                     s = r("deviceCommandUtils "),
                     l = r("c4ce"),
                     p = r("bbc7"),
@@ -64709,7 +64709,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -65315,7 +65315,7 @@
             var n = {
                     pageMeta: r("7854").default,
                     navigationBar: r("7943").default,
-                    uniPopup: r("762b").default
+                    uniPopup: r("uniPopupComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -65369,7 +65369,7 @@
                         }
                     }), n("view"), e._$s(14, "i", e.sortFileDown) ? n("image", {
                         attrs: {
-                            src: e._$s(14, "a-src", r("74ed")),
+                            src: e._$s(14, "a-src", r("arrowDownPng")),
                             _i: 14
                         },
                         on: {
