@@ -10,7 +10,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
@@ -652,7 +652,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -4794,7 +4794,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -7894,7 +7894,7 @@
                     "6c72": "oqYb,m8FN,ikdX,g1+F,5m8X,c+GF,mVAX,mWgN,g2A9,g2SV,btOF,8qlh,67FN,3QX9,mVNr,ewDp,8pS1,4Bwx,g2nz,9XY9,682N,4CBh",
                     5320: "mWmX,mVc1,4Bk1,4Cy9,7ENj,bt6V,jSdV,kDKF,fhfP,fi1V,fhHX,6UB1",
                     5883: "j4YH,j5lN,oq/j,9Xgp,8pmH,aIhV,pcmH,m9c9,m8LX,m9y1,lo4j,ikVN,il33,lowx,ikzP,ilvh,fhm3,fh+N,9YbN,9Xz9,fhm9,c+T3,c/vN,9XOH,67wp,3QKF,9XY3,4C99,3Rnh,3RG1,68fh",
-                    "780d": "m8jP,m8Sh,m8Cz,dLcV,6TVb,gOGh,gP09,8pV9,8pzh,fhpb,jSzN,pct1,jSzH,jT69,g2PN,gPp3,9b0V,6UrF,3QQV,cer3,8qrx,5ngV,3RJ9",
+                    "imageToVectorLinesUtils": "m8jP,m8Sh,m8Cz,dLcV,6TVb,gOGh,gP09,8pV9,8pzh,fhpb,jSzN,pct1,jSzH,jT69,g2PN,gPp3,9b0V,6UrF,3QQV,cer3,8qrx,5ngV,3RJ9",
                     "83b1": "mV8P,mWq9,pc0P,kD2V,pczb,kDBh,ikh3,illV,c+qX,c/C1,gOPz,dLI9,dM1X,gPyx,kDir,3R4x,5m8X,8pLN,9Xz9,c/0x,9XV1,7FCx,5nn9",
                     8138: "3QrP,9Xa9,nG49,nGq1,5my1,3QHx,ikh3,ikD1,c+u3,c+Q1,gP03,jSzN,nGS9,kDEp,iliN,gPO9,g2kr,g2SV,ce8j,7FjN,c/9P,9bah,4Ccb,ceJV,4BPb,4Cy9",
                     "9c81": "jRTX,mVuN,pc41,mVuH,mW7p,kDlF,kCSj,kDNN,fh+N,fh3p,kCSp,iknj,iliN,kDir,fhvx,c+nP,c/F9,3QHr,aI8x,aIZF,3RwF,7EQr,7FFF,4Bwr,4ClF",
@@ -21823,7 +21823,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -23726,7 +23726,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
@@ -24692,7 +24692,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -24813,7 +24813,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -26731,7 +26731,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        "780d": function(e, t, r) {
+        "imageToVectorLinesUtils": function(e, t, r) {
             (function(t) {
                 var n = r("jsfeatCVLib"),
                     h = r("cefd"),
@@ -26893,7 +26893,7 @@
                 }
             }).call(this, r("f3b9")["default"])
         },
-        7854: function(e, t, r) {
+        "pageMetaComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("ac2c"),
@@ -26985,7 +26985,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -27135,7 +27135,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
@@ -43829,7 +43829,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default
+                    pageMeta: r("pageMetaComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -44212,7 +44212,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     HMDragSorts: r("vueComponentExportWrapper").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
@@ -44471,7 +44471,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var n = r("780d"),
+                var n = r("imageToVectorLinesUtils"),
                     h = getApp(),
                     a = r("textLineVectorizer "),
                     i = ["red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
@@ -45243,7 +45243,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -62513,7 +62513,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
@@ -64302,7 +64302,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default
                 },
                 h = function() {
@@ -64707,7 +64707,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
@@ -65313,7 +65313,7 @@
                 return n
             }));
             var n = {
-                    pageMeta: r("7854").default,
+                    pageMeta: r("pageMetaComponentExportWrapper").default,
                     navigationBar: r("7943").default,
                     uniPopup: r("uniPopupComponentExportWrapper").default
                 },
