@@ -20912,7 +20912,7 @@
                 };
             t.default = b
         },
-        "3dd4": function(e, t, r) {
+        "mainPageComponent": function(e, t, r) {
             "use strict";
             (function(e) {
                 function n(e, t) {
@@ -45198,7 +45198,7 @@
         "9cc2": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("3dd4"),
+            var n = r("mainPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
