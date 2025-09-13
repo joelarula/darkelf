@@ -2691,7 +2691,7 @@
                 h = n(r("7ca3"));
             r("ff59");
             var a = n(r("eeae")),
-                i = n(r("3c74")),
+                i = n(r("languagePacks")),
                 c = n(r("951c")),
                 o = n(r("4d79"));
 
@@ -2736,7 +2736,7 @@
                 }), t.default = void 0;
                 var h = n(r("762b")),
                     a = getApp(),
-                    i = r("3b77"),
+                    i = r("deviceCommandUtils "),
                     c = r("c4ce"),
                     o = r("handwritingCanvasHelper"),
                     s = r("720d"),
@@ -3782,7 +3782,7 @@
                 var h = n(r("762b")),
                     a = getApp(),
                     i = r("720d"),
-                    c = r("3b77"),
+                    c = r("deviceCommandUtils "),
                     o = r("c4ce"),
                     s = r("bbc7"),
                     l = a.globalData.MaxSaveFileCount,
@@ -5407,7 +5407,7 @@
                     value: !0
                 }), r.default = void 0;
                 var a = h(n("af34")),
-                    i = h(n("3b2d")),
+                    i = h(n("typeofHelper")),
                     c = h(n("7ca3")),
                     o = n("vueAnimationManager");
 
@@ -12174,7 +12174,7 @@
         },
         "codePointAt": function(t, r, n) {
             (function(h, a) {
-                var i, c, o, s = n("3b2d");
+                var i, c, o, s = n("typeofHelper");
                 (function(e, n) {
                     "object" === s(r) && "undefined" !== typeof t ? n(r) : (c = [r], i = n, o = "function" === typeof i ? i.apply(r, c) : i, void 0 === o || (t.exports = o))
                 })(0, (function(t) {
@@ -19973,7 +19973,7 @@
                     a = n(r("762b")),
                     i = getApp(),
                     c = r("720d"),
-                    o = (r("3b77"), r("c4ce")),
+                    o = (r("deviceCommandUtils "), r("c4ce")),
                     s = r("bbc7"),
                     l = {
                         data: function() {
@@ -20409,7 +20409,7 @@
                 t.default = r
             }).call(this, r("f3b9")["default"])
         },
-        "3b2d": function(e, t) {
+        "typeofHelper": function(e, t) {
             function r(t) {
                 return e.exports = r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
                     return typeof e
@@ -20419,7 +20419,7 @@
             }
             e.exports = r, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        "3b77": function(e, t, r) {
+        "deviceCommandUtils ": function(e, t, r) {
             (function(t) {
                 var n = r("af34");
 
@@ -20884,7 +20884,7 @@
                 }
             }).call(this, r("f3b9")["default"])
         },
-        "3c74": function(e, t, r) {
+        "languagePacks": function(e, t, r) {
             "use strict";
             var n = r("47a9");
             Object.defineProperty(t, "__esModule", {
@@ -20994,7 +20994,7 @@
                 }), t.default = void 0;
                 var a = getApp(),
                     i = (r("codePointAt"), r("e458")),
-                    c = r("3b77"),
+                    c = r("deviceCommandUtils "),
                     o = (r("720d"), r("c4ce")),
                     s = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
                     l = {
@@ -21914,7 +21914,7 @@
                 }), t.default = void 0;
                 var h = n(r("762b")),
                     a = getApp(),
-                    i = r("3b77"),
+                    i = r("deviceCommandUtils "),
                     c = r("c4ce"),
                     o = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
                     s = {
@@ -25408,7 +25408,7 @@
                     a = getApp(),
                     i = r("codePointAt"),
                     c = r("textLineVectorizer "),
-                    o = r("3b77"),
+                    o = r("deviceCommandUtils "),
                     s = r("720d"),
                     l = r("c4ce"),
                     p = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
@@ -45512,7 +45512,7 @@
                     value: !0
                 }), t.default = void 0;
                 var n = getApp(),
-                    h = r("3b77"),
+                    h = r("deviceCommandUtils "),
                     a = r("c4ce"),
                     i = {
                         data: function() {
@@ -46635,7 +46635,7 @@
         c4ce: function(e, t, r) {
             (function(t) {
                 var n = getApp(),
-                    h = r("3b77");
+                    h = r("deviceCommandUtils ");
 
                 function a(e, t, r) {
                     var n = 2 * (e - 1),
@@ -62241,7 +62241,7 @@
                 }), t.default = void 0;
                 var h = n(r("762b")),
                     a = getApp(),
-                    i = r("3b77"),
+                    i = r("deviceCommandUtils "),
                     c = r("c4ce"),
                     o = (r("e458"), {
                         data: function() {
@@ -63027,7 +63027,7 @@
                 }
                 var c = getApp(),
                     o = r("720d"),
-                    s = r("3b77"),
+                    s = r("deviceCommandUtils "),
                     l = r("c4ce"),
                     p = r("bbc7"),
                     d = c.globalData.MaxSaveFileCount,
@@ -63813,7 +63813,7 @@
             }).call(this, r("f3b9")["default"])
         },
         d551: function(e, t, r) {
-            var n = r("3b2d")["default"],
+            var n = r("typeofHelper")["default"],
                 h = r("e6db");
             e.exports = function(e) {
                 var t = h(e, "string");
@@ -64001,7 +64001,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("3b2d")),
+                var h = n(r("typeofHelper")),
                     a = n(r("af34")),
                     i = {
                         name: "HM-dragSort",
@@ -64685,7 +64685,7 @@
             }
         },
         e6db: function(e, t, r) {
-            var n = r("3b2d")["default"];
+            var n = r("typeofHelper")["default"];
             e.exports = function(e, t) {
                 if ("object" != n(e) || !e) return e;
                 var r = e[Symbol.toPrimitive];
@@ -64934,7 +64934,7 @@
                     value: !0
                 }), t.default = void 0;
                 var n = getApp(),
-                    h = r("3b77"),
+                    h = r("deviceCommandUtils "),
                     a = r("c4ce"),
                     i = {
                         data: function() {
@@ -66135,7 +66135,7 @@
                 var a = getApp(),
                     i = r("e458"),
                     c = r("c4ce"),
-                    o = r("3b77"),
+                    o = r("deviceCommandUtils "),
                     s = {
                         data: function() {
                             return {
