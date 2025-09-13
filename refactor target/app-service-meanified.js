@@ -1513,7 +1513,7 @@
                 },
                 a = []
         },
-        "0792": function(e, t) {
+        "fontGeometryUtils ": function(e, t) {
             function r(e, t, r) {
                 var n = {
                         x: e[0] - t[0],
@@ -2742,7 +2742,7 @@
                     s = r("720d"),
                     l = r("3315"),
                     p = r("095b"),
-                    d = r("0792"),
+                    d = r("fontGeometryUtils "),
                     b = {
                         data: function() {
                             var e = 0 | a.globalData.readData("text_fontIdex"),
@@ -25412,7 +25412,7 @@
                     s = r("720d"),
                     l = r("c4ce"),
                     p = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
-                    d = r("0792"),
+                    d = r("fontGeometryUtils "),
                     b = r("bbc7"),
                     g = [15, 5],
                     j = [20, 20],
@@ -45757,7 +45757,7 @@
             (function(t) {
                 var n = r("34cf"),
                     h = r("720d"),
-                    a = r("0792"),
+                    a = r("fontGeometryUtils "),
                     i = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"];
 
                 function c(e, t, r, n, h) {
