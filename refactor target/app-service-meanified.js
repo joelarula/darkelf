@@ -26897,7 +26897,7 @@
             "use strict";
             r.r(t);
             var n = r("slotWrapperRender"),
-                h = r("f48d");
+                h = r("uniPageMetaManagerExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -65265,7 +65265,7 @@
                 return o
             }))
         },
-        f48d: function(e, t, r) {
+        uniPageMetaManagerExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("uniPageMetaManager"),
