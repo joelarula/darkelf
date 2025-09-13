@@ -8568,7 +8568,7 @@
                     "7ece": "or5z,hzlV,hzHN,kD93,bsN1,c+Q1,66WP,8pOV,nGt3,nH8V,jSPp,gPfN,fhj1,nGzj,kDlF,il39,gPyx,fi89,ce5b,ceN1,8pV3,8qH9,g2A3,3Rk9",
                     "8bed": "oqV3,lnQN,hziH,hzyp,3QEp,9aH1,nGt3,nHc1,nGLP,dLUF,jSnb,jSYN,dMhF,dLBP,dMxh,3R1j,btjp,btUV,3RCV,5mHj,5ngV",
                     "71e5": "fgSP,jRX9,pbTr,dLsx,9Xgp,6TS9,4BgV,bsWj,8pS1,gOMr,kD99,nGCr,nH2F,kDKF,kDix,nGCx,ikG3,ikYV,ewPV,ewx9,ikG9,il6b,ilp1,exg1,ewZh,il6h,aIkX,aJdh,c/g3,3Rk9,5mxX,6Uox,aIN9,7FFF,68fh",
-                    "8bca": "oqV3,kC/N,hziH,hzyp,4Btp,9aH1,gOYX,loaF,pct1,lowx,hAD9,ce5b,il6h,8q2r,ex6F,3QX3,4B/N,67Sh,aJ71",
+                    "systemLanguageSelectorExportWrapper": "oqV3,kC/N,hziH,hzyp,4Btp,9aH1,gOYX,loaF,pct1,lowx,hAD9,ce5b,il6h,8q2r,ex6F,3QX3,4B/N,67Sh,aJ71",
                     "8bdb": "oqV3,lnQN,hziH,hzBx,4Btp,9XsV,ikJb,mVNx,jSqj,jS/V,fhfP,fi89,pcsX,3Rh1,67jP,9aQp,fhI1,9bjF,6V19",
                     "7f6a": "nGaj,nH5N,j67N,j5cp,nGap,nGt3,j5v9,j5QX,nGP1,hzR3,3QX9,fgVX,fhm9,ce23,cdIh,8ppP,8pV9,hA7P,3RdV,fhEP,fi51,ceJP,cekV,8qbP,8qH9",
                     9738: "3QQP,c+MV,7Fgz,7EAV,9al3,bsQ9,btmx,9aTx,9al9,gP3b,c+Wh,c+Ap,gOJp,fgSP,fhyF,3R1j,6UuN,9b0V,fhEV,fi1V,5ngV,3Rqp,9bpP,9b0V,cekP,ceJV,hA7P,hAqF,jSVz,jSCV,jSk3,jS1p,hzyj,hzR9,ikdX,m8n1,m9y1,ilp1,gP9r,orrx,oqRX,os11",
@@ -22216,7 +22216,7 @@
                                     var e = r("c4e5");
                                     return e
                                 }
-                                var t = r("8a07");
+                                var t = r("shapePatternTemplates");
                                 return t
                             },
                             sendCmd: function() {
@@ -27678,9 +27678,9 @@
             }(a);
             t["default"] = h.a
         },
-        "8a07": function(e, t) {
+        "shapePatternTemplates": function(e, t) {
             var r = [{
-                label: "\u76f4\u7ebf",
+                label: "Straight Line",
                 arr: [
                     [
                         [-400, 0, 0, 1],
@@ -29807,7 +29807,7 @@
                     ]
                 ]
             }, {
-                label: "\u5706\u5f27",
+                label: "Arc",
                 arr: [
                     [
                         [0, 400, 0, 1],
@@ -34799,7 +34799,7 @@
                     ]
                 ]
             }, {
-                label: "\u4eae\u70b9",
+                label: "Highlight",
                 arr: [
                     [
                         [-399, 0, 0, 1],
@@ -35874,7 +35874,7 @@
                     ]
                 ]
             }, {
-                label: "\u6253\u70b9",
+                label: "Dotting",
                 arr: [
                     [
                         [-400, 0, 0, 1],
@@ -36853,7 +36853,7 @@
                     ]
                 ]
             }, {
-                label: "\u5723\u8bde",
+                label: "Christmas",
                 arr: [
                     [
                         [-325, 56, 0, 1],
@@ -43795,10 +43795,10 @@
                     ]
                 ]
             }, {
-                label: "\u52a8\u753bA",
+                label: "Animation A",
                 arr: [0, 51]
             }, {
-                label: "\u52a8\u753bB",
+                label: "Animation B",
                 arr: [0, 14]
             }];
             e.exports = {
@@ -43819,7 +43819,7 @@
                 }
             }
         },
-        "8aa4": function(e, t, r) {
+        "deviceControlPageComponent": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -44190,7 +44190,7 @@
                 },
                 a = []
         },
-        "8bca": function(e, t, r) {
+        "systemLanguageSelectorExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("systemLanguageSelector"),
@@ -45184,7 +45184,7 @@
         "9c4f": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("8aa4"),
+            var n = r("deviceControlPageComponent"),
                 h = r("9cc2");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -45489,7 +45489,7 @@
             "use strict";
             r.r(t);
             var n = r("languageSelectorPageRender"),
-                h = r("8bca");
+                h = r("systemLanguageSelectorExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -58932,7 +58932,7 @@
                     ]
                 ]
             }, {
-                label: "\u4fdd\u7559",
+                label: "Reserved",
                 arr: []
             }, {
                 label: "\u52a8\u753bA",
@@ -60146,7 +60146,7 @@
                     "9e55": "drJj,oqRp,iXbH,iXn1,gbXr,gbMh,aIcb,aInx,3QzX,6Axh,lHkh,lHvx,5cPx,3QQV,9l0b,9kFN,5d9X,3RmF,3Rsh,6Bpx,dsSx,dsqp,lHMp,lI6V,gcyV,eQAh,iY9z,hAgF,orJz,lHMp,drOX,7Yf1,7Y3N,drDN,drP1",
                     "88c6": "lHez,oqX1,kj4H,kjwV,iXDV,c3KN,3QFz,gbGF,5cV3,5dwx,hAxx,hzW9,ePYP,dr+h,aInx,c4Zr,c4m9,orDX,hAb1,iYfb,lIcx,lHB3,kjNN",
                     "4ec3": "hziH,orbV,3QzX,iXn1,5cV3,3R5N,3Rbp,5da1,lHS1,lHpP,lIcx",
-                    "8a07": "hziH,or0F,lH8X,lIcx,5dwx,3RxV,3Rsh,5dfF,c3/z,c4IF,eQuz,ePNF,hztX,hAmh,kjI3,iXUN,6B2X,9kR1,9kjh,6Axh,6B31",
+                    "shapePatternTemplates": "hziH,or0F,lH8X,lIcx,5dwx,3RxV,3Rsh,5dfF,c3/z,c4IF,eQuz,ePNF,hztX,hAmh,kjI3,iXUN,6B2X,9kR1,9kjh,6Axh,6B31",
                     9649: "orpT,or+3,mYMj,izJB,h4jP,fDm7,fDgb,cFAJ,cEQH,5ksF,cFcL,5j+v,5kWV,bbH1,9Izj,9IFp,bbZ5,fDa5,iyZj,lv8B,or7R,oqLN,3QoN,izJv,h4BN,fE0j,fE6p",
                     5773: "iXyb,iXbN,7YeX,oqX1,9kjb,6AaN,6AZj,9kFN,7YSj,7YvV,hz/N,eQ2r,hzFh,n3u9,iX+j,iYqx,5dwx,3RxV,3Rsh,3Rbj,6B8F,orJF",
                     "835c": "n45r,n2SN,oryj,lHMp,lHpP,orbV,iXmX,aI11,aI6F,ds3V,gbAX,gc19,iX+j,c4xp,aIK1,aJ4x,dsSx,eQjj,hArV,3R03,aIt9,7Y3H,7Zix",
