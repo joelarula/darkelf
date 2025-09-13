@@ -2737,7 +2737,7 @@
                 var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
-                    c = r("c4ce"),
+                    c = r("bleDeviceControlUtils "),
                     o = r("handwritingCanvasHelper"),
                     s = r("handDrawFileManager"),
                     l = r("codePointAt"),
@@ -3783,7 +3783,7 @@
                     a = getApp(),
                     i = r("handDrawFileManager"),
                     c = r("deviceCommandUtils "),
-                    o = r("c4ce"),
+                    o = r("bleDeviceControlUtils "),
                     s = r("handDrawGeometryUtils "),
                     l = a.globalData.MaxSaveFileCount,
                     p = a.globalData.MaxListCount,
@@ -5161,7 +5161,7 @@
         "vueComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("c125"),
+            var n = r("HMDragSortRender"),
                 h = r("e0f0");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -19973,7 +19973,7 @@
                     a = n(r("uniPopupComponentExportWrapper")),
                     i = getApp(),
                     c = r("handDrawFileManager"),
-                    o = (r("deviceCommandUtils "), r("c4ce")),
+                    o = (r("deviceCommandUtils "), r("bleDeviceControlUtils ")),
                     s = r("handDrawGeometryUtils "),
                     l = {
                         data: function() {
@@ -20896,7 +20896,7 @@
                 c = n(r("viLocaleStrings ")),
                 o = n(r("e82e")),
                 s = n(r("deLocaleStrings")),
-                l = n(r("cb7c")),
+                l = n(r("itLocaleStrings")),
                 p = n(r("i18nStrings ")),
                 d = n(r("chineseLocaleStrings")),
                 b = {
@@ -20995,7 +20995,7 @@
                 var a = getApp(),
                     i = (r("codePointAt"), r("e458")),
                     c = r("deviceCommandUtils "),
-                    o = (r("handDrawFileManager"), r("c4ce")),
+                    o = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
                     s = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
                     l = {
                         data: function() {
@@ -21915,7 +21915,7 @@
                 var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
-                    c = r("c4ce"),
+                    c = r("bleDeviceControlUtils "),
                     o = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
                     s = {
                         data: function() {
@@ -22213,7 +22213,7 @@
                         methods: {
                             getPicArray: function() {
                                 if (this.features.ilda) {
-                                    var e = r("c4e5");
+                                    var e = r("lineShapes");
                                     return e
                                 }
                                 var t = r("shapePatternTemplates");
@@ -25410,7 +25410,7 @@
                     c = r("textLineVectorizer "),
                     o = r("deviceCommandUtils "),
                     s = r("handDrawFileManager"),
-                    l = r("c4ce"),
+                    l = r("bleDeviceControlUtils "),
                     p = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
                     d = r("fontGeometryUtils "),
                     b = r("handDrawGeometryUtils "),
@@ -45513,7 +45513,7 @@
                 }), t.default = void 0;
                 var n = getApp(),
                     h = r("deviceCommandUtils "),
-                    a = r("c4ce"),
+                    a = r("bleDeviceControlUtils "),
                     i = {
                         data: function() {
                             var e = n.globalData.getDeviceFeatures(),
@@ -46391,7 +46391,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        c125: function(e, t, r) {
+        HMDragSortRender: function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return n
@@ -46632,7 +46632,7 @@
                 },
                 h = []
         },
-        c4ce: function(e, t, r) {
+        bleDeviceControlUtils : function(e, t, r) {
             (function(t) {
                 var n = getApp(),
                     h = r("deviceCommandUtils ");
@@ -46994,9 +46994,9 @@
                 }
             }).call(this, r("f3b9")["default"])
         },
-        c4e5: function(e, t) {
+        lineShapes: function(e, t) {
             var r = [{
-                label: "\u76f4\u7ebf",
+                label: "Starigh Line",
                 arr: [
                     [
                         [-400, 0, 0, 2],
@@ -58959,10 +58959,10 @@
                 }
             }
         },
-        cb7c: function(e) {
+        itLocaleStrings: function(e) {
             e.exports = JSON.parse('{"\u8fde\u63a5\u84dd\u7259":"Connetti Bluetooth","\u968f\u673a\u64ad\u653e":"Casuale","\u5df2\u8fde\u63a5":"Connesso","\u672a\u8fde\u63a5":"Non Connesso","\u6237\u5916\u64ad\u653e":"All\'aperto","\u6b63\u5728\u8bfb\u53d6\u8bbe\u5907\u53c2\u6570...":"Lettura Parametri Dispositivo","\u8bfb\u8bbe\u5907\u53c2\u6570\u5931\u8d25":"Errore nella Lettura dei Parametri del Dispositivo","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Ricarica Lista","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Cerca / Ferma","\u641c\u7d22\u84dd\u7259\u8bbe\u5907":"Cerca Dispositivi Bluetooth","\u5df2\u53d1\u73b0":"Trovato","\u7ea2":"Rosso","\u7eff":"Verde","\u84dd":"Blu","\u9ec4":"Giallo","\u9752":"Ciano","\u7d2b":"Viola","\u767d":"Bianco","\u8df3\u53d8":"Salto","\u5168\u5f69":"RGB","\u64ad\u653e\u6a21\u5f0f":"Gioca","\u81ea\u8d70":"Automatico","\u58f0\u63a7":"Musica","\u81ea\u8d70\u901f\u5ea6":"Velocit\xe0","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensibilit\xe0","\u56fe\u6848\u989c\u8272":"Pattern","\u5f53\u524d\u989c\u8272":"Attuale","\u5faa\u73af\u64ad\u653e":"Loop","\u52fe\u9009\u64ad\u653e":"Nomina","\u5730\u5740\u7801":"Indirizzo","\u663e\u793a\u8303\u56f4":"Intervallo","\u56fe\u6848\u76f8\u4f4d":"Fase","\u6b63\u5e38\u663e\u793a":"Normale","XY\u4e92\u6362":"Scambio XY","\u8c03\u5149\u8bbe\u7f6e":"Impostazioni Dimming","\u7ea2\u5149\u8c03\u5149":"Rosso","\u7eff\u5149\u8c03\u5149":"Verde","\u84dd\u5149\u8c03\u5149":"Blu","\u6fc0\u5149\u5149\u6e90":"Laser","\u5355\u8272":"Semp.","\u53cc\u8272":"Molti","\u8c03\u5236\u6a21\u5f0f":"Pattern","\u7cfb\u7edf\u8bed\u8a00":"Lingua","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Lettura dei Font","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"Generazione...","\u6587\u672c\u989c\u8272":"Colore del Testo","\u6587\u5b57\u5927\u5c0f":"Dimensione","\u663e\u793a\u89c6\u8ddd":"Distanza","\u6d41\u6c34\u901f\u5ea6":"Flusso","\u6295\u5c04\u65b9\u5411":"Direzione","\u6c34\u5e73\u6295\u5c04":"Orizzontale","\u5782\u76f4\u6295\u5c04":"Verticale","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"Punti Massimi","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Le Parti Eccedenti Saranno Perse","\u7ebf\u6761\u989c\u8272":"Colore della Linea","\u6e05\u7a7a":"Svuota","\u56de\u9000":"Indietro","\u53d1\u9001":"Invia","\u6700\u591a20\u4e2a\u573a\u666f":"Fino a 20 Scene","\u63d0\u793a":"Messaggio","\u662f\u5426\u5220\u9664\u573a\u666f":"Vuoi Cancellare la Scena","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"L\'utente ha cliccato su Annulla","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"--La lista delle scene \xe8 vuota--","\u573a\u666f":"Scena","\u79d2":"Sec","\u5220\u9664":"Cancella","\u7f16\u8f91":"Modifica","\u65b0\u589e\u573a\u666f":"Crea Nuova Scena","\u56fe\u6848\u9009\u62e9":"Pattern","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Lineare","\u5706\u5f27\u7c7b\u56fe\u6848":"Arco Circolare","\u4eae\u70b9\u56fe\u6848":"Evidenzia","\u6253\u70b9\u56fe\u6848":"Punti","\u5723\u8bde\u56fe\u6848":"Natale","\u52a8\u753b\u7ec4\u522b1":"Animazione 1","\u52a8\u753b\u7ec4\u522b2":"Animazione 2","\u52a8\u753b\u7ec4\u522b3":"Animazione 3","\u52a8\u753b\u7ec4\u522b4":"Animazione 4","\u52a8\u753b\u7ec4\u522b5":"Animazione 5","\u767d\u8272":"Bianco","\u7ea2\u8272":"Rosso","\u84dd\u8272":"Blu","\u7c89\u8272":"Rosa","\u9752\u8272":"Ciano","\u9ec4\u8272":"Giallo","\u7eff\u8272":"Verde","\u6574\u4f53\u989c\u8272\u6362\u8272":"Totale","\u4e03\u5f69\u8679\u989c\u8272":"Arcobaleno","2\u5206\u6bb5\u989c\u8272":"2 Segmenti","3\u5206\u6bb5\u989c\u8272":"3 Segmenti","4\u5206\u6bb5\u989c\u8272":"4 Segmenti","8\u5206\u6bb5\u989c\u8272":"8 Segmenti","16\u5206\u6bb5\u989c\u8272":"16 Segmenti","32\u5206\u6bb5\u989c\u8272":"32 Segmenti","\u989c\u8272\u6e10\u7ed8":"Gradiente di Colore","\u4e0d\u6d41\u6c34":"Nessun Flusso","\u6b63\u5411\u6d41\u6c34":"Flusso Avanti","\u53cd\u5411\u6d41\u6c34":"Flusso Indietro","\u56fe\u6848\u5927\u5c0f":"Dimensione","\u7f29\u653e\u624b\u52a8\u9009\u62e9":"Zoom Manuale","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Espandi","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"Stretto","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Zoom Ciclico","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Zoom Regola 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Zoom Regola 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Zoom Regola 3","\u65cb\u8f6c\u89d2\u5ea6":"Angolo","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Velocit\xe0 Positiva","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Velocit\xe0 Inversa","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"Posizione H","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"Velocit\xe0 H","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"Posizione V","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"Velocit\xe0 V","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"Rot. Ori.","\u6c34\u5e73\u79fb\u52a8":"M Ori.","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"Rot. Ver.","\u5782\u76f4\u79fb\u52a8":"M Ver.","\u65e0\u6ce2\u6d6a":"Nessuna Onda","\u6ce2\u6d6a\u5e45\u5ea61":"Onda 1","\u6ce2\u6d6a\u5e45\u5ea62":"Onda 2","\u6ce2\u6d6a\u5e45\u5ea63":"Onda 3","\u6ce2\u6d6a\u5e45\u5ea64":"Onda 4","\u6ce2\u6d6a\u5e45\u5ea65":"Onda 5","\u6ce2\u6d6a\u5e45\u5ea66":"Onda 6","\u6ce2\u6d6a\u5e45\u5ea67":"Onda 7","\u6ce2\u6d6a\u5e45\u5ea68":"Onda 8","\u65e0\u6e10\u7ed8":"Nessun Gradiente","\u624b\u52a8\u6e10\u7ed81":"Manuale 1","\u624b\u52a8\u6e10\u7ed82":"Manuale 2","\u81ea\u52a8\u6e10\u7ed81":"Auto 1","\u81ea\u52a8\u6e10\u7ed82":"Auto 2","\u81ea\u52a8\u6e10\u7ed83":"Auto 3","\u81ea\u52a8\u6e10\u7ed84":"Auto 4","\u56fe\u5f62\u5206\u7ec4":"Gruppo","\u56fe\u5f62":"Grafico","\u989c\u8272":"Colore","\u989c\u8272\u6d41\u6c34":"Flusso","\u56fe\u5f62\u5927\u5c0f":"Dimen.","\u56fe\u5f62\u7f29\u653e":"Zoom","\u56fe\u5f62\u65cb\u8f6c":"Ruota","\u6c34\u5e73\u7ffb\u8f6c":"Flip Ori.","\u5782\u76f4\u7ffb\u8f6c":"Flip Ver.","\u6ce2\u6d6a":"Onda","\u6e10\u7ed8":"Graduale","\u64ad\u653e\u65f6\u957f":"Tempo","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Caricamento...","\u53d6\u6d88":"Annu.","\u786e\u5b9a":"Conferma","\u9009\u62e9\u56fe\u5f62":"Seleziona","\u901a\u9053\u590d\u4f4d":"Reset","\u5b8b\u4f53":"Songt","\u76f4\u7ebf":"Linea","\u5706\u5f27":"Arco","\u4eae\u70b9":"Punto","\u6253\u70b9":"Gestione","\u5723\u8bde":"Natale","\u52a8\u753bA":"AnimA","\u52a8\u753bB":"AnimB","\u5f69\u8679":"Arco.","\u9ed8\u8ba4":"Default","\u8f6f\u4ef6\u7248\u672c":"Versione","\u8fde\u63a5":"Collegare","\u8bbe\u7f6e":"Impostazioni","\u624b\u7ed8\u6d82\u9e26":"Disegnato","\u6587\u672c\u64ad\u653e":"Testo","\u4e2a\u6027\u7f16\u7a0b":"Programma","\u52a8\u753b\u64ad\u653e":"Animazione","\u7ebf\u6761\u64ad\u653e":"Linea","\u5723\u8bde\u64ad\u653e":"Natale","DMX":"DMX","\u914d\u7f6e":"Config","\u8fd4\u56de":"Indietro","\u70b9\u6211\u8fde\u63a5":"Clicca per connettere","\u84dd\u7259\u672a\u8fde\u63a5":"Non connesso","\u8bbe\u5907":"Stato","\u8bf7\u8f93\u5165\u6587\u5b57":"Inserisci testo","\u9884\u7559\u65e0\u529f\u80fd":"Riservato","\u91cd\u7f6e":"Ripristina","\u84dd\u7259\u8fde\u63a5":"Connessione Bluetooth","\u5168\u9009":"Intero","\u53cd\u9009":"Inverso","\u6e05\u9664":"vuoto","\u5b57\u6570":"Testo","\u70b9\u6570":"Punto","\u9884\u89c8":"Anteprima","\u573a\u666f\u7ba1\u7406":"Gestione scena","\u52a0\u8f7d\u4e2d":"Caricamento","\u573a\u666f\u7f16\u8f91":"Modifica scena","\u8bf7\u5148\u8fde\u63a5\u84dd\u7259":"Si prega di connettere il Bluetooth prima","\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b":"Il dispositivo corrente non \xe8 riconosciuto","DMX\u5730\u5740\u7801":"Indirizzo DMX","\u8bf7\u5148\u6253\u5f00\u8bbe\u5907":"Accendere prima il dispositivo","\u5355\u7ebf\u5b57\u4f53":"Semplice","\u6b63\u5728\u53d1\u9001":"Invio in corso","\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528":"Controlla se il Bluetooth \xe8 abilitato sul tuo telefono","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"Questo font non supporta la visualizzazione in cinese","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"A causa di limitazioni di capacit\xe0, alcuni caratteri cinesi non sono inclusi nella libreria di caratteri. Per una libreria di caratteri completa, vai alla versione dell\'APP","\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Imposta i permessi di posizione per l\'app","\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650":"Imposta i permessi Bluetooth per il mini programma","\u8bfb\u8bbe\u5907\u53c2\u6570\u5f02\u5e38":"Lettura parametri dispositivo anomala","\u9009\u62e9":"Seleziona","\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247":"Imposta immagine di sfondo","\u53d1\u9001\u5931\u8d25":"Invio fallito","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"La lunghezza del testo ha superato i 100 caratteri, per favore reinserisci","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"Il numero di punti di coordinate del testo ha superato i 2048, per favore reinserisci","\u7b2c":"N.","\u7ec4\u6587\u5b57":"Gruppo","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Per favore modifica il carattere o il testo e riprova","\u4e0d\u652f\u6301\u6587\u672c":"Non supportato","\u7ec4\u5b57\u4f53":"Carattere del gruppo","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":"Nessun testo nel gruppo, per favore inserisci prima di inviare","\u662f\u5426\u5220\u9664\u7b2c":"Eliminare N.","\u7ec4":"Gruppo","\u6700\u591a4\u4e2a\u5206\u7ec4":"Fino a 4 gruppi","\u6b63\u5728\u8fde\u63a5...":"Connessione in corso...","\u8fde\u63a5\u5931\u8d25":"Connessione fallita","\u5b57\u4f53\u9009\u62e9":"Seleziona carattere","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans1","\u601d\u6e90\u9ed1\u4f532":"NotoSans2","\u601d\u6e90\u9ed1\u4f533":"NotoSans3","\u601d\u6e90\u9ed1\u4f534":"NotoSans4","\u601d\u6e90\u9ed1\u4f535":"NotoSans5","\u601d\u6e90\u9ed1\u4f536":"NotoSans6","\u601d\u6e90\u9ed1\u4f537":"NotoSans7","font_note_1001":"Cinese, Inglese, Spagnolo, Portoghese, Tedesco, Francese","font_note_1002":"Inglese, Spagnolo, Russo, Portoghese, Tedesco, Francese, Vietnamita, Hindi, Bengali","font_note_1003":"Inglese, Cinese, Spagnolo, Russo, Portoghese, Giapponese, Tedesco","font_note_1004":"Cinese, Inglese, Spagnolo, Portoghese, Tedesco, Francese","font_note_1005":"Inglese, Cinese","font_note_1006":"Inglese, Giapponese, Coreano","font_note_1007":"Arabo","\u4fdd\u7559":"Riservato","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Colore iniziale","\u6df7\u8272":"Mescolanza","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Raccomandato, migliore performance","\u5df2\u65ad\u5f00\u8fde\u63a5":"Disconnesso","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"Inserisci un valore compreso tra 1 e 255","\u6587\u5b57\u7cbe\u5ea6":"Effetti testo","\u6587\u672c\u56fe\u5f62\u7cbe\u5ea6":"Effetti","\u7cbe\u5ea6":"Effetti","\u9009\u62e9\u56fe\u7247":"Scelta","\u8bbe\u4e3a\u80cc\u666f":"Sfondo","\u8bc6\u522b\u56fe\u6848":"Leggere","\u63cf\u8fb9":"Contorno","\u6b63\u5728\u5904\u7406\u4e2d":"In elaborazione","\u5f53\u524d\u673a\u578b":"Modello","hand_draw_tips":" ** Per favore scorri dall\'area vuota verso il pattern di destinazione per selezionare.\\n ** Puoi eseguire operazioni come ingrandire, ridurre, spostare, cambiare colore ed eliminare sul pattern selezionato.","\u4e0d\u518d\u63d0\u793a":"Non mostrare mai pi\xf9","out_door_tips1":"1-30 Landmark","out_door_tips2":"31-40 Aurora Boreale","out_door_tips3":"41-50 Tunnel del tempo","\u6587\u4ef6\u540d":"Nome del file","\u4fdd\u5b58\u6587\u4ef6":"Salva file","\u9009\u62e9\u6587\u4ef6":"Seleziona file","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Nome del file","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Nuovo nome del file","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Il nome del file non pu\xf2 essere vuoto","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"Il file esiste gi\xe0, per favore reinserisci","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"Il file esiste gi\xe0, continuare?","\u4fdd\u5b58\u6210\u529f":"Salvataggio riuscito","\u4fdd\u5b58\u5931\u8d25":"Salvataggio fallito","\u4fee\u6539\u6210\u529f":"Modifica riuscita","\u4fee\u6539\u5931\u8d25":"Modifica fallita","\u5220\u9664\u6210\u529f":"Eliminazione riuscita","\u5220\u9664\u5931\u8d25":"Eliminazione fallita","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"Il modello corrente non lo supporta","text_time_range":"Intervallo 1-25,5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"Riconoscimento fallito","\u8bf7\u9009\u62e9\u6587\u4ef6":"Per favore seleziona un file","\u6587\u4ef6\u6570":"File","\u53e6\u5b58\u6587\u4ef6":"Salva come","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Elimina i file selezionati","Select-File":"Sele.","\u6447\u5934\u8bbe\u7f6e":"Impostazioni movimento","\u6447\u5934\u6a21\u5f0f":"Modalit\xe0","\u6447\u5934\u76f8\u4f4d":"Fase","\u81ea\u52a8":"Automatico","\u624b\u52a8":"Manuale","X\u7c97\u8c03":"Grossa X","X\u7ec6\u8c03":"Fine X","Y\u7c97\u8c03":"Grossa Y","Y\u7ec6\u8c03":"Fine Y","\u6c34\u5e73\u7535\u673a":"Moto. O","\u6c34\u5e73\u5fae\u8c03":"Rego. O","\u5782\u76f4\u7535\u673a":"Moto. V","\u5782\u76f4\u5fae\u8c03":"Rego. V","\u7535\u673a\u901f\u5ea6":"Velocit\xe0","\u6d41\u6c34\u65b9\u5411":"Direzione","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabo","\u9ed8\u8ba4\u65b9\u5411":"Default","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Salva nella cartella","\u9009\u62e9\u5217\u8868":"Lista","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Nome del gruppo","\u64ad\u653e\u5217\u8868":"Playlist","\u4fdd\u5b58":"Salva","\u6dfb\u52a0":"Aggiungi","\u6279\u91cf\u8bbe\u7f6e":"A lotti","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Nome della lista","ALL":"Tutti","\u5217\u8868\u7f16\u8f91":"Modifica lista","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Inserisci un numero tra 0.1 e 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Nuova lista","\u7acb\u5373\u64ad\u653e":"Riproduci","\u76f8\u5e94\u7684\u64ad\u653e\u5217\u8868\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"La playlist corrispondente verr\xe0 eliminata, continuare","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- Lista vuota --"}')
         },
-        cbd5: function(e, t, r) {
+        bleAutoTestPageComponentSfcExport: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("deviceTestingPageComponent"),
@@ -62242,7 +62242,7 @@
                 var h = n(r("uniPopupComponentExportWrapper")),
                     a = getApp(),
                     i = r("deviceCommandUtils "),
-                    c = r("c4ce"),
+                    c = r("bleDeviceControlUtils "),
                     o = (r("e458"), {
                         data: function() {
                             var e = a.globalData.getDeviceFeatures();
@@ -63028,7 +63028,7 @@
                 var c = getApp(),
                     o = r("handDrawFileManager"),
                     s = r("deviceCommandUtils "),
-                    l = r("c4ce"),
+                    l = r("bleDeviceControlUtils "),
                     p = r("handDrawGeometryUtils "),
                     d = c.globalData.MaxSaveFileCount,
                     b = c.globalData.MaxListCount,
@@ -64935,7 +64935,7 @@
                 }), t.default = void 0;
                 var n = getApp(),
                     h = r("deviceCommandUtils "),
-                    a = r("c4ce"),
+                    a = r("bleDeviceControlUtils "),
                     i = {
                         data: function() {
                             var e = n.globalData.getDeviceFeatures(),
@@ -66134,7 +66134,7 @@
                 }), t.default = void 0;
                 var a = getApp(),
                     i = r("e458"),
-                    c = r("c4ce"),
+                    c = r("bleDeviceControlUtils "),
                     o = r("deviceCommandUtils "),
                     s = {
                         data: function() {
@@ -66387,7 +66387,7 @@
             })), __definePage("pages/setuuid/setuuid", (function() {
                 return Vue.extend(r("deviceModeAndVersionSelectorPageComponentExportWrapper").default)
             })), __definePage("pages/test/test", (function() {
-                return Vue.extend(r("cbd5").default)
+                return Vue.extend(r("").default)
             })), __definePage("pages/lang/lang", (function() {
                 return Vue.extend(r("languageSelectorPageComponentExportWrapper").default)
             })), __definePage("pages/subset/subset", (function() {
