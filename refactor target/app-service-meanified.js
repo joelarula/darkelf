@@ -24558,7 +24558,7 @@
                 picArray: r
             }
         },
-        "5a85": function(e, t, r) {
+        "deviceModeAndVersionSelectorPage": function(e, t, r) {
             "use strict";
             (function(e) {
                 Object.defineProperty(t, "__esModule", {
@@ -44363,7 +44363,7 @@
         "8e17": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("5a85"),
+            var n = r("deviceModeAndVersionSelectorPage"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
