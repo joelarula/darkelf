@@ -4053,7 +4053,7 @@
                  */
                 var h = n("base64js"),
                     a = n("ba37"),
-                    i = n("b0e4");
+                    i = n("isArrayPolyfill");
 
                 function c() {
                     return s.TYPED_ARRAY_SUPPORT ? 2147483647 : 1073741823
@@ -45499,13 +45499,13 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        b0e4: function(e, t) {
+        isArrayPolyfill: function(e, t) {
             var r = {}.toString;
             e.exports = Array.isArray || function(e) {
                 return "[object Array]" == r.call(e)
             }
         },
-        b520: function(e, t, r) {
+        sceneManagerPageComponent: function(e, t, r) {
             "use strict";
             (function(e) {
                 Object.defineProperty(t, "__esModule", {
@@ -45665,7 +45665,7 @@
                 t.default = i
             }).call(this, r("f3b9")["default"])
         },
-        b6aa: function(e, t, r) {
+        deviceModeAndVersionSelectorPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("deviceModeAndVersionSelectorRender"),
@@ -65294,7 +65294,7 @@
         fba0: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("b520"),
+            var n = r("sceneManagerPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -66385,7 +66385,7 @@
             })), __definePage("pages/cnn/cnn", (function() {
                 return Vue.extend(r("drawFontsComponentExportWrapper").default)
             })), __definePage("pages/setuuid/setuuid", (function() {
-                return Vue.extend(r("b6aa").default)
+                return Vue.extend(r("deviceModeAndVersionSelectorPageComponentExportWrapper").default)
             })), __definePage("pages/test/test", (function() {
                 return Vue.extend(r("cbd5").default)
             })), __definePage("pages/lang/lang", (function() {
