@@ -1630,7 +1630,7 @@
         "textLineVectorizer ": function(e, t, r) {
             (function(t) {
                 var n = r("spreadToArrayHelper"),
-                    h = r("af34"),
+                    h = r("arrayConversionHelper"),
                     a = r("arabicPresentationFormsConverter");
 
                 function i(e, t, r, n) {
@@ -5406,7 +5406,7 @@
                 Object.defineProperty(r, "__esModule", {
                     value: !0
                 }), r.default = void 0;
-                var a = h(n("af34")),
+                var a = h(n("arrayConversionHelper")),
                     i = h(n("typeofHelper")),
                     c = h(n("defineOrAssignPropertyHelper")),
                     o = n("vueAnimationManager");
@@ -19969,7 +19969,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var h = n(r("af34")),
+                var h = n(r("arrayConversionHelper")),
                     a = n(r("uniPopupComponentExportWrapper")),
                     i = getApp(),
                     c = r("handDrawFileManager"),
@@ -20421,7 +20421,7 @@
         },
         "deviceCommandUtils ": function(e, t, r) {
             (function(t) {
-                var n = r("af34");
+                var n = r("arrayConversionHelper");
 
                 function h(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
@@ -45476,7 +45476,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        af34: function(e, t, r) {
+        arrayConversionHelper: function(e, t, r) {
             var n = r("arrayToArrayLikeHelper"),
                 h = r("b893"),
                 a = r("toConsumableArrayHelper"),
@@ -45485,7 +45485,7 @@
                 return n(e) || h(e) || a(e) || i()
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        aff7: function(e, t, r) {
+        languageSelectorPageComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("languageSelectorPageRender"),
@@ -58978,7 +58978,7 @@
         },
         cefd: function(e, t, r) {
             (function(t) {
-                var n = r("af34"),
+                var n = r("arrayConversionHelper"),
                     h = r("spreadToArrayHelper");
 
                 function a(e, t) {
@@ -64002,7 +64002,7 @@
                     value: !0
                 }), t.default = void 0;
                 var h = n(r("typeofHelper")),
-                    a = n(r("af34")),
+                    a = n(r("arrayConversionHelper")),
                     i = {
                         name: "HM-dragSort",
                         data: function() {
@@ -66389,7 +66389,7 @@
             })), __definePage("pages/test/test", (function() {
                 return Vue.extend(r("cbd5").default)
             })), __definePage("pages/lang/lang", (function() {
-                return Vue.extend(r("aff7").default)
+                return Vue.extend(r("languageSelectorPageComponentExportWrapper").default)
             })), __definePage("pages/subset/subset", (function() {
                 return Vue.extend(r("featurePageComponentExportWrapper").default)
             })), __definePage("sub/pages/text/text", (function() {
