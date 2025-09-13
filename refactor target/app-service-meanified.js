@@ -23897,7 +23897,7 @@
                 },
                 a = []
         },
-        "531a": function(e, t, r) {
+        "systemLanguageSelector": function(e, t, r) {
             "use strict";
             (function(e) {
                 Object.defineProperty(t, "__esModule", {
@@ -23932,10 +23932,10 @@
                 t.default = n
             }).call(this, r("f3b9")["default"])
         },
-        "56d8": function(e, t, r) {
+        "arrowUpImagePath": function(e, t, r) {
             e.exports = r.p + "static/imgs/arrow-up.png"
         },
-        5945: function(e, t) {
+        "picArrayShapes": function(e, t) {
             var r = [
                 [
                     [-400, 0, 0, 1],
@@ -25797,7 +25797,7 @@
                             }
                         },
                         onLoad: function() {
-                            var e = r("5945");
+                            var e = r("picArrayShapes");
                             this.objCount = e.picArray.length;
                             var t = r("fontRegistryModule ");
                             this.fontNameList = t.getFontNameList();
@@ -25937,7 +25937,7 @@
                                 this.resetSelectMode();
                                 var t = e.currentTarget.dataset.tag;
                                 if (9999 == t && this.textToLeft && (this.textToLeft = !1, this.refreshTextPoints(0)), 9998 == t && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), t = 9999), t >= 0 && t < 9999) {
-                                    var n = r("5945"),
+                                    var n = r("picArrayShapes"),
                                         h = n.picArray;
                                     this.obj = c.dealObjLines(h[t], !1)
                                 }
@@ -44193,7 +44193,7 @@
         "8bca": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("531a"),
+            var n = r("systemLanguageSelector"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -61031,7 +61031,7 @@
                     9503: "gbpH,or0F,kjwP,kjg1,gbAX,gbRV,aIhP,aHRN,c4Zr,c4gx,7YH3,7ZcV,3RDr,3QWx,c4CX,3Rh1,gbGz,3QFF,6ACV,lHGH,lI1h,gcth,gc6N,lHGN",
                     "74e0": "or0z,kjlF,gbpN,kjlz,gbXx,lGZH,lHpV,gbMb,gbB1,drDH,ds9x,dr+b,9k2p,9koV,6ACV,3QFF,5ct1,3QWr,5cV9,lHB9,n3/V,lHXz,dsBF,3RDx,5dlb,6B8F,5da1,5d4p,kjTp",
                     "764d": "n3Fj,orsN,lIcr,lH91,6Am1,3QoN,5cJP,5cyF,aI6z,aIhV,gbRP,gbGF,gchX,gc19,gcEr,gcth,aIVb,aJ4x,5dlb,5dqV,5dwx,gcyP,5dqV,hA5j,iXUN,gccj,7YSp,3QWx,3RgX,7YH9,dsf9,gbMb,5cEh,c3KH,ePI1,kj4H,hzop",
-                    "531a": "q2J7,q1ih,5qXh,5smd",
+                    "systemLanguageSelector": "q2J7,q1ih,5qXh,5smd",
                     "50a5": "iXbH,or0F,3QzX,kjg1,3QQP,9kFN,c4rN,c4CX,5da1,3RmF,3RDx,5dwx,hArP,kkjx,kjwV,hzFh,oryj,kjTp,lHXz,n3Wh,n3or,lHB9,c4gr,gbXx,gcth,c4Oh,c4gx",
                     "8c16": "kjfX,n2Yp,gbpH,gbB1,5ct1,7Yqh,3QLb,9kFN,hA5p,iY9z,lI1h,iXP3,kjCx,kjTj,iY41,orPb,lHpV,hzKP,hArV,eQLr,ePTh,c4rH,c4TV,9l0h,3R5N,3R09,9kFH,5dfF,3RxV,3RDx",
                     "755a": "mXQ3,pWrH,mYAb,mXK3,orH/,lvON,cEmr,lvkD,iA5z,iyNh,cFGP,izJB,5kgD,e8et,9Izd,9JvD,e8Ix,5kKT,5jOz,e7Mj,e8ID",
@@ -65377,7 +65377,7 @@
                         }
                     }) : e._e(), e._$s(15, "i", !e.sortFileDown) ? n("image", {
                         attrs: {
-                            src: e._$s(15, "a-src", r("56d8")),
+                            src: e._$s(15, "a-src", r("arrowUpImagePath")),
                             _i: 15
                         },
                         on: {
