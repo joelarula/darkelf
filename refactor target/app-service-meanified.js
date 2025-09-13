@@ -2692,7 +2692,7 @@
             r("ff59");
             var a = n(r("eeae")),
                 i = n(r("languagePacks")),
-                c = n(r("951c")),
+                c = n(r("vueInstanceExport")),
                 o = n(r("vueI18nPlugin"));
 
             function s(e, t) {
@@ -4772,7 +4772,7 @@
         "interop": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("ab96"),
+            var n = r("fontSelectorPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -5177,7 +5177,7 @@
             "use strict";
             r.r(t);
             var n = r("e745"),
-                h = r("9d65");
+                h = r("playListManagerComponentExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -7998,7 +7998,7 @@
                     "4e25": "nG0X,nHc1,lnEb,ikzV,nGwb,gP3h,nGLP,gPiV,il6b,m9rN,gPKX,gOJp,bsWp,9aoh,5m5V",
                     8681: "bsMX,kCJ1,kD99,dLI9,dLg1,pbWz,8pIF,6TLP,9XCh,cd+X,7Fdx,orxH,kDBh,kDir,ewMN,9bah,6UQF,4Cy9,3QTX,67CF,9bah,ceAx,g2MF,m9rN",
                     9149: "nFZP,nHf9,3QBb,j59h,j67N,3RzN,cdRz,ewu1,gP09,nGt9,nGIH,fhBN,ewPV,dM21,dMkN,9Xdb,9YbN,5mfb,5ndN",
-                    "97f5": "or2r,m8IV,lnxX,lo7x,jR+b,hzBx,g24P,jSk9,g1HP,g2nF,3QBb,c+xh,c+Wh,5mEh,5mfh,9aob,9aNh,hz+r,orH9,kDrP,kDU1,6891,5nk1,3Rqp,gPiP,ex0p,9aWz,c/sF",
+                    "bluetoothConnectPageComponent": "or2r,m8IV,lnxX,lo7x,jR+b,hzBx,g24P,jSk9,g1HP,g2nF,3QBb,c+xh,c+Wh,5mEh,5mfh,9aob,9aNh,hz+r,orH9,kDrP,kDU1,6891,5nk1,3Rqp,gPiP,ex0p,9aWz,c/sF",
                     "969c": "3QuX,oqS1,orbV,hzyp,ewnN,bt6V,9Xgp,pcmH,mW19,mVAX,mWjV,m8Vj,j5KN,j5U3,m9lx,j5lH,j6h9,g2eb,g2MF,aIZF,aIrh,g2eh,dLLb,dMhF,7EWH,7FVh,aIJX,3Rh1",
                     "7a92": "pcab,mVTN,ikdX,lny1,loJ1,ilp1,hzyj,jSk9,kDoH,hAqF,g2VX,g1L1,g2eb,bsWp,ceAx,ewSX,btRN,8pCj,8qxN,btmr,4BVx,4BgP,4Cy9",
                     "7d2b": "nGaj,hzyp,gOzX,j5HF,oreX,ikD1,m8LX,m8/F,pcpP,ikYV,hAb1,hAA1,jT69,kDrP,mWjV,hzXj,dLvF,dLUF,g2Db,9Xgp,aIWx,c/jb,9bpV,5mc3,8pOV,9XLz,5mNF,3QX9,9b73,5nk1",
@@ -26896,7 +26896,7 @@
         "pageMetaComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("ac2c"),
+            var n = r("slotWrapperRender"),
                 h = r("f48d");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -27554,7 +27554,7 @@
                         }
                     }), n("image", {
                         attrs: {
-                            src: e._$s(70, "a-src", r("abb8")),
+                            src: e._$s(70, "a-src", r("arrowUpPng")),
                             _i: 70
                         }
                     })]) : e._e(), e._$s(71, "i", e.features.textUpDown) ? n("label", {
@@ -44387,7 +44387,7 @@
                 return n
             }));
             var n = {
-                    uniTransition: r("ae26").default
+                    uniTransition: r("animatedViewComponentExportWrapper").default
                 },
                 h = function() {
                     var e = this,
@@ -44462,7 +44462,7 @@
             }(a);
             t["default"] = h.a
         },
-        "951c": function(e, t) {
+        "vueInstanceExport": function(e, t) {
             e.exports = Vue
         },
         "imageToVectorLinesPageComponent": function(e, t, r) {
@@ -44880,7 +44880,7 @@
                 t.default = c
             }).call(this, r("f3b9")["default"])
         },
-        "97f5": function(e, t, r) {
+        "bluetoothConnectPageComponent": function(e, t, r) {
             "use strict";
             (function(e) {
                 var n = r("esModuleInteropHelper");
@@ -45104,7 +45104,7 @@
                 t.default = i
             }).call(this, r("f3b9")["default"])
         },
-        "9b0f": function(e, t, r) {
+        "deviceModeAndVersionSelectorRender": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return n
@@ -45181,11 +45181,11 @@
                 },
                 h = []
         },
-        "9c4f": function(e, t, r) {
+        "deviceControlPageComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("deviceControlPageComponent"),
-                h = r("9cc2");
+                h = r("mainPageComponentExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -45195,7 +45195,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        "9cc2": function(e, t, r) {
+        "mainPageComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("mainPageComponent"),
@@ -45207,7 +45207,7 @@
             }(a);
             t["default"] = h.a
         },
-        "9d65": function(e, t, r) {
+        "playListManagerComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("playListManagerComponent "),
@@ -45219,7 +45219,7 @@
             }(a);
             t["default"] = h.a
         },
-        a3bc: function(e, t, r) {
+        d902ComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("d3b8"),
@@ -45233,7 +45233,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        a6a2: function(e, t, r) {
+        imageToVectorLinesPageRender: function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -45400,13 +45400,13 @@
                 },
                 a = []
         },
-        a708: function(e, t, r) {
+        arrayToArrayLikeHelper: function(e, t, r) {
             var n = r("arrayLikeToArrayHelper");
             e.exports = function(e) {
                 if (Array.isArray(e)) return n(e)
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        ab96: function(e, t, r) {
+        fontSelectorPageComponent: function(e, t, r) {
             "use strict";
             Object.defineProperty(t, "__esModule", {
                 value: !0
@@ -45443,10 +45443,10 @@
                 };
             t.default = a
         },
-        abb8: function(e, t, r) {
+        arrowUpPng: function(e, t, r) {
             e.exports = r.p + "static/imgs/text/arrow-up.png"
         },
-        ac2c: function(e, t, r) {
+        slotWrapperRender: function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return n
@@ -45462,7 +45462,7 @@
                 },
                 h = []
         },
-        ae26: function(e, t, r) {
+        animatedViewComponentExportWrapper: function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("uniAnimatedViewRender"),
@@ -45477,7 +45477,7 @@
             t["default"] = c.exports
         },
         af34: function(e, t, r) {
-            var n = r("a708"),
+            var n = r("arrayToArrayLikeHelper"),
                 h = r("b893"),
                 a = r("toConsumableArrayHelper"),
                 i = r("nonIterableSpreadErrorHelper");
@@ -45668,7 +45668,7 @@
         b6aa: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("9b0f"),
+            var n = r("deviceModeAndVersionSelectorRender"),
                 h = r("deviceModeAndVersionSelectorPageExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -60845,7 +60845,7 @@
                     "9c9a": "iXbH,oqX1,lH8X,lHpV,hzzF,9kdF,drJj,ds3V,6ACP,5chN,3R03,6AZp,c4xp,3Rsb,c4Oh,dsSr,dsMV,hA5p,dsf3,dskN,gci1,kkjx,kjI9,orDX,lHXF,9koP,hzKV,hzop,9k2p,9koV",
                     "9ccb": "iXbH,oqX1,lH8X,lHpV,hzzF,9kdF,drJj,ds3V,6ACP,5chN,3R03,3Rh1,5dqV,6BjP,3RDx,dsvX,3Rh1,eQLr,eQFV,gcnF,hA5p,kjI9,kjYX,lHMp,n3u3,n3/V,lI6V,hAb1,eQ89,9koP,hzKV,hzop,9k2p,9koV,c4TP,9l5V,9kA9,c4m9,c4TV",
                     "9ab7": "kjfX,kjrh,gbMh,dsf3,eQdN,gc6N,gbvp,drDN,aInr,aI11,7YeX,7YBx,3QzX,drP1,ds9x,5cPx,3QQV,5cEh,orJz,aIPF,hz/H,hAxx,gbXr,n3ox,n321,gbB1,5d4j,5dqV,aI+V,aIEp,5d4p",
-                    "9b0f": "orhr,oqX1,gbB1,drJp,ds3V,ePTh,gbpH,gbXx,iXDP,iXn1,lH8X,lHpV,lHGH,lHMp,n3QF,orPh,lI6P,iY9F,hA5p,hz/N,dskH,dsqp,eQuF,gcyV,hAxx,6B8z,9l5V,3RDr,3RxV,7YY1,3R09,aIJX,7YY1,7YH3,9kFN,7Y3H,7YvV,aIhP,aHXp,3QFz,aI6F,6Axb,5cJV,3QoH,6Am1",
+                    "deviceModeAndVersionSelectorRender": "orhr,oqX1,gbB1,drJp,ds3V,ePTh,gbpH,gbXx,iXDP,iXn1,lH8X,lHpV,lHGH,lHMp,n3QF,orPh,lI6P,iY9F,hA5p,hz/N,dskH,dsqp,eQuF,gcyV,hAxx,6B8z,9l5V,3RDr,3RxV,7YY1,3R09,aIJX,7YY1,7YH3,9kFN,7Y3H,7YvV,aIhP,aHXp,3QFz,aI6F,6Axb,5cJV,3QoH,6Am1",
                     "9f44": "or0z,n321,n3ox,eQ2x,ePI1,n321,kjCr,kjg1,hztX,hzQx,aIt3,aHXp,7Yqb,dr+h,6AaH,6ATN,6AlX,5ct1,3Qup,3QWr,6AIx,5dwr,5d4p,c4xj,c4TV,orJz,hAgF,lHGH,lIcx,hz/H,kjZ1,hAxr,kk8h,drJj,dsf9,7YH9,7Y9p,drJp,9l5P,eQFV,eQjp,9kLp,9l5V",
                     5669: "os43,oqLN,3R2T,orpZ,3QoH,3RJ9,e8Uz,e7Ah,6Mu1,bbH7,bc3b,6MSb,6Mu7,6Ne9,bcrf,bcPj,6NCj,6Nef,h4pF,h4NP,lv+P,lvCL,h4pL,h41B,lveH,luSD,h3FD,h41H",
                     "4f7b": "orhr,gbvp,iXsz,3QFF,3QWr,6ATN,orsN,orJz,5dfF,3Rsh,3RDx,7Zix,aJa3,dsSx,eQuF,hAgz,iYqx,lIi9,kjwP,hz/N,dskH,9koV",
@@ -63977,7 +63977,7 @@
         daf1: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("97f5"),
+            var n = r("bluetoothConnectPageComponent"),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -65179,7 +65179,7 @@
         eacd: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("a6a2"),
+            var n = r("imageToVectorLinesPageRender"),
                 h = r("interopExportWrapperForimageToVectorLinesPageComponent");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -66377,7 +66377,7 @@
                 ArrayBuffer = n.ArrayBuffer, Int8Array = n.Int8Array, Uint8Array = n.Uint8Array, Uint8ClampedArray = n.Uint8ClampedArray, Int16Array = n.Int16Array, Uint16Array = n.Uint16Array, Int32Array = n.Int32Array, Uint32Array = n.Uint32Array, Float32Array = n.Float32Array, Float64Array = n.Float64Array, BigInt64Array = n.BigInt64Array, BigUint64Array = n.BigUint64Array
             }
             uni.restoreGlobal && uni.restoreGlobal(weex, plus, setTimeout, clearTimeout, setInterval, clearInterval), __definePage("pages/main/main", (function() {
-                return Vue.extend(r("9c4f").default)
+                return Vue.extend(r("deviceControlPageComponentExportWrapper").default)
             })), __definePage("pages/prj/prj", (function() {
                 return Vue.extend(r("fc20").default)
             })), __definePage("pages/setting/setting", (function() {
@@ -66409,7 +66409,7 @@
             })), __definePage("sub2/pages/pgs/pgs", (function() {
                 return Vue.extend(r("f7c2").default)
             })), __definePage("sub2/pages/pis/pis", (function() {
-                return Vue.extend(r("a3bc").default)
+                return Vue.extend(r("d902ComponentExportWrapper").default)
             }))
         },
         ffb9: function(e, t, r) {
