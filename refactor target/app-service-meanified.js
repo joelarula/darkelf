@@ -23716,7 +23716,7 @@
                 DrawFonts: s
             }
         },
-        "52b4": function(e, t, r) {
+        "mergedDrawFontsUtils": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -24760,7 +24760,7 @@
         "64c9": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("52b4"),
+            var n = r("mergedDrawFontsUtils"),
                 h = r("daf1");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
