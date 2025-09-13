@@ -2693,7 +2693,7 @@
             var a = n(r("eeae")),
                 i = n(r("languagePacks")),
                 c = n(r("951c")),
-                o = n(r("4d79"));
+                o = n(r("vueI18nPlugin"));
 
             function s(e, t) {
                 var r = Object.keys(e);
@@ -21893,7 +21893,7 @@
                 }
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        4883: function(e, t, r) {
+        "esModuleReexportHelper": function(e, t, r) {
             "use strict";
             r.r(t);
             var n = r("75a8"),
@@ -21905,7 +21905,7 @@
             }(a);
             t["default"] = h.a
         },
-        "48ab": function(e, t, r) {
+        "scenePatternEditorPageComponent ": function(e, t, r) {
             "use strict";
             (function(e) {
                 var n = r("esModuleInteropHelper");
@@ -22592,7 +22592,7 @@
                 t.default = s
             }).call(this, r("f3b9")["default"])
         },
-        "4d79": function(t, r, n) {
+        "vueI18nPlugin": function(t, r, n) {
             "use strict";
             n.r(r);
             /*!
@@ -45683,7 +45683,7 @@
             "use strict";
             r.r(t);
             var n = r("mainLayoutComponent"),
-                h = r("4883");
+                h = r("esModuleReexportHelper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
                     return h[e]
@@ -63965,7 +63965,7 @@
         d902: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("48ab"),
+            var n = r("scenePatternEditorPageComponent "),
                 h = r.n(n);
             for (var a in n)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
