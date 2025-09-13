@@ -19169,7 +19169,7 @@
                                 l.initEvent("click", !0, !1), s.dispatchEvent(l)
                             } else h("warn", "Font file could not be downloaded. Try using a different browser.", " at utils/opentype.js:13594");
                         else {
-                            var p = n("61af"),
+                            var p = n("emptyModuleStub"),
                                 d = function(e) {
                                     for (var t = new a(e.byteLength), r = new Uint8Array(e), n = 0; n < t.length; ++n) t[n] = r[n];
                                     return t
@@ -19683,7 +19683,7 @@
                     }
 
                     function An(e, t) {
-                        var r = n("61af"),
+                        var r = n("emptyModuleStub"),
                             h = r.readFileSync(e);
                         return yn(Rt(h), t)
                     }
@@ -24661,10 +24661,10 @@
                 t.default = n
             }).call(this, r("f3b9")["default"])
         },
-        6169: function(e, t, r) {
+        "refreshEmptyImagePath": function(e, t, r) {
             e.exports = r.p + "static/imgs/refreshempty.png"
         },
-        "61af": function(e, t) {},
+        "emptyModuleStub": function(e, t) {},
         6382: function(e, t, r) {
             var n = r("6454");
             e.exports = function(e, t) {
@@ -65361,7 +65361,7 @@
                         }
                     }), n("view"), n("image", {
                         attrs: {
-                            src: e._$s(12, "a-src", r("6169")),
+                            src: e._$s(12, "a-src", r("refreshEmptyImagePath")),
                             _i: 12
                         },
                         on: {
