@@ -105,18 +105,183 @@ impl LaserCommand {
         result
     }
 }
-/// Configuration options for laser control.
+/// Command settings for laser control
+#[derive(Debug, Clone)]
+pub struct CommandSettings {
+    pub cur_mode: u8,
+    pub setting_data: SettingData,
+    pub text_data: LaserTextData,
+    pub draw_data: DrawData,
+    pub pgs_data: ProgramData,
+    pub subset_data: SubsetData,
+}
+
+impl CommandSettings {
+    pub fn new() -> Self {
+        Self {
+            cur_mode: 0,
+            setting_data: SettingData {
+                dmx: 0,
+                ch: 0,
+                xy: 0,
+                light: 1,
+                cfg: 0,
+                lang: 0,
+                val_arr: [1, 10, 10, 10, 10],
+            },
+            text_data: LaserTextData {
+                refresh: false,
+                ver_tag: 0,
+                run_dir: 0,
+                tx_point_time: 50,
+                tx_color: 9,
+                tx_size: 50,
+                tx_dist: 50,
+                run_speed: 50,
+                group_index: 0,
+                group_list: Vec::new(),
+            },
+            draw_data: DrawData {
+                pis_obj: PisObject {
+                    tx_point_time: 50,
+                    cnf_values: [0; 13],
+                }
+            },
+            pgs_data: ProgramData { pis_list: Vec::new() },
+            subset_data: SubsetData::default(),
+        }
+    }
+}
+
+/// Configuration options for laser control
 #[derive(Debug, Clone)]
 pub struct LaserOptions {
     text_decimal_time: bool,  // Use decimal time
     text_stop_time: bool,     // Stop time flag
-    tx_color: u8,             // Text color
-    tx_size: u8,              // Text size (scaled)
-    run_speed: u8,            // Run speed (scaled)
-    tx_dist: u8,              // Text distance (scaled)
-    rd_mode: u8,              // Read mode
-    sound_val: u8,            // Sound value (scaled)
+    tx_color: u8,             // Text color (0-9)
+    tx_size: u8,             // Text size (10-100)
+    run_speed: u8,           // Run speed (0-255)
+    tx_dist: u8,             // Text distance (10-100)
+    rd_mode: u8,             // Read mode
+    sound_val: u8,           // Sound value (0-255)
 }
+
+#[derive(Debug, Clone)]
+pub struct SettingData {
+    pub dmx: u8,             // DMX settings
+    pub ch: u8,              // Channel
+    pub xy: u8,              // XY configuration
+    pub light: u8,           // Light intensity (0-1)
+    pub cfg: u8,             // Configuration
+    pub lang: u8,            // Language
+    pub val_arr: [u8; 5],    // Value array
+}
+
+#[derive(Debug, Clone)]
+pub struct Point {
+    pub x: i16,
+    pub y: i16,
+    pub z: u8,  // 1 = laser on, 0 = laser off
+}
+
+#[derive(Debug, Clone)]
+pub struct LaserTextData {
+    pub refresh: bool,
+    pub ver_tag: u8,
+    pub run_dir: u8,
+    pub tx_point_time: u8,    // Default 50
+    pub tx_color: u8,         // 0-9
+    pub tx_size: u8,          // 10-100
+    pub tx_dist: u8,          // 10-100
+    pub run_speed: u8,        // 0-255
+    pub group_index: u8,
+    pub group_list: Vec<LaserTextGroup>,
+}
+
+#[derive(Debug, Clone)]
+pub struct LaserTextGroup {
+    pub text: String,
+    pub update: u8,
+    pub color: u8,
+    pub font_index: Option<u8>,
+    pub time: u8,
+    pub xys: Vec<Point>,
+    pub xys_right: Vec<Point>,
+    pub xys_up: Vec<Point>,
+    pub xys_down: Vec<Point>,
+}
+
+#[derive(Debug, Clone)]
+pub struct DrawData {
+    pub pis_obj: PisObject,
+}
+
+#[derive(Debug, Clone)]
+pub struct PisObject {
+    pub tx_point_time: u8,    // Default 50
+    pub cnf_values: [u8; 13], // Configuration values
+}
+
+#[derive(Debug, Clone)]
+pub struct ProgramData {
+    pub pis_list: Vec<PisObject>,
+}
+
+#[derive(Debug, Clone)]
+pub struct SubsetData {
+    pub xy_cnf: XYAdjustConfig,
+}
+
+// Renamed to XYAdjustConfig to avoid duplicate definition
+#[derive(Debug, Clone)]
+pub struct XYAdjustConfig {
+    pub auto: bool,
+    pub auto_value: u8,
+    pub phase: u8,
+    pub xy: Vec<XYAdjust>,
+}
+
+#[derive(Debug, Clone)]
+pub struct XYAdjust {
+    pub title: String,
+    pub name: String,
+    pub value: i16,
+}
+
+impl Default for SubsetData {
+    fn default() -> Self {
+        Self {
+            xy_cnf: XYAdjustConfig {
+                auto: true,
+                auto_value: 0,
+                phase: 0,
+                xy: vec![
+                    XYAdjust {
+                        title: "X coarse".to_string(),
+                        name: "xBig".to_string(),
+                        value: 0,
+                    },
+                    XYAdjust {
+                        title: "X fine".to_string(),
+                        name: "xSmall".to_string(),
+                        value: 0,
+                    },
+                    XYAdjust {
+                        title: "Y coarse".to_string(),
+                        name: "yBig".to_string(),
+                        value: 0,
+                    },
+                    XYAdjust {
+                        title: "Y fine".to_string(),
+                        name: "ySmall".to_string(),
+                        value: 0,
+                    },
+                ],
+            }
+        }
+    }
+}
+
 
 impl LaserOptions {
     pub fn new() -> Self {
@@ -124,9 +289,9 @@ impl LaserOptions {
             text_decimal_time: false,
             text_stop_time: false,
             tx_color: 0,
-            tx_size: 0,
-            run_speed: 0,
-            tx_dist: 0,
+            tx_size: 60,      // Default from JS
+            run_speed: 128,   // Default from JS
+            tx_dist: 60,      // Default from JS
             rd_mode: 0,
             sound_val: 0,
         }
@@ -199,7 +364,7 @@ pub struct XYConfig {
 
 /// Subset data for shake command.
 #[derive(Debug)]
-pub struct SubsetData {
+pub struct SubsetDataInner {
     xy_cnf: XYConfig,
 }
 

@@ -41,37 +41,62 @@ pub struct WinBlueController {
     sending: Arc<TokioMutex<()>>,
     notification_token: Option<NotificationToken>,
     cccd_state: Option<GattClientCharacteristicConfigurationDescriptorValue>,
+    // New fields matching JS implementation - temporarily marked as unused while implementing
+    connect_count: u32,
+    ready_to_receive: bool,
+    can_send: bool,
+    cmd_sending: bool,
+    manual_disconnect: bool,
+    connection_state: i32, // -1=connecting, 0=disconnected, 1=connected, 2=ready
+    min_send_interval: Duration,
 }
 
 impl WinBlueController {
     pub async fn new(device_info: Option<&DeviceInformation>) -> Result<Self, Box<dyn Error>> {
-
         Ok(Self {
             device_info: device_info.cloned(),
             device: None,
             write_char: None,
             notify_char: None,
-            service_uuid: None,            
+            service_uuid: None,
             connected: false,
             buffer: Arc::new(Mutex::new(String::new())),
             last_send_time: None,
             sending: Arc::new(TokioMutex::new(())),
             notification_token: None,
             cccd_state: None,
+            connect_count: 0,
+            ready_to_receive: false,
+            can_send: false,
+            cmd_sending: false,
+            manual_disconnect: false,
+            connection_state: 0,
+            min_send_interval: Duration::from_millis(100), // Same as JS 100ms interval
         })
     }
 
     pub async fn connect(&mut self) -> Result<(), Box<dyn Error>> {
         debug!("WinBlueController::connect called");
+        self.connect_count += 1;
+        self.connection_state = -1; // Set to connecting
+        
         if let Some(device_info) = self.device_info.as_ref() {
             let device_id = device_info.Id()?;
             debug!("Connecting to BLE device with id: {}", device_id);
             self.device = Some(BluetoothLEDevice::FromIdAsync(&device_id)?.get()?);
-                self.discover_characteristics().await?;
+            self.discover_characteristics().await?;
             self.connected = true;
+            self.connection_state = 1; // Set to connected
             debug!("Device connected");
+            
+            // Only set ready_to_receive after successful characteristic setup
+            self.ready_to_receive = true;
+            self.connection_state = 2; // Set to ready
+            
             // Send initialization command (if required)
             self.send_init_command().await?;
+        } else {
+            self.connection_state = 0; // Set to disconnected
         }
         Ok(())
     }
@@ -327,10 +352,11 @@ impl WinBlueController {
         // Enforce minimum delay between commands
         if let Some(last_time) = self.last_send_time {
             let elapsed = last_time.elapsed();
-            if elapsed < Duration::from_millis(100) {
-                sleep(Duration::from_millis(100) - elapsed).await;
+            if elapsed < self.min_send_interval {
+                sleep(self.min_send_interval - elapsed).await;
             }
         }
+
         debug!("WinBlueController::send called with {} bytes", bytes.len());
         if bytes.len() != 20 || !bytes.starts_with(&[0xE0, 0xE1, 0xE2, 0xE3]) {
             return Err("Invalid command: must be 20 bytes starting with E0E1E2E3".to_string());
@@ -341,52 +367,48 @@ impl WinBlueController {
             return Err("Not connected".to_string());
         }
 
-        if let Some(last_send) = self.last_send_time {
-            let elapsed = Instant::now().duration_since(last_send);
-            if elapsed < Duration::from_millis(20) {
-                sleep(Duration::from_millis(20) - elapsed).await;
-            }
+        // Check if we can send
+        if !self.can_send {
+            return Err("Device not ready to send".to_string());
         }
-        self.last_send_time = Some(Instant::now());
-        self.send_data(bytes).await
-    }
 
-    async fn send_data(&self, bytes: &[u8]) -> Result<(), String> {
-        if let Some(write_char) = &self.write_char {
-            let hex_str = bytes.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join("");
-            debug!("Writing command to BLE: {}", hex_str);
+        // Set command sending state
+        self.cmd_sending = true;
 
+        // Send the data
+        let result = if let Some(write_char) = &self.write_char {
             let writer = DataWriter::new().map_err(|e| e.to_string())?;
             writer.WriteBytes(bytes).map_err(|e| e.to_string())?;
             let buffer = writer.DetachBuffer().map_err(|e| e.to_string())?;
             
-            let write_result = write_char.WriteValueAsync(&buffer).map_err(|e| e.to_string())?.get();
-            match write_result {
+            let result = write_char.WriteValueWithOptionAsync(
+                &buffer,
+                GattWriteOption::WriteWithoutResponse,
+            ).map_err(|e| e.to_string())?.get();
+            
+            match result {
                 Ok(GattCommunicationStatus::Success) => {
-                    debug!("Write to BLE characteristic succeeded");
-                    // Send to DMX
-                    //if let Some(ref mut dmx_port) = self.dmx_port.as_ref() {
-                    //    let mut dmx_frame = [0u8; 512];
-                    //    dmx_frame[0] = bytes[12]; // Red (channel 1)
-                    //    dmx_frame[1] = bytes[13]; // Green (channel 2)
-                    //     dmx_frame[2] = bytes[14]; // Blue (channel 3)
-                    //    dmx_frame[3] = bytes[8]; // x low byte (channel 4)
-                    //    dmx_frame[4] = bytes[9]; // x high byte (channel 5)
-                    //    dmx_frame[5] = bytes[10]; // y low byte (channel 6)
-                    //    dmx_frame[6] = bytes[11]; // y high byte (channel 7)
-                    //    dmx_frame[7] = bytes[15]; // z (laser on/off, channel 8)
-                    //    dmx_port.write(&[0x00]).map_err(|e| e.to_string())?;
-                    //    dmx_port.write(&dmx_frame).map_err(|e| e.to_string())?;
-                    //}
+                    debug!("Data sent successfully: {:?}", bytes);
+                    self.last_send_time = Some(Instant::now());
                     Ok(())
-                },
-                Ok(status) => Err(format!("Write failed with status: {:?}", status)),
-                Err(e) => Err(format!("Write failed with error: {:?}", e)),
+                }
+                Ok(status) => {
+                    error!("Failed to write data: {:?}", status);
+                    Err(format!("Failed to write data: {:?}", status))
+                }
+                Err(e) => Err(e.to_string())
             }
         } else {
             Err("Write characteristic not found".to_string())
-        }
+        };
+
+        // Reset command sending state
+        self.cmd_sending = false;
+
+        result
     }
+
+
 
     pub async fn send_animation(&mut self, coordinates: &[[u16; 2]], color: [u8; 3]) -> Result<(), String> {
         for &[x, y] in coordinates {
