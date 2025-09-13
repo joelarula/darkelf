@@ -2685,7 +2685,7 @@
                 }), e
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        "0c90": function(e, t, r) {
+        "mainAppEntry": function(e, t, r) {
             "use strict";
             var n = r("47a9"),
                 h = n(r("7ca3"));
@@ -66417,6 +66417,6 @@
         }
     },
     [
-        ["0c90", "app-config"]
+        ["mainAppEntry", "app-config"]
     ]
 ]);
