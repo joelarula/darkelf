@@ -2688,7 +2688,7 @@
         "mainAppEntry": function(e, t, r) {
             "use strict";
             var n = r("esModuleInteropHelper"),
-                h = n(r("7ca3"));
+                h = n(r("defineOrAssignPropertyHelper"));
             r("ff59");
             var a = n(r("eeae")),
                 i = n(r("languagePacks")),
@@ -5193,7 +5193,7 @@
         "someFeaturePageExport": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("811d"),
+            var n = r("textGroupEditorPageComponent"),
                 h = r("85c1");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -5408,7 +5408,7 @@
                 }), r.default = void 0;
                 var a = h(n("af34")),
                     i = h(n("typeofHelper")),
-                    c = h(n("7ca3")),
+                    c = h(n("defineOrAssignPropertyHelper")),
                     o = n("vueAnimationManager");
 
                 function s(e, t) {
@@ -19865,7 +19865,7 @@
                 if (!t) return;
                 return clearTimeout(t.timer), new s(e, t)
             };
-            var h = n(r("7ca3")),
+            var h = n(r("defineOrAssignPropertyHelper")),
                 a = n(r("classCallCheckHelper")),
                 i = n(r("defineClassHelper "));
 
@@ -23684,7 +23684,7 @@
             }), Z.install = A, Z.version = "8.28.2", r["default"] = Z
         },
         "4e7c": function(e, t, r) {
-            var n = r("7ca3");
+            var n = r("defineOrAssignPropertyHelper");
 
             function h(e, t) {
                 var r = Object.keys(e);
@@ -26964,7 +26964,7 @@
             }(a);
             t["default"] = h.a
         },
-        "7ca3": function(e, t, r) {
+        "defineOrAssignPropertyHelper": function(e, t, r) {
             var n = r("d551");
             e.exports = function(e, t, r) {
                 return t = n(t), t in e ? Object.defineProperty(e, t, {
@@ -26975,7 +26975,7 @@
                 }) : e[t] = r, e
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        "7e7e": function(e, t, r) {
+        "sceneListEditorPageComponent": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -27125,7 +27125,7 @@
                 },
                 a = []
         },
-        "811d": function(e, t, r) {
+        "textGroupEditorPageComponent": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -65280,7 +65280,7 @@
         f7c2: function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("7e7e"),
+            var n = r("sceneListEditorPageComponent"),
                 h = r("fba0");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
