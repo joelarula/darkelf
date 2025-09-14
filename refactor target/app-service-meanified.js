@@ -46877,10 +46877,10 @@
                     t("log", r, " at utils/bluCtrl.js:494")
                 }
 
-                function x(e) {
+                function splitHexStringToBuffers(hexString) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 20;
-                    if ("" == e) return [];
-                    var r = new Uint8Array(e.match(/[\da-f]{2}/gi).map((function(e) {
+                    if ("" == hexString) return [];
+                    var r = new Uint8Array(hexString.match(/[\da-f]{2}/gi).map((function(e) {
                         return parseInt(e, 16)
                     })));
                     if (null == r) return [];
@@ -46895,18 +46895,18 @@
                     return a
                 }
 
-                function V(e) {
-                    var r = e.toUpperCase().split("Z");
+                function hexStringToBufferSequence(hexString) {
+                    var r = hexString.toUpperCase().split("Z");
                     t("log", r, " at utils/bluCtrl.js:530");
                     for (var n = [], h = 0; h < r.length; h++) {
                         t("log", h, r[h], " at utils/bluCtrl.js:533");
-                        var a = x(r[h]);
+                        var a = splitHexStringToBuffers(r[h]);
                         a.length > 0 && (n.length > 0 && n.push("split"), n = n.concat(a))
                     }
                     return n
                 }
 
-                function f() {
+                function canSendBleData() {
                     return appStateManager.globalData.blu_data_canSend
                 }
                 e.exports = {
@@ -46943,10 +46943,10 @@
                     setCanSend: function(e) {
                         appStateManager.globalData.blu_data_canSend = e
                     },
-                    getCanSend: f,
+                    getCanSend: canSendBleData,
                     gosend: function(e, r) {
                         var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                        if (f() ? logHexBytes(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !f() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
+                        if (canSendBleData() ? logHexBytes(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !canSendBleData() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
                             appStateManager.globalData.blu_data_cmdSending = !1, h && h(1, 100)
                         }), 20), !0));
                         if (appStateManager.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
@@ -46954,7 +46954,7 @@
                         e && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), h ? h(0, 0) : uni.showLoading({
                             mask: !0
                         }));
-                        var a = V(r);
+                        var a = hexStringToBufferSequence(r);
                         if (0 == a.length) return !1;
                         if (appStateManager.globalData.blu_data_cmdSending) return !1;
                         appStateManager.globalData.blu_data_cmdSending = !0;
