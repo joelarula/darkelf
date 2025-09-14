@@ -2445,7 +2445,7 @@
 
 
 
-                        // The setCmdData function is a setter used to update command-related data within the cmd object. 
+                        //  function is a setter used to update command-related data within the cmd object. 
                         // It takes two arguments: e, which is the key indicating which section of the command data to update, 
                         // and t, which is the new data to set.
                         // If the key e is "prjData", the function updates the public property of cmd.prjData with t.public. 
@@ -20450,7 +20450,7 @@
             (function(t) {
                 var n = r("arrayConversionHelper");
 
-                function h(e, t) {
+                function createIteratorHelper(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
                     if (!r) {
                         if (Array.isArray(e) || (r = function(e, t) {
@@ -20643,7 +20643,7 @@
 
                 function b(e, t) {
                     var r, a = n(t),
-                        i = h(e);
+                        i = createIteratorHelper(e);
                     try {
                         for (i.s(); !(r = i.n()).done;) {
                             var c = r.value,
@@ -20829,7 +20829,7 @@
                             n = "00", r.hasOwnProperty("xyCnfSave") && !r.xyCnfSave && (n = "ff");
                             var a = e.subsetData.xyCnf;
                             a.auto ? n += i(a.autoValue, 2) : n += i(255 - a.autoValue, 2), n += i(a.phase, 2);
-                            var c, o = h(a.xy);
+                            var c, o = createIteratorHelper(a.xy);
                             try {
                                 for (o.s(); !(c = o.n()).done;) {
                                     var s = c.value;
@@ -21224,9 +21224,9 @@
 
                             // This function handles the response after receiving data from a Bluetooth device, 
                             // validates it, updates the app state if valid, and notifies the user if there’s an error.
-                            blu_rec_call_back: function(t) {
+                            blu_rec_call_back: function(data) {
                                 e("log", "blu_rec_call_back", " at pages/main/main.js:270");
-                                this.clearBluTimer(), uni.hideLoading(), this.checkRcvData(t, this.randomCheck) ? (bleDeviceController.setCanSend(!0), bleDeviceController.setCmdData(t), this.prjIndex = app.globalData.cmd.curMode) : uni.showToast({
+                                this.clearBluTimer(), uni.hideLoading(), this.checkRcvData(data, this.randomCheck) ? (bleDeviceController.setCanSend(!0), bleDeviceController.setCmdData(data), this.prjIndex = app.globalData.cmd.curMode) : uni.showToast({
                                     title: this.$t("Abnormality in reading device parameters"),
                                     icon: "none",
                                     duration: 3e3
