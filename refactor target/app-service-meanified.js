@@ -2283,6 +2283,7 @@
                         blu_state: 0,
                         blu_connect_stop: !1,
                         blu_connected: 0,
+                        //  global "stop BLE operations" flag
                         blu_readyRec: !1,
                         blu_cnn_call_back: null,
                         blu_rec_call_back: null,
@@ -46759,7 +46760,7 @@
                     })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
                 }
 
-                function l(e, r) {
+                function discoverAndSetupServices(e, r) {
                     var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 3,
                         a = r.callback;
                     if (appStateManager.globalData.blu_connect_stop) a && a(!1);
@@ -46783,22 +46784,22 @@
                             },
                             complete: function() {
                                 c || setTimeout((function() {
-                                    l(i, r, --h)
+                                    discoverAndSetupServices(i, r, --h)
                                 }), 1e3)
                             }
                         })
                     }
                 }
 
-                function p(e) {
+                function connectToDevice(device ) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                         r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
                     if (appStateManager.globalData.blu_connect_stop) r && r(!1);
-                    else if (void 0 != e && "" != e && null != e) {
+                    else if (void 0 != device  && "" != device  && null != device ) {
                         appStateManager.globalData.readSetting(), appStateManager.globalData.blu_readyRec = !1;
-                        var h = e.deviceId;
+                        var h = device .deviceId;
                         appStateManager.globalData.createBLEConnection(h, (function(e) {
-                            e ? (appStateManager.globalData.setBluCnnState(1, !1), l(h, {
+                            e ? (appStateManager.globalData.setBluCnnState(1, !1), discoverAndSetupServices(h, {
                                 showMsg: t,
                                 callback: r
                             })) : (uni.hideLoading(), t && appStateManager.globalData.showModalTips(g("Connection failed"), !0), r && r(!1))
@@ -46914,7 +46915,7 @@
                             appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1, appStateManager.globalData.readDevice();
                             var e = appStateManager.globalData.ble_device;
                             void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
-                                r && p(e, !1, (function(e) {
+                                r && connectToDevice(e, !1, (function(e) {
                                     1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:365")
                                 }))
                             })) : appStateManager.globalData.blu_state = 0
@@ -46931,7 +46932,7 @@
                                             mask: !0
                                         }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
                                         var e = appStateManager.globalData.ble_device;
-                                        p(e, !0, (function(e) {
+                                        connectToDevice(e, !0, (function(e) {
                                             e ? appStateManager.globalData.blu_state = 0 : (uni.hideLoading(), appStateManager.globalData.blu_state = 2), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:391")
                                         }))
                                     }), 1)
