@@ -46740,12 +46740,12 @@
                                     }, l = 0; l < h.characteristics.length; l++) o(l)
                             },
                             fail: function(e) {
-                                0 == retryCount && appStateManager.globalData.showModalTips(g("Connection failed") + "-1002"), s = -2
+                                0 == retryCount && appStateManager.globalData.showModalTips(translate("Connection failed") + "-1002"), s = -2
                             },
                             complete: function() {
                                 s <= 0 && (retryCount > 0 ? setTimeout((function() {
                                     discoverAndConfigureCharacteristics(deviceId , serviceId , --retryCount, callback )
-                                }), 1500) : (uni.hideLoading(), callback  && callback (!1), appStateManager.globalData.showModalTips(g("Connection failed") + "-1001")))
+                                }), 1500) : (uni.hideLoading(), callback  && callback (!1), appStateManager.globalData.showModalTips(translate("Connection failed") + "-1001")))
                             }
                         })
                     }
@@ -46792,72 +46792,72 @@
                 }
 
                 function connectToDevice(device ) {
-                    var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
-                        r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    if (appStateManager.globalData.blu_connect_stop) r && r(!1);
+                    var showMsg  = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+                        connectionCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    if (appStateManager.globalData.blu_connect_stop) connectionCallback && connectionCallback(!1);
                     else if (void 0 != device  && "" != device  && null != device ) {
                         appStateManager.globalData.readSetting(), appStateManager.globalData.blu_readyRec = !1;
                         var h = device .deviceId;
                         appStateManager.globalData.createBLEConnection(h, (function(e) {
                             e ? (appStateManager.globalData.setBluCnnState(1, !1), discoverAndSetupServices(h, {
-                                showMsg: t,
-                                callback: r
-                            })) : (uni.hideLoading(), t && appStateManager.globalData.showModalTips(g("Connection failed"), !0), r && r(!1))
+                                showMsg: showMsg ,
+                                callback: connectionCallback
+                            })) : (uni.hideLoading(), showMsg  && appStateManager.globalData.showModalTips(translate("Connection failed"), !0), connectionCallback && connectionCallback(!1))
                         }))
-                    } else r && r(!1)
+                    } else connectionCallback && connectionCallback(!1)
                 }
 
-                function d(e) {
-                    var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
-                        h = 20,
+                function sendBleDataBuffers(sendContext) {
+                    var lastSendTimestamp  = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
+                        sendInterval = 20,
                         a = appStateManager.globalData.blu_data_send_interval;
-                    if (appStateManager.globalData.platform.app && "android" == appStateManager.globalData.platform.system && (h = 40), e.showMsg) {
-                        e.count;
-                        var i = Math.floor((e.count - e.sendBufs.length) / e.count * 100),
+                    if (appStateManager.globalData.platform.app && "android" == appStateManager.globalData.platform.system && (sendInterval = 40), sendContext.showMsg) {
+                        sendContext.count;
+                        var i = Math.floor((sendContext.count - sendContext.sendBufs.length) / sendContext.count * 100),
                             c = (new Date).getTime();
-                        (100 == i || c - appStateManager.globalData.blu_data_lastShowTime > 200) && (appStateManager.globalData.blu_data_lastShowTime = c, e.callBack ? (uni.hideLoading(), e.callBack(0, i)) : uni.showLoading({
+                        (100 == i || c - appStateManager.globalData.blu_data_lastShowTime > 200) && (appStateManager.globalData.blu_data_lastShowTime = c, sendContext.callBack ? (uni.hideLoading(), sendContext.callBack(0, i)) : uni.showLoading({
                             mask: !0
                         }))
                     }
-                    if (0 != e.sendBufs.length) {
-                        var o = (new Date).getTime();
-                        r = 0 == r ? o : r;
-                        var s = h - (o - r),
-                            l = s > 0 ? s : 1;
+                    if (0 != sendContext.sendBufs.length) {
+                        var nowTimestamp = (new Date).getTime();
+                        lastSendTimestamp  = 0 == lastSendTimestamp  ? nowTimestamp : lastSendTimestamp ;
+                        var timeUntilNextSend = sendInterval - (nowTimestamp - lastSendTimestamp ),
+                            delayBeforeSend  = timeUntilNextSend > 0 ? timeUntilNextSend : 1;
                         setTimeout((function() {
-                            var n = e.sendBufs.shift();
-                            "split" != n ? (t("log", "send date---", (new Date).getTime() / 1e3, " at utils/bluCtrl.js:441"), uni.writeBLECharacteristicValue({
-                                deviceId: e.device.deviceId,
-                                serviceId: e.device.serviceId,
-                                characteristicId: e.device.characteristicId,
-                                value: n,
+                            var currentBuffer  = sendContext.sendBufs.shift();
+                            "split" != currentBuffer  ? (t("log", "send date---", (new Date).getTime() / 1e3, " at utils/bluCtrl.js:441"), uni.writeBLECharacteristicValue({
+                                deviceId: sendContext.device.deviceId,
+                                serviceId: sendContext.device.serviceId,
+                                characteristicId: sendContext.device.characteristicId,
+                                value: currentBuffer ,
                                 success: function(t) {
-                                    d(e, o)
+                                    sendBleDataBuffers(sendContext, nowTimestamp)
                                 },
                                 fail: function(r) {
                                     t("log", "writeBLECharacteristicValue fail", r, " at utils/bluCtrl.js:454"), setTimeout((function() {
-                                        e.fail(r)
-                                    }), h)
+                                        sendContext.fail(r)
+                                    }), sendInterval)
                                 },
                                 complete: function(e) {}
                             })) : setTimeout((function() {
-                                t("log", "sleep---", a, h, " at utils/bluCtrl.js:436"), d(e, o)
-                            }), a - (o - r))
-                        }), l)
+                                t("log", "sleep---", a, sendInterval, " at utils/bluCtrl.js:436"), sendBleDataBuffers(sendContext, nowTimestamp)
+                            }), a - (nowTimestamp - lastSendTimestamp ))
+                        }), delayBeforeSend )
                     } else setTimeout((function() {
-                        e.success({})
-                    }), h)
+                        sendContext.success({})
+                    }), sendInterval)
                 }
 
-                function b(e, t, r) {
-                    var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                function sendBleBuffersPromise(dataBuffers, deviceInfo, showProgress) {
+                    var progressCallback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
                     return new Promise((function(h, a) {
-                        d({
-                            device: t,
-                            sendBufs: e,
-                            count: e.length,
-                            showMsg: r,
-                            callBack: n,
+                        sendBleDataBuffers({
+                            device: deviceInfo,
+                            sendBufs: dataBuffers,
+                            count: dataBuffers.length,
+                            showMsg: showProgress,
+                            callBack: progressCallback,
                             success: function(e) {
                                 h(e)
                             },
@@ -46868,12 +46868,12 @@
                     }))
                 }
 
-                function g(e) {
+                function translate(e) {
                     return appStateManager.globalData.t(e)
                 }
 
-                function j(e) {
-                    for (var r = "", n = 0; n < e.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + e[n]) : r += e[n];
+                function logHexBytes(byteArray) {
+                    for (var r = "", n = 0; n < byteArray.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + byteArray[n]) : r += byteArray[n];
                     t("log", r, " at utils/bluCtrl.js:494")
                 }
 
@@ -46928,7 +46928,7 @@
                                 acceptDataFromOpenedPage: function(e) {
                                     setTimeout((function() {
                                         uni.showLoading({
-                                            title: g("\u6b63\u5728\u8fde\u63a5..."),
+                                            title: translate("\u6b63\u5728\u8fde\u63a5..."),
                                             mask: !0
                                         }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
                                         var e = appStateManager.globalData.ble_device;
@@ -46946,11 +46946,11 @@
                     getCanSend: f,
                     gosend: function(e, r) {
                         var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                        if (f() ? j(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !f() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
+                        if (f() ? logHexBytes(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !f() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
                             appStateManager.globalData.blu_data_cmdSending = !1, h && h(1, 100)
                         }), 20), !0));
                         if (appStateManager.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
-                        if (2 != appStateManager.globalData.blu_connected) return appStateManager.globalData.showModalTips(g("BluetoothNot connected")), !0;
+                        if (2 != appStateManager.globalData.blu_connected) return appStateManager.globalData.showModalTips(translate("BluetoothNot connected")), !0;
                         e && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), h ? h(0, 0) : uni.showLoading({
                             mask: !0
                         }));
@@ -46960,7 +46960,7 @@
                         appStateManager.globalData.blu_data_cmdSending = !0;
                         var i = a,
                             c = appStateManager.globalData.ble_device;
-                        return b(i, c, e, h).then((function(r) {
+                        return sendBleBuffersPromise(i, c, e, h).then((function(r) {
                             e && uni.hideLoading(), appStateManager.globalData.blu_data_cmdSending = !1, t("log", "bluSend succ", " at utils/bluCtrl.js:592"), h && h(1, 100)
                         })).catch((function(r) {
                             e && uni.hideLoading(), t("log", "\u53d1\u9001\u5931\u8d25", r, " at utils/bluCtrl.js:596"), appStateManager.globalData.blu_data_cmdSending = !1, h && h(-1, 0)
