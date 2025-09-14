@@ -20524,7 +20524,7 @@
                     return r
                 }
 
-                function o(e, t) {
+                function splitIntoSegmentsBySumLimit(e, t) {
                     for (var r = 0, n = [], h = 0, a = 0, i = 0; i < e.length; i++)
                         if (r + e[i] <= t) a += 1, n.push([h, a]), r += e[i];
                         else {
@@ -20543,7 +20543,7 @@
                         } return n
                 }
 
-                function s(e, t) {
+                function generateSegmentedLayoutData(e, t) {
                     for (var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0, n = -1, h = [], a = [], c = 200, s = 0, l = 0, p = 0; p < e.length; p++) n != e[p][0] && (n = e[p][0], h.push(e[p][2] * t), s += e[p][2], a.push(e[p][3] * t), l += e[p][3]);
                     if (127 == r || 127 == r) {
                         for (var d = 0, b = [], g = 0; g < 9; g++) {
@@ -20555,7 +20555,7 @@
                             }];
                             b.push([n, j, c, c]), d += c, a.push(c * t)
                         }
-                        for (var x = o(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += toFixedWidthHex(x[F][0], 2), f += toFixedWidthHex(x[F][1], 2);
+                        for (var x = splitIntoSegmentsBySumLimit(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += toFixedWidthHex(x[F][0], 2), f += toFixedWidthHex(x[F][1], 2);
                         return [e.concat(b), V, f, -d * t / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {
@@ -20567,11 +20567,11 @@
                         }];
                         m.push([n, u, c, c]), k += c, h.push(c * t)
                     }
-                    for (var X = o(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
+                    for (var X = splitIntoSegmentsBySumLimit(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
                     return [e.concat(m), N, H, -k * t / 2]
                 }
 
-                function l(e, r, n, h) {
+                function encodeLayoutToCommandData(e, r, n, h) {
                     var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
                     if (0 == e.length) return null;
                     var o = 0,
@@ -20591,7 +20591,7 @@
                     var P = !1;
                     if (P) t("error", "20241210 - \u5f53\u524d\u4ee3\u7801\u4e3a\u5750\u6807\u8c03\u5f0f\u6a21\u5f0f\uff0c\u4e0d\u53ef\u53d1\u7248", " at utils/funcTools.js:345"), xyss = e, se1 = 0, se2 = 0, xOffset = 0;
                     else {
-                        var u = s(e, f, h);
+                        var u = generateSegmentedLayoutData(e, f, h);
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
                     }
                     for (var X = 0; X < xyss.length; X++) {
@@ -20621,12 +20621,12 @@
                     }
                 }
 
-                function p(e, t) {
+                function padHexStringToByteLength(e, t) {
                     for (var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "00", n = Math.floor(e.length / 2), h = e, a = n; a < t; a++) h += r;
                     return h
                 }
 
-                function d(e) {
+                function getBitmaskAndIndex(e) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : -1,
                         r = e - 1;
                     t > -1 && (r = t - e);
@@ -20641,18 +20641,18 @@
                     }
                 }
 
-                function b(e, t) {
+                function applyBitmaskUpdates(e, t) {
                     var r, a = n(t),
                         i = createIteratorHelper(e);
                     try {
                         for (i.s(); !(r = i.n()).done;) {
                             var c = r.value,
-                                o = d(c, -1);
+                                o = getBitmaskAndIndex(c, -1);
                             if (o.idx < a.length) {
                                 var s = a[o.idx] & o.val;
                                 if (a[o.idx] != s) {
                                     a[o.idx] = s;
-                                    var l = d(c, 50);
+                                    var l = getBitmaskAndIndex(c, 50);
                                     l.idx < a.length && (a[l.idx] = a[l.idx] | l.val)
                                 }
                             }
@@ -20665,7 +20665,7 @@
                     return a
                 }
 
-                function g(e, t) {
+                function getFeatureValue(e, t) {
                     if (e.hasOwnProperty("features")) {
                         var r = e.features;
                         if (r.hasOwnProperty(t)) return r[t]
@@ -20673,8 +20673,8 @@
                     return null
                 }
 
-                function j(e, t, r, n) {
-                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += toFixedWidthHex(t.cnfValus[s], 2) : 13 == s ? g({
+                function encodeDrawPointCommand(e, t, r, n) {
+                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += toFixedWidthHex(t.cnfValus[s], 2) : 13 == s ? getFeatureValue({
                         features: r
                     }, "picsPlay") ? o += toFixedWidthHex(-1 == n ? 10 * t.cnfValus[12] : 10 * n, 2) : o += "00" : 14 == s && r.textStopTime ? o += toFixedWidthHex(t.txPointTime, 2) : o += "00";
                     if ("00" == h) {
@@ -20689,7 +20689,7 @@
                     return a
                 }
 
-                function x(e, t) {
+                function drawPointStrToCmd(e, t) {
                     var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null,
                         n = "";
                     return n = null == r ? t.picsPlay ? "f0f1f200" + e + "f4f5f6f7" : "f0f1f2f3" + e + "f4f5f6f7" : "f0f1f2" + toFixedWidthHex(r, 2) + e + "f4f5f6f7", n.toUpperCase()
@@ -20752,7 +20752,7 @@
                             j = b,
                             x = 0;
                         b >= 8 && (j = 0);
-                        var V = s(e, g);
+                        var V = generateSegmentedLayoutData(e, g);
                         xyss = V[0], se = V[1] + V[2], xOffset = V[3];
                         for (var f = 0; f < xyss.length; f++) {
                             h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += toFixedWidthHex(x, 2), x = 0), n++, p += toFixedWidthHex(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
@@ -20775,7 +20775,7 @@
                             var o = e[c].xys,
                                 s = n;
                             255 == n && null != e[c].XysRight ? o = e[c].XysRight : 127 == n && null != e[c].XysUp ? o = e[c].XysUp : 128 == n && null != e[c].XysDown ? o = e[c].XysDown : s = 0;
-                            var p = l(o, e[c].time, r, s, h);
+                            var p = encodeLayoutToCommandData(o, e[c].time, r, s, h);
                             null != p && a.push(p)
                         }
                         if (0 == a.length) return "";
@@ -20801,23 +20801,23 @@
                         if (null != t) {
                             if (x = "", t.hasOwnProperty("groupList"))
                                 for (var V = 0; V < t.groupList.length; V++) x += toFixedWidthHex(t.groupList[V].color, 2);
-                            x += "ffffffff", x = x.substring(0, 8), g(t, "textStopTime") && (x += toFixedWidthHex(e.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(t, "textStopTime") && (x += toFixedWidthHex(e.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
                         }
                         var f = "",
                             F = e.prjData.prjItem;
                         for (var k in F) {
                             var m = F[k],
                                 P = 0 == m.pyMode ? 0 : 128;
-                            0 != P && null != t && t.hasOwnProperty("prjParm") && t.prjParm.prjIndex == k && (3 == k && g(t, "animationFix") && [2, 4, 11, 13, 19].includes(t.prjParm.selIndex) ? P |= 50 - t.prjParm.selIndex : P |= t.prjParm.selIndex);
+                            0 != P && null != t && t.hasOwnProperty("prjParm") && t.prjParm.prjIndex == k && (3 == k && getFeatureValue(t, "animationFix") && [2, 4, 11, 13, 19].includes(t.prjParm.selIndex) ? P |= 50 - t.prjParm.selIndex : P |= t.prjParm.selIndex);
                             var u = toFixedWidthHex(P, 2),
                                 X = "",
                                 N = n(m.prjSelected);
-                            3 == k && g(t, "animationFix") && (N = b([2, 4, 11, 13, 19], N));
+                            3 == k && getFeatureValue(t, "animationFix") && (N = applyBitmaskUpdates([2, 4, 11, 13, 19], N));
                             for (var H = 0; H < N.length; H++) X = toFixedWidthHex(N[H]) + X;
                             f = f + u + X
                         }
                         var z = "";
-                        g(t, "arbPlay") && (z += toFixedWidthHex(e.textData.runDir, 2));
+                        getFeatureValue(t, "arbPlay") && (z += toFixedWidthHex(e.textData.runDir, 2));
                         for (var Q = "", R = Math.floor(z.length / 2), v = R; v < 44; v++) Q += "00";
                         var I = "c0c1c2c3" + r + h + a + c + o + s + l + p + d + j + x + f + z + Q + "c4c5c6c7";
                         return I.toUpperCase()
@@ -20825,7 +20825,7 @@
                     getShakeCmdStr: function(e) {
                         var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
                             n = "";
-                        if (g(r, "xyCnf")) {
+                        if (getFeatureValue(r, "xyCnf")) {
                             n = "00", r.hasOwnProperty("xyCnfSave") && !r.xyCnfSave && (n = "ff");
                             var a = e.subsetData.xyCnf;
                             a.auto ? n += toFixedWidthHex(a.autoValue, 2) : n += toFixedWidthHex(255 - a.autoValue, 2), n += toFixedWidthHex(a.phase, 2);
@@ -20842,24 +20842,24 @@
                             }
                             t("log", "xyCnf", JSON.stringify(a), " at utils/funcTools.js:551")
                         }
-                        n = p(n, 16, "00");
+                        n = padHexStringToByteLength(n, 16, "00");
                         var l = "10111213" + n + "14151617";
                         return l.toUpperCase()
                     },
-                    getDrawPointStr: j,
+                    getDrawPointStr: encodeDrawPointCommand,
                     getDrawCmdStr: function(e, t, r) {
                         var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : "00",
-                            h = j(e, t, r, -1, n);
-                        return x(h, r)
+                            h = encodeDrawPointCommand(e, t, r, -1, n);
+                        return drawPointStrToCmd(h, r)
                     },
-                    drawPointStrToCmd: x,
+                    drawPointStrToCmd: drawPointStrToCmd,
                     getPisCmdStr: function(e, r) {
                         for (var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, h = r.cnfValus, a = "01", c = toFixedWidthHex(e, 2), o = a + c, s = 0; s <= 12; s++) o += toFixedWidthHex(h[s], 2);
                         var l = toFixedWidthHex(10 * r.playTime, 2);
-                        if (o += l, g(n, "xyCnf")) {
+                        if (o += l, getFeatureValue(n, "xyCnf")) {
                             for (var d = 14; d <= 18; d++) o += toFixedWidthHex(h[d], 2);
-                            t("log", "13-17", h[14], h[15], h[16], h[17], h[18], " at utils/funcTools.js:516"), o = p(o, 24, "00")
-                        } else o = p(o, 18, "00");
+                            t("log", "13-17", h[14], h[15], h[16], h[17], h[18], " at utils/funcTools.js:516"), o = padHexStringToByteLength(o, 24, "00")
+                        } else o = padHexStringToByteLength(o, 18, "00");
                         var b = "d0d1d2d3" + o + "d4d5d6d7";
                         return b.toUpperCase()
                     },
@@ -20867,10 +20867,10 @@
                         for (var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null, n = toFixedWidthHex(128 | e.length, 2), h = "FF", a = "", c = 0; c < e.length; c++) {
                             for (var o = "", s = e[c], l = 0; l <= 12; l++) o += toFixedWidthHex(s.cnfValus[l], 2);
                             var d = toFixedWidthHex(10 * s.playTime, 2);
-                            if (o += d, g(r, "xyCnf")) {
+                            if (o += d, getFeatureValue(r, "xyCnf")) {
                                 for (var b = s.cnfValus, j = 14; j <= 18; j++) o += toFixedWidthHex(b[j], 2);
-                                t("log", "pgs 14-18", b[14], b[15], b[16], b[17], b[18], " at utils/funcTools.js:488"), o = p(o, 21, "00")
-                            } else o = p(o, 15, "00");
+                                t("log", "pgs 14-18", b[14], b[15], b[16], b[17], b[18], " at utils/funcTools.js:488"), o = padHexStringToByteLength(o, 21, "00")
+                            } else o = padHexStringToByteLength(o, 15, "00");
                             a = a + o + h
                         }
                         return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
@@ -20907,7 +20907,7 @@
                         }
                         return r = "10111213" + toFixedWidthHex(t) + toFixedWidthHex(e.length, 2) + r + "14151617", r.toUpperCase()
                     },
-                    getFeaturesValue: g
+                    getFeaturesValue: getFeatureValue
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
