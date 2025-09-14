@@ -2613,7 +2613,7 @@
                                         t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), r && r(!0)
                                     },
                                     fail: function(h) {
-                                        e("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), r && r(!1)
+                                        e("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), r && r(!1)
                                     }
                                 })
                             }
@@ -5194,7 +5194,7 @@
             t["default"] = c.exports
         },
         "chineseLocaleStrings": function(e) {
-            e.exports = JSON.parse('{"\u8fde\u63a5\u84dd\u7259":"\u8fde\u63a5\u84dd\u7259","Random playback":"Random playback","\u5df2\u8fde\u63a5":"\u5df2\u8fde\u63a5","Not connected":"Not connected","Outdoor playback":"Outdoor playback","Reading device parameters...":"Reading device parameters...","Failed to read device parameters":"Failed to read device parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"\u91cd\u65b0\u5237\u65b0\u5217\u8868","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62","\u641c\u7d22\u84dd\u7259\u8bbe\u5907":"\u641c\u7d22\u84dd\u7259\u8bbe\u5907","\u5df2\u53d1\u73b0":"\u5df2\u53d1\u73b0\u8bbe\u5907","\u7ea2":"\u7ea2","\u7eff":"\u7eff","\u84dd":"\u84dd","\u9ec4":"\u9ec4","\u9752":"\u9752","\u7d2b":"\u7d2b","\u767d":"\u767d","\u8df3\u53d8":"\u8df3\u53d8","\u5168\u5f69":"\u5168\u5f69","\u64ad\u653e\u6a21\u5f0f":"\u64ad\u653e\u6a21\u5f0f","\u81ea\u8d70":"\u81ea\u8d70","\u58f0\u63a7":"\u58f0\u63a7","\u81ea\u8d70\u901f\u5ea6":"\u81ea\u8d70\u901f\u5ea6","\u58f0\u63a7\u7075\u654f\u5ea6":"\u58f0\u63a7\u7075\u654f\u5ea6","\u56fe\u6848\u989c\u8272":"\u56fe\u6848\u989c\u8272","\u5f53\u524d\u989c\u8272":"\u5f53\u524d\u989c\u8272","\u5faa\u73af\u64ad\u653e":"\u5faa\u73af\u64ad\u653e","\u52fe\u9009\u64ad\u653e":"\u52fe\u9009\u64ad\u653e","\u5730\u5740\u7801":"\u5730\u5740\u7801","\u663e\u793a\u8303\u56f4":"\u663e\u793a\u8303\u56f4","\u56fe\u6848\u76f8\u4f4d":"\u56fe\u6848\u76f8\u4f4d","\u6b63\u5e38\u663e\u793a":"\u6b63\u5e38\u663e\u793a","XY\u4e92\u6362":"XY\u4e92\u6362","\u8c03\u5149\u8bbe\u7f6e":"\u8c03\u5149\u8bbe\u7f6e","\u7ea2\u5149\u8c03\u5149":"\u7ea2\u5149\u8c03\u5149","\u7eff\u5149\u8c03\u5149":"\u7eff\u5149\u8c03\u5149","\u84dd\u5149\u8c03\u5149":"\u84dd\u5149\u8c03\u5149","\u6fc0\u5149\u5149\u6e90":"\u6fc0\u5149\u5149\u6e90","\u5355\u8272":"\u5355\u8272","\u53cc\u8272":"\u53cc\u8272","\u8c03\u5236\u6a21\u5f0f":"\u8c03\u5236\u6a21\u5f0f","\u7cfb\u7edf\u8bed\u8a00":"\u7cfb\u7edf\u8bed\u8a00","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...","\u6587\u672c\u989c\u8272":"\u6587\u672c\u989c\u8272","\u6587\u5b57\u5927\u5c0f":"\u6587\u5b57\u5927\u5c0f","\u663e\u793a\u89c6\u8ddd":"\u663e\u793a\u89c6\u8ddd","\u6d41\u6c34\u901f\u5ea6":"\u6d41\u6c34\u901f\u5ea6","\u6295\u5c04\u65b9\u5411":"\u6295\u5c04\u65b9\u5411","\u6c34\u5e73\u6295\u5c04":"\u6c34\u5e73\u6295\u5c04","\u5782\u76f4\u6295\u5c04":"\u5782\u76f4\u6295\u5c04","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"\u8d85\u51fa\u6700\u5927\u70b9\u6570","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931","\u7ebf\u6761\u989c\u8272":"\u7ebf\u6761\u989c\u8272","\u6e05\u7a7a":"\u6e05\u7a7a","\u56de\u9000":"\u56de\u9000","\u53d1\u9001":"\u53d1\u9001","\u6700\u591a20\u4e2a\u573a\u666f":"\u6700\u591a20\u4e2a\u573a\u666f","\u63d0\u793a":"\u63d0\u793a","\u662f\u5426\u5220\u9664\u573a\u666f":"\u662f\u5426\u5220\u9664\u573a\u666f","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"\u7528\u6237\u70b9\u51fb\u53d6\u6d88","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --","\u573a\u666f":"\u573a\u666f","\u79d2":"\u79d2","\u5220\u9664":"\u5220\u9664","\u7f16\u8f91":"\u7f16\u8f91","\u65b0\u589e\u573a\u666f":"\u65b0\u589e\u573a\u666f","\u56fe\u6848\u9009\u62e9":"\u56fe\u6848\u9009\u62e9","\u76f4\u7ebf\u7c7b\u56fe\u6848":"\u76f4\u7ebf\u7c7b\u56fe\u6848","\u5706\u5f27\u7c7b\u56fe\u6848":"\u5706\u5f27\u7c7b\u56fe\u6848","\u4eae\u70b9\u56fe\u6848":"\u4eae\u70b9\u56fe\u6848","\u6253\u70b9\u56fe\u6848":"\u6253\u70b9\u56fe\u6848","\u5723\u8bde\u56fe\u6848":"\u5723\u8bde\u56fe\u6848","\u52a8\u753b\u7ec4\u522b1":"\u52a8\u753b\u7ec4\u522b1","\u52a8\u753b\u7ec4\u522b2":"\u52a8\u753b\u7ec4\u522b2","\u52a8\u753b\u7ec4\u522b3":"\u52a8\u753b\u7ec4\u522b3","\u52a8\u753b\u7ec4\u522b4":"\u52a8\u753b\u7ec4\u522b4","\u52a8\u753b\u7ec4\u522b5":"\u52a8\u753b\u7ec4\u522b5","\u767d\u8272":"\u767d\u8272","\u7ea2\u8272":"\u7ea2\u8272","\u84dd\u8272":"\u84dd\u8272","\u7c89\u8272":"\u7c89\u8272","\u9752\u8272":"\u9752\u8272","\u9ec4\u8272":"\u9ec4\u8272","\u7eff\u8272":"\u7eff\u8272","\u6574\u4f53\u989c\u8272\u6362\u8272":"\u6574\u4f53\u989c\u8272\u6362\u8272","\u4e03\u5f69\u8679\u989c\u8272":"\u4e03\u5f69\u8679\u989c\u8272","2\u5206\u6bb5\u989c\u8272":"2\u5206\u6bb5\u989c\u8272","3\u5206\u6bb5\u989c\u8272":"3\u5206\u6bb5\u989c\u8272","4\u5206\u6bb5\u989c\u8272":"4\u5206\u6bb5\u989c\u8272","8\u5206\u6bb5\u989c\u8272":"8\u5206\u6bb5\u989c\u8272","16\u5206\u6bb5\u989c\u8272":"16\u5206\u6bb5\u989c\u8272","32\u5206\u6bb5\u989c\u8272":"32\u5206\u6bb5\u989c\u8272","\u989c\u8272\u6e10\u7ed8":"\u989c\u8272\u6e10\u7ed8","\u4e0d\u6d41\u6c34":"\u4e0d\u6d41\u6c34","\u6b63\u5411\u6d41\u6c34":"\u6b63\u5411\u6d41\u6c34","\u53cd\u5411\u6d41\u6c34":"\u53cd\u5411\u6d41\u6c34","\u56fe\u6848\u5927\u5c0f":"\u56fe\u6848\u5927\u5c0f","\u7f29\u653e\u624b\u52a8\u9009\u62e9":"\u7f29\u653e\u624b\u52a8\u9009\u62e9","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"\u7531\u5c0f\u5230\u5927\u7f29\u653e","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"\u7531\u5927\u5230\u5c0f\u7f29\u653e","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"\u5927\u5c0f\u5faa\u73af\u7f29\u653e","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e00","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e09","\u65cb\u8f6c\u89d2\u5ea6":"\u65cb\u8f6c\u89d2\u5ea6","\u6b63\u65cb\u8f6c\u901f\u5ea6":"\u6b63\u65cb\u8f6c\u901f\u5ea6","\u53cd\u65cb\u8f6c\u901f\u5ea6":"\u53cd\u65cb\u8f6c\u901f\u5ea6","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c","\u6c34\u5e73\u79fb\u52a8":"\u6c34\u5e73\u79fb\u52a8","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c","\u5782\u76f4\u79fb\u52a8":"\u5782\u76f4\u79fb\u52a8","\u65e0\u6ce2\u6d6a":"\u65e0\u6ce2\u6d6a","\u6ce2\u6d6a\u5e45\u5ea61":"\u6ce2\u6d6a\u5e45\u5ea61","\u6ce2\u6d6a\u5e45\u5ea62":"\u6ce2\u6d6a\u5e45\u5ea62","\u6ce2\u6d6a\u5e45\u5ea63":"\u6ce2\u6d6a\u5e45\u5ea63","\u6ce2\u6d6a\u5e45\u5ea64":"\u6ce2\u6d6a\u5e45\u5ea64","\u6ce2\u6d6a\u5e45\u5ea65":"\u6ce2\u6d6a\u5e45\u5ea65","\u6ce2\u6d6a\u5e45\u5ea66":"\u6ce2\u6d6a\u5e45\u5ea66","\u6ce2\u6d6a\u5e45\u5ea67":"\u6ce2\u6d6a\u5e45\u5ea67","\u6ce2\u6d6a\u5e45\u5ea68":"\u6ce2\u6d6a\u5e45\u5ea68","\u65e0\u6e10\u7ed8":"\u65e0\u6e10\u7ed8","\u624b\u52a8\u6e10\u7ed81":"\u624b\u52a8\u6e10\u7ed81","\u624b\u52a8\u6e10\u7ed82":"\u624b\u52a8\u6e10\u7ed82","\u81ea\u52a8\u6e10\u7ed81":"\u81ea\u52a8\u6e10\u7ed81","\u81ea\u52a8\u6e10\u7ed82":"\u81ea\u52a8\u6e10\u7ed82","\u81ea\u52a8\u6e10\u7ed83":"\u81ea\u52a8\u6e10\u7ed83","\u81ea\u52a8\u6e10\u7ed84":"\u81ea\u52a8\u6e10\u7ed84","\u56fe\u5f62\u5206\u7ec4":"\u56fe\u5f62\u5206\u7ec4","\u56fe\u5f62":"\u56fe\u5f62","\u989c\u8272":"\u989c\u8272","\u989c\u8272\u6d41\u6c34":"\u989c\u8272\u6d41\u6c34","\u56fe\u5f62\u5927\u5c0f":"\u56fe\u5f62\u5927\u5c0f","\u56fe\u5f62\u7f29\u653e":"\u56fe\u5f62\u7f29\u653e","\u56fe\u5f62\u65cb\u8f6c":"\u56fe\u5f62\u65cb\u8f6c","\u6c34\u5e73\u7ffb\u8f6c":"\u6c34\u5e73\u7ffb\u8f6c","\u5782\u76f4\u7ffb\u8f6c":"\u5782\u76f4\u7ffb\u8f6c","\u6ce2\u6d6a":"\u6ce2\u6d6a","\u6e10\u7ed8":"\u6e10\u7ed8","\u64ad\u653e\u65f6\u957f":"\u64ad\u653e\u65f6\u957f","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...","\u53d6\u6d88":"\u53d6\u6d88","\u786e\u5b9a":"\u786e\u5b9a","\u9009\u62e9\u56fe\u5f62":"\u9009\u62e9\u56fe\u5f62","\u901a\u9053\u590d\u4f4d":"\u901a\u9053\u590d\u4f4d","\u5b8b\u4f53":"\u5b8b\u4f53","\u76f4\u7ebf":"\u76f4\u7ebf","\u5706\u5f27":"\u5706\u5f27","\u4eae\u70b9":"\u4eae\u70b9","\u6253\u70b9":"\u6253\u70b9","\u5723\u8bde":"\u5723\u8bde","\u52a8\u753bA":"\u52a8\u753bA","\u52a8\u753bB":"\u52a8\u753bB","\u5f69\u8679":"\u5f69\u8679","\u9ed8\u8ba4":"\u9ed8\u8ba4","\u8f6f\u4ef6\u7248\u672c":"\u8f6f\u4ef6\u7248\u672c","\u8fde\u63a5":"\u8fde\u63a5","\u8bbe\u7f6e":"\u8bbe\u7f6e","Hand-drawn doodle":"Hand-drawn doodle","Text playback":"Text playback","Personalized programming":"Personalized programming","Animation playback":"Animation playback","Timeline playback":"Timeline playback","Christmas broadcast":"Christmas broadcast","DMX":"DMX","\u914d\u7f6e":"\u914d\u7f6e","\u8fd4\u56de":"\u8fd4\u56de","\u70b9\u6211\u8fde\u63a5":"\u70b9\u6211\u8fde\u63a5","\u84dd\u7259Not connected":"\u84dd\u7259Not connected","\u8bbe\u5907":"\u8bbe\u5907","\u8bf7\u8f93\u5165\u6587\u5b57":"\u8bf7\u8f93\u5165\u6587\u5b57","\u9884\u7559\u65e0\u529f\u80fd":"\u9884\u7559\u65e0\u529f\u80fd","\u91cd\u7f6e":"\u91cd\u7f6e","\u84dd\u7259\u8fde\u63a5":"\u84dd\u7259\u8fde\u63a5","\u5168\u9009":"\u5168\u9009","\u53cd\u9009":"\u53cd\u9009","\u6e05\u9664":"\u6e05\u9664","\u5b57\u6570":"\u5b57\u6570","\u70b9\u6570":"\u70b9\u6570","\u9884\u89c8":"\u9884\u89c8","\u573a\u666f\u7ba1\u7406":"\u573a\u666f\u7ba1\u7406","\u52a0\u8f7d\u4e2d":"\u52a0\u8f7d\u4e2d","\u573a\u666f\u7f16\u8f91":"\u573a\u666f\u7f16\u8f91","\u8bf7\u5148\u8fde\u63a5\u84dd\u7259":"\u8bf7\u5148\u8fde\u63a5\u84dd\u7259","\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b":"\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b","DMX\u5730\u5740\u7801":"\u5730\u5740\u7801","Please turn on the device first":"Please turn on the device first","\u5355\u7ebf\u5b57\u4f53":"\u5355\u7ebf\u5b57\u4f53","\u6b63\u5728\u53d1\u9001":"\u6b63\u5728\u53d1\u9001","\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528":"\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c","\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650","\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650":"\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650","Abnormality in reading device parameters":"Abnormality in reading device parameters","\u9009\u62e9":"\u9009\u62e9","\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247":"\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247","\u53d1\u9001\u5931\u8d25":"\u53d1\u9001\u5931\u8d25","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165","\u7b2c":"\u7b2c","\u7ec4\u6587\u5b57":"\u7ec4\u6587\u5b57","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5","\u4e0d\u652f\u6301\u6587\u672c":"\u4e0d\u652f\u6301\u6587\u672c","\u7ec4\u5b57\u4f53":"\u7ec4\u5b57\u4f53","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":"\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001","\u662f\u5426\u5220\u9664\u7b2c":"\u662f\u5426\u5220\u9664\u7b2c","\u7ec4":"\u7ec4","\u6700\u591a4\u4e2a\u5206\u7ec4":"\u6700\u591a4\u4e2a\u5206\u7ec4","\u6b63\u5728\u8fde\u63a5...":"\u6b63\u5728\u8fde\u63a5...","\u8fde\u63a5\u5931\u8d25":"\u8fde\u63a5\u5931\u8d25","\u5b57\u4f53\u9009\u62e9":"\u5b57\u4f53\u9009\u62e9","\u601d\u6e90\u9ed1\u4f53":"\u601d\u6e90\u9ed1\u4f53","\u601d\u6e90\u9ed1\u4f531":"\u601d\u6e90\u9ed1\u4f531","\u601d\u6e90\u9ed1\u4f532":"\u601d\u6e90\u9ed1\u4f532","\u601d\u6e90\u9ed1\u4f533":"\u601d\u6e90\u9ed1\u4f533","\u601d\u6e90\u9ed1\u4f534":"\u601d\u6e90\u9ed1\u4f534","\u601d\u6e90\u9ed1\u4f535":"\u601d\u6e90\u9ed1\u4f535","\u601d\u6e90\u9ed1\u4f536":"\u601d\u6e90\u9ed1\u4f536","\u601d\u6e90\u9ed1\u4f537":"\u601d\u6e90\u9ed1\u4f537","font_note_1001":"\u4e2d\u6587\uff0c\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587","font_note_1002":"\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u4fc4\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587\uff0c\u8d8a\u5357\u6587\uff0c\u5370\u5730\u6587\uff0c\u5b5f\u52a0\u62c9\u6587","font_note_1003":"\u82f1\u6587\uff0c\u4e2d\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u4fc4\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u65e5\u6587\uff0c\u5fb7\u6587","font_note_1004":"\u4e2d\u6587\uff0c\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587","font_note_1005":"\u82f1\u6587\uff0c\u4e2d\u6587","font_note_1006":"\u82f1\u6587\uff0c\u65e5\u6587\uff0c\u97e9\u6587","font_note_1007":"\u963f\u62c9\u4f2f\u6587","\u4fdd\u7559":"\u4fdd\u7559","\u56fe\u6848\u521d\u59cb\u989c\u8272":"\u56fe\u6848\u521d\u59cb\u989c\u8272","\u6df7\u8272":"\u6df7\u8272","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528","\u5df2\u65ad\u5f00\u8fde\u63a5":"\u5df2\u65ad\u5f00\u8fde\u63a5","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c","\u6587\u5b57\u7cbe\u5ea6":"\u6587\u5b57\u7cbe\u5ea6","Text graphic accuracy":"Text graphic accuracy","\u7cbe\u5ea6":"\u7cbe\u5ea6","\u9009\u62e9\u56fe\u7247":"\u9009\u62e9\u56fe\u7247","\u8bbe\u4e3a\u80cc\u666f":"\u8bbe\u4e3a\u80cc\u666f","\u8bc6\u522b\u56fe\u6848":"\u8bc6\u522b\u56fe\u6848","\u63cf\u8fb9":"\u63cf\u8fb9","\u6b63\u5728\u5904\u7406\u4e2d":"\u6b63\u5728\u5904\u7406\u4e2d","\u5f53\u524d\u673a\u578b":"\u5f53\u524d\u673a\u578b","hand_draw_tips":" ** \u8bf7\u7528\u624b\u6307\u4ece\u7a7a\u767d\u533a\u57df\u6ed1\u5411\u76ee\u6807\u56fe\u6848\u6765\u9009\u4e2d\\n ** \u53ef\u5bf9\u9009\u4e2d\u56fe\u6848\u653e\u5927\u3001\u7f29\u5c0f\u3001\u79fb\u52a8\u3001\u4fee\u6539\u989c\u8272\u3001\u5220\u9664\u7b49\u64cd\u4f5c","\u4e0d\u518d\u63d0\u793a":"\u4e0d\u518d\u63d0\u793a","out_door_tips1":"1-30 \u5730\u6807","out_door_tips2":"31-40 \u5317\u6781\u5149","out_door_tips3":"41-50 \u65f6\u7a7a\u96a7\u9053","\u6587\u4ef6\u540d":"\u6587\u4ef6\u540d","\u4fdd\u5b58\u6587\u4ef6":"\u4fdd\u5b58\u6587\u4ef6","\u9009\u62e9\u6587\u4ef6":"\u9009\u62e9\u6587\u4ef6","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"\u8bf7\u8f93\u5165\u6587\u4ef6\u540d","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed","\u4fdd\u5b58\u6210\u529f":"\u4fdd\u5b58\u6210\u529f","\u4fdd\u5b58\u5931\u8d25":"\u4fdd\u5b58\u5931\u8d25","\u4fee\u6539\u6210\u529f":"\u4fee\u6539\u6210\u529f","\u4fee\u6539\u5931\u8d25":"\u4fee\u6539\u5931\u8d25","\u5220\u9664\u6210\u529f":"\u5220\u9664\u6210\u529f","\u5220\u9664\u5931\u8d25":"\u5220\u9664\u5931\u8d25","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301","text_time_range":"\u8303\u56f41-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848","\u8bf7\u9009\u62e9\u6587\u4ef6":"\u8bf7\u9009\u62e9\u6587\u4ef6","\u6587\u4ef6\u6570":"\u6587\u4ef6\u6570","\u53e6\u5b58\u6587\u4ef6":"\u53e6\u5b58\u6587\u4ef6","\u5220\u9664\u6240\u9009\u6587\u4ef6":"\u5220\u9664\u6240\u9009\u6587\u4ef6","Select-File":"\u9009\u62e9","\u6447\u5934\u8bbe\u7f6e":"\u6447\u5934\u8bbe\u7f6e","\u6447\u5934\u6a21\u5f0f":"\u6447\u5934\u6a21\u5f0f","\u6447\u5934\u76f8\u4f4d":"\u6447\u5934\u76f8\u4f4d","\u81ea\u52a8":"\u81ea\u52a8","\u624b\u52a8":"\u624b\u52a8","X-axis coarse tuning":"X-axis coarse tuning","X-axis fine tuning":"X-axis fine tuning","Y-axis coarse tuning":"Y-axis coarse tuning","Y-axis fine tuning":"Y-axis fine tuning","\u6c34\u5e73\u7535\u673a":"\u6c34\u5e73\u7535\u673a","\u6c34\u5e73\u5fae\u8c03":"\u6c34\u5e73\u5fae\u8c03","\u5782\u76f4\u7535\u673a":"\u5782\u76f4\u7535\u673a","\u5782\u76f4\u5fae\u8c03":"\u5782\u76f4\u5fae\u8c03","\u7535\u673a\u901f\u5ea6":"\u7535\u673a\u901f\u5ea6","\u6d41\u6c34\u65b9\u5411":"\u6d41\u6c34\u65b9\u5411","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"\u963f\u62c9\u4f2f\u8bed\u65b9\u5411","\u9ed8\u8ba4\u65b9\u5411":"\u9ed8\u8ba4\u65b9\u5411","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939","\u9009\u62e9\u5217\u8868":"\u9009\u62e9\u5217\u8868","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0","Playlist":"Playlist","\u4fdd\u5b58":"\u4fdd\u5b58","\u6dfb\u52a0":"\u6dfb\u52a0","\u6279\u91cf\u8bbe\u7f6e":"\u6279\u91cf\u8bbe\u7f6e","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0","ALL":"\u5168\u90e8","\u5217\u8868\u7f16\u8f91":"\u5217\u8868\u7f16\u8f91","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"\u6dfb\u52a0\u81f3\u65b0\u5217\u8868","\u7acb\u5373\u64ad\u653e":"\u7acb\u5373\u64ad\u653e","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --","\u641c\u7d22\u4e0d\u5230\u8bbe\u5907?":"\u641c\u7d22\u4e0d\u5230\u8bbe\u5907?","Ins_title":"\u65e0\u6cd5\u8fde\u63a5\u84dd\u7259\u6392\u67e5\u6307\u5357","Ins_OpenBlu_Title":"\u5f00\u542f\u84dd\u7259","Ins_OpenBlu_Text":"\u8bbe\u7f6e \u2192 \u84dd\u7259 \u2192 \u5f00\u542f","Ins_PerBlu_Title":"\u6388\u4e88\u84dd\u7259\u6743\u9650","Ins_PerBlu_Text_android":"\u8bbe\u7f6e \u2192 \u5e94\u7528\u7ba1\u7406 \u2192Light Elf \u2192 \u6743\u9650\u7ba1\u7406 \u2192 \u5f00\u542f\u300c\u84dd\u7259&\u9644\u8fd1\u8bbe\u5907\u300d","Ins_PerBlu_Text_IOS":"\u8bbe\u7f6e \u2192 \u5e94\u7528\u5217\u8868 \u2192Light Elf \u2192  \u5f00\u542f\u300c\u84dd\u7259\u300d","Ins_PerBlu_Text_WX":"\u4e3b\u754c\u9762 \u2192 \u5de6\u4e0a\u89d2\u300c...\u300d \u2192 \u8bbe\u7f6e \u2192\u84dd\u7259 \u2192 \u9009\u62e9\u300c\u4f7f\u7528\u5c0f\u7a0b\u5e8f\u65f6\u5141\u8bb8\u300d","Ins_OpenLoc_Title":"\u5f00\u542f\u5b9a\u4f4d","Ins_OpenLoc_Text":"\u8bbe\u7f6e \u2192 \u4f4d\u7f6e\u4fe1\u606f \u2192 \u5f00\u542f","Ins_PerLoc_Title":"\u6388\u4e88\u5b9a\u4f4d\u6743\u9650","Ins_PerLoc_Text":"\u8bbe\u7f6e \u2192 \u5e94\u7528\u7ba1\u7406 \u2192Light Elf \u2192 \u6743\u9650\u7ba1\u7406 \u2192 \u5f00\u542f\u300c\u4f4d\u7f6e\u300d","Ins_Distance_Title":"\u63a7\u5236\u8bbe\u5907\u8ddd\u79bb","Ins_Distance_Text":"\u84dd\u7259\u8fde\u63a5\u8303\u56f4\u6709\u9650\uff0c\u5c06\u624b\u673a\u9760\u8fd1\u8bbe\u5907\uff0c\u907f\u514d\u5899\u58c1\u3001\u91d1\u5c5e\u7b49\u963b\u9694\u4fe1\u53f7","Ins_Reroot_Title":"\u91cd\u542f\u8bbe\u5907","Ins_Reroot_Text":"\u5173\u95ed\u624b\u673a\u548c\u84dd\u7259\u8bbe\u5907\u540e\u91cd\u65b0\u5f00\u542f\uff0c\u6216\u53ef\u89e3\u51b3\u8fde\u63a5\u95ee\u9898","\u989c\u8272\u8bbe\u7f6e":"Color"}')
+            e.exports = JSON.parse('{"\u8fde\u63a5Bluetooth":"\u8fde\u63a5Bluetooth","Random playback":"Random playback","Connected":"Connected","Not connected":"Not connected","Outdoor playback":"Outdoor playback","Reading device parameters...":"Reading device parameters...","Failed to read device parameters":"Failed to read device parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"\u91cd\u65b0\u5237\u65b0\u5217\u8868","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62","\u641c\u7d22BluetoothDevice":"\u641c\u7d22BluetoothDevice","\u5df2\u53d1\u73b0":"\u5df2\u53d1\u73b0Device","\u7ea2":"\u7ea2","\u7eff":"\u7eff","\u84dd":"\u84dd","\u9ec4":"\u9ec4","\u9752":"\u9752","\u7d2b":"\u7d2b","\u767d":"\u767d","\u8df3\u53d8":"\u8df3\u53d8","\u5168\u5f69":"\u5168\u5f69","\u64ad\u653e\u6a21\u5f0f":"\u64ad\u653e\u6a21\u5f0f","\u81ea\u8d70":"\u81ea\u8d70","\u58f0\u63a7":"\u58f0\u63a7","\u81ea\u8d70\u901f\u5ea6":"\u81ea\u8d70\u901f\u5ea6","\u58f0\u63a7\u7075\u654f\u5ea6":"\u58f0\u63a7\u7075\u654f\u5ea6","\u56fe\u6848\u989c\u8272":"\u56fe\u6848\u989c\u8272","\u5f53\u524d\u989c\u8272":"\u5f53\u524d\u989c\u8272","\u5faa\u73af\u64ad\u653e":"\u5faa\u73af\u64ad\u653e","\u52fe\u9009\u64ad\u653e":"\u52fe\u9009\u64ad\u653e","\u5730\u5740\u7801":"\u5730\u5740\u7801","\u663e\u793a\u8303\u56f4":"\u663e\u793a\u8303\u56f4","\u56fe\u6848\u76f8\u4f4d":"\u56fe\u6848\u76f8\u4f4d","\u6b63\u5e38\u663e\u793a":"\u6b63\u5e38\u663e\u793a","XY\u4e92\u6362":"XY\u4e92\u6362","\u8c03\u5149Settings":"\u8c03\u5149Settings","\u7ea2\u5149\u8c03\u5149":"\u7ea2\u5149\u8c03\u5149","\u7eff\u5149\u8c03\u5149":"\u7eff\u5149\u8c03\u5149","\u84dd\u5149\u8c03\u5149":"\u84dd\u5149\u8c03\u5149","\u6fc0\u5149\u5149\u6e90":"\u6fc0\u5149\u5149\u6e90","\u5355\u8272":"\u5355\u8272","\u53cc\u8272":"\u53cc\u8272","\u8c03\u5236\u6a21\u5f0f":"\u8c03\u5236\u6a21\u5f0f","\u7cfb\u7edf\u8bed\u8a00":"\u7cfb\u7edf\u8bed\u8a00","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...","\u6587\u672c\u989c\u8272":"\u6587\u672c\u989c\u8272","\u6587\u5b57\u5927\u5c0f":"\u6587\u5b57\u5927\u5c0f","\u663e\u793a\u89c6\u8ddd":"\u663e\u793a\u89c6\u8ddd","\u6d41\u6c34\u901f\u5ea6":"\u6d41\u6c34\u901f\u5ea6","\u6295\u5c04\u65b9\u5411":"\u6295\u5c04\u65b9\u5411","\u6c34\u5e73\u6295\u5c04":"\u6c34\u5e73\u6295\u5c04","\u5782\u76f4\u6295\u5c04":"\u5782\u76f4\u6295\u5c04","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"\u8d85\u51fa\u6700\u5927\u70b9\u6570","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931","\u7ebf\u6761\u989c\u8272":"\u7ebf\u6761\u989c\u8272","\u6e05\u7a7a":"\u6e05\u7a7a","\u56de\u9000":"\u56de\u9000","\u53d1\u9001":"\u53d1\u9001","\u6700\u591a20\u4e2a\u573a\u666f":"\u6700\u591a20\u4e2a\u573a\u666f","\u63d0\u793a":"\u63d0\u793a","\u662f\u5426\u5220\u9664\u573a\u666f":"\u662f\u5426\u5220\u9664\u573a\u666f","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"\u7528\u6237\u70b9\u51fb\u53d6\u6d88","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --","\u573a\u666f":"\u573a\u666f","\u79d2":"\u79d2","\u5220\u9664":"\u5220\u9664","\u7f16\u8f91":"\u7f16\u8f91","\u65b0\u589e\u573a\u666f":"\u65b0\u589e\u573a\u666f","\u56fe\u6848\u9009\u62e9":"\u56fe\u6848\u9009\u62e9","\u76f4\u7ebf\u7c7b\u56fe\u6848":"\u76f4\u7ebf\u7c7b\u56fe\u6848","\u5706\u5f27\u7c7b\u56fe\u6848":"\u5706\u5f27\u7c7b\u56fe\u6848","\u4eae\u70b9\u56fe\u6848":"\u4eae\u70b9\u56fe\u6848","\u6253\u70b9\u56fe\u6848":"\u6253\u70b9\u56fe\u6848","\u5723\u8bde\u56fe\u6848":"\u5723\u8bde\u56fe\u6848","\u52a8\u753b\u7ec4\u522b1":"\u52a8\u753b\u7ec4\u522b1","\u52a8\u753b\u7ec4\u522b2":"\u52a8\u753b\u7ec4\u522b2","\u52a8\u753b\u7ec4\u522b3":"\u52a8\u753b\u7ec4\u522b3","\u52a8\u753b\u7ec4\u522b4":"\u52a8\u753b\u7ec4\u522b4","\u52a8\u753b\u7ec4\u522b5":"\u52a8\u753b\u7ec4\u522b5","\u767d\u8272":"\u767d\u8272","\u7ea2\u8272":"\u7ea2\u8272","\u84dd\u8272":"\u84dd\u8272","\u7c89\u8272":"\u7c89\u8272","\u9752\u8272":"\u9752\u8272","\u9ec4\u8272":"\u9ec4\u8272","\u7eff\u8272":"\u7eff\u8272","\u6574\u4f53\u989c\u8272\u6362\u8272":"\u6574\u4f53\u989c\u8272\u6362\u8272","\u4e03\u5f69\u8679\u989c\u8272":"\u4e03\u5f69\u8679\u989c\u8272","2\u5206\u6bb5\u989c\u8272":"2\u5206\u6bb5\u989c\u8272","3\u5206\u6bb5\u989c\u8272":"3\u5206\u6bb5\u989c\u8272","4\u5206\u6bb5\u989c\u8272":"4\u5206\u6bb5\u989c\u8272","8\u5206\u6bb5\u989c\u8272":"8\u5206\u6bb5\u989c\u8272","16\u5206\u6bb5\u989c\u8272":"16\u5206\u6bb5\u989c\u8272","32\u5206\u6bb5\u989c\u8272":"32\u5206\u6bb5\u989c\u8272","\u989c\u8272\u6e10\u7ed8":"\u989c\u8272\u6e10\u7ed8","\u4e0d\u6d41\u6c34":"\u4e0d\u6d41\u6c34","\u6b63\u5411\u6d41\u6c34":"\u6b63\u5411\u6d41\u6c34","\u53cd\u5411\u6d41\u6c34":"\u53cd\u5411\u6d41\u6c34","\u56fe\u6848\u5927\u5c0f":"\u56fe\u6848\u5927\u5c0f","\u7f29\u653eManual\u9009\u62e9":"\u7f29\u653eManual\u9009\u62e9","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"\u7531\u5c0f\u5230\u5927\u7f29\u653e","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"\u7531\u5927\u5230\u5c0f\u7f29\u653e","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"\u5927\u5c0f\u5faa\u73af\u7f29\u653e","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e00","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"\u4e0d\u89c4\u5219\u7f29\u653e\u4e09","\u65cb\u8f6c\u89d2\u5ea6":"\u65cb\u8f6c\u89d2\u5ea6","\u6b63\u65cb\u8f6c\u901f\u5ea6":"\u6b63\u65cb\u8f6c\u901f\u5ea6","\u53cd\u65cb\u8f6c\u901f\u5ea6":"\u53cd\u65cb\u8f6c\u901f\u5ea6","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c","\u6c34\u5e73\u79fb\u52a8":"\u6c34\u5e73\u79fb\u52a8","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c","\u5782\u76f4\u79fb\u52a8":"\u5782\u76f4\u79fb\u52a8","\u65e0\u6ce2\u6d6a":"\u65e0\u6ce2\u6d6a","\u6ce2\u6d6a\u5e45\u5ea61":"\u6ce2\u6d6a\u5e45\u5ea61","\u6ce2\u6d6a\u5e45\u5ea62":"\u6ce2\u6d6a\u5e45\u5ea62","\u6ce2\u6d6a\u5e45\u5ea63":"\u6ce2\u6d6a\u5e45\u5ea63","\u6ce2\u6d6a\u5e45\u5ea64":"\u6ce2\u6d6a\u5e45\u5ea64","\u6ce2\u6d6a\u5e45\u5ea65":"\u6ce2\u6d6a\u5e45\u5ea65","\u6ce2\u6d6a\u5e45\u5ea66":"\u6ce2\u6d6a\u5e45\u5ea66","\u6ce2\u6d6a\u5e45\u5ea67":"\u6ce2\u6d6a\u5e45\u5ea67","\u6ce2\u6d6a\u5e45\u5ea68":"\u6ce2\u6d6a\u5e45\u5ea68","\u65e0\u6e10\u7ed8":"\u65e0\u6e10\u7ed8","Manual\u6e10\u7ed81":"Manual\u6e10\u7ed81","Manual\u6e10\u7ed82":"Manual\u6e10\u7ed82","Automatic\u6e10\u7ed81":"Automatic\u6e10\u7ed81","Automatic\u6e10\u7ed82":"Automatic\u6e10\u7ed82","Automatic\u6e10\u7ed83":"Automatic\u6e10\u7ed83","Automatic\u6e10\u7ed84":"Automatic\u6e10\u7ed84","\u56fe\u5f62\u5206\u7ec4":"\u56fe\u5f62\u5206\u7ec4","\u56fe\u5f62":"\u56fe\u5f62","\u989c\u8272":"\u989c\u8272","\u989c\u8272\u6d41\u6c34":"\u989c\u8272\u6d41\u6c34","\u56fe\u5f62\u5927\u5c0f":"\u56fe\u5f62\u5927\u5c0f","\u56fe\u5f62\u7f29\u653e":"\u56fe\u5f62\u7f29\u653e","\u56fe\u5f62\u65cb\u8f6c":"\u56fe\u5f62\u65cb\u8f6c","\u6c34\u5e73\u7ffb\u8f6c":"\u6c34\u5e73\u7ffb\u8f6c","\u5782\u76f4\u7ffb\u8f6c":"\u5782\u76f4\u7ffb\u8f6c","\u6ce2\u6d6a":"\u6ce2\u6d6a","\u6e10\u7ed8":"\u6e10\u7ed8","\u64ad\u653e\u65f6\u957f":"\u64ad\u653e\u65f6\u957f","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...","\u53d6\u6d88":"\u53d6\u6d88","\u786e\u5b9a":"\u786e\u5b9a","\u9009\u62e9\u56fe\u5f62":"\u9009\u62e9\u56fe\u5f62","\u901a\u9053\u590d\u4f4d":"\u901a\u9053\u590d\u4f4d","\u5b8b\u4f53":"\u5b8b\u4f53","\u76f4\u7ebf":"\u76f4\u7ebf","\u5706\u5f27":"\u5706\u5f27","\u4eae\u70b9":"\u4eae\u70b9","\u6253\u70b9":"\u6253\u70b9","\u5723\u8bde":"\u5723\u8bde","\u52a8\u753bA":"\u52a8\u753bA","\u52a8\u753bB":"\u52a8\u753bB","\u5f69\u8679":"\u5f69\u8679","\u9ed8\u8ba4":"\u9ed8\u8ba4","\u8f6f\u4ef6\u7248\u672c":"\u8f6f\u4ef6\u7248\u672c","\u8fde\u63a5":"\u8fde\u63a5","Settings":"Settings","Hand-drawn doodle":"Hand-drawn doodle","Text playback":"Text playback","Personalized programming":"Personalized programming","Animation playback":"Animation playback","Timeline playback":"Timeline playback","Christmas broadcast":"Christmas broadcast","DMX":"DMX","\u914d\u7f6e":"\u914d\u7f6e","\u8fd4\u56de":"\u8fd4\u56de","Click me to connect":"Click me to connect","BluetoothNot connected":"BluetoothNot connected","Device":"Device","\u8bf7\u8f93\u5165\u6587\u5b57":"\u8bf7\u8f93\u5165\u6587\u5b57","\u9884\u7559\u65e0\u529f\u80fd":"\u9884\u7559\u65e0\u529f\u80fd","\u91cd\u7f6e":"\u91cd\u7f6e","Bluetooth\u8fde\u63a5":"Bluetooth\u8fde\u63a5","\u5168\u9009":"\u5168\u9009","\u53cd\u9009":"\u53cd\u9009","\u6e05\u9664":"\u6e05\u9664","\u5b57\u6570":"\u5b57\u6570","\u70b9\u6570":"\u70b9\u6570","\u9884\u89c8":"\u9884\u89c8","\u573a\u666f\u7ba1\u7406":"\u573a\u666f\u7ba1\u7406","\u52a0\u8f7d\u4e2d":"\u52a0\u8f7d\u4e2d","\u573a\u666f\u7f16\u8f91":"\u573a\u666f\u7f16\u8f91","\u8bf7\u5148\u8fde\u63a5Bluetooth":"\u8bf7\u5148\u8fde\u63a5Bluetooth","The current device cannot be identified":"The current device cannot be identified","DMX\u5730\u5740\u7801":"\u5730\u5740\u7801","Please turn on the device first":"Please turn on the device first","\u5355\u7ebf\u5b57\u4f53":"\u5355\u7ebf\u5b57\u4f53","\u6b63\u5728\u53d1\u9001":"\u6b63\u5728\u53d1\u9001","\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528":"\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c","\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650","\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650":"\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650","Abnormality in reading device parameters":"Abnormality in reading device parameters","\u9009\u62e9":"\u9009\u62e9","Settings\u80cc\u666f\u56fe\u7247":"Settings\u80cc\u666f\u56fe\u7247","\u53d1\u9001\u5931\u8d25":"\u53d1\u9001\u5931\u8d25","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165","\u7b2c":"\u7b2c","\u7ec4\u6587\u5b57":"\u7ec4\u6587\u5b57","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5","\u4e0d\u652f\u6301\u6587\u672c":"\u4e0d\u652f\u6301\u6587\u672c","\u7ec4\u5b57\u4f53":"\u7ec4\u5b57\u4f53","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":"\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001","\u662f\u5426\u5220\u9664\u7b2c":"\u662f\u5426\u5220\u9664\u7b2c","\u7ec4":"\u7ec4","\u6700\u591a4\u4e2a\u5206\u7ec4":"\u6700\u591a4\u4e2a\u5206\u7ec4","\u6b63\u5728\u8fde\u63a5...":"\u6b63\u5728\u8fde\u63a5...","\u8fde\u63a5\u5931\u8d25":"\u8fde\u63a5\u5931\u8d25","\u5b57\u4f53\u9009\u62e9":"\u5b57\u4f53\u9009\u62e9","\u601d\u6e90\u9ed1\u4f53":"\u601d\u6e90\u9ed1\u4f53","\u601d\u6e90\u9ed1\u4f531":"\u601d\u6e90\u9ed1\u4f531","\u601d\u6e90\u9ed1\u4f532":"\u601d\u6e90\u9ed1\u4f532","\u601d\u6e90\u9ed1\u4f533":"\u601d\u6e90\u9ed1\u4f533","\u601d\u6e90\u9ed1\u4f534":"\u601d\u6e90\u9ed1\u4f534","\u601d\u6e90\u9ed1\u4f535":"\u601d\u6e90\u9ed1\u4f535","\u601d\u6e90\u9ed1\u4f536":"\u601d\u6e90\u9ed1\u4f536","\u601d\u6e90\u9ed1\u4f537":"\u601d\u6e90\u9ed1\u4f537","font_note_1001":"\u4e2d\u6587\uff0c\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587","font_note_1002":"\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u4fc4\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587\uff0c\u8d8a\u5357\u6587\uff0c\u5370\u5730\u6587\uff0c\u5b5f\u52a0\u62c9\u6587","font_note_1003":"\u82f1\u6587\uff0c\u4e2d\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u4fc4\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u65e5\u6587\uff0c\u5fb7\u6587","font_note_1004":"\u4e2d\u6587\uff0c\u82f1\u6587\uff0c\u897f\u73ed\u7259\u6587\uff0c\u8461\u8404\u7259\u6587\uff0c\u5fb7\u6587\uff0c\u6cd5\u6587","font_note_1005":"\u82f1\u6587\uff0c\u4e2d\u6587","font_note_1006":"\u82f1\u6587\uff0c\u65e5\u6587\uff0c\u97e9\u6587","font_note_1007":"\u963f\u62c9\u4f2f\u6587","\u4fdd\u7559":"\u4fdd\u7559","\u56fe\u6848\u521d\u59cb\u989c\u8272":"\u56fe\u6848\u521d\u59cb\u989c\u8272","\u6df7\u8272":"\u6df7\u8272","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528","Disconnected":"Disconnected","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c","\u6587\u5b57\u7cbe\u5ea6":"\u6587\u5b57\u7cbe\u5ea6","Text graphic accuracy":"Text graphic accuracy","\u7cbe\u5ea6":"\u7cbe\u5ea6","\u9009\u62e9\u56fe\u7247":"\u9009\u62e9\u56fe\u7247","\u8bbe\u4e3a\u80cc\u666f":"\u8bbe\u4e3a\u80cc\u666f","\u8bc6\u522b\u56fe\u6848":"\u8bc6\u522b\u56fe\u6848","\u63cf\u8fb9":"\u63cf\u8fb9","\u6b63\u5728\u5904\u7406\u4e2d":"\u6b63\u5728\u5904\u7406\u4e2d","\u5f53\u524d\u673a\u578b":"\u5f53\u524d\u673a\u578b","hand_draw_tips":" ** \u8bf7\u7528\u624b\u6307\u4ece\u7a7a\u767d\u533a\u57df\u6ed1\u5411\u76ee\u6807\u56fe\u6848\u6765\u9009\u4e2d\\n ** \u53ef\u5bf9\u9009\u4e2d\u56fe\u6848\u653e\u5927\u3001\u7f29\u5c0f\u3001\u79fb\u52a8\u3001\u4fee\u6539\u989c\u8272\u3001\u5220\u9664\u7b49\u64cd\u4f5c","\u4e0d\u518d\u63d0\u793a":"\u4e0d\u518d\u63d0\u793a","out_door_tips1":"1-30 \u5730\u6807","out_door_tips2":"31-40 \u5317\u6781\u5149","out_door_tips3":"41-50 \u65f6\u7a7a\u96a7\u9053","\u6587\u4ef6\u540d":"\u6587\u4ef6\u540d","\u4fdd\u5b58\u6587\u4ef6":"\u4fdd\u5b58\u6587\u4ef6","\u9009\u62e9\u6587\u4ef6":"\u9009\u62e9\u6587\u4ef6","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"\u8bf7\u8f93\u5165\u6587\u4ef6\u540d","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed","\u4fdd\u5b58\u6210\u529f":"\u4fdd\u5b58\u6210\u529f","\u4fdd\u5b58\u5931\u8d25":"\u4fdd\u5b58\u5931\u8d25","\u4fee\u6539\u6210\u529f":"\u4fee\u6539\u6210\u529f","\u4fee\u6539\u5931\u8d25":"\u4fee\u6539\u5931\u8d25","\u5220\u9664\u6210\u529f":"\u5220\u9664\u6210\u529f","\u5220\u9664\u5931\u8d25":"\u5220\u9664\u5931\u8d25","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301","text_time_range":"\u8303\u56f41-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848","\u8bf7\u9009\u62e9\u6587\u4ef6":"\u8bf7\u9009\u62e9\u6587\u4ef6","\u6587\u4ef6\u6570":"\u6587\u4ef6\u6570","\u53e6\u5b58\u6587\u4ef6":"\u53e6\u5b58\u6587\u4ef6","\u5220\u9664\u6240\u9009\u6587\u4ef6":"\u5220\u9664\u6240\u9009\u6587\u4ef6","Select-File":"\u9009\u62e9","\u6447\u5934Settings":"\u6447\u5934Settings","Shake mode":"Shake mode","Shake phase":"Shake phase","Automatic":"Automatic","Manual":"Manual","X-axis coarse tuning":"X-axis coarse tuning","X-axis fine tuning":"X-axis fine tuning","Y-axis coarse tuning":"Y-axis coarse tuning","Y-axis fine tuning":"Y-axis fine tuning","\u6c34\u5e73\u7535\u673a":"\u6c34\u5e73\u7535\u673a","\u6c34\u5e73\u5fae\u8c03":"\u6c34\u5e73\u5fae\u8c03","\u5782\u76f4\u7535\u673a":"\u5782\u76f4\u7535\u673a","\u5782\u76f4\u5fae\u8c03":"\u5782\u76f4\u5fae\u8c03","\u7535\u673a\u901f\u5ea6":"\u7535\u673a\u901f\u5ea6","\u6d41\u6c34\u65b9\u5411":"\u6d41\u6c34\u65b9\u5411","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"\u963f\u62c9\u4f2f\u8bed\u65b9\u5411","\u9ed8\u8ba4\u65b9\u5411":"\u9ed8\u8ba4\u65b9\u5411","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939","\u9009\u62e9\u5217\u8868":"\u9009\u62e9\u5217\u8868","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0","Playlist":"Playlist","\u4fdd\u5b58":"\u4fdd\u5b58","\u6dfb\u52a0":"\u6dfb\u52a0","\u6279\u91cfSettings":"\u6279\u91cfSettings","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0","ALL":"\u5168\u90e8","\u5217\u8868\u7f16\u8f91":"\u5217\u8868\u7f16\u8f91","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"\u6dfb\u52a0\u81f3\u65b0\u5217\u8868","\u7acb\u5373\u64ad\u653e":"\u7acb\u5373\u64ad\u653e","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --","\u641c\u7d22\u4e0d\u5230Device?":"\u641c\u7d22\u4e0d\u5230Device?","Ins_title":"\u65e0\u6cd5\u8fde\u63a5Bluetooth\u6392\u67e5\u6307\u5357","Ins_OpenBlu_Title":"\u5f00\u542fBluetooth","Ins_OpenBlu_Text":"Settings \u2192 Bluetooth \u2192 \u5f00\u542f","Ins_PerBlu_Title":"\u6388\u4e88Bluetooth\u6743\u9650","Ins_PerBlu_Text_android":"Settings \u2192 \u5e94\u7528\u7ba1\u7406 \u2192Light Elf \u2192 \u6743\u9650\u7ba1\u7406 \u2192 \u5f00\u542f\u300cBluetooth&\u9644\u8fd1Device\u300d","Ins_PerBlu_Text_IOS":"Settings \u2192 \u5e94\u7528\u5217\u8868 \u2192Light Elf \u2192  \u5f00\u542f\u300cBluetooth\u300d","Ins_PerBlu_Text_WX":"\u4e3b\u754c\u9762 \u2192 \u5de6\u4e0a\u89d2\u300c...\u300d \u2192 Settings \u2192Bluetooth \u2192 \u9009\u62e9\u300c\u4f7f\u7528\u5c0f\u7a0b\u5e8f\u65f6\u5141\u8bb8\u300d","Ins_OpenLoc_Title":"\u5f00\u542f\u5b9a\u4f4d","Ins_OpenLoc_Text":"Settings \u2192 \u4f4d\u7f6e\u4fe1\u606f \u2192 \u5f00\u542f","Ins_PerLoc_Title":"\u6388\u4e88\u5b9a\u4f4d\u6743\u9650","Ins_PerLoc_Text":"Settings \u2192 \u5e94\u7528\u7ba1\u7406 \u2192Light Elf \u2192 \u6743\u9650\u7ba1\u7406 \u2192 \u5f00\u542f\u300c\u4f4d\u7f6e\u300d","Ins_Distance_Title":"\u63a7\u5236Device\u8ddd\u79bb","Ins_Distance_Text":"Bluetooth\u8fde\u63a5\u8303\u56f4\u6709\u9650\uff0c\u5c06\u624b\u673a\u9760\u8fd1Device\uff0c\u907f\u514d\u5899\u58c1\u3001\u91d1\u5c5e\u7b49\u963b\u9694\u4fe1\u53f7","Ins_Reroot_Title":"\u91cd\u542fDevice","Ins_Reroot_Text":"\u5173\u95ed\u624b\u673a\u548cBluetoothDevice\u540e\u91cd\u65b0\u5f00\u542f\uff0c\u6216\u53ef\u89e3\u51b3\u8fde\u63a5\u95ee\u9898","Color settings":"Color"}')
         },
         "someFeaturePageExport": function(e, t, r) {
             "use strict";
@@ -11747,7 +11747,7 @@
                 var a = {
                     data: function() {
                         return {
-                            nbTitle: "\u81ea\u52a8\u5316\u6d4b\u8bd5",
+                            nbTitle: "Automatic\u5316\u6d4b\u8bd5",
                             devices: [],
                             forTest: !1,
                             deviceTested: [],
@@ -11764,7 +11764,7 @@
                             scrollTop: 0,
                             chs: [],
                             misScanding: !1,
-                            scandbutName: "\u5f00\u59cb\u81ea\u52a8\u6d4b\u8bd5",
+                            scandbutName: "\u5f00\u59cbAutomatic\u6d4b\u8bd5",
                             name: "",
                             deviceId: "",
                             canWrite: !1
@@ -11815,7 +11815,7 @@
                                     }))
                                 },
                                 fail: function(e) {
-                                    r.bluOpen = !1, t("log", "openBluetoothAdapter", e, " at pages/test/test.js:110"), 10001 === e.errCode && r.showMsg("\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528"), 103 == e.errno && r.showMsg("\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650")
+                                    r.bluOpen = !1, t("log", "openBluetoothAdapter", e, " at pages/test/test.js:110"), 10001 === e.errCode && r.showMsg("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), 103 == e.errno && r.showMsg("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650")
                                 },
                                 complete: function() {
                                     e && e()
@@ -11839,14 +11839,14 @@
                         },
                         startBluetoothDevicesDiscovery: function() {
                             var e = this;
-                            this.discoveryStarted ? this.stopBluetoothDevicesDiscovery() : (this.misScanding = !0, this.scandbutName = "\u6b63\u5728\u81ea\u52a8\u6d4b\u8bd5", this.devices = [], this.chs = [], this.discoveryStarted = !0, uni.startBluetoothDevicesDiscovery({
+                            this.discoveryStarted ? this.stopBluetoothDevicesDiscovery() : (this.misScanding = !0, this.scandbutName = "\u6b63\u5728Automatic\u6d4b\u8bd5", this.devices = [], this.chs = [], this.discoveryStarted = !0, uni.startBluetoothDevicesDiscovery({
                                 allowDuplicatesKey: !0,
                                 interval: 1e3,
                                 success: function(r) {
                                     t("log", "startBluetoothDevicesDiscovery success", r, " at pages/test/test.js:173"), e.onBluetoothDeviceFound()
                                 },
                                 fail: function(r) {
-                                    t("log", "startBluetoothDevicesDiscovery fail", r, " at pages/test/test.js:177"), 150nonIterableSpreadErrorHelper === r.errno && n.globalData.showModalTips(e.$t("\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650"), !0)
+                                    t("log", "startBluetoothDevicesDiscovery fail", r, " at pages/test/test.js:177"), 150nonIterableSpreadErrorHelper === r.errno && n.globalData.showModalTips(e.$t("\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650"), !0)
                                 }
                             }))
                         },
@@ -11856,7 +11856,7 @@
                             var r = this;
                             uni.stopBluetoothDevicesDiscovery({
                                 success: function(n) {
-                                    t("log", n, " at pages/test/test.js:189"), r.misScanding = !1, r.scandbutName = "\u5f00\u59cb\u81ea\u52a8\u6d4b\u8bd5", t("log", r.misScanding, r.scandbutName, " at pages/test/test.js:192"), null != e && e()
+                                    t("log", n, " at pages/test/test.js:189"), r.misScanding = !1, r.scandbutName = "\u5f00\u59cbAutomatic\u6d4b\u8bd5", t("log", r.misScanding, r.scandbutName, " at pages/test/test.js:192"), null != e && e()
                                 }
                             })
                         },
@@ -12049,15 +12049,15 @@
                             var r = this,
                                 n = this;
                             e.testStatus = "\u6b63\u5728\u53d1\u9001\u67e5\u8be2\u547d\u4ee4", this.doLog(), this.sendData(e, "E0E1E2E3F776CD3AE4E5E6E7", (function(h) {
-                                h ? (e.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", e.testResult = "\u672a\u901a\u8fc7", t("log", "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u5931\u8d25" + JSON.stringify(h), " at pages/test/test.js:519"), e.testMsg = "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u5931\u8d25", n.doLog()) : (e.testStatus = "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u6210\u529f\uff0c\u7b49\u5f85\u8bbe\u5907\u54cd\u5e94", n.doLog(), r.recDeviceMsgTimer && clearTimeout(r.recDeviceMsgTimer), r.recDeviceMsgTimer = setTimeout((function() {
-                                    r.recDeviceMsgTimer = null, e.conn && (e.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", e.testResult = "\u672a\u901a\u8fc7", t("log", "\u8bfb\u53d6\u8bbe\u5907\u8d85\u65f6", " at pages/test/test.js:531"), e.testMsg = "\u8bfb\u53d6\u8bbe\u5907\u8d85\u65f6", n.doLog(), n.closeCnnAndRun((function() {
+                                h ? (e.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", e.testResult = "\u672a\u901a\u8fc7", t("log", "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u5931\u8d25" + JSON.stringify(h), " at pages/test/test.js:519"), e.testMsg = "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u5931\u8d25", n.doLog()) : (e.testStatus = "\u53d1\u9001\u67e5\u8be2\u547d\u4ee4\u6210\u529f\uff0c\u7b49\u5f85Device\u54cd\u5e94", n.doLog(), r.recDeviceMsgTimer && clearTimeout(r.recDeviceMsgTimer), r.recDeviceMsgTimer = setTimeout((function() {
+                                    r.recDeviceMsgTimer = null, e.conn && (e.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", e.testResult = "\u672a\u901a\u8fc7", t("log", "\u8bfb\u53d6Device\u8d85\u65f6", " at pages/test/test.js:531"), e.testMsg = "\u8bfb\u53d6Device\u8d85\u65f6", n.doLog(), n.closeCnnAndRun((function() {
                                         t("log", "that.closeCnnAndRun", " at pages/test/test.js:535")
                                     })))
                                 }), 1e4))
                             }))
                         },
                         reTest: function(e) {
-                            this.discoveryStarted ? this.showMsg("\u8bf7\u5148\u505c\u6b62\u81ea\u52a8\u6d4b\u8bd5") : ("\u5df2\u901a\u8fc7" == this.deviceTested[e].testResult && (this.notPass = this.notPass + 1, this.passCount = this.passCount - 1), this.doStart(e))
+                            this.discoveryStarted ? this.showMsg("\u8bf7\u5148\u505c\u6b62Automatic\u6d4b\u8bd5") : ("\u5df2\u901a\u8fc7" == this.deviceTested[e].testResult && (this.notPass = this.notPass + 1, this.passCount = this.passCount - 1), this.doStart(e))
                         },
                         startTest1: function(e) {
                             var r = this;
@@ -12096,7 +12096,7 @@
                                 var n = this.deviceTesting;
                                 this.closeCnnAndRun((function() {
                                     r.createBLEConnection(r.deviceTesting, (function(t) {
-                                        t ? (n.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", n.testResult = "\u672a\u901a\u8fc7", n.testMsg = "\u8fde\u63a5\u5931\u8d25:" + JSON.stringify(t), r.$set(r.deviceTested[e], "testStatus", "\u6d4b\u8bd5\u7ed3\u675f"), r.doLog(), r.deviceTesting = null, r.discoveryStarted && r.doStart(r.testingIdx + 1)) : (n.testStatus = "\u5df2\u8fde\u63a5", n.conn = !0, r.doLog(), r.getBLEDeviceServices(n, (function(e) {
+                                        t ? (n.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", n.testResult = "\u672a\u901a\u8fc7", n.testMsg = "\u8fde\u63a5\u5931\u8d25:" + JSON.stringify(t), r.$set(r.deviceTested[e], "testStatus", "\u6d4b\u8bd5\u7ed3\u675f"), r.doLog(), r.deviceTesting = null, r.discoveryStarted && r.doStart(r.testingIdx + 1)) : (n.testStatus = "Connected", n.conn = !0, r.doLog(), r.getBLEDeviceServices(n, (function(e) {
                                             n.testStatus = "\u6d4b\u8bd5\u7ed3\u675f", n.testResult = "\u672a\u901a\u8fc7", n.testMsg = "\u83b7\u53d6\u670d\u52a1\u5931\u8d25:" + JSON.stringify(e), r.doLog(), r.closeCnnAndRun()
                                         })))
                                     }))
@@ -20897,11 +20897,8 @@
                 value: !0
             }), t.default = void 0;
             var h = n(r("enLocaleStrings")),
-                d = n(r("chineseLocaleStrings")),
                 b = {
                     en: h.default,
-                    de: s.default,
-                    "zh-Hans": d.default
                 };
             t.default = b
         },
@@ -20986,7 +20983,7 @@
                     value: !0
                 }), t.default = void 0;
                 var app = getApp(),
-                    i = (r("codePointAt"), r("geometryAndUuidUtils")),
+                    geometryUtil = (r("codePointAt"), r("geometryAndUuidUtils")),
                     deviceCommandUtil = r("deviceCommandUtils "),
                     bleDeviceController = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
                     s = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
@@ -21137,6 +21134,7 @@
                                 }))
                             }
                         },
+                        //When the page is ready, this function logs a message and, if LED device mode is enabled, initializes the channel drawing UI.
                         onReady: function() {
                             e("log", "main onready", " at pages/main/main.js:99"), this.ledDevTag && this.chDrawInit()
                         },
@@ -21182,10 +21180,10 @@
                             blu_cnn_call_back: function(t, r) {
                                 if (1 != t) {
                                     var n = app.globalData.ble_device;
-                                    if (t && n && "characteristicId" in n) e("log", "blu_cnn_call_back1", t, r, " at pages/main/main.js:191"), e("log", "\u5df2\u8fde\u63a5", n.name, " at pages/main/main.js:192"), this.cnnDevice = n.name, this.cnnState = !0, app.globalData.blu_cnn_from_page && "pages/cnn/cnn" == this.getCurPage() && uni.navigateBack(), app.globalData.blu_cnn_from_page = !1, this.goQueryCmd();
+                                    if (t && n && "characteristicId" in n) e("log", "blu_cnn_call_back1", t, r, " at pages/main/main.js:191"), e("log", "Connected", n.name, " at pages/main/main.js:192"), this.cnnDevice = n.name, this.cnnState = !0, app.globalData.blu_cnn_from_page && "pages/cnn/cnn" == this.getCurPage() && uni.navigateBack(), app.globalData.blu_cnn_from_page = !1, this.goQueryCmd();
                                     else {
                                         if (e("log", "blu_cnn_call_back2", t, r, " at pages/main/main.js:202"), this.clearBluTimer(), uni.hideLoading(), this.cnnState = !1, this.deviceOn = !1, this.prjIndex = -1, app.globalData.blu_cnn_from_test) return;
-                                        var h = this.getCurPage(); - 1 == s.indexOf(h) && (n && app.globalData.showModalTips(n.name + this.$t("\u5df2\u65ad\u5f00\u8fde\u63a5")), this.gotoMain())
+                                        var h = this.getCurPage(); - 1 == s.indexOf(h) && (n && app.globalData.showModalTips(n.name + this.$t("Disconnected")), this.gotoMain())
                                     }
                                 }
                             },
@@ -21197,23 +21195,6 @@
                                         url: "/pages/main/main"
                                     }) : t && (this.initShow = !1)
                                 }
-                            },
-                            testShow: function(t) {
-                                var r = this;
-                                uni.getSystemInfo({
-                                    success: function(n) {
-                                        if ("ios" == n.platform) {
-                                            var h = uni.createSelectorQuery().in(r),
-                                                a = !0;
-                                            h.select("#containerId").boundingClientRect((function(e) {
-                                                a = !1
-                                            })).exec();
-                                            var i = setTimeout((function() {
-                                                clearTimeout(i), e("log", "isRecovery", a, " at pages/main/main.js:251"), a ? plus.runtime.restart() : null != t && t()
-                                            }), 500)
-                                        } else null != t && t()
-                                    }
-                                })
                             },
                             getCurPage: function() {
                                 var e = getCurrentPages();
@@ -21293,7 +21274,7 @@
                                     this.deviceOn = !this.deviceOn, e("log", "this.deviceOn", this.deviceOn, " at pages/main/main.js:379");
                                     var r = "B0B1B2B300B4B5B6B7";
                                     this.deviceOn && (r = "B0B1B2B3FFB4B5B6B7"), bleDeviceController.gosend(!1, r)
-                                } else this.cnnState ? app.globalData.showModalTips(this.$t("\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b"), !0) : app.globalData.showModalTips(this.$t("\u8bf7\u5148\u8fde\u63a5\u84dd\u7259"), !0)
+                                } else this.cnnState ? app.globalData.showModalTips(this.$t("The current device cannot be identified"), !0) : app.globalData.showModalTips(this.$t("\u8bf7\u5148\u8fde\u63a5Bluetooth"), !0)
                             },
                             
                             // testFunc injects a specific test command into the device controller 
@@ -21326,9 +21307,12 @@
                             //  routes the user to the correct function or project page, 
                             // sending the necessary command to the device, and handles device state checks and navigation logic.
                             prjClick: function(e) {
+                                
                                 var t = e.currentTarget.dataset.tag;
+                                
                                 if (0 != t)
                                     if (this.deviceOn || this.debugTag) {
+                                        
                                         if (this.prjIndex != t || 5 == t && this.features.ilda) return this.prjIndex = t, app.globalData.setCmdMode(t), void this.sendCmd();
                                         this.sendCmd(), 4 == t && uni.navigateTo({
                                             url: "/sub/pages/text/text"
@@ -21437,7 +21421,7 @@
                                 if (X < s) {
                                     var N = s - X,
                                         H = s - Math.sqrt(Math.pow(s, 2) - Math.pow(N, 2)),
-                                        z = i.lineTheta([d, b], [x, V], [d - H, b + N]);
+                                        z = geometryUtil.lineTheta([d, b], [x, V], [d - H, b + N]);
                                     o.moveTo(d - H, b + N), o.arc(x, V, s, z, Math.PI - z), o.fill()
                                 } else if (X <= r - s) {
                                     o.moveTo(d, b), o.arc(x, V, s, 0, 1 * Math.PI);
@@ -21450,7 +21434,7 @@
                                     else {
                                         var v = X - (r - s),
                                             I = s - Math.sqrt(Math.pow(s, 2) - Math.pow(v, 2)),
-                                            w = i.lineTheta([l, p], [g, j], [l + I, p - v]);
+                                            w = geometryUtil.lineTheta([l, p], [g, j], [l + I, p - v]);
                                         o.moveTo(l + I, p - v), o.arc(g, j, s, 2 * Math.PI - w, Math.PI + w)
                                     }
                                     o.fill()
@@ -21873,7 +21857,7 @@
                             "color-animation-timing-func": "easeIn",
                             _i: 2
                         }
-                    })], 1), r("view", [r("view", [r("view", [r("view", [e._e(), r("view", [r("label", [e._v(e._$s(11, "t0-0", e._s(null == e.deviceTesting ? "\u7b49\u5f85\u6d4b\u8bd5" : e.testStatus)))]), r("label", [e._v(e._$s(12, "t0-0", e._s(null == e.deviceTesting ? "\u7b49\u5f85\u8bbe\u5907" : e.deviceTesting.showName)))]), r("view", [r("label", [e._v(e._$s(14, "t0-0", e._s(e.total)))]), r("label", [e._v(e._$s(15, "t0-0", e._s(e.notPass)))]), r("label", [e._v(e._$s(16, "t0-0", e._s(e.passCount)))])])]), r("scroll-view", {
+                    })], 1), r("view", [r("view", [r("view", [r("view", [e._e(), r("view", [r("label", [e._v(e._$s(11, "t0-0", e._s(null == e.deviceTesting ? "\u7b49\u5f85\u6d4b\u8bd5" : e.testStatus)))]), r("label", [e._v(e._$s(12, "t0-0", e._s(null == e.deviceTesting ? "\u7b49\u5f85Device" : e.deviceTesting.showName)))]), r("view", [r("label", [e._v(e._$s(14, "t0-0", e._s(e.total)))]), r("label", [e._v(e._$s(15, "t0-0", e._s(e.notPass)))]), r("label", [e._v(e._$s(16, "t0-0", e._s(e.passCount)))])])]), r("scroll-view", {
                         attrs: {
                             _i: 17
                         }
@@ -22020,7 +22004,7 @@
                                         [256, this.$t("\u56fe\u6848\u5927\u5c0f")]
                                     ],
                                     5: [
-                                        [16, this.$t("\u7f29\u653e\u624b\u52a8\u9009\u62e9")],
+                                        [16, this.$t("\u7f29\u653eManual\u9009\u62e9")],
                                         [40, this.$t("\u7531\u5c0f\u5230\u5927\u7f29\u653e")],
                                         [40, this.$t("\u7531\u5927\u5230\u5c0f\u7f29\u653e")],
                                         [40, this.$t("\u5927\u5c0f\u5faa\u73af\u7f29\u653e")],
@@ -22062,12 +22046,12 @@
                                     ],
                                     12: [
                                         [2, this.$t("\u65e0\u6e10\u7ed8")],
-                                        [62, this.$t("\u624b\u52a8\u6e10\u7ed81")],
-                                        [64, this.$t("\u624b\u52a8\u6e10\u7ed82")],
-                                        [26, this.$t("\u81ea\u52a8\u6e10\u7ed81")],
-                                        [26, this.$t("\u81ea\u52a8\u6e10\u7ed82")],
-                                        [26, this.$t("\u81ea\u52a8\u6e10\u7ed83")],
-                                        [50, this.$t("\u81ea\u52a8\u6e10\u7ed84")]
+                                        [62, this.$t("Manual\u6e10\u7ed81")],
+                                        [64, this.$t("Manual\u6e10\u7ed82")],
+                                        [26, this.$t("Automatic\u6e10\u7ed81")],
+                                        [26, this.$t("Automatic\u6e10\u7ed82")],
+                                        [26, this.$t("Automatic\u6e10\u7ed83")],
+                                        [50, this.$t("Automatic\u6e10\u7ed84")]
                                     ],
                                     13: [
                                         [256, this.$t("\u6c34\u5e73\u7535\u673a")]
@@ -23827,7 +23811,7 @@
                         on: {
                             click: e.showCnnDeal
                         }
-                    }, [e._v(e._$s(13, "t0-0", e._s(e.$t("\u641c\u7d22\u4e0d\u5230\u8bbe\u5907?"))))])]) : e._e()]), r("scroll-view", {
+                    }, [e._v(e._$s(13, "t0-0", e._s(e.$t("\u641c\u7d22\u4e0d\u5230Device?"))))])]) : e._e()]), r("scroll-view", {
                         attrs: {
                             _i: 14
                         },
@@ -25584,7 +25568,7 @@
                                         [256, this.$t("\u56fe\u6848\u5927\u5c0f")]
                                     ],
                                     5: [
-                                        [16, this.$t("\u7f29\u653e\u624b\u52a8\u9009\u62e9")],
+                                        [16, this.$t("\u7f29\u653eManual\u9009\u62e9")],
                                         [40, this.$t("\u7531\u5c0f\u5230\u5927\u7f29\u653e")],
                                         [40, this.$t("\u7531\u5927\u5230\u5c0f\u7f29\u653e")],
                                         [40, this.$t("\u5927\u5c0f\u5faa\u73af\u7f29\u653e")],
@@ -43845,7 +43829,7 @@
                 }
             }
         },
-        "deviceControlPageComponent": function(e, t, r) {
+        "deviceControlPageTemplate": function(e, t, r) {
             "use strict";
             r.d(t, "b", (function() {
                 return h
@@ -43858,23 +43842,23 @@
                     pageMeta: r("pageMetaComponentExportWrapper").default
                 },
                 h = function() {
-                    var e = this,
-                        t = e.$createElement,
-                        r = e._self._c || t;
+                    var mainPageComponent = this,
+                        t = mainPageComponent.$createElement,
+                        r = mainPageComponent._self._c || t;
                     return r("view", [r("page-meta", {
                         attrs: {
                             "page-style": "overflow: hidden",
-                            "root-font-size": e.screen_width,
+                            "root-font-size": mainPageComponent.screen_width,
                             _i: 1
                         }
                     }), r("view", {
-                        class: e._$s(2, "c", e.rtl ? "rtl" : ""),
+                        class: mainPageComponent._$s(2, "c", mainPageComponent.rtl ? "rtl" : ""),
                         attrs: {
                             id: "containerId",
                             _i: 2
                         }
                     }, [r("view", {
-                        style: e._$s(3, "s", "background-color: #10161C; width: 100%; height: 100%; display: flex; justify-content: center; padding-top: " + e.statusBarHeight + "px;"),
+                        style: mainPageComponent._$s(3, "s", "background-color: #10161C; width: 100%; height: 100%; display: flex; justify-content: center; padding-top: " + mainPageComponent.statusBarHeight + "px;"),
                         attrs: {
                             _i: 3
                         }
@@ -43883,15 +43867,15 @@
                             _i: 4
                         }
                     }), r("view", [r("view", {
-                        style: e._$s(6, "s", (e.rtl ? "margin-left: 20rem;" : "") + "z-index: 1; display: flex; align-items: center; direction: ltr;"),
+                        style: mainPageComponent._$s(6, "s", (mainPageComponent.rtl ? "margin-left: 20rem;" : "") + "z-index: 1; display: flex; align-items: center; direction: ltr;"),
                         attrs: {
                             _i: 6
                         },
                         on: {
-                            click: e.settingClick
+                            click: mainPageComponent.settingClick
                         }
                     }, [r("view", {
-                        class: e._$s(7, "c", e.rtl ? "rtl" : ""),
+                        class: mainPageComponent._$s(7, "c", mainPageComponent.rtl ? "rtl" : ""),
                         attrs: {
                             _i: 7
                         }
@@ -43899,8 +43883,8 @@
                         attrs: {
                             _i: 8
                         }
-                    }), r("text", [e._v(e._$s(9, "t0-0", e._s(e.$t("\u8bbe\u7f6e"))))])])]), r("view", {
-                        style: e._$s(10, "s", "position: absolute; left: calc(100vw - 100rem); top:" + e.warnTop + "px;"),
+                    }), r("text", [mainPageComponent._v(mainPageComponent._$s(9, "t0-0", mainPageComponent._s(mainPageComponent.$t("Settings"))))])])]), r("view", {
+                        style: mainPageComponent._$s(10, "s", "position: absolute; left: calc(100vw - 100rem); top:" + mainPageComponent.warnTop + "px;"),
                         attrs: {
                             _i: 10
                         }
@@ -43909,17 +43893,17 @@
                             _i: 11
                         }
                     })]), r("view", {
-                        staticClass: e._$s(12, "sc", "title-view-class"),
+                        staticClass: mainPageComponent._$s(12, "sc", "title-view-class"),
                         attrs: {
                             _i: 12
                         }
                     }, [r("text", {
-                        staticClass: e._$s(13, "sc", "title-text-class"),
+                        staticClass: mainPageComponent._$s(13, "sc", "title-text-class"),
                         attrs: {
                             _i: 13
                         }
                     }), r("text", {
-                        staticClass: e._$s(14, "sc", "title-text-class-sub"),
+                        staticClass: mainPageComponent._$s(14, "sc", "title-text-class-sub"),
                         attrs: {
                             _i: 14
                         }
@@ -43928,246 +43912,246 @@
                             _i: 18
                         },
                         on: {
-                            click: e.cnnLaser
+                            click: mainPageComponent.cnnLaser
                         }
                     }, [r("image", {
                         attrs: {
                             _i: 19
                         }
-                    }), r("text", [e._v(e._$s(20, "t0-0", e._s(e.$t("\u70b9\u6211\u8fde\u63a5"))))])]), r("view", [r("view", {
-                        staticClass: e._$s(22, "sc", "view-device-onoff1"),
-                        style: e._$s(22, "s", e.deviceOn ? "justify-content: flex-end;background-color: #75E4FD;" : ""),
+                    }), r("text", [mainPageComponent._v(mainPageComponent._$s(20, "t0-0", mainPageComponent._s(mainPageComponent.$t("Click me to connect"))))])]), r("view", [r("view", {
+                        staticClass: mainPageComponent._$s(22, "sc", "view-device-onoff1"),
+                        style: mainPageComponent._$s(22, "s", mainPageComponent.deviceOn ? "justify-content: flex-end;background-color: #75E4FD;" : ""),
                         attrs: {
                             _i: 22
                         },
                         on: {
-                            click: e.onOffChange
+                            click: mainPageComponent.onOffChange
                         }
                     }, [r("view", {
-                        staticClass: e._$s(23, "sc", "view-device-onoff2"),
-                        style: e._$s(23, "s", e.deviceOn ? "background: #39CD78;" : "background: red;"),
+                        staticClass: mainPageComponent._$s(23, "sc", "view-device-onoff2"),
+                        style: mainPageComponent._$s(23, "s", mainPageComponent.deviceOn ? "background: #39CD78;" : "background: red;"),
                         attrs: {
                             _i: 23
                         }
                     })])])]), r("view", [r("view", [r("view", {
-                        style: e._$s(26, "s", (e.cnnState ? "background-color: #39CD78;" : "background-color: #597181;") + "margin-right: 10rem; width: 20rem; height: 20rem; border-radius: 10rem;"),
+                        style: mainPageComponent._$s(26, "s", (mainPageComponent.cnnState ? "background-color: #39CD78;" : "background-color: #597181;") + "margin-right: 10rem; width: 20rem; height: 20rem; border-radius: 10rem;"),
                         attrs: {
                             _i: 26
                         }
                     }), r("text", {
-                        style: e._$s(27, "s", "font-size: 24rem;" + (e.cnnState ? "color: #DADADA;" : "color: #597181;")),
+                        style: mainPageComponent._$s(27, "s", "font-size: 24rem;" + (mainPageComponent.cnnState ? "color: #DADADA;" : "color: #597181;")),
                         attrs: {
                             _i: 27
                         }
-                    }, [e._v(e._$s(27, "t0-0", e._s(e.cnnState ? e.$t("\u5df2\u8fde\u63a5") + " " + e.cnnDevice : e.$t("\u84dd\u7259Not connected"))))])]), r("view", [r("text", [e._v(e._$s(29, "t0-0", e._s(e.$t("\u8bbe\u5907"))))]), r("text", {
-                        style: e._$s(30, "s", "width: 70rem; text-align: left; font-size: 30rem;" + (e.deviceOn ? "color: #39CD78;" : "color: red;")),
+                    }, [mainPageComponent._v(mainPageComponent._$s(27, "t0-0", mainPageComponent._s(mainPageComponent.cnnState ? mainPageComponent.$t("Connected") + " " + mainPageComponent.cnnDevice : mainPageComponent.$t("BluetoothNot connected"))))])]), r("view", [r("text", [mainPageComponent._v(mainPageComponent._$s(29, "t0-0", mainPageComponent._s(mainPageComponent.$t("Device"))))]), r("text", {
+                        style: mainPageComponent._$s(30, "s", "width: 70rem; text-align: left; font-size: 30rem;" + (mainPageComponent.deviceOn ? "color: #39CD78;" : "color: red;")),
                         attrs: {
                             _i: 30
                         }
-                    }, [e._v(e._$s(30, "t0-0", e._s(e.deviceOn ? "ON" : "OFF")))])])])])]), r("view", [e._$s(32, "i", !e.ledDevTag) ? r("view", {
+                    }, [mainPageComponent._v(mainPageComponent._$s(30, "t0-0", mainPageComponent._s(mainPageComponent.deviceOn ? "ON" : "OFF")))])])])])]), r("view", [mainPageComponent._$s(32, "i", !mainPageComponent.ledDevTag) ? r("view", {
                         attrs: {
                             _i: 32
                         }
-                    }, [e._l(e._$s(33, "f", {
-                        forItems: e.functionsShow
+                    }, [mainPageComponent._l(mainPageComponent._$s(33, "f", {
+                        forItems: mainPageComponent.functionsShow
                     }), (function(t, n, h, a) {
-                        return [e._$s("34-" + a, "i", n % 3 == 0) ? r("view", {
-                            key: e._$s(33, "f", {
+                        return [mainPageComponent._$s("34-" + a, "i", n % 3 == 0) ? r("view", {
+                            key: mainPageComponent._$s(33, "f", {
                                 forIndex: h,
                                 keyIndex: 0,
                                 key: n + "_0"
                             }),
-                            staticClass: e._$s("34-" + a, "sc", "fun-btn-group"),
+                            staticClass: mainPageComponent._$s("34-" + a, "sc", "fun-btn-group"),
                             attrs: {
                                 _i: "34-" + a
                             }
-                        }, e._l(3, (function(t, h, i, c) {
-                            return e._$s("35-" + a + "-" + c, "i", h + n < e.functionsShow.length) ? r("view", {
+                        }, mainPageComponent._l(3, (function(t, h, i, c) {
+                            return mainPageComponent._$s("35-" + a + "-" + c, "i", h + n < mainPageComponent.functionsShow.length) ? r("view", {
                                 key: h,
-                                staticClass: e._$s("35-" + a + "-" + c, "sc", "fun-btn-view"),
+                                staticClass: mainPageComponent._$s("35-" + a + "-" + c, "sc", "fun-btn-view"),
                                 attrs: {
                                     _i: "35-" + a + "-" + c
                                 }
                             }, [r("view", {
-                                staticClass: e._$s("36-" + a + "-" + c, "sc", "view-main-func"),
-                                style: e._$s("36-" + a + "-" + c, "s", e.prjIndex == e.functionsShow[h + n].tag ? "background: linear-gradient(0deg, #0566D1, #4FC8E3);" : ""),
+                                staticClass: mainPageComponent._$s("36-" + a + "-" + c, "sc", "view-main-func"),
+                                style: mainPageComponent._$s("36-" + a + "-" + c, "s", mainPageComponent.prjIndex == mainPageComponent.functionsShow[h + n].tag ? "background: linear-gradient(0deg, #0566D1, #4FC8E3);" : ""),
                                 attrs: {
-                                    "data-tag": e._$s("36-" + a + "-" + c, "a-data-tag", e.functionsShow[h + n].tag),
+                                    "data-tag": mainPageComponent._$s("36-" + a + "-" + c, "a-data-tag", mainPageComponent.functionsShow[h + n].tag),
                                     _i: "36-" + a + "-" + c
                                 },
                                 on: {
-                                    click: e.prjClick
+                                    click: mainPageComponent.prjClick
                                 }
                             }, [r("view", {
-                                staticClass: e._$s("37-" + a + "-" + c, "sc", "view-main-func-sub"),
-                                style: e._$s("37-" + a + "-" + c, "s", e.prjIndex == e.functionsShow[h + n].tag ? "background-color: #2B4863;" : ""),
+                                staticClass: mainPageComponent._$s("37-" + a + "-" + c, "sc", "view-main-func-sub"),
+                                style: mainPageComponent._$s("37-" + a + "-" + c, "s", mainPageComponent.prjIndex == mainPageComponent.functionsShow[h + n].tag ? "background-color: #2B4863;" : ""),
                                 attrs: {
                                     _i: "37-" + a + "-" + c
                                 }
                             }, [r("image", {
-                                staticClass: e._$s("38-" + a + "-" + c, "sc", "view-main-image"),
+                                staticClass: mainPageComponent._$s("38-" + a + "-" + c, "sc", "view-main-image"),
                                 attrs: {
-                                    src: e._$s("38-" + a + "-" + c, "a-src", "/static/imgs/main/" + e.functionsShow[h + n].img),
+                                    src: mainPageComponent._$s("38-" + a + "-" + c, "a-src", "/static/imgs/main/" + mainPageComponent.functionsShow[h + n].img),
                                     _i: "38-" + a + "-" + c
                                 }
                             })])]), r("view"), r("text", {
-                                staticClass: e._$s("40-" + a + "-" + c, "sc", "btn-text-class"),
+                                staticClass: mainPageComponent._$s("40-" + a + "-" + c, "sc", "btn-text-class"),
                                 attrs: {
                                     _i: "40-" + a + "-" + c
                                 }
-                            }, [e._v(e._$s("40-" + a + "-" + c, "t0-0", e._s(e.$t(e.functionsShow[h + n].name))))])]) : r("view", {
-                                staticClass: e._$s("41-" + a + "-" + c, "sc", "fun-btn-view"),
+                            }, [mainPageComponent._v(mainPageComponent._$s("40-" + a + "-" + c, "t0-0", mainPageComponent._s(mainPageComponent.$t(mainPageComponent.functionsShow[h + n].name))))])]) : r("view", {
+                                staticClass: mainPageComponent._$s("41-" + a + "-" + c, "sc", "fun-btn-view"),
                                 attrs: {
                                     _i: "41-" + a + "-" + c
                                 }
                             })
-                        })), 0) : e._e()]
-                    }))], 2) : e._e(), e._$s(42, "i", e.ledDevTag) ? r("view", {
+                        })), 0) : mainPageComponent._e()]
+                    }))], 2) : mainPageComponent._e(), mainPageComponent._$s(42, "i", mainPageComponent.ledDevTag) ? r("view", {
                         attrs: {
                             _i: 42
                         }
                     }, [r("view", [r("view", {
-                        staticClass: e._$s(44, "sc", "display-btn-group"),
+                        staticClass: mainPageComponent._$s(44, "sc", "display-btn-group"),
                         attrs: {
                             _i: 44
                         }
                     }, [r("text", {
-                        staticClass: e._$s(45, "sc", "display-btn-lable"),
+                        staticClass: mainPageComponent._$s(45, "sc", "display-btn-lable"),
                         attrs: {
                             _i: 45
                         }
-                    }, [e._v(e._$s(45, "t0-0", e._s(e.$t("\u989c\u8272\u8bbe\u7f6e"))))]), r("slider", {
-                        staticClass: e._$s(46, "sc", "fun-slider"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(45, "t0-0", mainPageComponent._s(mainPageComponent.$t("Color settings"))))]), r("slider", {
+                        staticClass: mainPageComponent._$s(46, "sc", "fun-slider"),
                         attrs: {
                             _i: 46
                         },
                         on: {
-                            change: e.slTxDistChange
+                            change: mainPageComponent.slTxDistChange
                         }
                     })])]), r("view", [r("radio-group", {
-                        staticClass: e._$s(48, "sc", "display-btn-group"),
+                        staticClass: mainPageComponent._$s(48, "sc", "display-btn-group"),
                         attrs: {
                             _i: 48
                         },
                         on: {
-                            change: e.radioChange
+                            change: mainPageComponent.radioChange
                         }
                     }, [r("view", [r("label", {
-                        staticClass: e._$s(50, "sc", "display-btn-lable"),
+                        staticClass: mainPageComponent._$s(50, "sc", "display-btn-lable"),
                         attrs: {
                             _i: 50
                         }
-                    }, [e._v(e._$s(50, "t0-0", e._s(e.$t("\u6447\u5934\u6a21\u5f0f"))))]), r("label", {
-                        staticClass: e._$s(51, "sc", "fun-radio"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(50, "t0-0", mainPageComponent._s(mainPageComponent.$t("Shake mode"))))]), r("label", {
+                        staticClass: mainPageComponent._$s(51, "sc", "fun-radio"),
                         attrs: {
                             _i: 51
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(52, "a-checked", !!e.xyCnf.auto),
+                            checked: mainPageComponent._$s(52, "a-checked", !!mainPageComponent.xyCnf.auto),
                             _i: 52
                         }
                     }), r("text", {
-                        style: e._$s(53, "s", "font-size: 30rem;" + (e.xyCnf.auto ? "color: #76CEE7;" : "color: #687C8E;")),
+                        style: mainPageComponent._$s(53, "s", "font-size: 30rem;" + (mainPageComponent.xyCnf.auto ? "color: #76CEE7;" : "color: #687C8E;")),
                         attrs: {
                             _i: 53
                         }
-                    }, [e._v(e._$s(53, "t0-0", e._s(e.$t("\u81ea\u52a8"))))])]), r("label", {
-                        staticClass: e._$s(54, "sc", "fun-radio"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(53, "t0-0", mainPageComponent._s(mainPageComponent.$t("Automatic"))))])]), r("label", {
+                        staticClass: mainPageComponent._$s(54, "sc", "fun-radio"),
                         attrs: {
                             _i: 54
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(55, "a-checked", !e.xyCnf.auto),
+                            checked: mainPageComponent._$s(55, "a-checked", !mainPageComponent.xyCnf.auto),
                             _i: 55
                         }
                     }), r("text", {
-                        style: e._$s(56, "s", "font-size: 30rem;" + (e.xyCnf.auto ? "color: #687C8E;" : "color: #76CEE7;")),
+                        style: mainPageComponent._$s(56, "s", "font-size: 30rem;" + (mainPageComponent.xyCnf.auto ? "color: #687C8E;" : "color: #76CEE7;")),
                         attrs: {
                             _i: 56
                         }
-                    }, [e._v(e._$s(56, "t0-0", e._s(e.$t("\u624b\u52a8"))))])])])])]), r("view", [r("radio-group", {
-                        staticClass: e._$s(58, "sc", "display-btn-group"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(56, "t0-0", mainPageComponent._s(mainPageComponent.$t("Manual"))))])])])])]), r("view", [r("radio-group", {
+                        staticClass: mainPageComponent._$s(58, "sc", "display-btn-group"),
                         attrs: {
                             _i: 58
                         },
                         on: {
-                            change: e.radioPhaseChange
+                            change: mainPageComponent.radioPhaseChange
                         }
                     }, [r("view", [r("view", [r("label", {
-                        staticClass: e._$s(61, "sc", "display-btn-lable"),
+                        staticClass: mainPageComponent._$s(61, "sc", "display-btn-lable"),
                         attrs: {
                             _i: 61
                         }
-                    }, [e._v(e._$s(61, "t0-0", e._s(e.$t("\u6447\u5934\u76f8\u4f4d"))))]), r("label", {
-                        staticClass: e._$s(62, "sc", "fun-radio"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(61, "t0-0", mainPageComponent._s(mainPageComponent.$t("Shake phase"))))]), r("label", {
+                        staticClass: mainPageComponent._$s(62, "sc", "fun-radio"),
                         attrs: {
                             _i: 62
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(63, "a-checked", 0 == e.xyCnf.phase),
+                            checked: mainPageComponent._$s(63, "a-checked", 0 == mainPageComponent.xyCnf.phase),
                             _i: 63
                         }
                     }), r("text", {
-                        style: e._$s(64, "s", "font-size: 30rem;" + (0 == e.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
+                        style: mainPageComponent._$s(64, "s", "font-size: 30rem;" + (0 == mainPageComponent.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
                         attrs: {
                             _i: 64
                         }
-                    }, [e._v(e._$s(64, "t0-0", e._s("X+Y+")))])]), r("label", {
-                        staticClass: e._$s(65, "sc", "fun-radio"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(64, "t0-0", mainPageComponent._s("X+Y+")))])]), r("label", {
+                        staticClass: mainPageComponent._$s(65, "sc", "fun-radio"),
                         attrs: {
                             _i: 65
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(66, "a-checked", 1 == e.xyCnf.phase),
+                            checked: mainPageComponent._$s(66, "a-checked", 1 == mainPageComponent.xyCnf.phase),
                             _i: 66
                         }
                     }), r("text", {
-                        style: e._$s(67, "s", "font-size: 30rem;" + (1 == e.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
+                        style: mainPageComponent._$s(67, "s", "font-size: 30rem;" + (1 == mainPageComponent.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
                         attrs: {
                             _i: 67
                         }
-                    }, [e._v(e._$s(67, "t0-0", e._s("X-Y+")))])])]), r("view", [r("label", {
-                        staticClass: e._$s(69, "sc", "display-btn-lable"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(67, "t0-0", mainPageComponent._s("X-Y+")))])])]), r("view", [r("label", {
+                        staticClass: mainPageComponent._$s(69, "sc", "display-btn-lable"),
                         attrs: {
                             _i: 69
                         }
                     }), r("label", {
-                        staticClass: e._$s(70, "sc", "fun-radio"),
+                        staticClass: mainPageComponent._$s(70, "sc", "fun-radio"),
                         attrs: {
                             _i: 70
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(71, "a-checked", 2 == e.xyCnf.phase),
+                            checked: mainPageComponent._$s(71, "a-checked", 2 == mainPageComponent.xyCnf.phase),
                             _i: 71
                         }
                     }), r("text", {
-                        style: e._$s(72, "s", "font-size: 30rem;" + (2 == e.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
+                        style: mainPageComponent._$s(72, "s", "font-size: 30rem;" + (2 == mainPageComponent.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
                         attrs: {
                             _i: 72
                         }
-                    }, [e._v(e._$s(72, "t0-0", e._s("X+Y-")))])]), r("label", {
-                        staticClass: e._$s(73, "sc", "fun-radio"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(72, "t0-0", mainPageComponent._s("X+Y-")))])]), r("label", {
+                        staticClass: mainPageComponent._$s(73, "sc", "fun-radio"),
                         attrs: {
                             _i: 73
                         }
                     }, [r("radio", {
                         attrs: {
-                            checked: e._$s(74, "a-checked", 3 == e.xyCnf.phase),
+                            checked: mainPageComponent._$s(74, "a-checked", 3 == mainPageComponent.xyCnf.phase),
                             _i: 74
                         }
                     }), r("text", {
-                        style: e._$s(75, "s", "font-size: 30rem;" + (3 == e.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
+                        style: mainPageComponent._$s(75, "s", "font-size: 30rem;" + (3 == mainPageComponent.xyCnf.phase ? "color: #76CEE7;" : "color: #687C8E;")),
                         attrs: {
                             _i: 75
                         }
-                    }, [e._v(e._$s(75, "t0-0", e._s("X-Y-")))])])])])])]), r("view", {
-                        staticClass: e._$s(76, "sc", "canvas-xy"),
-                        style: e._$s(76, "s", "opacity: " + (e.xyCnf.auto ? "0.3" : "1") + ";"),
+                    }, [mainPageComponent._v(mainPageComponent._$s(75, "t0-0", mainPageComponent._s("X-Y-")))])])])])])]), r("view", {
+                        staticClass: mainPageComponent._$s(76, "sc", "canvas-xy"),
+                        style: mainPageComponent._$s(76, "s", "opacity: " + (mainPageComponent.xyCnf.auto ? "0.3" : "1") + ";"),
                         attrs: {
                             _i: 76
                         }
@@ -44176,26 +44160,26 @@
                             id: "cvView",
                             _i: 77
                         }
-                    }, e._l(e._$s(78, "f", {
-                        forItems: e.xyCnf.xy
+                    }, mainPageComponent._l(mainPageComponent._$s(78, "f", {
+                        forItems: mainPageComponent.xyCnf.xy
                     }), (function(t, n, h, a) {
                         return r("view", {
-                            key: e._$s(78, "f", {
+                            key: mainPageComponent._$s(78, "f", {
                                 forIndex: h,
                                 key: n
                             })
                         }, [r("canvas", {
                             attrs: {
-                                "data-idx": e._$s("79-" + a, "a-data-idx", n),
-                                "canvas-id": e._$s("79-" + a, "a-canvas-id", "chCanvas" + t.name),
-                                id: e._$s("79-" + a, "a-id", "chCanvas" + t.name),
+                                "data-idx": mainPageComponent._$s("79-" + a, "a-data-idx", n),
+                                "canvas-id": mainPageComponent._$s("79-" + a, "a-canvas-id", "chCanvas" + t.name),
+                                id: mainPageComponent._$s("79-" + a, "a-id", "chCanvas" + t.name),
                                 _i: "79-" + a
                             },
                             on: {
-                                touchstart: e.chTouchstart,
-                                touchmove: e.chTouchmove,
-                                touchend: e.chTouchend,
-                                touchcancel: e.chTouchend
+                                touchstart: mainPageComponent.chTouchstart,
+                                touchmove: mainPageComponent.chTouchmove,
+                                touchend: mainPageComponent.chTouchend,
+                                touchcancel: mainPageComponent.chTouchend
                             }
                         })])
                     })), 0), r("view", {
@@ -44203,16 +44187,16 @@
                             id: "cvView",
                             _i: 80
                         }
-                    }, e._l(e._$s(81, "f", {
-                        forItems: e.xyCnf.xy
+                    }, mainPageComponent._l(mainPageComponent._$s(81, "f", {
+                        forItems: mainPageComponent.xyCnf.xy
                     }), (function(t, n, h, a) {
                         return r("label", {
-                            key: e._$s(81, "f", {
+                            key: mainPageComponent._$s(81, "f", {
                                 forIndex: h,
                                 key: n
                             })
-                        }, [e._v(e._$s("81-" + a, "t0-0", e._s(e.$t(t.title))))])
-                    })), 0)])]) : e._e(), r("view")])])])])], 1)
+                        }, [mainPageComponent._v(mainPageComponent._$s("81-" + a, "t0-0", mainPageComponent._s(mainPageComponent.$t(t.title))))])
+                    })), 0)])]) : mainPageComponent._e(), r("view")])])])])], 1)
                 },
                 a = []
         },
@@ -44301,7 +44285,7 @@
                         on: {
                             click: e.setPlayTime
                         }
-                    }, [e._v(e._$s(9, "t0-0", e._s(e.$t("\u6279\u91cf\u8bbe\u7f6e"))))]), r("view", {
+                    }, [e._v(e._$s(9, "t0-0", e._s(e.$t("\u6279\u91cfSettings"))))]), r("view", {
                         staticClass: e._$s(10, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 10
@@ -44504,7 +44488,7 @@
                     c = {
                         data: function() {
                             return {
-                                ntitle: this.$t("\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247"),
+                                ntitle: this.$t("Settings\u80cc\u666f\u56fe\u7247"),
                                 debugTag: h.globalData.mainPage.debugTag,
                                 screen_width: h.globalData.screen_width_str,
                                 screen_width_float: h.globalData.screen_width_float,
@@ -44919,7 +44903,7 @@
                     data: function() {
                         return {
                             screen_width: a.globalData.screen_width_str,
-                            nbTitle: this.$t("\u84dd\u7259\u8fde\u63a5"),
+                            nbTitle: this.$t("Bluetooth\u8fde\u63a5"),
                             rtl: a.globalData.rtl,
                             showUUID: a.globalData.mainPage.debugTag,
                             devices: null,
@@ -45045,7 +45029,7 @@
                                     }), 1e4), e.misScanding = 2, e.onBluetoothDeviceFoundPro()
                                 },
                                 fail: function(t) {
-                                    150nonIterableSpreadErrorHelper === t.errno && a.globalData.showModalTips(e.$t("\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650"), !0)
+                                    150nonIterableSpreadErrorHelper === t.errno && a.globalData.showModalTips(e.$t("\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650"), !0)
                                 }
                             })
                         },
@@ -45095,7 +45079,7 @@
                                         if (i || (i = r.name), 0 == a.globalData.muuidSel) {
                                             if (!i || !i.startsWith("TD5322A_")) return;
                                             var c = i.substring("TD5322A_".length, i.length);
-                                            e("log", "\u84dd\u7259\u8bbe\u5907\u540d\uff1a", i, "\u957f\u5ea6\uff1a", i.length, "\u540e\u7f00\uff1a", c, " at pages/cnn/cnn.js:298");
+                                            e("log", "Bluetooth Device name:", i, "Length:", i.length, "Suffix:", c, " at pages/cnn/cnn.js:298");
                                             var o = t.tripCh(r.deviceId, ":"),
                                                 s = o.slice(0, 4).toUpperCase();
                                             i = "Laser_Light_" + s;
@@ -45210,7 +45194,7 @@
         "deviceControlPageComponentExportWrapper": function(e, t, r) {
             "use strict";
             r.r(t);
-            var n = r("deviceControlPageComponent"),
+            var n = r("deviceControlPageTemplate"),
                 h = r("mainPageComponentExportWrapper");
             for (var a in h)["default"].indexOf(a) < 0 && function(e) {
                 r.d(t, e, (function() {
@@ -46661,12 +46645,12 @@
         bleDeviceControlUtils : function(e, t, r) {
             (function(t) {
                 var n = getApp(),
-                    h = r("deviceCommandUtils ");
+                    deviceCommandUtils = r("deviceCommandUtils ");
 
-                function a(e, t, r) {
-                    var n = 2 * (e - 1),
-                        h = n + 2 * t,
-                        a = r.slice(n, h),
+                function extractHexValue (startByte , byteLength , hexString) {
+                    var n = 2 * (startByte  - 1),
+                        h = n + 2 * byteLength ,
+                        a = hexString.slice(n, h),
                         i = parseInt(a, 16);
                     return i
                 }
@@ -46749,8 +46733,8 @@
                     var a = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
                     n.globalData.blu_connect_stop ? a && a(!1) : (uni.onBLECharacteristicValueChange((function(e) {
                         var r = new Uint8Array(e.value),
-                            a = h.ab2hex(e.value);
-                        h.ab2Str(e.value); - 1 != n.globalData.mrxduuids.indexOf(e.characteristicId) ? n.globalData.blu_readyRec && r.length > 0 && c(a) : t("error", "no same characteristicId: ", n.globalData.mrxduuids, e.characteristicId, " at utils/bluCtrl.js:270")
+                            a = deviceCommandUtils.ab2hex(e.value);
+                        deviceCommandUtils.ab2Str(e.value); - 1 != n.globalData.mrxduuids.indexOf(e.characteristicId) ? n.globalData.blu_readyRec && r.length > 0 && c(a) : t("error", "no same characteristicId: ", n.globalData.mrxduuids, e.characteristicId, " at utils/bluCtrl.js:270")
                     })), o(e, r, 1, a))
                 }
 
@@ -46944,7 +46928,7 @@
                             n.globalData.blu_data_cmdSending = !1, h && h(1, 100)
                         }), 20), !0));
                         if (n.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
-                        if (2 != n.globalData.blu_connected) return n.globalData.showModalTips(g("\u84dd\u7259Not connected")), !0;
+                        if (2 != n.globalData.blu_connected) return n.globalData.showModalTips(g("BluetoothNot connected")), !0;
                         e && (n.globalData.blu_data_lastShowTime = (new Date).getTime(), h ? h(0, 0) : uni.showLoading({
                             mask: !0
                         }));
@@ -46978,42 +46962,42 @@
                         e.fillText(r + "%", a - d / 2, i + p / 3), e.fill(), e.draw()
                     },
                     setCmdData: function(e) {
-                        t("log", "\u8bbe\u5907\u8fd4\u56de\u6570\u636e", e, " at utils/bluCtrl.js:21"), h.getCmdValue("B0B1B2B3", "B4B5B6B7", e);
-                        var r = h.getCmdValue("C0C1C2C3", "C4C5C6C7", e);
-                        n.globalData.cmd.curMode = i(a(1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.prjIndex = i(a(1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.public.txColor = i(a(3, 1, r), 0, 9, 0), n.globalData.cmd.textData.txColor = n.globalData.cmd.prjData.public.txColor, n.globalData.cmd.textData.txSize = i(Math.round(a(4, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.textData.runSpeed = i(Math.round(a(6, 1, r) / 255 * 100), 0, 255, 128), n.globalData.cmd.prjData.public.runSpeed = n.globalData.cmd.textData.runSpeed, n.globalData.cmd.textData.txDist = i(Math.round(a(8, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.prjData.public.rdMode = i(a(9, 1, r), 0, 255, 0), n.globalData.cmd.prjData.public.soundVal = i(Math.round(a(10, 1, r) / 255 * 100), 0, 255, 0), n.globalData.cmd.textData.txPointTime = i(a(15, 1, r), 0, 100, 50), n.globalData.cmd.drawData.pisObj.txPointTime = i(a(16, 1, r), 0, 100, 50), n.globalData.cmd.textData.refresh = !0;
+                        t("log", "Device\u8fd4\u56de\u6570\u636e", e, " at utils/bluCtrl.js:21"), deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", e);
+                        var r = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", e);
+                        n.globalData.cmd.curMode = i(extractHexValue (1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.prjIndex = i(extractHexValue (1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.public.txColor = i(extractHexValue (3, 1, r), 0, 9, 0), n.globalData.cmd.textData.txColor = n.globalData.cmd.prjData.public.txColor, n.globalData.cmd.textData.txSize = i(Math.round(extractHexValue (4, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.textData.runSpeed = i(Math.round(extractHexValue (6, 1, r) / 255 * 100), 0, 255, 128), n.globalData.cmd.prjData.public.runSpeed = n.globalData.cmd.textData.runSpeed, n.globalData.cmd.textData.txDist = i(Math.round(extractHexValue (8, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.prjData.public.rdMode = i(extractHexValue (9, 1, r), 0, 255, 0), n.globalData.cmd.prjData.public.soundVal = i(Math.round(extractHexValue (10, 1, r) / 255 * 100), 0, 255, 0), n.globalData.cmd.textData.txPointTime = i(extractHexValue (15, 1, r), 0, 100, 50), n.globalData.cmd.drawData.pisObj.txPointTime = i(extractHexValue (16, 1, r), 0, 100, 50), n.globalData.cmd.textData.refresh = !0;
                         var c = n.globalData.cmd.prjData.prjItem,
                             o = 17;
                         for (var s in c) {
                             var l = c[s];
-                            l.pyMode = i(a(o, 1, r), 0, 255, 0), l.prjSelected[3] = a(o + 1, 2, r), l.prjSelected[2] = a(o + 3, 2, r), l.prjSelected[1] = a(o + 5, 2, r), l.prjSelected[0] = a(o + 7, 2, r), o += 9
+                            l.pyMode = i(extractHexValue (o, 1, r), 0, 255, 0), l.prjSelected[3] = extractHexValue (o + 1, 2, r), l.prjSelected[2] = extractHexValue (o + 3, 2, r), l.prjSelected[1] = extractHexValue (o + 5, 2, r), l.prjSelected[0] = extractHexValue (o + 7, 2, r), o += 9
                         }
-                        n.globalData.cmd.textData.runDir = i(a(o, 1, r), 0, 255, 0), o += 1;
-                        for (var p = n.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == i(a(o + d, 1, r), 0, 255, 0) : 1 == d ? p.xyCnf.phase = i(a(o + d, 1, r), 0, 255, 0) : p.xyCnf.xy[d - 2].value = i(a(o + d, 1, r), 0, 255, 0);
-                        var b = h.getCmdValue("00010203", "04050607", e);
-                        n.globalData.cmd.settingData.valArr[0] = i(a(1, 2, b), 1, 512, 1), n.globalData.cmd.settingData.ch = a(3, 1, b), n.globalData.cmd.settingData.valArr[1] = i(a(4, 1, b), 10, 100, 10), n.globalData.cmd.settingData.xy = i(a(5, 1, b), 0, 7, 0), n.globalData.cmd.settingData.valArr[2] = i(a(6, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[3] = i(a(7, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[4] = i(a(8, 1, b), 0, 255, 255), n.globalData.cmd.settingData.light = i(a(9, 1, b), 1, 3, 3), n.globalData.cmd.settingData.cfg = i(a(10, 1, b), 0, 255, 0);
-                        var g = h.getCmdValue("D0D1D2D3", "D4D5D6D7", e);
+                        n.globalData.cmd.textData.runDir = i(extractHexValue (o, 1, r), 0, 255, 0), o += 1;
+                        for (var p = n.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == i(extractHexValue (o + d, 1, r), 0, 255, 0) : 1 == d ? p.xyCnf.phase = i(extractHexValue (o + d, 1, r), 0, 255, 0) : p.xyCnf.xy[d - 2].value = i(extractHexValue (o + d, 1, r), 0, 255, 0);
+                        var b = deviceCommandUtils.getCmdValue("00010203", "04050607", e);
+                        n.globalData.cmd.settingData.valArr[0] = i(extractHexValue (1, 2, b), 1, 512, 1), n.globalData.cmd.settingData.ch = extractHexValue (3, 1, b), n.globalData.cmd.settingData.valArr[1] = i(extractHexValue (4, 1, b), 10, 100, 10), n.globalData.cmd.settingData.xy = i(extractHexValue (5, 1, b), 0, 7, 0), n.globalData.cmd.settingData.valArr[2] = i(extractHexValue (6, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[3] = i(extractHexValue (7, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[4] = i(extractHexValue (8, 1, b), 0, 255, 255), n.globalData.cmd.settingData.light = i(extractHexValue (9, 1, b), 1, 3, 3), n.globalData.cmd.settingData.cfg = i(extractHexValue (10, 1, b), 0, 255, 0);
+                        var g = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", e);
                         if ("" != g) {
                             var j = n.globalData.getDeviceFeatures(),
                                 x = 16;
-                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), h.getFeaturesValue({
+                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), deviceCommandUtils.getFeaturesValue({
                                 features: j
                             }, "xyCnf") && (x = 22);
-                            for (var V = [], f = i(a(1, 1, g), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
+                            for (var V = [], f = i(extractHexValue (1, 1, g), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
                                 for (var m = {
                                         playTime: 0,
                                         cnfValus: []
                                     }, P = 0; P < x; P++) {
-                                    var u = i(a(3 + k * x + P, 1, g), 0, 255, 0);
+                                    var u = i(extractHexValue (3 + k * x + P, 1, g), 0, 255, 0);
                                     m.cnfValus.push(u), 13 == P && (m.playTime = (u / 10).toFixed())
                                 }
                                 t("log", "pis.cnfValus", JSON.stringify(m.cnfValus), " at utils/bluCtrl.js:111"), V.push(m)
                             }
                             n.globalData.cmd.pgsData.pisList = V
                         }
-                        var X = h.getCmdValue("F0F1F2F3", "F4F5F6F7", e);
+                        var X = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", e);
                         if ("" != X)
                             for (var N = n.globalData.cmd.drawData.pisObj, H = 0; H < 15; H++) {
-                                var z = i(a(H + 1, 1, X), 0, 255, 0);
+                                var z = i(extractHexValue (H + 1, 1, X), 0, 255, 0);
                                 H < N.cnfValus.length && (N.cnfValus[H] = z), 14 == H && (N.txPointTime = z)
                             }
                     }
@@ -62308,7 +62292,7 @@
                         computed: {
                             ntitle: {
                                 get: function() {
-                                    var e = 0 == this.dmx ? "DMX" : this.$t("\u8bbe\u7f6e");
+                                    var e = 0 == this.dmx ? "DMX" : this.$t("Settings");
                                     return e
                                 }
                             },
@@ -64016,7 +64000,7 @@
             t["default"] = h.a
         },
         enLocaleStrings: function(e) {
-            e.exports = JSON.parse('{"\u8fde\u63a5\u84dd\u7259":"Connect Bluetooth","Random playback":"Random","\u5df2\u8fde\u63a5":"Connected","Not connected":"Not Connected","Outdoor playback":"Outdoor","Reading device parameters...":"Reading Device Parameters","Failed to read device parameters":"Failed To Read Device Parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Refresh List Again","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Search / Stop","\u641c\u7d22\u84dd\u7259\u8bbe\u5907":"Search","\u5df2\u53d1\u73b0":"Discovered","\u7ea2":"Red","\u7eff":"Green","\u84dd":"Blue","\u9ec4":"Yellow","\u9752":"Cyan","\u7d2b":"Purple","\u767d":"White","\u8df3\u53d8":"Jump","\u5168\u5f69":"RGB","\u64ad\u653e\u6a21\u5f0f":"Play Mode","\u81ea\u8d70":"Auto","\u58f0\u63a7":"Music","\u81ea\u8d70\u901f\u5ea6":"Speed","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensitivity","\u56fe\u6848\u989c\u8272":"Pattern","\u5f53\u524d\u989c\u8272":"Current","\u5faa\u73af\u64ad\u653e":"Loop Play","\u52fe\u9009\u64ad\u653e":"Tick Play","\u5730\u5740\u7801":"Address","\u663e\u793a\u8303\u56f4":"View Size","\u56fe\u6848\u76f8\u4f4d":"Phase","\u6b63\u5e38\u663e\u793a":"Normal","XY\u4e92\u6362":"Interchange","\u8c03\u5149\u8bbe\u7f6e":"Dimming settings","\u7ea2\u5149\u8c03\u5149":"Red","\u7eff\u5149\u8c03\u5149":"Green","\u84dd\u5149\u8c03\u5149":"Blue","\u6fc0\u5149\u5149\u6e90":"Laser","\u5355\u8272":"Single","\u53cc\u8272":"Two","\u8c03\u5236\u6a21\u5f0f":"Modulation","\u7cfb\u7edf\u8bed\u8a00":"Language","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Reading Fonts","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"Generating...","\u6587\u672c\u989c\u8272":"Text Color","\u6587\u5b57\u5927\u5c0f":"Text Size","\u663e\u793a\u89c6\u8ddd":"Distance","\u6d41\u6c34\u901f\u5ea6":"Flow Speed","\u6295\u5c04\u65b9\u5411":"Direction","\u6c34\u5e73\u6295\u5c04":"Horizontal","\u5782\u76f4\u6295\u5c04":"Vertical","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"Max Points ","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Exceeding Parts Will Be Lost","\u7ebf\u6761\u989c\u8272":"Line Color","\u6e05\u7a7a":"Clear","\u56de\u9000":"Back","\u53d1\u9001":"Send","\u6700\u591a20\u4e2a\u573a\u666f":"Up To 20 Scenarios","\u63d0\u793a":"Prompt","\u662f\u5426\u5220\u9664\u573a\u666f":"Do You Want To Delete The Scene ","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"User Clicks To Cancel","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"--The Scene List Is Empty--","\u573a\u666f":"Scene ","\u79d2":"Sec","\u5220\u9664":"Delete","\u7f16\u8f91":"Edit","\u65b0\u589e\u573a\u666f":"Create A New Scene","\u56fe\u6848\u9009\u62e9":"Pattern","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Linear","\u5706\u5f27\u7c7b\u56fe\u6848":"Circular Arc","\u4eae\u70b9\u56fe\u6848":"Highlight","\u6253\u70b9\u56fe\u6848":"Dot","\u5723\u8bde\u56fe\u6848":"Christmas","\u52a8\u753b\u7ec4\u522b1":"Animation 1","\u52a8\u753b\u7ec4\u522b2":"Animation 2","\u52a8\u753b\u7ec4\u522b3":"Animation 3","\u52a8\u753b\u7ec4\u522b4":"Animation 4","\u52a8\u753b\u7ec4\u522b5":"Animation 5","\u767d\u8272":"White","\u7ea2\u8272":"Red","\u84dd\u8272":"Blue","\u7c89\u8272":"Pink","\u9752\u8272":"Cyan","\u9ec4\u8272":"Yellow","\u7eff\u8272":"Green","\u6574\u4f53\u989c\u8272\u6362\u8272":"Overall","\u4e03\u5f69\u8679\u989c\u8272":"Rainbow Colors","2\u5206\u6bb5\u989c\u8272":"2 Segmented","3\u5206\u6bb5\u989c\u8272":"3 Segmented","4\u5206\u6bb5\u989c\u8272":"4 Segmented","8\u5206\u6bb5\u989c\u8272":"8 Segmented","16\u5206\u6bb5\u989c\u8272":"16 Segmented","32\u5206\u6bb5\u989c\u8272":"32 Segmented","\u989c\u8272\u6e10\u7ed8":"Color Gradient","\u4e0d\u6d41\u6c34":"No Flowing","\u6b63\u5411\u6d41\u6c34":"Forward Flow","\u53cd\u5411\u6d41\u6c34":"Reverse Flow","\u56fe\u6848\u5927\u5c0f":"Pattern Size","\u7f29\u653e\u624b\u52a8\u9009\u62e9":"Zoom Manual","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Small To Large","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"Large To Small","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Size Scaling","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Zoom Rule 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Zoom Rule 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Zoom Rule 3","\u65cb\u8f6c\u89d2\u5ea6":"Angle","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Positive","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Reverse","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"H Position","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"H Speed","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"V Position","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"V Speed","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"H Rotation","\u6c34\u5e73\u79fb\u52a8":"H Move","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"V Rotation","\u5782\u76f4\u79fb\u52a8":"V Move","\u65e0\u6ce2\u6d6a":"No waves","\u6ce2\u6d6a\u5e45\u5ea61":"Wave 1","\u6ce2\u6d6a\u5e45\u5ea62":"Wave 2","\u6ce2\u6d6a\u5e45\u5ea63":"Wave 3","\u6ce2\u6d6a\u5e45\u5ea64":"Wave 4","\u6ce2\u6d6a\u5e45\u5ea65":"Wave 5","\u6ce2\u6d6a\u5e45\u5ea66":"Wave 6","\u6ce2\u6d6a\u5e45\u5ea67":"Wave 7","\u6ce2\u6d6a\u5e45\u5ea68":"Wave 8","\u65e0\u6e10\u7ed8":"No Gradient","\u624b\u52a8\u6e10\u7ed81":"Manual 1","\u624b\u52a8\u6e10\u7ed82":"Manual 2","\u81ea\u52a8\u6e10\u7ed81":"Auto 1","\u81ea\u52a8\u6e10\u7ed82":"Auto 2","\u81ea\u52a8\u6e10\u7ed83":"Auto 3","\u81ea\u52a8\u6e10\u7ed84":"Auto 4","\u56fe\u5f62\u5206\u7ec4":"Group","\u56fe\u5f62":"Graph","\u989c\u8272":"Colour","\u989c\u8272\u6d41\u6c34":"Flow","\u56fe\u5f62\u5927\u5c0f":"Size","\u56fe\u5f62\u7f29\u653e":"Zoom","\u56fe\u5f62\u65cb\u8f6c":"Rotation","\u6c34\u5e73\u7ffb\u8f6c":"H Flip","\u5782\u76f4\u7ffb\u8f6c":"V Flip","\u6ce2\u6d6a":"Wave","\u6e10\u7ed8":"Gradual","\u64ad\u653e\u65f6\u957f":"Time","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Loading ...","\u53d6\u6d88":"Cancel","\u786e\u5b9a":"Confirm","\u9009\u62e9\u56fe\u5f62":"Select","\u901a\u9053\u590d\u4f4d":"Reset","\u5b8b\u4f53":"Songt","\u76f4\u7ebf":"Line","\u5706\u5f27":"Arc","\u4eae\u70b9":"Dot","\u6253\u70b9":"Manage","\u5723\u8bde":"Christmas","\u52a8\u753bA":"AnimA","\u52a8\u753bB":"AnimB","\u5f69\u8679":"Rainbow","\u9ed8\u8ba4":"Default","\u8f6f\u4ef6\u7248\u672c":"Version","\u8fde\u63a5":"Connect","\u8bbe\u7f6e":"Settings","Hand-drawn doodle":"Draw","Text playback":"Text","Personalized programming":"Program","Animation playback":"Animation","Timeline playback":"Line","Christmas broadcast":"Christmas","DMX":"DMX","\u914d\u7f6e":"Config","\u8fd4\u56de":"Back","\u70b9\u6211\u8fde\u63a5":"Click Me To Connect","\u84dd\u7259Not connected":"Not Connected","\u8bbe\u5907":"Device","\u8bf7\u8f93\u5165\u6587\u5b57":"Please Enter Text","\u9884\u7559\u65e0\u529f\u80fd":"Reserved","\u91cd\u7f6e":"Reset","\u84dd\u7259\u8fde\u63a5":"Bluetooth Connection","\u5168\u9009":"All","\u53cd\u9009":"Invert","\u6e05\u9664":"Clear","\u5b57\u6570":"Text","\u70b9\u6570":"Dot","\u9884\u89c8":"Preview","\u573a\u666f\u7ba1\u7406":"Scene Management","\u52a0\u8f7d\u4e2d":"Loading","\u573a\u666f\u7f16\u8f91":"Scene Edit","\u8bf7\u5148\u8fde\u63a5\u84dd\u7259":"Please Connect Bluetooth First","\u5f53\u524d\u8bbe\u5907\u65e0\u6cd5\u8bc6\u522b":"The Current Device Is Not Recognized","DMX\u5730\u5740\u7801":"Dmx Address","Please turn on the device first":"Please Trun On The Device First","\u5355\u7ebf\u5b57\u4f53":"Single Line","\u6b63\u5728\u53d1\u9001":"Sending","\u8bf7\u68c0\u67e5\u624b\u673a\u84dd\u7259\u662f\u5426\u542f\u7528":"Please Check If Bluetooth Is Enabled On Your Phone","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"This Font Does Not Support Chinese Display","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"Due To Capacity Limitations, Some Chinese Characters Have Not Been Included In The Font Library. Please To To The APP Version For A Complete Font Library","\u8bf7\u8bbe\u7f6e\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Please Set App Location Permissions","\u8bf7\u8bbe\u7f6e\u5c0f\u7a0b\u5e8f\u84dd\u7259\u6743\u9650":"Please Set Bluetooth Permissions For The Mini Program","Abnormality in reading device parameters":"Abnormal Reading Device Parameters","\u9009\u62e9":"select","\u8bbe\u7f6e\u80cc\u666f\u56fe\u7247":"Set Background Image","\u53d1\u9001\u5931\u8d25":"fail in send","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Text Length Has Exceeded 100","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Number Of Text Coordinate Points Has Exceeded 2048","\u7b2c":"No.","\u7ec4\u6587\u5b57":" Group","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Please Modify The Font Or Text And Try Again","\u4e0d\u652f\u6301\u6587\u672c":" Not Supported ","\u7ec4\u5b57\u4f53":" Text Font ","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":" Group No Text Entered, Please Enter Before Sending","\u662f\u5426\u5220\u9664\u7b2c":"Delete No.","\u7ec4":" Group","\u6700\u591a4\u4e2a\u5206\u7ec4":"Up To 4 Groups","\u6b63\u5728\u8fde\u63a5...":"Connecting...","\u8fde\u63a5\u5931\u8d25":"Connect Failed","\u5b57\u4f53\u9009\u62e9":"Select Font","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans1","\u601d\u6e90\u9ed1\u4f532":"NotoSans2","\u601d\u6e90\u9ed1\u4f533":"NotoSans3","\u601d\u6e90\u9ed1\u4f534":"NotoSans4","\u601d\u6e90\u9ed1\u4f535":"NotoSans5","\u601d\u6e90\u9ed1\u4f536":"NotoSans6","\u601d\u6e90\u9ed1\u4f537":"NotoSans7","font_note_1001":"Chinese, English, Spanish, Portuguese, German, French","font_note_1002":"English, Spanish, Russian, Portuguese, German, French, Vietnamese, Hindi, Bengali","font_note_1003":"English, Chinese, Spanish, Russian, Portuguese, Japanese, German","font_note_1004":"Chinese, English, Spanish, Portuguese, German, French","font_note_1005":"English, Chinese","font_note_1006":"English, Japanese, Korean","font_note_1007":"Arabic","\u4fdd\u7559":"Reserved","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Initial Color","\u6df7\u8272":"Mixing","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Recommended, Better Performance","\u5df2\u65ad\u5f00\u8fde\u63a5":"Disconnected","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"The Range Of 1-255","\u6587\u5b57\u7cbe\u5ea6":"Text Effects","Text graphic accuracy":"Effects","\u7cbe\u5ea6":"Effects","\u9009\u62e9\u56fe\u7247":"Select","\u8bbe\u4e3a\u80cc\u666f":"Background","\u8bc6\u522b\u56fe\u6848":"Recognize","\u63cf\u8fb9":"Outline","\u6b63\u5728\u5904\u7406\u4e2d":"Processing","\u5f53\u524d\u673a\u578b":"Model","hand_draw_tips":" ** Please swipe from the blank area towards the target pattern to select.\\n ** You can perform operations such as zooming in, zooming out, moving, changing colors, and deleting on the selected pattern.","\u4e0d\u518d\u63d0\u793a":"Never Show","out_door_tips1":"1-30 Landmark","out_door_tips2":"31-40 Northern Lights","out_door_tips3":"41-50 Time Tunnel","\u6587\u4ef6\u540d":"File Name","\u4fdd\u5b58\u6587\u4ef6":"Save File","\u9009\u62e9\u6587\u4ef6":"Select File","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Please Enter The Filename","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Please Enter New Filename","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Filename Cannot Be Empty","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"File Already Exists, Please Re-enter","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"File Already Exists, Continue?","\u4fdd\u5b58\u6210\u529f":"Save Successful","\u4fdd\u5b58\u5931\u8d25":"Save Failed","\u4fee\u6539\u6210\u529f":"Modification Successful","\u4fee\u6539\u5931\u8d25":"Modification Failed","\u5220\u9664\u6210\u529f":"Deletion Successful","\u5220\u9664\u5931\u8d25":"Deletion Failed","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"The Current Model Does Not Support It","text_time_range":"Range 1-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"Recognition Failed","\u8bf7\u9009\u62e9\u6587\u4ef6":"Please Select A File","\u6587\u4ef6\u6570":"Files","\u53e6\u5b58\u6587\u4ef6":"Save AS","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Delete Selected Files","Select-File":"Select","\u6447\u5934\u8bbe\u7f6e":"Movement Settings","\u6447\u5934\u6a21\u5f0f":"Mode","\u6447\u5934\u76f8\u4f4d":"Phase","\u81ea\u52a8":"Automatic","\u624b\u52a8":"Manual","X-axis coarse tuning":"X Coa. Adj.","X-axis fine tuning":"X Fine Adj.","Y-axis coarse tuning":"Y Coa. Adj.","Y-axis fine tuning":"Y Fine Adj.","\u6c34\u5e73\u7535\u673a":"H Motor","\u6c34\u5e73\u5fae\u8c03":"Hor Adj","\u5782\u76f4\u7535\u673a":"V Motor","\u5782\u76f4\u5fae\u8c03":"Ver Adj","\u7535\u673a\u901f\u5ea6":"M Speed","\u6d41\u6c34\u65b9\u5411":"Direction","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabic","\u9ed8\u8ba4\u65b9\u5411":"Default","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Save to Folder","\u9009\u62e9\u5217\u8868":"Select List","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Please Enter Group Name","Playlist":"Playlist","\u4fdd\u5b58":"Save","\u6dfb\u52a0":"Add","\u6279\u91cf\u8bbe\u7f6e":"Bulk Set","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Please Enter List Name","ALL":"All","\u5217\u8868\u7f16\u8f91":"List Edit","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Please Enter a Number Between 0.1 and 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Add New List","\u7acb\u5373\u64ad\u653e":"Play Now","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"The Corresponding Playlist Will Be Deleted, Continue","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- List is Empty --","\u989c\u8272\u8bbe\u7f6e":"Color"}')
+            e.exports = JSON.parse('{"\u8fde\u63a5Bluetooth":"Connect Bluetooth","Random playback":"Random","Connected":"Connected","Not connected":"Not Connected","Outdoor playback":"Outdoor","Reading device parameters...":"Reading Device Parameters","Failed to read device parameters":"Failed To Read Device Parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Refresh List Again","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Search / Stop","\u641c\u7d22BluetoothDevice":"Search","\u5df2\u53d1\u73b0":"Discovered","\u7ea2":"Red","\u7eff":"Green","\u84dd":"Blue","\u9ec4":"Yellow","\u9752":"Cyan","\u7d2b":"Purple","\u767d":"White","\u8df3\u53d8":"Jump","\u5168\u5f69":"RGB","\u64ad\u653e\u6a21\u5f0f":"Play Mode","\u81ea\u8d70":"Auto","\u58f0\u63a7":"Music","\u81ea\u8d70\u901f\u5ea6":"Speed","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensitivity","\u56fe\u6848\u989c\u8272":"Pattern","\u5f53\u524d\u989c\u8272":"Current","\u5faa\u73af\u64ad\u653e":"Loop Play","\u52fe\u9009\u64ad\u653e":"Tick Play","\u5730\u5740\u7801":"Address","\u663e\u793a\u8303\u56f4":"View Size","\u56fe\u6848\u76f8\u4f4d":"Phase","\u6b63\u5e38\u663e\u793a":"Normal","XY\u4e92\u6362":"Interchange","\u8c03\u5149Settings":"Dimming settings","\u7ea2\u5149\u8c03\u5149":"Red","\u7eff\u5149\u8c03\u5149":"Green","\u84dd\u5149\u8c03\u5149":"Blue","\u6fc0\u5149\u5149\u6e90":"Laser","\u5355\u8272":"Single","\u53cc\u8272":"Two","\u8c03\u5236\u6a21\u5f0f":"Modulation","\u7cfb\u7edf\u8bed\u8a00":"Language","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Reading Fonts","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"Generating...","\u6587\u672c\u989c\u8272":"Text Color","\u6587\u5b57\u5927\u5c0f":"Text Size","\u663e\u793a\u89c6\u8ddd":"Distance","\u6d41\u6c34\u901f\u5ea6":"Flow Speed","\u6295\u5c04\u65b9\u5411":"Direction","\u6c34\u5e73\u6295\u5c04":"Horizontal","\u5782\u76f4\u6295\u5c04":"Vertical","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"Max Points ","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Exceeding Parts Will Be Lost","\u7ebf\u6761\u989c\u8272":"Line Color","\u6e05\u7a7a":"Clear","\u56de\u9000":"Back","\u53d1\u9001":"Send","\u6700\u591a20\u4e2a\u573a\u666f":"Up To 20 Scenarios","\u63d0\u793a":"Prompt","\u662f\u5426\u5220\u9664\u573a\u666f":"Do You Want To Delete The Scene ","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"User Clicks To Cancel","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"--The Scene List Is Empty--","\u573a\u666f":"Scene ","\u79d2":"Sec","\u5220\u9664":"Delete","\u7f16\u8f91":"Edit","\u65b0\u589e\u573a\u666f":"Create A New Scene","\u56fe\u6848\u9009\u62e9":"Pattern","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Linear","\u5706\u5f27\u7c7b\u56fe\u6848":"Circular Arc","\u4eae\u70b9\u56fe\u6848":"Highlight","\u6253\u70b9\u56fe\u6848":"Dot","\u5723\u8bde\u56fe\u6848":"Christmas","\u52a8\u753b\u7ec4\u522b1":"Animation 1","\u52a8\u753b\u7ec4\u522b2":"Animation 2","\u52a8\u753b\u7ec4\u522b3":"Animation 3","\u52a8\u753b\u7ec4\u522b4":"Animation 4","\u52a8\u753b\u7ec4\u522b5":"Animation 5","\u767d\u8272":"White","\u7ea2\u8272":"Red","\u84dd\u8272":"Blue","\u7c89\u8272":"Pink","\u9752\u8272":"Cyan","\u9ec4\u8272":"Yellow","\u7eff\u8272":"Green","\u6574\u4f53\u989c\u8272\u6362\u8272":"Overall","\u4e03\u5f69\u8679\u989c\u8272":"Rainbow Colors","2\u5206\u6bb5\u989c\u8272":"2 Segmented","3\u5206\u6bb5\u989c\u8272":"3 Segmented","4\u5206\u6bb5\u989c\u8272":"4 Segmented","8\u5206\u6bb5\u989c\u8272":"8 Segmented","16\u5206\u6bb5\u989c\u8272":"16 Segmented","32\u5206\u6bb5\u989c\u8272":"32 Segmented","\u989c\u8272\u6e10\u7ed8":"Color Gradient","\u4e0d\u6d41\u6c34":"No Flowing","\u6b63\u5411\u6d41\u6c34":"Forward Flow","\u53cd\u5411\u6d41\u6c34":"Reverse Flow","\u56fe\u6848\u5927\u5c0f":"Pattern Size","\u7f29\u653eManual\u9009\u62e9":"Zoom Manual","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Small To Large","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"Large To Small","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Size Scaling","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Zoom Rule 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Zoom Rule 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Zoom Rule 3","\u65cb\u8f6c\u89d2\u5ea6":"Angle","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Positive","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Reverse","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"H Position","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"H Speed","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"V Position","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"V Speed","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"H Rotation","\u6c34\u5e73\u79fb\u52a8":"H Move","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"V Rotation","\u5782\u76f4\u79fb\u52a8":"V Move","\u65e0\u6ce2\u6d6a":"No waves","\u6ce2\u6d6a\u5e45\u5ea61":"Wave 1","\u6ce2\u6d6a\u5e45\u5ea62":"Wave 2","\u6ce2\u6d6a\u5e45\u5ea63":"Wave 3","\u6ce2\u6d6a\u5e45\u5ea64":"Wave 4","\u6ce2\u6d6a\u5e45\u5ea65":"Wave 5","\u6ce2\u6d6a\u5e45\u5ea66":"Wave 6","\u6ce2\u6d6a\u5e45\u5ea67":"Wave 7","\u6ce2\u6d6a\u5e45\u5ea68":"Wave 8","\u65e0\u6e10\u7ed8":"No Gradient","Manual\u6e10\u7ed81":"Manual 1","Manual\u6e10\u7ed82":"Manual 2","Automatic\u6e10\u7ed81":"Auto 1","Automatic\u6e10\u7ed82":"Auto 2","Automatic\u6e10\u7ed83":"Auto 3","Automatic\u6e10\u7ed84":"Auto 4","\u56fe\u5f62\u5206\u7ec4":"Group","\u56fe\u5f62":"Graph","\u989c\u8272":"Colour","\u989c\u8272\u6d41\u6c34":"Flow","\u56fe\u5f62\u5927\u5c0f":"Size","\u56fe\u5f62\u7f29\u653e":"Zoom","\u56fe\u5f62\u65cb\u8f6c":"Rotation","\u6c34\u5e73\u7ffb\u8f6c":"H Flip","\u5782\u76f4\u7ffb\u8f6c":"V Flip","\u6ce2\u6d6a":"Wave","\u6e10\u7ed8":"Gradual","\u64ad\u653e\u65f6\u957f":"Time","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Loading ...","\u53d6\u6d88":"Cancel","\u786e\u5b9a":"Confirm","\u9009\u62e9\u56fe\u5f62":"Select","\u901a\u9053\u590d\u4f4d":"Reset","\u5b8b\u4f53":"Songt","\u76f4\u7ebf":"Line","\u5706\u5f27":"Arc","\u4eae\u70b9":"Dot","\u6253\u70b9":"Manage","\u5723\u8bde":"Christmas","\u52a8\u753bA":"AnimA","\u52a8\u753bB":"AnimB","\u5f69\u8679":"Rainbow","\u9ed8\u8ba4":"Default","\u8f6f\u4ef6\u7248\u672c":"Version","\u8fde\u63a5":"Connect","Settings":"Settings","Hand-drawn doodle":"Draw","Text playback":"Text","Personalized programming":"Program","Animation playback":"Animation","Timeline playback":"Line","Christmas broadcast":"Christmas","DMX":"DMX","\u914d\u7f6e":"Config","\u8fd4\u56de":"Back","Click me to connect":"Click Me To Connect","BluetoothNot connected":"Not Connected","Device":"Device","\u8bf7\u8f93\u5165\u6587\u5b57":"Please Enter Text","\u9884\u7559\u65e0\u529f\u80fd":"Reserved","\u91cd\u7f6e":"Reset","Bluetooth\u8fde\u63a5":"Bluetooth Connection","\u5168\u9009":"All","\u53cd\u9009":"Invert","\u6e05\u9664":"Clear","\u5b57\u6570":"Text","\u70b9\u6570":"Dot","\u9884\u89c8":"Preview","\u573a\u666f\u7ba1\u7406":"Scene Management","\u52a0\u8f7d\u4e2d":"Loading","\u573a\u666f\u7f16\u8f91":"Scene Edit","\u8bf7\u5148\u8fde\u63a5Bluetooth":"Please Connect Bluetooth First","The current device cannot be identified":"The Current Device Is Not Recognized","DMX\u5730\u5740\u7801":"Dmx Address","Please turn on the device first":"Please Trun On The Device First","\u5355\u7ebf\u5b57\u4f53":"Single Line","\u6b63\u5728\u53d1\u9001":"Sending","\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528":"Please Check If Bluetooth Is Enabled On Your Phone","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"This Font Does Not Support Chinese Display","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"Due To Capacity Limitations, Some Chinese Characters Have Not Been Included In The Font Library. Please To To The APP Version For A Complete Font Library","\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Please Set App Location Permissions","\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650":"Please Set Bluetooth Permissions For The Mini Program","Abnormality in reading device parameters":"Abnormal Reading Device Parameters","\u9009\u62e9":"select","Settings\u80cc\u666f\u56fe\u7247":"Set Background Image","\u53d1\u9001\u5931\u8d25":"fail in send","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Text Length Has Exceeded 100","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Number Of Text Coordinate Points Has Exceeded 2048","\u7b2c":"No.","\u7ec4\u6587\u5b57":" Group","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Please Modify The Font Or Text And Try Again","\u4e0d\u652f\u6301\u6587\u672c":" Not Supported ","\u7ec4\u5b57\u4f53":" Text Font ","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":" Group No Text Entered, Please Enter Before Sending","\u662f\u5426\u5220\u9664\u7b2c":"Delete No.","\u7ec4":" Group","\u6700\u591a4\u4e2a\u5206\u7ec4":"Up To 4 Groups","\u6b63\u5728\u8fde\u63a5...":"Connecting...","\u8fde\u63a5\u5931\u8d25":"Connect Failed","\u5b57\u4f53\u9009\u62e9":"Select Font","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans1","\u601d\u6e90\u9ed1\u4f532":"NotoSans2","\u601d\u6e90\u9ed1\u4f533":"NotoSans3","\u601d\u6e90\u9ed1\u4f534":"NotoSans4","\u601d\u6e90\u9ed1\u4f535":"NotoSans5","\u601d\u6e90\u9ed1\u4f536":"NotoSans6","\u601d\u6e90\u9ed1\u4f537":"NotoSans7","font_note_1001":"Chinese, English, Spanish, Portuguese, German, French","font_note_1002":"English, Spanish, Russian, Portuguese, German, French, Vietnamese, Hindi, Bengali","font_note_1003":"English, Chinese, Spanish, Russian, Portuguese, Japanese, German","font_note_1004":"Chinese, English, Spanish, Portuguese, German, French","font_note_1005":"English, Chinese","font_note_1006":"English, Japanese, Korean","font_note_1007":"Arabic","\u4fdd\u7559":"Reserved","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Initial Color","\u6df7\u8272":"Mixing","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Recommended, Better Performance","Disconnected":"Disconnected","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"The Range Of 1-255","\u6587\u5b57\u7cbe\u5ea6":"Text Effects","Text graphic accuracy":"Effects","\u7cbe\u5ea6":"Effects","\u9009\u62e9\u56fe\u7247":"Select","\u8bbe\u4e3a\u80cc\u666f":"Background","\u8bc6\u522b\u56fe\u6848":"Recognize","\u63cf\u8fb9":"Outline","\u6b63\u5728\u5904\u7406\u4e2d":"Processing","\u5f53\u524d\u673a\u578b":"Model","hand_draw_tips":" ** Please swipe from the blank area towards the target pattern to select.\\n ** You can perform operations such as zooming in, zooming out, moving, changing colors, and deleting on the selected pattern.","\u4e0d\u518d\u63d0\u793a":"Never Show","out_door_tips1":"1-30 Landmark","out_door_tips2":"31-40 Northern Lights","out_door_tips3":"41-50 Time Tunnel","\u6587\u4ef6\u540d":"File Name","\u4fdd\u5b58\u6587\u4ef6":"Save File","\u9009\u62e9\u6587\u4ef6":"Select File","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Please Enter The Filename","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Please Enter New Filename","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Filename Cannot Be Empty","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"File Already Exists, Please Re-enter","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"File Already Exists, Continue?","\u4fdd\u5b58\u6210\u529f":"Save Successful","\u4fdd\u5b58\u5931\u8d25":"Save Failed","\u4fee\u6539\u6210\u529f":"Modification Successful","\u4fee\u6539\u5931\u8d25":"Modification Failed","\u5220\u9664\u6210\u529f":"Deletion Successful","\u5220\u9664\u5931\u8d25":"Deletion Failed","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"The Current Model Does Not Support It","text_time_range":"Range 1-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"Recognition Failed","\u8bf7\u9009\u62e9\u6587\u4ef6":"Please Select A File","\u6587\u4ef6\u6570":"Files","\u53e6\u5b58\u6587\u4ef6":"Save AS","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Delete Selected Files","Select-File":"Select","\u6447\u5934Settings":"Movement Settings","Shake mode":"Mode","Shake phase":"Phase","Automatic":"Automatic","Manual":"Manual","X-axis coarse tuning":"X Coa. Adj.","X-axis fine tuning":"X Fine Adj.","Y-axis coarse tuning":"Y Coa. Adj.","Y-axis fine tuning":"Y Fine Adj.","\u6c34\u5e73\u7535\u673a":"H Motor","\u6c34\u5e73\u5fae\u8c03":"Hor Adj","\u5782\u76f4\u7535\u673a":"V Motor","\u5782\u76f4\u5fae\u8c03":"Ver Adj","\u7535\u673a\u901f\u5ea6":"M Speed","\u6d41\u6c34\u65b9\u5411":"Direction","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabic","\u9ed8\u8ba4\u65b9\u5411":"Default","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Save to Folder","\u9009\u62e9\u5217\u8868":"Select List","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Please Enter Group Name","Playlist":"Playlist","\u4fdd\u5b58":"Save","\u6dfb\u52a0":"Add","\u6279\u91cfSettings":"Bulk Set","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Please Enter List Name","ALL":"All","\u5217\u8868\u7f16\u8f91":"List Edit","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Please Enter a Number Between 0.1 and 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Add New List","\u7acb\u5373\u64ad\u653e":"Play Now","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"The Corresponding Playlist Will Be Deleted, Continue","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- List is Empty --","Color settings":"Color"}')
         },
         nonIterableDestructuringErrorHelper: function(e, t) {
             e.exports = function() {
@@ -64369,7 +64353,7 @@
                         attrs: {
                             _i: 8
                         }
-                    }, [e._v(e._$s(8, "t0-0", e._s(e.$t("\u6447\u5934\u6a21\u5f0f"))))]), r("label", {
+                    }, [e._v(e._$s(8, "t0-0", e._s(e.$t("Shake mode"))))]), r("label", {
                         staticClass: e._$s(9, "sc", "fun-radio"),
                         attrs: {
                             _i: 9
@@ -64384,7 +64368,7 @@
                         attrs: {
                             _i: 11
                         }
-                    }, [e._v(e._$s(11, "t0-0", e._s(e.$t("\u81ea\u52a8"))))])]), r("label", {
+                    }, [e._v(e._$s(11, "t0-0", e._s(e.$t("Automatic"))))])]), r("label", {
                         staticClass: e._$s(12, "sc", "fun-radio"),
                         attrs: {
                             _i: 12
@@ -64399,7 +64383,7 @@
                         attrs: {
                             _i: 14
                         }
-                    }, [e._v(e._$s(14, "t0-0", e._s(e.$t("\u624b\u52a8"))))])])])])]), r("view", [r("radio-group", {
+                    }, [e._v(e._$s(14, "t0-0", e._s(e.$t("Manual"))))])])])])]), r("view", [r("radio-group", {
                         staticClass: e._$s(16, "sc", "display-btn-group"),
                         attrs: {
                             _i: 16
@@ -64412,7 +64396,7 @@
                         attrs: {
                             _i: 19
                         }
-                    }, [e._v(e._$s(19, "t0-0", e._s(e.$t("\u6447\u5934\u76f8\u4f4d"))))]), r("label", {
+                    }, [e._v(e._$s(19, "t0-0", e._s(e.$t("Shake phase"))))]), r("label", {
                         staticClass: e._$s(20, "sc", "fun-radio"),
                         attrs: {
                             _i: 20
@@ -66165,7 +66149,7 @@
                                 screen_width: a.globalData.screen_width_str,
                                 scUnit: a.globalData.screen_width_float,
                                 rtl: a.globalData.rtl,
-                                ntitle: this.$t("\u6447\u5934\u8bbe\u7f6e"),
+                                ntitle: this.$t("\u6447\u5934Settings"),
                                 sendTimer: null,
                                 lastSendTime: 0,
                                 lastCmdTime: 0,
