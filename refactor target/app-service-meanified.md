@@ -181,10 +181,10 @@
 
 - [Radio Group] (on change: `radioChange`)
   - [Border Group 1]
-    - [Label] "正常显示" (Normal Display)
+    - [Label] (Normal Display)
     - Four radio choices (0,1,2,3), each with a label and colored text if selected
   - [Border Group 2]
-    - [Label] "XY互换" (XY Swap)
+    - [Label]  (XY Swap)
     - Four radio choices (4,5,6,7), each with a label and colored text if selected
 
 ---
@@ -193,19 +193,19 @@
 
 - [RGB Controls]
   - [Row 1]
-    - [Label] "红光调光" (Red Light Dimming)
+    - [Label]  (Red Light Dimming)
     - [Decrement Button]
     - [Input] (bound to `valArr2`)
     - [Increment Button]
     - Inputs/buttons disabled if `cfg==0`
   - [Row 2]
-    - [Label] "绿光调光" (Green Light Dimming)
+    - [Label]  (Green Light Dimming)
     - [Decrement Button]
     - [Input] (bound to `valArr3`)
     - [Increment Button]
     - Inputs/buttons disabled if `cfg==0`
   - [Row 3]
-    - [Label] "蓝光调光" (Blue Light Dimming)
+    - [Label]  (Blue Light Dimming)
     - [Decrement Button]
     - [Input] (bound to `valArr4`)
     - [Increment Button]
@@ -216,10 +216,10 @@
 ## Lighting Source Section
 
 - [Radio Group] (on change: `radioChange`)
-  - [Label] "激光光源" (Laser Light Source)
-  - [Option 1] 单色 ("Single Color") - disabled if `showCtr.light1`
-  - [Option 2] 双色 ("Dual Color") - visible/disabled based on `showCtr.light2`
-  - [Option 3] 全彩 ("Full Color") - disabled if `showCtr.light3`
+  - [Label]  (Laser Light Source)
+  - [Option 1]  ("Single Color") - disabled if `showCtr.light1`
+  - [Option 2]  ("Dual Color") - visible/disabled based on `showCtr.light2`
+  - [Option 3]  ("Full Color") - disabled if `showCtr.light3`
   - [Option 4] (extra) - visible if `showCtr.lightExt`
 
 ---
@@ -227,7 +227,7 @@
 ## Adjustment Mode Section
 
 - [Radio Group] (on change: `radioChange`)
-  - [Label] "调制模式" (Modulation Mode)
+  - [Label] (Modulation Mode)
   - [Option 1] (disabled if `!features.ttlAn`, checked if `cfg==0`)
   - [Option 2] (disabled if `!features.ttlAn`, checked if `cfg==255`)
   - [Option 3] (extra)
@@ -237,7 +237,7 @@
 ## System Language Section
 
 - [Radio Group]
-  - [Label] "系统语言" (System Language)
+  - [Label]  (System Language)
   - [Clickable Label] `[langName]` (underlined, colored), triggers `selectLang` on click
 
 ---
@@ -245,7 +245,7 @@
 ## Software Version Section
 
 - [Radio Group]
-  - [Label] "软件版本" (Software Version)
+  - [Label]  (Software Version)
   - [Label] `[version]` or "1.1.1" (colored, aligned)
 
 ---
@@ -253,7 +253,7 @@
 ## Model Section
 
 - [Radio Group]
-  - [Label] "当前机型" (Current Model)
+  - [Label] (Current Model)
   - [Label] `[machine]` (colored, aligned)
 
 ---

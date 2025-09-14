@@ -919,7 +919,7 @@
                         attrs: {
                             _i: 42
                         }
-                    }, [r("label", [e._v(e._$s(43, "t0-0", e._s(e.$t("\u6b63\u5e38\u663e\u793a"))))]), r("view", [r("view", {
+                    }, [r("label", [e._v(e._$s(43, "t0-0", e._s(e.$t("Normal"))))]), r("view", [r("view", {
                         staticClass: e._$s(45, "sc", "display-xy-radio"),
                         style: e._$s(45, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -993,7 +993,7 @@
                         attrs: {
                             _i: 57
                         }
-                    }, [r("label", [e._v(e._$s(58, "t0-0", e._s(e.$t("XY\u4e92\u6362"))))]), r("view", [r("view", {
+                    }, [r("label", [e._v(e._$s(58, "t0-0", e._s(e.$t("XYInterchange"))))]), r("view", [r("view", {
                         staticClass: e._$s(60, "sc", "display-xy-radio"),
                         style: e._$s(60, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -1081,7 +1081,7 @@
                         attrs: {
                             _i: 76
                         }
-                    }, [e._v(e._$s(76, "t0-0", e._s(e.$t("\u7ea2\u5149\u8c03\u5149"))))])]), r("view", {
+                    }, [e._v(e._$s(76, "t0-0", e._s(e.$t("Red"))))])]), r("view", {
                         staticClass: e._$s(77, "sc", "view-rgb-inut"),
                         style: e._$s(77, "s", "opacity: " + (0 != e.cfg ? "1;" : "0.5; pointer-events: none;")),
                         attrs: {
@@ -1161,7 +1161,7 @@
                         attrs: {
                             _i: 88
                         }
-                    }, [e._v(e._$s(88, "t0-0", e._s(e.$t("\u7eff\u5149\u8c03\u5149"))))])]), r("view", {
+                    }, [e._v(e._$s(88, "t0-0", e._s(e.$t("Green"))))])]), r("view", {
                         staticClass: e._$s(89, "sc", "view-rgb-inut"),
                         style: e._$s(89, "s", "opacity: " + (0 != e.cfg ? "1;" : "0.5; pointer-events: none;")),
                         attrs: {
@@ -1241,7 +1241,7 @@
                         attrs: {
                             _i: 100
                         }
-                    }, [e._v(e._$s(100, "t0-0", e._s(e.$t("\u84dd\u5149\u8c03\u5149"))))])]), r("view", {
+                    }, [e._v(e._$s(100, "t0-0", e._s(e.$t("Blue"))))])]), r("view", {
                         staticClass: e._$s(101, "sc", "view-rgb-inut"),
                         style: e._$s(101, "s", "opacity: " + (0 != e.cfg ? "1;" : "0.5; pointer-events: none;")),
                         attrs: {
@@ -1320,7 +1320,7 @@
                         attrs: {
                             _i: 111
                         }
-                    }, [e._v(e._$s(111, "t0-0", e._s(e.$t("\u6fc0\u5149\u5149\u6e90"))))]), r("view", [r("label", {
+                    }, [e._v(e._$s(111, "t0-0", e._s(e.$t("Laser"))))]), r("view", [r("label", {
                         staticClass: e._$s(113, "sc", "fun-radio"),
                         style: e._$s(113, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -1338,7 +1338,7 @@
                         attrs: {
                             _i: 115
                         }
-                    }, [e._v(e._$s(115, "t0-0", e._s(e.$t("\u5355\u8272"))))])]), e._$s(116, "i", e.showCtr.light2) ? r("label", {
+                    }, [e._v(e._$s(115, "t0-0", e._s(e.$t("Single"))))])]), e._$s(116, "i", e.showCtr.light2) ? r("label", {
                         staticClass: e._$s(116, "sc", "fun-radio"),
                         style: e._$s(116, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -1356,7 +1356,7 @@
                         attrs: {
                             _i: 118
                         }
-                    }, [e._v(e._$s(118, "t0-0", e._s(e.$t("\u53cc\u8272"))))])]) : e._e(), r("label", {
+                    }, [e._v(e._$s(118, "t0-0", e._s(e.$t("Two"))))])]) : e._e(), r("label", {
                         staticClass: e._$s(119, "sc", "fun-radio"),
                         style: e._$s(119, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -1374,7 +1374,7 @@
                         attrs: {
                             _i: 121
                         }
-                    }, [e._v(e._$s(121, "t0-0", e._s(e.$t("\u5168\u5f69"))))])]), e._$s(122, "i", e.showCtr.lightExt) ? r("label", {
+                    }, [e._v(e._$s(121, "t0-0", e._s(e.$t("RGB"))))])]), e._$s(122, "i", e.showCtr.lightExt) ? r("label", {
                         staticClass: e._$s(122, "sc", "fun-radio"),
                         attrs: {
                             _i: 122
@@ -1393,7 +1393,7 @@
                         attrs: {
                             _i: 124
                         }
-                    }, [e._v(e._$s(124, "t0-0", e._s(e.$t("\u8c03\u5236\u6a21\u5f0f"))))]), r("view", [r("label", {
+                    }, [e._v(e._$s(124, "t0-0", e._s(e.$t("Modulation"))))]), r("view", [r("label", {
                         staticClass: e._$s(126, "sc", "fun-radio"),
                         style: e._$s(126, "s", e.rtl ? "justify-content: right;" : ""),
                         attrs: {
@@ -1448,7 +1448,7 @@
                         attrs: {
                             _i: 134
                         }
-                    }, [e._v(e._$s(134, "t0-0", e._s(e.$t("\u7cfb\u7edf\u8bed\u8a00"))))]), r("label", {
+                    }, [e._v(e._$s(134, "t0-0", e._s(e.$t("Language"))))]), r("label", {
                         staticClass: e._$s(135, "sc", "fun-radio"),
                         style: e._$s(135, "s", "flex: 1; " + (e.rtl ? "justify-content: right;" : "")),
                         attrs: {
@@ -1474,7 +1474,7 @@
                         attrs: {
                             _i: 138
                         }
-                    }, [e._v(e._$s(138, "t0-0", e._s(e.$t("\u8f6f\u4ef6\u7248\u672c"))))]), r("label", {
+                    }, [e._v(e._$s(138, "t0-0", e._s(e.$t("Version"))))]), r("label", {
                         staticClass: e._$s(139, "sc", "fun-radio"),
                         style: e._$s(139, "s", "flex: 1; " + (e.rtl ? "justify-content: right;" : "")),
                         attrs: {
@@ -1497,7 +1497,7 @@
                         attrs: {
                             _i: 142
                         }
-                    }, [e._v(e._$s(142, "t0-0", e._s(e.$t("\u5f53\u524d\u673a\u578b"))))]), r("label", {
+                    }, [e._v(e._$s(142, "t0-0", e._s(e.$t("Current Model"))))]), r("label", {
                         staticClass: e._$s(143, "sc", "fun-radio"),
                         style: e._$s(143, "s", "flex: 1; align-content: center; " + (e.rtl ? "justify-content: right;" : "")),
                         attrs: {
@@ -2438,8 +2438,8 @@
                         setCmdMode: function(e) {
                             this.cmd["curMode"] = e, this.cmd["prjData"].prjIndex = e
                         },
-                        getCmdData: function(e) {
-                            return this.cmd[e]
+                        getCmdData: function(commandKey) {
+                            return this.cmd[commandKey]
                         },
                         setCmdData: function(e, t) {
                             if ("prjData" == e) return this.cmd[e].public = t.public, 1 != t.prjIndex && (this.cmd[e].prjItem[t.prjIndex + ""] = t.item), this.cmd.textData.runSpeed = t.public.runSpeed, void(this.cmd.textData.txColor = t.public.txColor);
@@ -2497,6 +2497,7 @@
                                     xyCnf: !1,
                                     arbPlay: !1,
                                     ilda: !1,
+                                    // device supports TTL analog
                                     ttlAn: !1,
                                     picsPlay: !1,
                                     textUpDown: !1,
@@ -2843,7 +2844,7 @@
                                     order: 7,
                                     idx: 8
                                 }, {
-                                    name: "\u5168\u5f69",
+                                    name: "RGB",
                                     color: "transparent",
                                     order: 8,
                                     idx: 9
@@ -23925,7 +23926,7 @@
                     n = {
                         data: function() {
                             return {
-                                ntitle: this.$t("\u7cfb\u7edf\u8bed\u8a00"),
+                                ntitle: this.$t("Language"),
                                 lang: "",
                                 list: r.globalData.langs
                             }
@@ -46942,7 +46943,11 @@
                         appStateManager.globalData.blu_data_canSend = canSend
                     },
                     getCanSend: canSendBleData,
-                    // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge cases and UI feedback.
+                    // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
+                    // cases and UI feedback.
+                    // In summary, gosend returns true if the send process (real or simulated) is started or handled, 
+                    // and false if it is blocked due to an ongoing send or invalid data. The actual BLE send is asynchronous,
+                    //  so the return value does not indicate send success, only that the process was started or handled.
                     gosend: function(showProgress, hexData) {
                         var sendCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
                         if (canSendBleData() ? logHexBytes(hexData) : t("log", "len:" + hexData.length, hexData, " at utils/bluCtrl.js:548"), 0 == hexData.length || !canSendBleData() && !hexData.startsWith("E0E1E2E3")) return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
@@ -62270,15 +62275,15 @@
                     value: !0
                 }), t.default = void 0;
                 var h = n(r("uniPopupComponentExportWrapper")),
-                    a = getApp(),
-                    i = r("deviceCommandUtils "),
-                    c = r("bleDeviceControlUtils "),
-                    o = (r("geometryAndUuidUtils"), {
+                    app = getApp(),
+                    deviceCommandUtil = r("deviceCommandUtils "),
+                    bleDeviceController = r("bleDeviceControlUtils "),
+                    geometryUtil = (r("geometryAndUuidUtils"), {
                         data: function() {
-                            var e = a.globalData.getDeviceFeatures();
+                            var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
-                                screen_width: a.globalData.screen_width_str,
-                                rtl: a.globalData.rtl,
+                                screen_width: app.globalData.screen_width_str,
+                                rtl: app.globalData.rtl,
                                 showCtr: {
                                     light1: !0,
                                     light2: !0,
@@ -62286,7 +62291,7 @@
                                     lightExt: !1
                                 },
                                 deviceInfo: 0,
-                                features: e,
+                                features: deviceFeatures,
                                 SetCmdSend: "",
                                 longPressed: !1,
                                 version: "",
@@ -62362,17 +62367,17 @@
                         onLoad: function(e) {
                             var t = this;
                             this.version = plus.runtime.version, this.version = this.version.trim();
-                            var r = a.globalData.getCmdData("settingData");
-                            r.dmx = e.dmx;
+                            var settingData = app.globalData.getCmdData("settingData");
+                            settingData.dmx = e.dmx;
                             var n = this;
-                            Object.keys(r).forEach((function(e) {
-                                n.$set(t, e, r[e])
-                            })), this.deviceInfo = a.globalData.getDeviceInfo(), this.machine = ("0" + this.deviceInfo.deviceType).slice(-2) + " - " + ("0" + this.deviceInfo.version).slice(-2), this.initData()
+                            Object.keys(settingData).forEach((function(e) {
+                                n.$set(t, e, settingData[e])
+                            })), this.deviceInfo = app.globalData.getDeviceInfo(), this.machine = ("0" + this.deviceInfo.deviceType).slice(-2) + " - " + ("0" + this.deviceInfo.version).slice(-2), this.initData()
                         },
                         onReady: function() {},
                         onShow: function() {
-                            var t = a.globalData.getLang();
-                            this.langName = a.globalData.langs[t], this.rtl = a.globalData.rtl, e("log", "this.langName", this.langName, " at pages/setting/setting.js:124")
+                            var t = app.globalData.getLang();
+                            this.langName = app.globalData.langs[t], this.rtl = app.globalData.rtl, e("log", "this.langName", this.langName, " at pages/setting/setting.js:124")
                         },
                         onHide: function() {},
                         onUnload: function() {
@@ -62385,14 +62390,14 @@
                                 lang: this.lang,
                                 valArr: this.valArr
                             };
-                            a.globalData.setCmdData("settingData", e)
+                            app.globalData.setCmdData("settingData", e)
                         },
                         onPullDownRefresh: function() {},
                         onReachBottom: function() {},
                         onShareAppMessage: function() {},
                         methods: {
                             sendCmd: function() {
-                                var e = {
+                                var settingData = {
                                     ch: this.ch,
                                     dmx: this.dmx,
                                     xy: this.xy,
@@ -62401,15 +62406,15 @@
                                     lang: this.lang,
                                     valArr: this.valArr
                                 };
-                                a.globalData.setCmdData("settingData", e);
-                                var t = i.getSettingCmd(a.globalData.cmd.settingData);
-                                this.SetCmdSend = t, this.doSendCmd()
+                                app.globalData.setCmdData("settingData", settingData);
+                                var command = deviceCommandUtil.getSettingCmd(app.globalData.cmd.settingData);
+                                this.SetCmdSend = command, this.doSendCmd()
                             },
                             doSendCmd: function() {
                                 if ("" != this.SetCmdSend) {
-                                    var e = c.gosend(!1, this.SetCmdSend),
+                                    var commandResult = bleDeviceController.gosend(!1, this.SetCmdSend),
                                         t = this;
-                                    e ? this.SetCmdSend = "" : setTimeout((function() {
+                                    commandResult ? this.SetCmdSend = "" : setTimeout((function() {
                                         t.doSendCmd()
                                     }), 100)
                                 }
@@ -62438,7 +62443,7 @@
                                 })
                             },
                             setLang: function(e) {
-                                a.globalData.setLang(e)
+                                app.globalData.setLang(e)
                             },
                             radioChange: function(e) {
                                 var t = e.detail.value;
@@ -62530,7 +62535,7 @@
                             }
                         }
                     });
-                t.default = o
+                t.default = geometryUtil
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
         DeviceConfigPageRender : function(e, t, r) {
@@ -63308,7 +63313,7 @@
                                         playTime: r
                                     }) : this.selectFiles.splice(n, 1)
                                 } else {
-                                    if (!this.isValid(e)) return void c.globalData.showModalTips(this.$t("\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301"));
+                                    if (!this.isValid(e)) return void c.globalData.showModalTips(this.$t("Current Model\u4e0d\u652f\u6301"));
                                     this.fileName = t
                                 }
                             },
@@ -64023,7 +64028,7 @@
             t["default"] = h.a
         },
         enLocaleStrings: function(e) {
-            e.exports = JSON.parse('{"\u8fde\u63a5Bluetooth":"Connect Bluetooth","Random playback":"Random","Connected":"Connected","Not connected":"Not Connected","Outdoor playback":"Outdoor","Reading device parameters...":"Reading Device Parameters","Failed to read device parameters":"Failed To Read Device Parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Refresh List Again","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Search / Stop","\u641c\u7d22BluetoothDevice":"Search","\u5df2\u53d1\u73b0":"Discovered","\u7ea2":"Red","\u7eff":"Green","\u84dd":"Blue","\u9ec4":"Yellow","\u9752":"Cyan","\u7d2b":"Purple","\u767d":"White","\u8df3\u53d8":"Jump","\u5168\u5f69":"RGB","\u64ad\u653e\u6a21\u5f0f":"Play Mode","\u81ea\u8d70":"Auto","\u58f0\u63a7":"Music","\u81ea\u8d70\u901f\u5ea6":"Speed","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensitivity","\u56fe\u6848\u989c\u8272":"Pattern","\u5f53\u524d\u989c\u8272":"Current","\u5faa\u73af\u64ad\u653e":"Loop Play","\u52fe\u9009\u64ad\u653e":"Tick Play","Address Code":"Address","Display Range":"View Size","\u56fe\u6848\u76f8\u4f4d":"Phase","\u6b63\u5e38\u663e\u793a":"Normal","XY\u4e92\u6362":"Interchange","\u8c03\u5149Settings":"Dimming settings","\u7ea2\u5149\u8c03\u5149":"Red","\u7eff\u5149\u8c03\u5149":"Green","\u84dd\u5149\u8c03\u5149":"Blue","\u6fc0\u5149\u5149\u6e90":"Laser","\u5355\u8272":"Single","\u53cc\u8272":"Two","\u8c03\u5236\u6a21\u5f0f":"Modulation","\u7cfb\u7edf\u8bed\u8a00":"Language","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Reading Fonts","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"Generating...","\u6587\u672c\u989c\u8272":"Text Color","\u6587\u5b57\u5927\u5c0f":"Text Size","\u663e\u793a\u89c6\u8ddd":"Distance","\u6d41\u6c34\u901f\u5ea6":"Flow Speed","\u6295\u5c04\u65b9\u5411":"Direction","\u6c34\u5e73\u6295\u5c04":"Horizontal","\u5782\u76f4\u6295\u5c04":"Vertical","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"Max Points ","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Exceeding Parts Will Be Lost","\u7ebf\u6761\u989c\u8272":"Line Color","\u6e05\u7a7a":"Clear","\u56de\u9000":"Back","\u53d1\u9001":"Send","\u6700\u591a20\u4e2a\u573a\u666f":"Up To 20 Scenarios","\u63d0\u793a":"Prompt","\u662f\u5426\u5220\u9664\u573a\u666f":"Do You Want To Delete The Scene ","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"User Clicks To Cancel","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"--The Scene List Is Empty--","\u573a\u666f":"Scene ","\u79d2":"Sec","\u5220\u9664":"Delete","\u7f16\u8f91":"Edit","\u65b0\u589e\u573a\u666f":"Create A New Scene","\u56fe\u6848\u9009\u62e9":"Pattern","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Linear","\u5706\u5f27\u7c7b\u56fe\u6848":"Circular Arc","\u4eae\u70b9\u56fe\u6848":"Highlight","\u6253\u70b9\u56fe\u6848":"Dot","\u5723\u8bde\u56fe\u6848":"Christmas","\u52a8\u753b\u7ec4\u522b1":"Animation 1","\u52a8\u753b\u7ec4\u522b2":"Animation 2","\u52a8\u753b\u7ec4\u522b3":"Animation 3","\u52a8\u753b\u7ec4\u522b4":"Animation 4","\u52a8\u753b\u7ec4\u522b5":"Animation 5","\u767d\u8272":"White","\u7ea2\u8272":"Red","\u84dd\u8272":"Blue","\u7c89\u8272":"Pink","\u9752\u8272":"Cyan","\u9ec4\u8272":"Yellow","\u7eff\u8272":"Green","\u6574\u4f53\u989c\u8272\u6362\u8272":"Overall","\u4e03\u5f69\u8679\u989c\u8272":"Rainbow Colors","2\u5206\u6bb5\u989c\u8272":"2 Segmented","3\u5206\u6bb5\u989c\u8272":"3 Segmented","4\u5206\u6bb5\u989c\u8272":"4 Segmented","8\u5206\u6bb5\u989c\u8272":"8 Segmented","16\u5206\u6bb5\u989c\u8272":"16 Segmented","32\u5206\u6bb5\u989c\u8272":"32 Segmented","\u989c\u8272\u6e10\u7ed8":"Color Gradient","\u4e0d\u6d41\u6c34":"No Flowing","\u6b63\u5411\u6d41\u6c34":"Forward Flow","\u53cd\u5411\u6d41\u6c34":"Reverse Flow","\u56fe\u6848\u5927\u5c0f":"Pattern Size","\u7f29\u653eManual\u9009\u62e9":"Zoom Manual","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Small To Large","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"Large To Small","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Size Scaling","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Zoom Rule 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Zoom Rule 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Zoom Rule 3","\u65cb\u8f6c\u89d2\u5ea6":"Angle","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Positive","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Reverse","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"H Position","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"H Speed","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"V Position","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"V Speed","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"H Rotation","\u6c34\u5e73\u79fb\u52a8":"H Move","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"V Rotation","\u5782\u76f4\u79fb\u52a8":"V Move","\u65e0\u6ce2\u6d6a":"No waves","\u6ce2\u6d6a\u5e45\u5ea61":"Wave 1","\u6ce2\u6d6a\u5e45\u5ea62":"Wave 2","\u6ce2\u6d6a\u5e45\u5ea63":"Wave 3","\u6ce2\u6d6a\u5e45\u5ea64":"Wave 4","\u6ce2\u6d6a\u5e45\u5ea65":"Wave 5","\u6ce2\u6d6a\u5e45\u5ea66":"Wave 6","\u6ce2\u6d6a\u5e45\u5ea67":"Wave 7","\u6ce2\u6d6a\u5e45\u5ea68":"Wave 8","\u65e0\u6e10\u7ed8":"No Gradient","Manual\u6e10\u7ed81":"Manual 1","Manual\u6e10\u7ed82":"Manual 2","Automatic\u6e10\u7ed81":"Auto 1","Automatic\u6e10\u7ed82":"Auto 2","Automatic\u6e10\u7ed83":"Auto 3","Automatic\u6e10\u7ed84":"Auto 4","\u56fe\u5f62\u5206\u7ec4":"Group","\u56fe\u5f62":"Graph","\u989c\u8272":"Colour","\u989c\u8272\u6d41\u6c34":"Flow","\u56fe\u5f62\u5927\u5c0f":"Size","\u56fe\u5f62\u7f29\u653e":"Zoom","\u56fe\u5f62\u65cb\u8f6c":"Rotation","\u6c34\u5e73\u7ffb\u8f6c":"H Flip","\u5782\u76f4\u7ffb\u8f6c":"V Flip","\u6ce2\u6d6a":"Wave","\u6e10\u7ed8":"Gradual","\u64ad\u653e\u65f6\u957f":"Time","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Loading ...","\u53d6\u6d88":"Cancel","\u786e\u5b9a":"Confirm","\u9009\u62e9\u56fe\u5f62":"Select","\u901a\u9053\u590d\u4f4d":"Reset","\u5b8b\u4f53":"Songt","\u76f4\u7ebf":"Line","\u5706\u5f27":"Arc","\u4eae\u70b9":"Dot","\u6253\u70b9":"Manage","\u5723\u8bde":"Christmas","\u52a8\u753bA":"AnimA","\u52a8\u753bB":"AnimB","\u5f69\u8679":"Rainbow","\u9ed8\u8ba4":"Default","\u8f6f\u4ef6\u7248\u672c":"Version","\u8fde\u63a5":"Connect","Settings":"Settings","Hand-drawn doodle":"Draw","Text playback":"Text","Personalized programming":"Program","Animation playback":"Animation","Timeline playback":"Line","Christmas broadcast":"Christmas","DMX":"DMX","\u914d\u7f6e":"Config","\u8fd4\u56de":"Back","Click me to connect":"Click Me To Connect","BluetoothNot connected":"Not Connected","Device":"Device","\u8bf7\u8f93\u5165\u6587\u5b57":"Please Enter Text","\u9884\u7559\u65e0\u529f\u80fd":"Reserved","\u91cd\u7f6e":"Reset","Bluetooth\u8fde\u63a5":"Bluetooth Connection","\u5168\u9009":"All","\u53cd\u9009":"Invert","\u6e05\u9664":"Clear","\u5b57\u6570":"Text","\u70b9\u6570":"Dot","\u9884\u89c8":"Preview","\u573a\u666f\u7ba1\u7406":"Scene Management","\u52a0\u8f7d\u4e2d":"Loading","\u573a\u666f\u7f16\u8f91":"Scene Edit","\u8bf7\u5148\u8fde\u63a5Bluetooth":"Please Connect Bluetooth First","The current device cannot be identified":"The Current Device Is Not Recognized","DMXAddress Code":"Dmx Address","Please turn on the device first":"Please Trun On The Device First","\u5355\u7ebf\u5b57\u4f53":"Single Line","\u6b63\u5728\u53d1\u9001":"Sending","\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528":"Please Check If Bluetooth Is Enabled On Your Phone","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"This Font Does Not Support Chinese Display","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"Due To Capacity Limitations, Some Chinese Characters Have Not Been Included In The Font Library. Please To To The APP Version For A Complete Font Library","\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Please Set App Location Permissions","\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650":"Please Set Bluetooth Permissions For The Mini Program","Abnormality in reading device parameters":"Abnormal Reading Device Parameters","\u9009\u62e9":"select","Settings\u80cc\u666f\u56fe\u7247":"Set Background Image","Sending failed":"fail in send","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Text Length Has Exceeded 100","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Number Of Text Coordinate Points Has Exceeded 2048","\u7b2c":"No.","\u7ec4\u6587\u5b57":" Group","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Please Modify The Font Or Text And Try Again","\u4e0d\u652f\u6301\u6587\u672c":" Not Supported ","\u7ec4\u5b57\u4f53":" Text Font ","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":" Group No Text Entered, Please Enter Before Sending","\u662f\u5426\u5220\u9664\u7b2c":"Delete No.","\u7ec4":" Group","\u6700\u591a4\u4e2a\u5206\u7ec4":"Up To 4 Groups","Connecting.....":"Connecting...","Connection failed":"Connect Failed","\u5b57\u4f53\u9009\u62e9":"Select Font","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans1","\u601d\u6e90\u9ed1\u4f532":"NotoSans2","\u601d\u6e90\u9ed1\u4f533":"NotoSans3","\u601d\u6e90\u9ed1\u4f534":"NotoSans4","\u601d\u6e90\u9ed1\u4f535":"NotoSans5","\u601d\u6e90\u9ed1\u4f536":"NotoSans6","\u601d\u6e90\u9ed1\u4f537":"NotoSans7","font_note_1001":"Chinese, English, Spanish, Portuguese, German, French","font_note_1002":"English, Spanish, Russian, Portuguese, German, French, Vietnamese, Hindi, Bengali","font_note_1003":"English, Chinese, Spanish, Russian, Portuguese, Japanese, German","font_note_1004":"Chinese, English, Spanish, Portuguese, German, French","font_note_1005":"English, Chinese","font_note_1006":"English, Japanese, Korean","font_note_1007":"Arabic","\u4fdd\u7559":"Reserved","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Initial Color","\u6df7\u8272":"Mixing","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Recommended, Better Performance","Disconnected":"Disconnected","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"The Range Of 1-255","\u6587\u5b57\u7cbe\u5ea6":"Text Effects","Text graphic accuracy":"Effects","\u7cbe\u5ea6":"Effects","\u9009\u62e9\u56fe\u7247":"Select","\u8bbe\u4e3a\u80cc\u666f":"Background","\u8bc6\u522b\u56fe\u6848":"Recognize","\u63cf\u8fb9":"Outline","\u6b63\u5728\u5904\u7406\u4e2d":"Processing","\u5f53\u524d\u673a\u578b":"Model","hand_draw_tips":" ** Please swipe from the blank area towards the target pattern to select.\\n ** You can perform operations such as zooming in, zooming out, moving, changing colors, and deleting on the selected pattern.","\u4e0d\u518d\u63d0\u793a":"Never Show","out_door_tips1":"1-30 Landmark","out_door_tips2":"31-40 Northern Lights","out_door_tips3":"41-50 Time Tunnel","\u6587\u4ef6\u540d":"File Name","\u4fdd\u5b58\u6587\u4ef6":"Save File","\u9009\u62e9\u6587\u4ef6":"Select File","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Please Enter The Filename","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Please Enter New Filename","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Filename Cannot Be Empty","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"File Already Exists, Please Re-enter","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"File Already Exists, Continue?","\u4fdd\u5b58\u6210\u529f":"Save Successful","\u4fdd\u5b58\u5931\u8d25":"Save Failed","\u4fee\u6539\u6210\u529f":"Modification Successful","\u4fee\u6539\u5931\u8d25":"Modification Failed","\u5220\u9664\u6210\u529f":"Deletion Successful","\u5220\u9664\u5931\u8d25":"Deletion Failed","\u5f53\u524d\u673a\u578b\u4e0d\u652f\u6301":"The Current Model Does Not Support It","text_time_range":"Range 1-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"Recognition Failed","\u8bf7\u9009\u62e9\u6587\u4ef6":"Please Select A File","\u6587\u4ef6\u6570":"Files","\u53e6\u5b58\u6587\u4ef6":"Save AS","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Delete Selected Files","Select-File":"Select","\u6447\u5934Settings":"Movement Settings","Shake mode":"Mode","Shake phase":"Phase","Automatic":"Automatic","Manual":"Manual","X-axis coarse tuning":"X Coa. Adj.","X-axis fine tuning":"X Fine Adj.","Y-axis coarse tuning":"Y Coa. Adj.","Y-axis fine tuning":"Y Fine Adj.","\u6c34\u5e73\u7535\u673a":"H Motor","\u6c34\u5e73\u5fae\u8c03":"Hor Adj","\u5782\u76f4\u7535\u673a":"V Motor","\u5782\u76f4\u5fae\u8c03":"Ver Adj","\u7535\u673a\u901f\u5ea6":"M Speed","\u6d41\u6c34\u65b9\u5411":"Direction","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabic","\u9ed8\u8ba4\u65b9\u5411":"Default","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Save to Folder","\u9009\u62e9\u5217\u8868":"Select List","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Please Enter Group Name","Playlist":"Playlist","\u4fdd\u5b58":"Save","\u6dfb\u52a0":"Add","\u6279\u91cfSettings":"Bulk Set","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Please Enter List Name","ALL":"All","\u5217\u8868\u7f16\u8f91":"List Edit","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Please Enter a Number Between 0.1 and 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Add New List","\u7acb\u5373\u64ad\u653e":"Play Now","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"The Corresponding Playlist Will Be Deleted, Continue","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- List is Empty --","Color settings":"Color"}')
+            e.exports = JSON.parse('{"\u8fde\u63a5Bluetooth":"Connect Bluetooth","Random playback":"Random","Connected":"Connected","Not connected":"Not Connected","Outdoor playback":"Outdoor","Reading device parameters...":"Reading Device Parameters","Failed to read device parameters":"Failed To Read Device Parameters","\u91cd\u65b0\u5237\u65b0\u5217\u8868":"Refresh List Again","\u6b63\u5728\u641c\u7d22\uff0c\u70b9\u51fb\u505c\u6b62":"Search / Stop","\u641c\u7d22BluetoothDevice":"Search","\u5df2\u53d1\u73b0":"Discovered","\u7ea2":"Red","\u7eff":"Green","\u84dd":"Blue","\u9ec4":"Yellow","\u9752":"Cyan","\u7d2b":"Purple","\u767d":"White","\u8df3\u53d8":"Jump","RGB":"RGB","\u64ad\u653e\u6a21\u5f0f":"Play Mode","\u81ea\u8d70":"Auto","\u58f0\u63a7":"Music","\u81ea\u8d70\u901f\u5ea6":"Speed","\u58f0\u63a7\u7075\u654f\u5ea6":"Sensitivity","\u56fe\u6848\u989c\u8272":"Pattern","\u5f53\u524d\u989c\u8272":"Current","\u5faa\u73af\u64ad\u653e":"Loop Play","\u52fe\u9009\u64ad\u653e":"Tick Play","Address Code":"Address","Display Range":"View Size","\u56fe\u6848\u76f8\u4f4d":"Phase","Normal":"Normal","XYInterchange":"Interchange","\u8c03\u5149Settings":"Dimming settings","Red":"Red","Green":"Green","Blue":"Blue","Laser":"Laser","Single":"Single","Two":"Two","Modulation":"Modulation","Language":"Language","\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...":"Reading Fonts","\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9...":"Generating...","\u6587\u672c\u989c\u8272":"Text Color","\u6587\u5b57\u5927\u5c0f":"Text Size","\u663e\u793a\u89c6\u8ddd":"Distance","\u6d41\u6c34\u901f\u5ea6":"Flow Speed","\u6295\u5c04\u65b9\u5411":"Direction","\u6c34\u5e73\u6295\u5c04":"Horizontal","\u5782\u76f4\u6295\u5c04":"Vertical","\u8d85\u51fa\u6700\u5927\u70b9\u6570":"Max Points ","\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931":"Exceeding Parts Will Be Lost","\u7ebf\u6761\u989c\u8272":"Line Color","\u6e05\u7a7a":"Clear","\u56de\u9000":"Back","\u53d1\u9001":"Send","\u6700\u591a20\u4e2a\u573a\u666f":"Up To 20 Scenarios","\u63d0\u793a":"Prompt","\u662f\u5426\u5220\u9664\u573a\u666f":"Do You Want To Delete The Scene ","\u7528\u6237\u70b9\u51fb\u53d6\u6d88":"User Clicks To Cancel","-- \u573a\u666f\u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"--The Scene List Is Empty--","\u573a\u666f":"Scene ","\u79d2":"Sec","\u5220\u9664":"Delete","\u7f16\u8f91":"Edit","\u65b0\u589e\u573a\u666f":"Create A New Scene","\u56fe\u6848\u9009\u62e9":"Pattern","\u76f4\u7ebf\u7c7b\u56fe\u6848":"Linear","\u5706\u5f27\u7c7b\u56fe\u6848":"Circular Arc","\u4eae\u70b9\u56fe\u6848":"Highlight","\u6253\u70b9\u56fe\u6848":"Dot","\u5723\u8bde\u56fe\u6848":"Christmas","\u52a8\u753b\u7ec4\u522b1":"Animation 1","\u52a8\u753b\u7ec4\u522b2":"Animation 2","\u52a8\u753b\u7ec4\u522b3":"Animation 3","\u52a8\u753b\u7ec4\u522b4":"Animation 4","\u52a8\u753b\u7ec4\u522b5":"Animation 5","\u767d\u8272":"White","\u7ea2\u8272":"Red","\u84dd\u8272":"Blue","\u7c89\u8272":"Pink","\u9752\u8272":"Cyan","\u9ec4\u8272":"Yellow","\u7eff\u8272":"Green","\u6574\u4f53\u989c\u8272\u6362\u8272":"Overall","\u4e03\u5f69\u8679\u989c\u8272":"Rainbow Colors","2\u5206\u6bb5\u989c\u8272":"2 Segmented","3\u5206\u6bb5\u989c\u8272":"3 Segmented","4\u5206\u6bb5\u989c\u8272":"4 Segmented","8\u5206\u6bb5\u989c\u8272":"8 Segmented","16\u5206\u6bb5\u989c\u8272":"16 Segmented","32\u5206\u6bb5\u989c\u8272":"32 Segmented","\u989c\u8272\u6e10\u7ed8":"Color Gradient","\u4e0d\u6d41\u6c34":"No Flowing","\u6b63\u5411\u6d41\u6c34":"Forward Flow","\u53cd\u5411\u6d41\u6c34":"Reverse Flow","\u56fe\u6848\u5927\u5c0f":"Pattern Size","\u7f29\u653eManual\u9009\u62e9":"Zoom Manual","\u7531\u5c0f\u5230\u5927\u7f29\u653e":"Small To Large","\u7531\u5927\u5230\u5c0f\u7f29\u653e":"Large To Small","\u5927\u5c0f\u5faa\u73af\u7f29\u653e":"Size Scaling","\u4e0d\u89c4\u5219\u7f29\u653e\u4e00":"Zoom Rule 1","\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c":"Zoom Rule 2","\u4e0d\u89c4\u5219\u7f29\u653e\u4e09":"Zoom Rule 3","\u65cb\u8f6c\u89d2\u5ea6":"Angle","\u6b63\u65cb\u8f6c\u901f\u5ea6":"Positive","\u53cd\u65cb\u8f6c\u901f\u5ea6":"Reverse","\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e":"H Position","\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6":"H Speed","\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e":"V Position","\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6":"V Speed","\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c":"H Rotation","\u6c34\u5e73\u79fb\u52a8":"H Move","\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c":"V Rotation","\u5782\u76f4\u79fb\u52a8":"V Move","\u65e0\u6ce2\u6d6a":"No waves","\u6ce2\u6d6a\u5e45\u5ea61":"Wave 1","\u6ce2\u6d6a\u5e45\u5ea62":"Wave 2","\u6ce2\u6d6a\u5e45\u5ea63":"Wave 3","\u6ce2\u6d6a\u5e45\u5ea64":"Wave 4","\u6ce2\u6d6a\u5e45\u5ea65":"Wave 5","\u6ce2\u6d6a\u5e45\u5ea66":"Wave 6","\u6ce2\u6d6a\u5e45\u5ea67":"Wave 7","\u6ce2\u6d6a\u5e45\u5ea68":"Wave 8","\u65e0\u6e10\u7ed8":"No Gradient","Manual\u6e10\u7ed81":"Manual 1","Manual\u6e10\u7ed82":"Manual 2","Automatic\u6e10\u7ed81":"Auto 1","Automatic\u6e10\u7ed82":"Auto 2","Automatic\u6e10\u7ed83":"Auto 3","Automatic\u6e10\u7ed84":"Auto 4","\u56fe\u5f62\u5206\u7ec4":"Group","\u56fe\u5f62":"Graph","\u989c\u8272":"Colour","\u989c\u8272\u6d41\u6c34":"Flow","\u56fe\u5f62\u5927\u5c0f":"Size","\u56fe\u5f62\u7f29\u653e":"Zoom","\u56fe\u5f62\u65cb\u8f6c":"Rotation","\u6c34\u5e73\u7ffb\u8f6c":"H Flip","\u5782\u76f4\u7ffb\u8f6c":"V Flip","\u6ce2\u6d6a":"Wave","\u6e10\u7ed8":"Gradual","\u64ad\u653e\u65f6\u957f":"Time","\u6b63\u5728\u52a0\u8f7d\u56fe\u5f62...":"Loading ...","\u53d6\u6d88":"Cancel","\u786e\u5b9a":"Confirm","\u9009\u62e9\u56fe\u5f62":"Select","\u901a\u9053\u590d\u4f4d":"Reset","\u5b8b\u4f53":"Songt","\u76f4\u7ebf":"Line","\u5706\u5f27":"Arc","\u4eae\u70b9":"Dot","\u6253\u70b9":"Manage","\u5723\u8bde":"Christmas","\u52a8\u753bA":"AnimA","\u52a8\u753bB":"AnimB","\u5f69\u8679":"Rainbow","\u9ed8\u8ba4":"Default","Version":"Version","\u8fde\u63a5":"Connect","Settings":"Settings","Hand-drawn doodle":"Draw","Text playback":"Text","Personalized programming":"Program","Animation playback":"Animation","Timeline playback":"Line","Christmas broadcast":"Christmas","DMX":"DMX","\u914d\u7f6e":"Config","\u8fd4\u56de":"Back","Click me to connect":"Click Me To Connect","BluetoothNot connected":"Not Connected","Device":"Device","\u8bf7\u8f93\u5165\u6587\u5b57":"Please Enter Text","\u9884\u7559\u65e0\u529f\u80fd":"Reserved","\u91cd\u7f6e":"Reset","Bluetooth\u8fde\u63a5":"Bluetooth Connection","\u5168\u9009":"All","\u53cd\u9009":"Invert","\u6e05\u9664":"Clear","\u5b57\u6570":"Text","\u70b9\u6570":"Dot","\u9884\u89c8":"Preview","\u573a\u666f\u7ba1\u7406":"Scene Management","\u52a0\u8f7d\u4e2d":"Loading","\u573a\u666f\u7f16\u8f91":"Scene Edit","\u8bf7\u5148\u8fde\u63a5Bluetooth":"Please Connect Bluetooth First","The current device cannot be identified":"The Current Device Is Not Recognized","DMXAddress Code":"Dmx Address","Please turn on the device first":"Please Trun On The Device First","\u5355\u7ebf\u5b57\u4f53":"Single Line","\u6b63\u5728\u53d1\u9001":"Sending","\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528":"Please Check If Bluetooth Is Enabled On Your Phone","\u8be5\u5b57\u4f53\u4e0d\u652f\u6301\u4e2d\u6587\u663e\u793a":"This Font Does Not Support Chinese Display","\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c":"Due To Capacity Limitations, Some Chinese Characters Have Not Been Included In The Font Library. Please To To The APP Version For A Complete Font Library","\u8bf7Settings\u5e94\u7528\u5b9a\u4f4d\u6743\u9650":"Please Set App Location Permissions","\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650":"Please Set Bluetooth Permissions For The Mini Program","Abnormality in reading device parameters":"Abnormal Reading Device Parameters","\u9009\u62e9":"select","Settings\u80cc\u666f\u56fe\u7247":"Set Background Image","Sending failed":"fail in send","\u6587\u672c\u957f\u5ea6\u5df2\u8d85\u8fc7100,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Text Length Has Exceeded 100","\u6587\u672c\u5750\u6807\u70b9\u6570\u5df2\u8d85\u8fc72048,\u8bf7\u91cd\u65b0\u8f93\u5165":"The Number Of Text Coordinate Points Has Exceeded 2048","\u7b2c":"No.","\u7ec4\u6587\u5b57":" Group","\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5":"Please Modify The Font Or Text And Try Again","\u4e0d\u652f\u6301\u6587\u672c":" Not Supported ","\u7ec4\u5b57\u4f53":" Text Font ","\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u53d1\u9001":" Group No Text Entered, Please Enter Before Sending","\u662f\u5426\u5220\u9664\u7b2c":"Delete No.","\u7ec4":" Group","\u6700\u591a4\u4e2a\u5206\u7ec4":"Up To 4 Groups","Connecting.....":"Connecting...","Connection failed":"Connect Failed","\u5b57\u4f53\u9009\u62e9":"Select Font","\u601d\u6e90\u9ed1\u4f53":"NotoSans","\u601d\u6e90\u9ed1\u4f531":"NotoSans1","\u601d\u6e90\u9ed1\u4f532":"NotoSans2","\u601d\u6e90\u9ed1\u4f533":"NotoSans3","\u601d\u6e90\u9ed1\u4f534":"NotoSans4","\u601d\u6e90\u9ed1\u4f535":"NotoSans5","\u601d\u6e90\u9ed1\u4f536":"NotoSans6","\u601d\u6e90\u9ed1\u4f537":"NotoSans7","font_note_1001":"Chinese, English, Spanish, Portuguese, German, French","font_note_1002":"English, Spanish, Russian, Portuguese, German, French, Vietnamese, Hindi, Bengali","font_note_1003":"English, Chinese, Spanish, Russian, Portuguese, Japanese, German","font_note_1004":"Chinese, English, Spanish, Portuguese, German, French","font_note_1005":"English, Chinese","font_note_1006":"English, Japanese, Korean","font_note_1007":"Arabic","\u4fdd\u7559":"Reserved","\u56fe\u6848\u521d\u59cb\u989c\u8272":"Initial Color","\u6df7\u8272":"Mixing","\u7b14\u753b\u5c11\uff0c\u65e0\u95ea\u70c1\uff0c\u63a8\u8350\u4f7f\u7528":"Recommended, Better Performance","Disconnected":"Disconnected","\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c":"The Range Of 1-255","\u6587\u5b57\u7cbe\u5ea6":"Text Effects","Text graphic accuracy":"Effects","\u7cbe\u5ea6":"Effects","\u9009\u62e9\u56fe\u7247":"Select","\u8bbe\u4e3a\u80cc\u666f":"Background","\u8bc6\u522b\u56fe\u6848":"Recognize","\u63cf\u8fb9":"Outline","\u6b63\u5728\u5904\u7406\u4e2d":"Processing","Current Model":"Model","hand_draw_tips":" ** Please swipe from the blank area towards the target pattern to select.\\n ** You can perform operations such as zooming in, zooming out, moving, changing colors, and deleting on the selected pattern.","\u4e0d\u518d\u63d0\u793a":"Never Show","out_door_tips1":"1-30 Landmark","out_door_tips2":"31-40 Northern Lights","out_door_tips3":"41-50 Time Tunnel","\u6587\u4ef6\u540d":"File Name","\u4fdd\u5b58\u6587\u4ef6":"Save File","\u9009\u62e9\u6587\u4ef6":"Select File","\u8bf7\u8f93\u5165\u6587\u4ef6\u540d":"Please Enter The Filename","\u8bf7\u8f93\u5165\u65b0\u6587\u4ef6\u540d":"Please Enter New Filename","\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a":"Filename Cannot Be Empty","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165":"File Already Exists, Please Re-enter","\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed":"File Already Exists, Continue?","\u4fdd\u5b58\u6210\u529f":"Save Successful","\u4fdd\u5b58\u5931\u8d25":"Save Failed","\u4fee\u6539\u6210\u529f":"Modification Successful","\u4fee\u6539\u5931\u8d25":"Modification Failed","\u5220\u9664\u6210\u529f":"Deletion Successful","\u5220\u9664\u5931\u8d25":"Deletion Failed","Current Model\u4e0d\u652f\u6301":"The Current Model Does Not Support It","text_time_range":"Range 1-25.5","\u6ca1\u6709\u8bc6\u522b\u5230\u56fe\u6848":"Recognition Failed","\u8bf7\u9009\u62e9\u6587\u4ef6":"Please Select A File","\u6587\u4ef6\u6570":"Files","\u53e6\u5b58\u6587\u4ef6":"Save AS","\u5220\u9664\u6240\u9009\u6587\u4ef6":"Delete Selected Files","Select-File":"Select","\u6447\u5934Settings":"Movement Settings","Shake mode":"Mode","Shake phase":"Phase","Automatic":"Automatic","Manual":"Manual","X-axis coarse tuning":"X Coa. Adj.","X-axis fine tuning":"X Fine Adj.","Y-axis coarse tuning":"Y Coa. Adj.","Y-axis fine tuning":"Y Fine Adj.","\u6c34\u5e73\u7535\u673a":"H Motor","\u6c34\u5e73\u5fae\u8c03":"Hor Adj","\u5782\u76f4\u7535\u673a":"V Motor","\u5782\u76f4\u5fae\u8c03":"Ver Adj","\u7535\u673a\u901f\u5ea6":"M Speed","\u6d41\u6c34\u65b9\u5411":"Direction","\u963f\u62c9\u4f2f\u8bed\u65b9\u5411":"Arabic","\u9ed8\u8ba4\u65b9\u5411":"Default","\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939":"Save to Folder","\u9009\u62e9\u5217\u8868":"Select List","\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0":"Please Enter Group Name","Playlist":"Playlist","\u4fdd\u5b58":"Save","\u6dfb\u52a0":"Add","\u6279\u91cfSettings":"Bulk Set","\u8bf7\u8f93\u5165\u5217\u8868\u540d\u79f0":"Please Enter List Name","ALL":"All","\u5217\u8868\u7f16\u8f91":"List Edit","\u8bf7\u8f93\u51650.1-25.5\u4e4b\u95f4\u7684\u6570\u5b57":"Please Enter a Number Between 0.1 and 25.5","\u6dfb\u52a0\u81f3\u65b0\u5217\u8868":"Add New List","\u7acb\u5373\u64ad\u653e":"Play Now","\u76f8\u5e94\u7684Playlist\u5c06\u88ab\u5220\u9664\uff0c \u7ee7\u7eed":"The Corresponding Playlist Will Be Deleted, Continue","-- \u5217\u8868\u7a7a\u7a7a\u5982\u4e5f --":"-- List is Empty --","Color settings":"Color"}')
         },
         nonIterableDestructuringErrorHelper: function(e, t) {
             e.exports = function() {
@@ -64989,7 +64994,7 @@
                                     [this.$t("\u7d2b"), "purple"],
                                     [this.$t("\u767d"), "white"],
                                     [this.$t("\u8df3\u53d8"), "white"],
-                                    [this.$t("\u5168\u5f69"), "white"]
+                                    [this.$t("RGB"), "white"]
                                 ],
                                 prjIndex: 0,
                                 sendCmdParmsTimer: null,
@@ -65036,7 +65041,7 @@
                                     order: 7,
                                     idx: 8
                                 }, {
-                                    name: "\u5168\u5f69",
+                                    name: "RGB",
                                     color: "transparent",
                                     order: 8,
                                     idx: 9
