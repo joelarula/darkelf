@@ -2441,9 +2441,27 @@
                         getCmdData: function(commandKey) {
                             return this.cmd[commandKey]
                         },
-                        setCmdData: function(e, t) {
-                            if ("prjData" == e) return this.cmd[e].public = t.public, 1 != t.prjIndex && (this.cmd[e].prjItem[t.prjIndex + ""] = t.item), this.cmd.textData.runSpeed = t.public.runSpeed, void(this.cmd.textData.txColor = t.public.txColor);
-                            this.cmd[e] = t, "textData" == e && (this.cmd.prjData.public.runSpeed = t.runSpeed, this.cmd.prjData.public.txColor = t.txColor)
+
+
+
+
+                        // The setCmdData function is a setter used to update command-related data within the cmd object. 
+                        // It takes two arguments: e, which is the key indicating which section of the command data to update, 
+                        // and t, which is the new data to set.
+                        // If the key e is "prjData", the function updates the public property of cmd.prjData with t.public. 
+                        // If t.prjIndex is not 1, it also updates the corresponding prjItem entry using the index as a string. 
+                        // Additionally, it synchronizes the runSpeed and txColor properties in cmd.textData with those from 
+                        // t.public. The use of void ensures the function returns undefined after these assignments,
+                        //  exiting early for this case.
+
+                        // For all other keys, the function simply assigns t to cmd[e]. If the key is "textData", 
+                        // it also updates cmd.prjData.public.runSpeed and cmd.prjData.public.txColor 
+                        // to match the new values in t. This ensures that related properties stay consistent across different 
+                        // sections of the command data structure.
+
+                        setCmdData: function(key, data) {
+                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), this.cmd.textData.runSpeed = data.public.runSpeed, void(this.cmd.textData.txColor = data.public.txColor);
+                            this.cmd[key] = data, "textData" == key && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
                         },
 
                         //restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
@@ -62387,9 +62405,14 @@
                                 dmx: this.dmx, // 0 or 1
                                 xy: this.xy, // 0-7 Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+
                                 light: this.light, // 1 single ,2 dual ,3 full
-                                cfg: this.cfg,
+                                cfg: this.cfg,  //  0 ttl 255 analog
                                 lang: this.lang,
-                                valArr: this.valArr
+                                valArr: this.valArr 
+                                // valArr[0]: 1 to 512  // channel
+                                //valArr[1]: 10 to 100   // Display Range
+                                //valArr[2]: 0 to 255 (or 0 to 100 for some device types) R
+                                //valArr[3]: 0 to 255 (or 0 to 100 for some device types) G
+                                //valArr[4]: 0 to 255 (or 0 to 100 for some device types) B
                             };
                             app.globalData.setCmdData("settingData", e)
                         },
