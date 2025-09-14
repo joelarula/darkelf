@@ -2259,8 +2259,12 @@
                         mainPage: null,
                         cloudApi: null,
                         appHide: !1,
+
+                        // List of Bluetooth service UUIDs to connect to
                         mserviceuuids: [],
+                        // List of Bluetooth characteristic UUIDs for transmitting (TX) data
                         mtxduuids: [],
+                        // List of Bluetooth characteristic UUIDs for receiving (RX) data
                         mrxduuids: [],
                         // 0,1,2
                         muuidSel: 0,
@@ -46746,13 +46750,13 @@
                     }
                 }
 
-                function s(e, r) {
-                    var a = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    appStateManager.globalData.blu_connect_stop ? a && a(!1) : (uni.onBLECharacteristicValueChange((function(e) {
-                        var r = new Uint8Array(e.value),
-                            a = deviceCommandUtils.ab2hex(e.value);
-                        deviceCommandUtils.ab2Str(e.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(e.characteristicId) ? appStateManager.globalData.blu_readyRec && r.length > 0 && processReceivedDataFragment(a) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, e.characteristicId, " at utils/bluCtrl.js:270")
-                    })), discoverAndConfigureCharacteristics(e, r, 1, a))
+                function setupCharacteristicNotification(deviceId , serviceId ) {
+                    var callback  = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    appStateManager.globalData.blu_connect_stop ? callback  && callback (!1) : (uni.onBLECharacteristicValueChange((function(characteristicEvent) {
+                        var dataBytes = new Uint8Array(characteristicEvent.value),
+                            valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
+                        deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
+                    })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
                 }
 
                 function l(e, r) {
@@ -46770,7 +46774,7 @@
                                 t("log", "services: ", e, " at utils/bluCtrl.js:301");
                                 for (var r = 0; r < e.services.length; r++)
                                     if (-1 != appStateManager.globalData.mserviceuuids.indexOf(e.services[r].uuid)) {
-                                        c = !0, s(i, e.services[r].uuid, a);
+                                        c = !0, setupCharacteristicNotification(i, e.services[r].uuid, a);
                                         break
                                     }
                             },
