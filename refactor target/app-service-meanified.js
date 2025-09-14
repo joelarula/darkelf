@@ -46644,7 +46644,7 @@
         },
         bleDeviceControlUtils : function(e, t, r) {
             (function(t) {
-                var n = getApp(),
+                var appStateManager = getApp(),
                     deviceCommandUtils = r("deviceCommandUtils ");
 
                 function extractHexValue (startByte , byteLength , hexString) {
@@ -46655,37 +46655,54 @@
                     return i
                 }
 
-                function i(e, t, r, n) {
-                    return isNaN(e) || e < t || e > r ? n : e
+                function clampOrDefault(value, min, max, defaultValue ) {
+                    return isNaN(value) || value < min || value > max ? defaultValue  : value
                 }
 
-                function c(e) {
-                    var t = n.globalData.blu_rec_content;
-                    if (null == t ? e.startsWith("E0E1E2E3") && (t = e) : t += e, "" != t) {
-                        var r = t.lastIndexOf("E0E1E2E3"),
-                            h = t.lastIndexOf("E4E5E6E7"),
-                            a = t;
-                        h > 0 && (h == t.length - 8 ? (a = t.slice(r, h + 8), n.globalData.setRecCallBack(a), a = null) : a = t.slice(r)), n.globalData.blu_rec_content = a
+                // The processReceivedDataFragment function is designed to handle incoming fragments of data, 
+                // likely from a Bluetooth device, and assemble them into complete messages based on specific
+                //  start and end markers. It works by maintaining a buffer, blu_rec_content, in the global 
+                // application state (appStateManager.globalData). When a new fragment (dataFragment) arrives,
+                //  the function checks if the buffer is null. If so, it only initializes the buffer if the 
+                // fragment starts with the expected start marker "E0E1E2E3". Otherwise, it appends the new 
+                // fragment to the existing buffer.
+
+                // Once the buffer is updated, the function checks if it is non-empty. It then searches for 
+                // the last occurrence of the start marker ("E0E1E2E3") and the end marker ("E4E5E6E7") w
+                // ithin the buffer. If the end marker is found at the very end of the buffer, 
+                // it extracts the complete message from the start marker to the end marker, 
+                // calls a callback (setRecCallBack) to process the complete message, 
+                // and clears the buffer. If the end marker is found elsewhere, 
+                // it keeps only the data from the last start marker onward, 
+                // likely waiting for more data to complete the message. Finally,
+                //  it updates the buffer in the global state with the remaining or new data.
+                function processReceivedDataFragment(dataFragment) {
+                    var receiveBuffer = appStateManager.globalData.blu_rec_content;
+                    if (null == receiveBuffer ? dataFragment.startsWith("E0E1E2E3") && (receiveBuffer = dataFragment) : receiveBuffer += dataFragment, "" != receiveBuffer) {
+                        var r = receiveBuffer.lastIndexOf("E0E1E2E3"),
+                            h = receiveBuffer.lastIndexOf("E4E5E6E7"),
+                            currentMessage = receiveBuffer;
+                        h > 0 && (h == receiveBuffer.length - 8 ? (currentMessage = receiveBuffer.slice(r, h + 8), appStateManager.globalData.setRecCallBack(currentMessage), currentMessage = null) : currentMessage = receiveBuffer.slice(r)), appStateManager.globalData.blu_rec_content = currentMessage
                     }
                 }
 
-                function o(e, r, h) {
-                    var a = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
-                    if (n.globalData.blu_connect_stop) a && a(!1);
+                function discoverAndConfigureCharacteristics(deviceId , serviceId , retryCount) {
+                    var callback  = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                    if (appStateManager.globalData.blu_connect_stop) callback  && callback (!1);
                     else {
                         var i = !1,
                             c = "",
                             s = -1;
                         uni.getBLEDeviceCharacteristics({
-                            deviceId: e,
-                            serviceId: r,
+                            deviceId: deviceId ,
+                            serviceId: serviceId ,
                             success: function(h) {
                                 s = 0, t("log", "getBLEDeviceCharacteristics success", h.characteristics, " at utils/bluCtrl.js:173");
                                 for (var o = function(o) {
                                         var l = h.characteristics[o];
                                         l.properties.read && (c = l.uuid, i && uni.readBLECharacteristicValue({
-                                            deviceId: e,
-                                            serviceId: r,
+                                            deviceId: deviceId ,
+                                            serviceId: serviceId ,
                                             characteristicId: l.uuid,
                                             success: function(e) {
                                                 t("log", "readBLECharacteristicValue1:", e, " at utils/bluCtrl.js:184")
@@ -46693,15 +46710,15 @@
                                             fail: function(e) {
                                                 t("log", "readBLECharacteristicValue1-fail:", e, " at utils/bluCtrl.js:187")
                                             }
-                                        })), l.properties.write && -1 != n.globalData.mtxduuids.indexOf(l.uuid) && (n.globalData.ble_device.characteristicId = l.uuid, n.globalData.ble_device.serviceId = r, s++), (l.properties.notify || l.properties.indicate) && -1 != n.globalData.mrxduuids.indexOf(l.uuid) && uni.notifyBLECharacteristicValueChange({
-                                            deviceId: e,
-                                            serviceId: r,
+                                        })), l.properties.write && -1 != appStateManager.globalData.mtxduuids.indexOf(l.uuid) && (appStateManager.globalData.ble_device.characteristicId = l.uuid, appStateManager.globalData.ble_device.serviceId = serviceId , s++), (l.properties.notify || l.properties.indicate) && -1 != appStateManager.globalData.mrxduuids.indexOf(l.uuid) && uni.notifyBLECharacteristicValueChange({
+                                            deviceId: deviceId ,
+                                            serviceId: serviceId ,
                                             characteristicId: l.uuid,
                                             state: !0,
                                             success: function(h) {
-                                                n.globalData.blu_readyRec = !0, i = !0, "" != c && uni.readBLECharacteristicValue({
-                                                    deviceId: e,
-                                                    serviceId: r,
+                                                appStateManager.globalData.blu_readyRec = !0, i = !0, "" != c && uni.readBLECharacteristicValue({
+                                                    deviceId: deviceId ,
+                                                    serviceId: serviceId ,
                                                     characteristicId: l.uuid,
                                                     success: function(e) {
                                                         t("log", "readBLECharacteristicValue2:", e, " at utils/bluCtrl.js:217")
@@ -46709,21 +46726,21 @@
                                                     fail: function(e) {
                                                         t("log", "readBLECharacteristicValue2-fail:", e, " at utils/bluCtrl.js:220")
                                                     }
-                                                }), n.globalData.setBluCnnState(2, !1), a && a(!0)
+                                                }), appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0)
                                             },
                                             fail: function(e) {
-                                                s > 0 && (n.globalData.blu_readyRec = !0, i = !0, n.globalData.setBluCnnState(2, !1), a && a(!0))
+                                                s > 0 && (appStateManager.globalData.blu_readyRec = !0, i = !0, appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0))
                                             }
                                         })
                                     }, l = 0; l < h.characteristics.length; l++) o(l)
                             },
                             fail: function(e) {
-                                0 == h && n.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25") + "-1002"), s = -2
+                                0 == retryCount && appStateManager.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25") + "-1002"), s = -2
                             },
                             complete: function() {
-                                s <= 0 && (h > 0 ? setTimeout((function() {
-                                    o(e, r, --h, a)
-                                }), 1500) : (uni.hideLoading(), a && a(!1), n.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25") + "-1001")))
+                                s <= 0 && (retryCount > 0 ? setTimeout((function() {
+                                    discoverAndConfigureCharacteristics(deviceId , serviceId , --retryCount, callback )
+                                }), 1500) : (uni.hideLoading(), callback  && callback (!1), appStateManager.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25") + "-1001")))
                             }
                         })
                     }
@@ -46731,20 +46748,20 @@
 
                 function s(e, r) {
                     var a = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    n.globalData.blu_connect_stop ? a && a(!1) : (uni.onBLECharacteristicValueChange((function(e) {
+                    appStateManager.globalData.blu_connect_stop ? a && a(!1) : (uni.onBLECharacteristicValueChange((function(e) {
                         var r = new Uint8Array(e.value),
                             a = deviceCommandUtils.ab2hex(e.value);
-                        deviceCommandUtils.ab2Str(e.value); - 1 != n.globalData.mrxduuids.indexOf(e.characteristicId) ? n.globalData.blu_readyRec && r.length > 0 && c(a) : t("error", "no same characteristicId: ", n.globalData.mrxduuids, e.characteristicId, " at utils/bluCtrl.js:270")
-                    })), o(e, r, 1, a))
+                        deviceCommandUtils.ab2Str(e.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(e.characteristicId) ? appStateManager.globalData.blu_readyRec && r.length > 0 && processReceivedDataFragment(a) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, e.characteristicId, " at utils/bluCtrl.js:270")
+                    })), discoverAndConfigureCharacteristics(e, r, 1, a))
                 }
 
                 function l(e, r) {
                     var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 3,
                         a = r.callback;
-                    if (n.globalData.blu_connect_stop) a && a(!1);
+                    if (appStateManager.globalData.blu_connect_stop) a && a(!1);
                     else if (h <= 0) a && a(!1);
                     else {
-                        n.globalData.blu_readyRec = !1;
+                        appStateManager.globalData.blu_readyRec = !1;
                         var i = e,
                             c = !1;
                         uni.getBLEDeviceServices({
@@ -46752,7 +46769,7 @@
                             success: function(e) {
                                 t("log", "services: ", e, " at utils/bluCtrl.js:301");
                                 for (var r = 0; r < e.services.length; r++)
-                                    if (-1 != n.globalData.mserviceuuids.indexOf(e.services[r].uuid)) {
+                                    if (-1 != appStateManager.globalData.mserviceuuids.indexOf(e.services[r].uuid)) {
                                         c = !0, s(i, e.services[r].uuid, a);
                                         break
                                     }
@@ -46772,15 +46789,15 @@
                 function p(e) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                         r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    if (n.globalData.blu_connect_stop) r && r(!1);
+                    if (appStateManager.globalData.blu_connect_stop) r && r(!1);
                     else if (void 0 != e && "" != e && null != e) {
-                        n.globalData.readSetting(), n.globalData.blu_readyRec = !1;
+                        appStateManager.globalData.readSetting(), appStateManager.globalData.blu_readyRec = !1;
                         var h = e.deviceId;
-                        n.globalData.createBLEConnection(h, (function(e) {
-                            e ? (n.globalData.setBluCnnState(1, !1), l(h, {
+                        appStateManager.globalData.createBLEConnection(h, (function(e) {
+                            e ? (appStateManager.globalData.setBluCnnState(1, !1), l(h, {
                                 showMsg: t,
                                 callback: r
-                            })) : (uni.hideLoading(), t && n.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25"), !0), r && r(!1))
+                            })) : (uni.hideLoading(), t && appStateManager.globalData.showModalTips(g("\u8fde\u63a5\u5931\u8d25"), !0), r && r(!1))
                         }))
                     } else r && r(!1)
                 }
@@ -46788,12 +46805,12 @@
                 function d(e) {
                     var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
                         h = 20,
-                        a = n.globalData.blu_data_send_interval;
-                    if (n.globalData.platform.app && "android" == n.globalData.platform.system && (h = 40), e.showMsg) {
+                        a = appStateManager.globalData.blu_data_send_interval;
+                    if (appStateManager.globalData.platform.app && "android" == appStateManager.globalData.platform.system && (h = 40), e.showMsg) {
                         e.count;
                         var i = Math.floor((e.count - e.sendBufs.length) / e.count * 100),
                             c = (new Date).getTime();
-                        (100 == i || c - n.globalData.blu_data_lastShowTime > 200) && (n.globalData.blu_data_lastShowTime = c, e.callBack ? (uni.hideLoading(), e.callBack(0, i)) : uni.showLoading({
+                        (100 == i || c - appStateManager.globalData.blu_data_lastShowTime > 200) && (appStateManager.globalData.blu_data_lastShowTime = c, e.callBack ? (uni.hideLoading(), e.callBack(0, i)) : uni.showLoading({
                             mask: !0
                         }))
                     }
@@ -46847,7 +46864,7 @@
                 }
 
                 function g(e) {
-                    return n.globalData.t(e)
+                    return appStateManager.globalData.t(e)
                 }
 
                 function j(e) {
@@ -46885,18 +46902,18 @@
                 }
 
                 function f() {
-                    return n.globalData.blu_data_canSend
+                    return appStateManager.globalData.blu_data_canSend
                 }
                 e.exports = {
                     cnnPreBlu: function() {
-                        if (t("log", "cnnPreBlu", n.globalData.blu_state, " at utils/bluCtrl.js:350"), 0 == n.globalData.blu_state) {
-                            n.globalData.blu_state = 1, n.globalData.blu_connect_stop = !1, n.globalData.readDevice();
-                            var e = n.globalData.ble_device;
-                            void 0 != e && "" != e && null != e ? n.globalData.openBluetoothAdapter((function(r) {
+                        if (t("log", "cnnPreBlu", appStateManager.globalData.blu_state, " at utils/bluCtrl.js:350"), 0 == appStateManager.globalData.blu_state) {
+                            appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1, appStateManager.globalData.readDevice();
+                            var e = appStateManager.globalData.ble_device;
+                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
                                 r && p(e, !1, (function(e) {
-                                    1 == n.globalData.blu_state && (n.globalData.blu_state = 0), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:365")
+                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:365")
                                 }))
-                            })) : n.globalData.blu_state = 0
+                            })) : appStateManager.globalData.blu_state = 0
                         }
                     },
                     cnnLaser: function() {
@@ -46908,10 +46925,10 @@
                                         uni.showLoading({
                                             title: g("\u6b63\u5728\u8fde\u63a5..."),
                                             mask: !0
-                                        }), n.globalData.blu_state = 1, n.globalData.blu_connect_stop = !1;
-                                        var e = n.globalData.ble_device;
+                                        }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
+                                        var e = appStateManager.globalData.ble_device;
                                         p(e, !0, (function(e) {
-                                            e ? n.globalData.blu_state = 0 : (uni.hideLoading(), n.globalData.blu_state = 2), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:391")
+                                            e ? appStateManager.globalData.blu_state = 0 : (uni.hideLoading(), appStateManager.globalData.blu_state = 2), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:391")
                                         }))
                                     }), 1)
                                 }
@@ -46919,29 +46936,29 @@
                         })
                     },
                     setCanSend: function(e) {
-                        n.globalData.blu_data_canSend = e
+                        appStateManager.globalData.blu_data_canSend = e
                     },
                     getCanSend: f,
                     gosend: function(e, r) {
                         var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                        if (f() ? j(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !f() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", n.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !n.globalData.blu_data_cmdSending && (n.globalData.blu_data_cmdSending = !0, setTimeout((function() {
-                            n.globalData.blu_data_cmdSending = !1, h && h(1, 100)
+                        if (f() ? j(r) : t("log", "len:" + r.length, r, " at utils/bluCtrl.js:548"), 0 == r.length || !f() && !r.startsWith("E0E1E2E3")) return 0 == r.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
+                            appStateManager.globalData.blu_data_cmdSending = !1, h && h(1, 100)
                         }), 20), !0));
-                        if (n.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
-                        if (2 != n.globalData.blu_connected) return n.globalData.showModalTips(g("BluetoothNot connected")), !0;
-                        e && (n.globalData.blu_data_lastShowTime = (new Date).getTime(), h ? h(0, 0) : uni.showLoading({
+                        if (appStateManager.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
+                        if (2 != appStateManager.globalData.blu_connected) return appStateManager.globalData.showModalTips(g("BluetoothNot connected")), !0;
+                        e && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), h ? h(0, 0) : uni.showLoading({
                             mask: !0
                         }));
                         var a = V(r);
                         if (0 == a.length) return !1;
-                        if (n.globalData.blu_data_cmdSending) return !1;
-                        n.globalData.blu_data_cmdSending = !0;
+                        if (appStateManager.globalData.blu_data_cmdSending) return !1;
+                        appStateManager.globalData.blu_data_cmdSending = !0;
                         var i = a,
-                            c = n.globalData.ble_device;
+                            c = appStateManager.globalData.ble_device;
                         return b(i, c, e, h).then((function(r) {
-                            e && uni.hideLoading(), n.globalData.blu_data_cmdSending = !1, t("log", "bluSend succ", " at utils/bluCtrl.js:592"), h && h(1, 100)
+                            e && uni.hideLoading(), appStateManager.globalData.blu_data_cmdSending = !1, t("log", "bluSend succ", " at utils/bluCtrl.js:592"), h && h(1, 100)
                         })).catch((function(r) {
-                            e && uni.hideLoading(), t("log", "\u53d1\u9001\u5931\u8d25", r, " at utils/bluCtrl.js:596"), n.globalData.blu_data_cmdSending = !1, h && h(-1, 0)
+                            e && uni.hideLoading(), t("log", "\u53d1\u9001\u5931\u8d25", r, " at utils/bluCtrl.js:596"), appStateManager.globalData.blu_data_cmdSending = !1, h && h(-1, 0)
                         })), !0
                     },
                     drawProgress: function(e, t, r) {
@@ -46964,40 +46981,40 @@
                     setCmdData: function(e) {
                         t("log", "Device\u8fd4\u56de\u6570\u636e", e, " at utils/bluCtrl.js:21"), deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", e);
                         var r = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", e);
-                        n.globalData.cmd.curMode = i(extractHexValue (1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.prjIndex = i(extractHexValue (1, 1, r), 0, 12, 0), n.globalData.cmd.prjData.public.txColor = i(extractHexValue (3, 1, r), 0, 9, 0), n.globalData.cmd.textData.txColor = n.globalData.cmd.prjData.public.txColor, n.globalData.cmd.textData.txSize = i(Math.round(extractHexValue (4, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.textData.runSpeed = i(Math.round(extractHexValue (6, 1, r) / 255 * 100), 0, 255, 128), n.globalData.cmd.prjData.public.runSpeed = n.globalData.cmd.textData.runSpeed, n.globalData.cmd.textData.txDist = i(Math.round(extractHexValue (8, 1, r) / 255 * 100), 10, 100, 60), n.globalData.cmd.prjData.public.rdMode = i(extractHexValue (9, 1, r), 0, 255, 0), n.globalData.cmd.prjData.public.soundVal = i(Math.round(extractHexValue (10, 1, r) / 255 * 100), 0, 255, 0), n.globalData.cmd.textData.txPointTime = i(extractHexValue (15, 1, r), 0, 100, 50), n.globalData.cmd.drawData.pisObj.txPointTime = i(extractHexValue (16, 1, r), 0, 100, 50), n.globalData.cmd.textData.refresh = !0;
-                        var c = n.globalData.cmd.prjData.prjItem,
+                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue (1, 1, r), 0, 12, 0), appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue (1, 1, r), 0, 12, 0), appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue (3, 1, r), 0, 9, 0), appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor, appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue (4, 1, r) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue (6, 1, r) / 255 * 100), 0, 255, 128), appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed, appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue (8, 1, r) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue (9, 1, r), 0, 255, 0), appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue (10, 1, r) / 255 * 100), 0, 255, 0), appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue (15, 1, r), 0, 100, 50), appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue (16, 1, r), 0, 100, 50), appStateManager.globalData.cmd.textData.refresh = !0;
+                        var c = appStateManager.globalData.cmd.prjData.prjItem,
                             o = 17;
                         for (var s in c) {
                             var l = c[s];
-                            l.pyMode = i(extractHexValue (o, 1, r), 0, 255, 0), l.prjSelected[3] = extractHexValue (o + 1, 2, r), l.prjSelected[2] = extractHexValue (o + 3, 2, r), l.prjSelected[1] = extractHexValue (o + 5, 2, r), l.prjSelected[0] = extractHexValue (o + 7, 2, r), o += 9
+                            l.pyMode = clampOrDefault(extractHexValue (o, 1, r), 0, 255, 0), l.prjSelected[3] = extractHexValue (o + 1, 2, r), l.prjSelected[2] = extractHexValue (o + 3, 2, r), l.prjSelected[1] = extractHexValue (o + 5, 2, r), l.prjSelected[0] = extractHexValue (o + 7, 2, r), o += 9
                         }
-                        n.globalData.cmd.textData.runDir = i(extractHexValue (o, 1, r), 0, 255, 0), o += 1;
-                        for (var p = n.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == i(extractHexValue (o + d, 1, r), 0, 255, 0) : 1 == d ? p.xyCnf.phase = i(extractHexValue (o + d, 1, r), 0, 255, 0) : p.xyCnf.xy[d - 2].value = i(extractHexValue (o + d, 1, r), 0, 255, 0);
+                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue (o, 1, r), 0, 255, 0), o += 1;
+                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue (o + d, 1, r), 0, 255, 0) : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue (o + d, 1, r), 0, 255, 0) : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue (o + d, 1, r), 0, 255, 0);
                         var b = deviceCommandUtils.getCmdValue("00010203", "04050607", e);
-                        n.globalData.cmd.settingData.valArr[0] = i(extractHexValue (1, 2, b), 1, 512, 1), n.globalData.cmd.settingData.ch = extractHexValue (3, 1, b), n.globalData.cmd.settingData.valArr[1] = i(extractHexValue (4, 1, b), 10, 100, 10), n.globalData.cmd.settingData.xy = i(extractHexValue (5, 1, b), 0, 7, 0), n.globalData.cmd.settingData.valArr[2] = i(extractHexValue (6, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[3] = i(extractHexValue (7, 1, b), 0, 255, 255), n.globalData.cmd.settingData.valArr[4] = i(extractHexValue (8, 1, b), 0, 255, 255), n.globalData.cmd.settingData.light = i(extractHexValue (9, 1, b), 1, 3, 3), n.globalData.cmd.settingData.cfg = i(extractHexValue (10, 1, b), 0, 255, 0);
+                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue (1, 2, b), 1, 512, 1), appStateManager.globalData.cmd.settingData.ch = extractHexValue (3, 1, b), appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue (4, 1, b), 10, 100, 10), appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue (5, 1, b), 0, 7, 0), appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue (6, 1, b), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue (7, 1, b), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue (8, 1, b), 0, 255, 255), appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue (9, 1, b), 1, 3, 3), appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue (10, 1, b), 0, 255, 0);
                         var g = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", e);
                         if ("" != g) {
-                            var j = n.globalData.getDeviceFeatures(),
+                            var j = appStateManager.globalData.getDeviceFeatures(),
                                 x = 16;
                             t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), deviceCommandUtils.getFeaturesValue({
                                 features: j
                             }, "xyCnf") && (x = 22);
-                            for (var V = [], f = i(extractHexValue (1, 1, g), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
+                            for (var V = [], f = clampOrDefault(extractHexValue (1, 1, g), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
                                 for (var m = {
                                         playTime: 0,
                                         cnfValus: []
                                     }, P = 0; P < x; P++) {
-                                    var u = i(extractHexValue (3 + k * x + P, 1, g), 0, 255, 0);
+                                    var u = clampOrDefault(extractHexValue (3 + k * x + P, 1, g), 0, 255, 0);
                                     m.cnfValus.push(u), 13 == P && (m.playTime = (u / 10).toFixed())
                                 }
                                 t("log", "pis.cnfValus", JSON.stringify(m.cnfValus), " at utils/bluCtrl.js:111"), V.push(m)
                             }
-                            n.globalData.cmd.pgsData.pisList = V
+                            appStateManager.globalData.cmd.pgsData.pisList = V
                         }
                         var X = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", e);
                         if ("" != X)
-                            for (var N = n.globalData.cmd.drawData.pisObj, H = 0; H < 15; H++) {
-                                var z = i(extractHexValue (H + 1, 1, X), 0, 255, 0);
+                            for (var N = appStateManager.globalData.cmd.drawData.pisObj, H = 0; H < 15; H++) {
+                                var z = clampOrDefault(extractHexValue (H + 1, 1, X), 0, 255, 0);
                                 H < N.cnfValus.length && (N.cnfValus[H] = z), 14 == H && (N.txPointTime = z)
                             }
                     }
