@@ -20455,11 +20455,11 @@
                     if (!r) {
                         if (Array.isArray(e) || (r = function(e, t) {
                                 if (!e) return;
-                                if ("string" === typeof e) return a(e, t);
+                                if ("string" === typeof e) return arrayLikeToArray(e, t);
                                 var r = Object.prototype.toString.call(e).slice(8, -1);
                                 "Object" === r && e.constructor && (r = e.constructor.name);
                                 if ("Map" === r || "Set" === r) return Array.from(e);
-                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return a(e, t)
+                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return arrayLikeToArray(e, t)
                             }(e)) || t && e && "number" === typeof e.length) {
                             r && (e = r);
                             var n = 0,
@@ -20505,13 +20505,13 @@
                     }
                 }
 
-                function a(e, t) {
+                function arrayLikeToArray(e, t) {
                     (null == t || t > e.length) && (t = e.length);
                     for (var r = 0, n = new Array(t); r < t; r++) n[r] = e[r];
                     return n
                 }
 
-                function i(e) {
+                function toFixedWidthHex(e) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 4,
                         r = Math.round(e);
                     r < 0 && (r = 32768 | -r);
@@ -20519,7 +20519,7 @@
                     return n
                 }
 
-                function c(e, t) {
+                function combineNibbles(e, t) {
                     var r = e << 4 | 15 & t;
                     return r
                 }
@@ -20555,7 +20555,7 @@
                             }];
                             b.push([n, j, c, c]), d += c, a.push(c * t)
                         }
-                        for (var x = o(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += i(x[F][0], 2), f += i(x[F][1], 2);
+                        for (var x = o(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += toFixedWidthHex(x[F][0], 2), f += toFixedWidthHex(x[F][1], 2);
                         return [e.concat(b), V, f, -d * t / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {
@@ -20567,7 +20567,7 @@
                         }];
                         m.push([n, u, c, c]), k += c, h.push(c * t)
                     }
-                    for (var X = o(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += i(X[z][0], 2), H += i(X[z][1], 2);
+                    for (var X = o(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
                     return [e.concat(m), N, H, -k * t / 2]
                 }
 
@@ -20579,7 +20579,7 @@
                         p = -1,
                         d = "",
                         b = "",
-                        g = i(a, 2),
+                        g = toFixedWidthHex(a, 2),
                         j = "",
                         x = "",
                         V = 8,
@@ -20587,7 +20587,7 @@
                         F = V,
                         k = 0,
                         m = "00";
-                    m = n.textDecimalTime ? i(Math.floor(10 * r), 2) : i(Math.floor(r), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
+                    m = n.textDecimalTime ? toFixedWidthHex(Math.floor(10 * r), 2) : toFixedWidthHex(Math.floor(r), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
                     var P = !1;
                     if (P) t("error", "20241210 - \u5f53\u524d\u4ee3\u7801\u4e3a\u5750\u6807\u8c03\u5f0f\u6a21\u5f0f\uff0c\u4e0d\u53ef\u53d1\u7248", " at utils/funcTools.js:345"), xyss = e, se1 = 0, se2 = 0, xOffset = 0;
                     else {
@@ -20595,7 +20595,7 @@
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
                     }
                     for (var X = 0; X < xyss.length; X++) {
-                        p != xyss[X][0] && (p = xyss[X][0], l > 0 && (j += i(k, 2), k = 0), l++, x += i(Math.round(Number(xyss[X][2] * f)), 2), V >= 8 && xyss[X][1].length > 1 && F++), F >= 8 && (F = 1);
+                        p != xyss[X][0] && (p = xyss[X][0], l > 0 && (j += toFixedWidthHex(k, 2), k = 0), l++, x += toFixedWidthHex(Math.round(Number(xyss[X][2] * f)), 2), V >= 8 && xyss[X][1].length > 1 && F++), F >= 8 && (F = 1);
                         var N = xyss[X][1];
                         k += N.length;
                         for (var H = 0; H < N.length; H++) {
@@ -20605,10 +20605,10 @@
                                 R = Math.round(Number(z.y * f)),
                                 v = Number(z.z),
                                 I = F;
-                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), n.textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + i(Q) + i(R) + i(c(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
+                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), n.textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + toFixedWidthHex(Q) + toFixedWidthHex(R) + toFixedWidthHex(combineNibbles(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
                         }
                     }
-                    return P && t("log", "\u6587\u5b57\u5750\u6807(\u7ed8\u56fe\u8f6f\u4ef6\u683c\u5f0f)", b, " at utils/funcTools.js:408"), j += i(k, 2), 0 == o ? null : {
+                    return P && t("log", "\u6587\u5b57\u5750\u6807(\u7ed8\u56fe\u8f6f\u4ef6\u683c\u5f0f)", b, " at utils/funcTools.js:408"), j += toFixedWidthHex(k, 2), 0 == o ? null : {
                         cnt: o,
                         charCount: l,
                         cmd: d,
@@ -20674,17 +20674,17 @@
                 }
 
                 function j(e, t, r, n) {
-                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += i(t.cnfValus[s], 2) : 13 == s ? g({
+                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += toFixedWidthHex(t.cnfValus[s], 2) : 13 == s ? g({
                         features: r
-                    }, "picsPlay") ? o += i(-1 == n ? 10 * t.cnfValus[12] : 10 * n, 2) : o += "00" : 14 == s && r.textStopTime ? o += i(t.txPointTime, 2) : o += "00";
+                    }, "picsPlay") ? o += toFixedWidthHex(-1 == n ? 10 * t.cnfValus[12] : 10 * n, 2) : o += "00" : 14 == s && r.textStopTime ? o += toFixedWidthHex(t.txPointTime, 2) : o += "00";
                     if ("00" == h) {
                         o += h;
                         for (var l = 0; l < e.length; l++) {
                             var p = e[l],
                                 d = p[3];
-                            r.textStopTime && (0 == p[2] ? d = 2 : (l < e.length - 1 && 0 == e[l + 1][2] || l == e.length - 1) && (d = 3)), a = a + i(p[0].toFixed()) + i(p[1].toFixed()) + i(c(p[2], d), 2)
+                            r.textStopTime && (0 == p[2] ? d = 2 : (l < e.length - 1 && 0 == e[l + 1][2] || l == e.length - 1) && (d = 3)), a = a + toFixedWidthHex(p[0].toFixed()) + toFixedWidthHex(p[1].toFixed()) + toFixedWidthHex(combineNibbles(p[2], d), 2)
                         }
-                        a = o + i(e.length) + a
+                        a = o + toFixedWidthHex(e.length) + a
                     } else o += h, a = o;
                     return a
                 }
@@ -20692,7 +20692,7 @@
                 function x(e, t) {
                     var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null,
                         n = "";
-                    return n = null == r ? t.picsPlay ? "f0f1f200" + e + "f4f5f6f7" : "f0f1f2f3" + e + "f4f5f6f7" : "f0f1f2" + i(r, 2) + e + "f4f5f6f7", n.toUpperCase()
+                    return n = null == r ? t.picsPlay ? "f0f1f200" + e + "f4f5f6f7" : "f0f1f2f3" + e + "f4f5f6f7" : "f0f1f2" + toFixedWidthHex(r, 2) + e + "f4f5f6f7", n.toUpperCase()
                 }
                 e.exports = {
                     test: function(e) {
@@ -20746,7 +20746,7 @@
                             o = "",
                             l = "",
                             p = "",
-                            d = i(t, 2),
+                            d = toFixedWidthHex(t, 2),
                             b = 8,
                             g = .5,
                             j = b,
@@ -20755,7 +20755,7 @@
                         var V = s(e, g);
                         xyss = V[0], se = V[1] + V[2], xOffset = V[3];
                         for (var f = 0; f < xyss.length; f++) {
-                            h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += i(x, 2), x = 0), n++, p += i(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
+                            h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += toFixedWidthHex(x, 2), x = 0), n++, p += toFixedWidthHex(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
                             var F = xyss[f][1];
                             x += F.length;
                             for (var k = 0; k < F.length; k++) {
@@ -20765,10 +20765,10 @@
                                     u = Math.round(Number(m.y * g)),
                                     X = Number(m.z),
                                     N = j;
-                                0 == k && (N = 0, X = 1), k == F.length - 1 && (X = 1), 1 == F.length && (X = Number(m.z)), a = a + i(P) + i(u) + i(c(N, X), 2), o = o + "\n" + P + "," + u + ",(" + N + "," + X + "),"
+                                0 == k && (N = 0, X = 1), k == F.length - 1 && (X = 1), 1 == F.length && (X = Number(m.z)), a = a + toFixedWidthHex(P) + toFixedWidthHex(u) + toFixedWidthHex(combineNibbles(N, X), 2), o = o + "\n" + P + "," + u + ",(" + N + "," + X + "),"
                             }
                         }
-                        return l += i(x, 2), 0 == r ? "" : (a = "A0A1A2A3" + i(r) + i(n, 2) + a + p + l + se + d + "A4A5A6A7", a.toUpperCase())
+                        return l += toFixedWidthHex(x, 2), 0 == r ? "" : (a = "A0A1A2A3" + toFixedWidthHex(r) + toFixedWidthHex(n, 2) + a + p + l + se + d + "A4A5A6A7", a.toUpperCase())
                     },
                     getXysCmdArr: function(e, r, n) {
                         for (var h = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0, a = [], c = 0; c < e.length; c++) {
@@ -20779,29 +20779,29 @@
                             null != p && a.push(p)
                         }
                         if (0 == a.length) return "";
-                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) d += a[P].cnt, b += a[P].charCount, i(a[P].cnt), g += i(a[P].charCount, 2), j += a[P].cmd, x += a[P].charWidthCmd, V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
+                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt), g += toFixedWidthHex(a[P].charCount, 2), j += a[P].cmd, x += a[P].charWidthCmd, V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
                         t("log", d, b, " at utils/funcTools.js:308");
-                        var u = i(a.length, 2),
-                            X = "A0A1A2A3" + i(d) + i(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
+                        var u = toFixedWidthHex(a.length, 2),
+                            X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
                     },
                     getCmdStr: function(e) {
                         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
-                            r = i(e.curMode, 2),
-                            h = i(0, 2),
-                            a = i(e.textData.txColor, 2),
-                            c = i(e.textData.txSize / 100 * 255, 2),
-                            o = i(e.textData.txSize / 100 * 255, 2),
-                            s = i(e.textData.runSpeed / 100 * 255, 2),
+                            r = toFixedWidthHex(e.curMode, 2),
+                            h = toFixedWidthHex(0, 2),
+                            a = toFixedWidthHex(e.textData.txColor, 2),
+                            c = toFixedWidthHex(e.textData.txSize / 100 * 255, 2),
+                            o = toFixedWidthHex(e.textData.txSize / 100 * 255, 2),
+                            s = toFixedWidthHex(e.textData.runSpeed / 100 * 255, 2),
                             l = "00",
-                            p = i(e.textData.txDist / 100 * 255, 2),
-                            d = i(e.prjData.public.rdMode, 2),
-                            j = i(e.prjData.public.soundVal / 100 * 255, 2),
+                            p = toFixedWidthHex(e.textData.txDist / 100 * 255, 2),
+                            d = toFixedWidthHex(e.prjData.public.rdMode, 2),
+                            j = toFixedWidthHex(e.prjData.public.soundVal / 100 * 255, 2),
                             x = "ffffffff0000";
                         if (null != t) {
                             if (x = "", t.hasOwnProperty("groupList"))
-                                for (var V = 0; V < t.groupList.length; V++) x += i(t.groupList[V].color, 2);
-                            x += "ffffffff", x = x.substring(0, 8), g(t, "textStopTime") && (x += i(e.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+                                for (var V = 0; V < t.groupList.length; V++) x += toFixedWidthHex(t.groupList[V].color, 2);
+                            x += "ffffffff", x = x.substring(0, 8), g(t, "textStopTime") && (x += toFixedWidthHex(e.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
                         }
                         var f = "",
                             F = e.prjData.prjItem;
@@ -20809,15 +20809,15 @@
                             var m = F[k],
                                 P = 0 == m.pyMode ? 0 : 128;
                             0 != P && null != t && t.hasOwnProperty("prjParm") && t.prjParm.prjIndex == k && (3 == k && g(t, "animationFix") && [2, 4, 11, 13, 19].includes(t.prjParm.selIndex) ? P |= 50 - t.prjParm.selIndex : P |= t.prjParm.selIndex);
-                            var u = i(P, 2),
+                            var u = toFixedWidthHex(P, 2),
                                 X = "",
                                 N = n(m.prjSelected);
                             3 == k && g(t, "animationFix") && (N = b([2, 4, 11, 13, 19], N));
-                            for (var H = 0; H < N.length; H++) X = i(N[H]) + X;
+                            for (var H = 0; H < N.length; H++) X = toFixedWidthHex(N[H]) + X;
                             f = f + u + X
                         }
                         var z = "";
-                        g(t, "arbPlay") && (z += i(e.textData.runDir, 2));
+                        g(t, "arbPlay") && (z += toFixedWidthHex(e.textData.runDir, 2));
                         for (var Q = "", R = Math.floor(z.length / 2), v = R; v < 44; v++) Q += "00";
                         var I = "c0c1c2c3" + r + h + a + c + o + s + l + p + d + j + x + f + z + Q + "c4c5c6c7";
                         return I.toUpperCase()
@@ -20828,12 +20828,12 @@
                         if (g(r, "xyCnf")) {
                             n = "00", r.hasOwnProperty("xyCnfSave") && !r.xyCnfSave && (n = "ff");
                             var a = e.subsetData.xyCnf;
-                            a.auto ? n += i(a.autoValue, 2) : n += i(255 - a.autoValue, 2), n += i(a.phase, 2);
+                            a.auto ? n += toFixedWidthHex(a.autoValue, 2) : n += toFixedWidthHex(255 - a.autoValue, 2), n += toFixedWidthHex(a.phase, 2);
                             var c, o = createIteratorHelper(a.xy);
                             try {
                                 for (o.s(); !(c = o.n()).done;) {
                                     var s = c.value;
-                                    n += i(s.value, 2)
+                                    n += toFixedWidthHex(s.value, 2)
                                 }
                             } catch (d) {
                                 o.e(d)
@@ -20854,21 +20854,21 @@
                     },
                     drawPointStrToCmd: x,
                     getPisCmdStr: function(e, r) {
-                        for (var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, h = r.cnfValus, a = "01", c = i(e, 2), o = a + c, s = 0; s <= 12; s++) o += i(h[s], 2);
-                        var l = i(10 * r.playTime, 2);
+                        for (var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, h = r.cnfValus, a = "01", c = toFixedWidthHex(e, 2), o = a + c, s = 0; s <= 12; s++) o += toFixedWidthHex(h[s], 2);
+                        var l = toFixedWidthHex(10 * r.playTime, 2);
                         if (o += l, g(n, "xyCnf")) {
-                            for (var d = 14; d <= 18; d++) o += i(h[d], 2);
+                            for (var d = 14; d <= 18; d++) o += toFixedWidthHex(h[d], 2);
                             t("log", "13-17", h[14], h[15], h[16], h[17], h[18], " at utils/funcTools.js:516"), o = p(o, 24, "00")
                         } else o = p(o, 18, "00");
                         var b = "d0d1d2d3" + o + "d4d5d6d7";
                         return b.toUpperCase()
                     },
                     getPisListCmdStr: function(e) {
-                        for (var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null, n = i(128 | e.length, 2), h = "FF", a = "", c = 0; c < e.length; c++) {
-                            for (var o = "", s = e[c], l = 0; l <= 12; l++) o += i(s.cnfValus[l], 2);
-                            var d = i(10 * s.playTime, 2);
+                        for (var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null, n = toFixedWidthHex(128 | e.length, 2), h = "FF", a = "", c = 0; c < e.length; c++) {
+                            for (var o = "", s = e[c], l = 0; l <= 12; l++) o += toFixedWidthHex(s.cnfValus[l], 2);
+                            var d = toFixedWidthHex(10 * s.playTime, 2);
                             if (o += d, g(r, "xyCnf")) {
-                                for (var b = s.cnfValus, j = 14; j <= 18; j++) o += i(b[j], 2);
+                                for (var b = s.cnfValus, j = 14; j <= 18; j++) o += toFixedWidthHex(b[j], 2);
                                 t("log", "pgs 14-18", b[14], b[15], b[16], b[17], b[18], " at utils/funcTools.js:488"), o = p(o, 21, "00")
                             } else o = p(o, 15, "00");
                             a = a + o + h
@@ -20876,17 +20876,17 @@
                         return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
                     },
                     getSettingCmd: function(e) {
-                        var t = i(e.valArr[0]),
-                            r = i(e.ch, 2),
-                            n = i(e.valArr[1], 2),
-                            h = i(e.xy, 2),
-                            a = i(e.valArr[2], 2),
-                            c = i(e.valArr[3], 2),
-                            o = i(e.valArr[4], 2),
-                            s = i(e.light, 2),
-                            l = i(e.cfg, 2);
+                        var t = toFixedWidthHex(e.valArr[0]),
+                            r = toFixedWidthHex(e.ch, 2),
+                            n = toFixedWidthHex(e.valArr[1], 2),
+                            h = toFixedWidthHex(e.xy, 2),
+                            a = toFixedWidthHex(e.valArr[2], 2),
+                            c = toFixedWidthHex(e.valArr[3], 2),
+                            o = toFixedWidthHex(e.valArr[4], 2),
+                            s = toFixedWidthHex(e.light, 2),
+                            l = toFixedWidthHex(e.cfg, 2);
                         0 == e.cfg && (a = "FF", c = "FF", o = "FF");
-                        var p = i(e.lang, 2),
+                        var p = toFixedWidthHex(e.lang, 2),
                             d = "00010203" + t + r + n + h + a + c + o + s + l + p + "000000000004050607";
                         return d.toUpperCase()
                     },
@@ -20896,16 +20896,16 @@
                         return null !== a ? a[1] : (t("log", "\u672a\u5339\u914d\u5230\u7b26\u5408\u8981\u6c42\u7684\u5b57\u7b26\u4e32", e, r, " at utils/funcTools.js:7"), "")
                     },
                     getQueryCmd: function(e) {
-                        for (var t = "", r = 0; r < e.length; r++) t += i(e[r], 2);
+                        for (var t = "", r = 0; r < e.length; r++) t += toFixedWidthHex(e[r], 2);
                         var n = "E0E1E2E3" + t + "E4E5E6E7";
                         return n.toUpperCase()
                     },
                     getDrawLineStr: function(e, t) {
                         for (var r = "", n = 0; n < e.length; n++) {
                             var h = e[n];
-                            r = r + i(h.pt.x) + i(h.pt.y) + i(c(h.color, h.z), 2)
+                            r = r + toFixedWidthHex(h.pt.x) + toFixedWidthHex(h.pt.y) + toFixedWidthHex(combineNibbles(h.color, h.z), 2)
                         }
-                        return r = "10111213" + i(t) + i(e.length, 2) + r + "14151617", r.toUpperCase()
+                        return r = "10111213" + toFixedWidthHex(t) + toFixedWidthHex(e.length, 2) + r + "14151617", r.toUpperCase()
                     },
                     getFeaturesValue: g
                 }
