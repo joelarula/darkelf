@@ -62301,6 +62301,7 @@
                                 dmx: 0,
                                 pressTimer: null,
                                 clickTimer: null,
+                                // channel
                                 ch: 0,
                                 xy: 0,
                                 light: 1,
@@ -62382,10 +62383,10 @@
                         onHide: function() {},
                         onUnload: function() {
                             var e = {
-                                ch: this.ch,
-                                dmx: this.dmx,
-                                xy: this.xy,
-                                light: this.light,
+                                ch: this.ch, // channel
+                                dmx: this.dmx, // 0 or 1
+                                xy: this.xy, // 0-7 Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+
+                                light: this.light, // 1 single ,2 dual ,3 full
                                 cfg: this.cfg,
                                 lang: this.lang,
                                 valArr: this.valArr
