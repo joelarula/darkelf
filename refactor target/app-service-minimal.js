@@ -18,62 +18,50 @@
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
                                 screen_width: app.globalData.screen_width_str,
-                                debugTag: !1,
                                 modeCmdSend: "",
                                 functions: [{
                                     tag: 8,
                                     name: "Hand-drawn doodle",
-                                    img: "2.png",
                                     show: !0
                                 }, {
                                     tag: 4,
                                     name: "Text playback",
-                                    img: "3.png",
                                     show: !0
                                 }, {
                                     tag: 7,
                                     name: "Personalized programming",
-                                    img: "4.png",
                                     show: !0
                                 }, {
                                     tag: 1,
                                     name: "Random playback",
-                                    img: "5.png",
                                     show: !0
                                 }, {
                                     tag: 3,
                                     name: "Animation playback",
-                                    img: "6.png",
                                     show: !0
                                 }, {
                                     tag: 2,
                                     name: "Timeline playback",
-                                    img: "7.png",
                                     show: !0
                                 }, {
                                     tag: 5,
                                     name: "Christmas broadcast",
-                                    img: "8.png",
                                     show: !0
                                 }, {
                                     tag: 6,
                                     name: "Outdoor playback",
-                                    img: "9.png",
                                     show: !0
                                 }, {
                                     tag: 0,
                                     name: "DMX",
-                                    img: "10.png",
                                     show: !0
                                 }, {
                                     tag: 5,
                                     name: "ILDA",
-                                    img: "11.png",
                                     show: !1
                                 }, {
                                     tag: 9,
                                     name: "Playlist",
-                                    img: "12.png",
                                     show: !0
                                 }],
                                 features: deviceFeatures,
@@ -150,8 +138,7 @@
                             if (!this.data.initShow) {
                                 this.data.initShow = true;
                                 this.methods.bluInitPro();
-                            }
-                            
+                            }             
                         },
                         methods: {
                             bluInitPro: function() {
@@ -162,43 +149,33 @@
                             goQueryCmd: function() {
                                 bleDeviceController.gosend(!1, deviceCommandUtil.getQueryCmd(this.data.randomCheck));
                             },
-                            blu_cnn_call_back: function(t, r) {
-                                if (1 != t) {
-                                    var n = app.globalData.ble_device;
-                                    if (t && n && "characteristicId" in n) logger("log", "blu_cnn_call_back1", t, r, " at pages/main/main.js:191"), logger("log", "Connected", n.name, " at pages/main/main.js:192"), this.cnnDevice = n.name, this.cnnState = !0, app.globalData.blu_cnn_from_page && "pages/cnn/cnn" == this.getCurPage() && uni.navigateBack(), app.globalData.blu_cnn_from_page = !1, this.goQueryCmd();
+                            blu_cnn_call_back: function(connectionStatus, resultCode) {
+                                if (1 != connectionStatus) {
+                                    var device = app.globalData.ble_device;
+                                    logger("log", "blu_cnn_call_back1", connectionStatus, resultCode); 
+                                    if (connectionStatus && device && "characteristicId" in device) 
+                                        logger("log", "Connected", device.name), 
+                                        this.cnnDevice = device.name, 
+                                        this.cnnState = true, 
+                                        this.goQueryCmd();
                                     else {
-                                        if (logger("log", "blu_cnn_call_back2", t, r, " at pages/main/main.js:202"), this.clearBluTimer(), uni.hideLoading(), this.cnnState = !1, this.deviceOn = !1, this.prjIndex = -1, app.globalData.blu_cnn_from_test) return;
-                                        var h = this.getCurPage(); - 1 == pages.indexOf(h) && (n && app.globalData.showModalTips(n.name + this.$t("Disconnected")), this.gotoMain())
+                                        this.cnnState = false, 
+                                        this.deviceOn = false, 
+                                        this.prjIndex = -1;
                                     }
                                 }
                             },
-                            gotoMain: function() {
-                                var t = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-                                if (!this.debugTag && (logger("log", "gotoMain cnnBlu", t, this.debugTag, app.globalData.img_selecting, " at pages/main/main.js:223"), !app.globalData.appHide)) {
-                                    var r = this.getCurPage();
-                                    "pages/main/main" != r ? uni.reLaunch({
-                                        url: "/pages/main/main"
-                                    }) : t && (this.initShow = !1)
-                                }
-                            },
-                            getCurPage: function() {
-                                var e = uni.getCurrentPages();
-                                return e[e.length - 1].route
-                            },
 
-                            // This function handles the response after receiving data from a Bluetooth device, 
-                            // validates it, updates the app state if valid, and notifies the user if there’s an error.
                             blu_rec_call_back: function(data) {
-                                logger("log", "blu_rec_call_back", " at pages/main/main.js:270");
-                                this.clearBluTimer(), uni.hideLoading(), this.checkRcvData(data, this.randomCheck) ? (bleDeviceController.setCanSend(!0), bleDeviceController.setCmdData(data), this.prjIndex = app.globalData.cmd.curMode) : uni.showToast({
-                                    title: this.$t("Abnormality in reading device parameters"),
-                                    icon: "none",
-                                    duration: 3e3
-                                })
+                                logger("log", "blu_rec_call_back");
+                                this.checkRcvData(data, this.randomCheck) 
+                                    ? (bleDeviceController.setCanSend(true), 
+                                        bleDeviceController.setCmdData(data), 
+                                        this.prjIndex = app.globalData.cmd.curMode) 
+                                    : logger("log", "Abnormality in reading device parameters");
                             },
                             
                             // fill the this.randomCheck array with 4 random integers between 0 and 255 (inclusive). 
-                            // This is typically used to generate a random check value, possibly for device communication or session validation.
                             genRandomCheck: function() {
                                 for (var e = 0; e < 4; e++) this.randomCheck[e] = Math.floor(256 * Math.random())
                             },
@@ -207,11 +184,11 @@
                             // Decodes and checks a checksum validation code.
                             // Updates device status and features if valid.
                             // Returns true if the data is valid and processed, otherwise false.
-                            checkRcvData: function(e, t) {
-                                if (4 != t.length || e.length < 24) return !1;
-                                for (var r = e.substr(e.length - 24, 8), n = [], h = 0; h < 4; h++) {
+                            checkRcvData: function(data, randomVerify) {
+                                if (4 != randomVerify.length || data.length < 24) return !1;
+                                for (var r = data.substr(data.length - 24, 8), n = [], h = 0; h < 4; h++) {
                                     var i = 0,
-                                        c = t[h];
+                                        c = randomVerify[h];
                                     0 == h && (i = (c + 55 >> 1) - 10 & 255), 1 == h && (i = 7 + (c - 68 << 1) & 255), 2 == h && (i = 15 + (c + 97 >> 1) & 255), 3 == h && (i = 87 + (c - 127 >> 1) & 255), n.push(i)
                                 }
                                 for (var o = [], s = 0; s < 4; s++) {
@@ -221,12 +198,14 @@
                                 }
                                 for (var d = 0; d < 4; d++)
                                     if (o[d] != n[d]) return !1;
-                                var b = e.substr(e.length - 16, 2);
+                                var b = data.substr(data.length - 16, 2);
                                 this.deviceOn = 0 != parseInt(b, 16);
-                                var g = e.substr(e.length - 14, 2),
-                                    j = e.substr(e.length - 12, 2),
-                                    x = e.substr(e.length - 10, 2);
-                                return this.debugTag || (app.globalData.setDeviceInfo(g, j, x), this.features = app.globalData.getDeviceFeatures()), this.features = app.globalData.getDeviceFeatures(), !0
+                                var deviceType = data.substr(data.length - 14, 2),
+                                    version = data.substr(data.length - 12, 2),
+                                    userType = data.substr(data.length - 10, 2);
+                                return  (app.globalData.setDeviceInfo(deviceType, version, userType), 
+                                    this.features = app.globalData.getDeviceFeatures()), 
+                                    this.features = app.globalData.getDeviceFeatures(), !0
                             },
 
                             voteTitle: function(e) {
@@ -242,7 +221,7 @@
                             // based on the clicked tag and device/debug state.
                             settingClick: function(e) {
                                 var t = e.currentTarget.dataset.tag;
-                                if (0 != t || this.deviceOn || this.debugTag) return this.prjIndex != t && 0 == t ? (this.prjIndex = t, app.globalData.setCmdMode(t), void this.sendCmd()) : void uni.navigateTo({
+                                if (0 != t || this.deviceOn ) return this.prjIndex != t && 0 == t ? (this.prjIndex = t, app.globalData.setCmdMode(t), void this.sendCmd()) : void uni.navigateTo({
                                     url: "/pages/setting/setting?dmx=" + t
                                 });
                                 app.globalData.showModalTips(this.$t("Please turn on the device first"), !0)
@@ -293,7 +272,7 @@
                                 var t = e.currentTarget.dataset.tag;
                                 
                                 if (0 != t)
-                                    if (this.deviceOn || this.debugTag) {
+                                    if (this.deviceOn ) {
                                         
                                         if (this.prjIndex != t || 5 == t && this.features.ilda) return this.prjIndex = t, 
                                             app.globalData.setCmdMode(t), void this.sendCmd();
@@ -378,9 +357,8 @@
                         bleConnectCount: 0,
                         bleManualDisCnn: !1,
                         BLEConnectionStateChangeSet: !1,
-                        BluetoothAdapterOpen: !1,
+                        BluetoothAdapterOpen: false,
                         ble_device: null,
-                        blu_cnn_from_page: !1,
                         blu_state: 0,
                         blu_connect_stop: !1,
                         blu_connected: 0,
@@ -389,7 +367,6 @@
                         blu_cnn_call_back: null,
                         blu_rec_call_back: null,
                         blu_rec_content: null,
-                        blu_cnn_from_test: !1,
                         screen_width_str: "0px",
                         screen_width_float: 0,
                         screen_width_page: 0,
@@ -590,8 +567,13 @@
                             var e = this.readData("tips");
                             return "1" != e
                         },
-                        setDeviceInfo: function(e, t, r) {
-                            this.saveData("deviceType", e), this.saveData("version", t), this.saveData("userType", r), this.deviceInfo["deviceType"] = e, this.deviceInfo["version"] = t, this.deviceInfo["userType"] = r
+                        setDeviceInfo: function(deviceType, version, userType) {
+                            this.saveData("deviceType", deviceType), 
+                            this.saveData("version", version), 
+                            this.saveData("userType", userType), 
+                            this.deviceInfo["deviceType"] = deviceType, 
+                            this.deviceInfo["version"] = version, 
+                            this.deviceInfo["userType"] = userType
                         },
                         getDeviceInfo: function() {
                             var e = this.readData("deviceType");
@@ -825,7 +807,6 @@
                         BLEConnectionStateChangeSet: !1,
                         BluetoothAdapterOpen: !1,
                         ble_device: null,
-                        blu_cnn_from_page: !1,
                         blu_state: 0,
                         blu_connect_stop: !1,
                         blu_connected: 0,
@@ -834,7 +815,6 @@
                         blu_cnn_call_back: null,
                         blu_rec_call_back: null,
                         blu_rec_content: null,
-                        blu_cnn_from_test: !1,
                         screen_width_str: "0px",
                         screen_width_float: 0,
                         screen_width_page: 0,
