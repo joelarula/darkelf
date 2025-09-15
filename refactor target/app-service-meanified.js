@@ -2505,7 +2505,8 @@
                             }
                         },
 
-                        // getDeviceFeatures() returns an object indicating which features are supported by the current device, based on its type and version.
+                        // getDeviceFeatures() returns an object indicating which features are supported by the current device, 
+                        // based on its type and version.
                         getDeviceFeatures: function() {
                             var e = {
                                     textStopTime: !1,
@@ -2521,9 +2522,9 @@
                                     textUpDown: !1,
                                     animationFix: !1
                                 },
-                                t = this.deviceInfo["deviceType"],
-                                r = this.deviceInfo["version"];
-                            return (1 == t && r >= 1 || 0 == t && r >= 2 || t >= 2) && (e.textStopTime = !0, e.textDecimalTime = !0), (1 == t && r >= 2 || t > 1) && (e.showOutDoorTips = !0), 1 == t && 1 == r && (e.textModeFix01 = !0), 2 == t && (e.xyCnf = !0), 1 != t && 2 != t || (e.ilda = !0), 1 != t && 2 != t || (e.ttlAn = !0), (t >= 2 || r >= 3) && (e.arbPlay = !0), (t >= 3 || r >= 4) && (e.textUpDown = !0), (t >= 3 || r >= 5) && (e.picsPlay = !0), 1 == t && (e.animationFix = !0), e.displayType = t, e
+                                deviceType = this.deviceInfo["deviceType"],
+                                version = this.deviceInfo["version"];
+                            return (1 == deviceType && version >= 1 || 0 == deviceType && version >= 2 || deviceType >= 2) && (e.textStopTime = !0, e.textDecimalTime = !0), (1 == deviceType && version >= 2 || deviceType > 1) && (e.showOutDoorTips = !0), 1 == deviceType && 1 == version && (e.textModeFix01 = !0), 2 == deviceType && (e.xyCnf = !0), 1 != deviceType && 2 != deviceType || (e.ilda = !0), 1 != deviceType && 2 != deviceType || (e.ttlAn = !0), (deviceType >= 2 || version >= 3) && (e.arbPlay = !0), (deviceType >= 3 || version >= 4) && (e.textUpDown = !0), (deviceType >= 3 || version >= 5) && (e.picsPlay = !0), 1 == deviceType && (e.animationFix = !0), e.displayType = deviceType, e
                         },
                         saveData: function(e, t) {
                             uni.setStorageSync(e, t)
@@ -21326,7 +21327,8 @@
                                 }
                             },
                             //  routes the user to the correct function or project page, 
-                            // sending the necessary command to the device, and handles device state checks and navigation logic.
+                            // sending the necessary command to the device, 
+                            // and handles device state checks and navigation logic.
                             prjClick: function(e) {
                                 
                                 var t = e.currentTarget.dataset.tag;
@@ -21334,7 +21336,9 @@
                                 if (0 != t)
                                     if (this.deviceOn || this.debugTag) {
                                         
-                                        if (this.prjIndex != t || 5 == t && this.features.ilda) return this.prjIndex = t, app.globalData.setCmdMode(t), void this.sendCmd();
+                                        if (this.prjIndex != t || 5 == t && this.features.ilda) return this.prjIndex = t, 
+                                            app.globalData.setCmdMode(t), void this.sendCmd();
+                                        
                                         this.sendCmd(), 4 == t && uni.navigateTo({
                                             url: "/sub/pages/text/text"
                                         }), 7 == t && uni.navigateTo({
@@ -64999,8 +65003,8 @@
                     value: !0
                 }), t.default = void 0;
                 var n = getApp(),
-                    h = r("deviceCommandUtils "),
-                    a = r("bleDeviceControlUtils "),
+                    deviceCommandUtils = r("deviceCommandUtils "),
+                    deviceBleController = r("bleDeviceControlUtils "),
                     i = {
                         data: function() {
                             var e = n.globalData.getDeviceFeatures(),
@@ -65010,14 +65014,14 @@
                                 rtl: n.globalData.rtl,
                                 prjTitles: ["--", "Random playback", "Timeline playback", "Animation playback", "--", "Christmas broadcast", "Outdoor playback"],
                                 colorName: [
-                                    [this.$t("\u7ea2"), "red"],
-                                    [this.$t("\u7eff"), "green"],
-                                    [this.$t("\u84dd"), "blue"],
-                                    [this.$t("\u9ec4"), "yellow"],
-                                    [this.$t("\u9752"), "#00FFFF"],
-                                    [this.$t("\u7d2b"), "purple"],
-                                    [this.$t("\u767d"), "white"],
-                                    [this.$t("\u8df3\u53d8"), "white"],
+                                    [this.$t("Red"), "red"],
+                                    [this.$t("Green"), "green"],
+                                    [this.$t("Blue"), "blue"],
+                                    [this.$t("Yellow"), "yellow"],
+                                    [this.$t("Cyan"), "#00FFFF"],
+                                    [this.$t("Purple"), "purple"],
+                                    [this.$t("White"), "white"],
+                                    [this.$t("Transparent"), "white"],
                                     [this.$t("RGB"), "white"]
                                 ],
                                 prjIndex: 0,
@@ -65025,42 +65029,42 @@
                                 showOutDoorTips: !1,
                                 features: e,
                                 colorDisplayOrder: [{
-                                    name: "\u7ea2",
+                                    name: "Red",
                                     color: "red",
                                     order: 0,
                                     idx: 1
                                 }, {
-                                    name: "\u9ec4",
+                                    name: "yellow",
                                     color: "yellow",
                                     order: 1,
                                     idx: 4
                                 }, {
-                                    name: "\u7eff",
+                                    name: "green",
                                     color: "green",
                                     order: 2,
                                     idx: 2
                                 }, {
-                                    name: "\u9752",
+                                    name: "Cyan",
                                     color: "#00FFFF",
                                     order: 3,
                                     idx: 5
                                 }, {
-                                    name: "\u84dd",
+                                    name: "blue",
                                     color: "blue",
                                     order: 4,
                                     idx: 3
                                 }, {
-                                    name: "\u7d2b",
+                                    name: "purple",
                                     color: "purple",
                                     order: 5,
                                     idx: 6
                                 }, {
-                                    name: "\u767d",
+                                    name: "white",
                                     color: "white",
                                     order: 6,
                                     idx: 7
                                 }, {
-                                    name: "\u8df3\u53d8",
+                                    name: "Jump",
                                     color: "transparent",
                                     order: 7,
                                     idx: 8
@@ -65092,20 +65096,20 @@
                             }
                         },
                         onLoad: function(e) {
-                            var t = e.tag,
-                                r = n.globalData.getCmdData("prjData"),
+                            var prjIndex = e.tag,
+                                prjData = n.globalData.getCmdData("prjData"),
                                 h = {},
-                                a = r.public;
-                            if (1 == t) h = {
+                                a = prjData.public;
+                            if (1 == prjIndex) h = {
                                 public: a,
-                                prjIndex: t
+                                prjIndex: prjIndex
                             };
                             else {
-                                var i = r.prjItem[t + ""];
+                                var i = prjData.prjItem[prjIndex + ""];
                                 h = {
                                     public: a,
                                     item: i,
-                                    prjIndex: t
+                                    prjIndex: prjIndex
                                 };
                                 var c = this.getCkValues(h.item.prjSelected);
                                 h.item["ckValues"] = c
@@ -65132,8 +65136,8 @@
                                     public: this.public,
                                     item: this.item
                                 }), null == e && (e = {}), e["features"] = n.globalData.getDeviceFeatures();
-                                var t = h.getCmdStr(n.globalData.cmd, e),
-                                    r = a.gosend(!1, t);
+                                var t = deviceCommandUtils.getCmdStr(n.globalData.cmd, e),
+                                    r = deviceBleController.gosend(!1, t);
                                 return r
                             },
                             rdColorChange: function(e) {
@@ -65176,7 +65180,7 @@
                                 this.$set(this.item, "prjSelected", a), this.$set(this.item, "ckValues", n), this.sendCmd()
                             },
                             checkboxChange: function(t) {
-                                e("log", "checkbox\u53d1\u751fchange\u4e8b\u4ef6\uff0c\u643a\u5e26value\u503c\u4e3a\uff1a", t.detail.value, " at pages/prj/prj.js:220");
+                                e("log", "checkboxTrigger a change event, carrying the value", t.detail.value, " at pages/prj/prj.js:220");
                                 var r = [0, 0, 0, 0];
                                 e("log", r, " at pages/prj/prj.js:222");
                                 for (var n = t.detail.value, h = 0; h < n.length; h++) {
