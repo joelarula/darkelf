@@ -10,6 +10,7 @@
                 var app = r("appStateManager")["default"],
                 geometryUtil = (r("codePointAt"), r("geometryAndUuidUtils")),
                 deviceCommandUtil = r("deviceCommandUtils "),
+                uni = r("uni"),
                 bleDeviceController = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
                 pages = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
                  module = {
@@ -17,10 +18,7 @@
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
                                 screen_width: app.globalData.screen_width_str,
-                                rtl: app.globalData.rtl,
                                 debugTag: !1,
-                                ledDevTag: !1,
-                                warnTop: 20,
                                 modeCmdSend: "",
                                 functions: [{
                                     tag: 8,
@@ -83,9 +81,8 @@
                                 prjIndex: -1,
                                 cnnDevice: "Not connected",
                                 cnnState: !1,
-                                bluTimer: null,
                                 randomCheck: [],
-                                initShow: !1,
+                                initShow: false,
                                 ctx: "null",
                                 sendTimer: null,
                                 lastSendTime: 0,
@@ -143,70 +140,27 @@
                             }
                         },
                         created: function() {
-                            uni.setKeepScreenOn({
-                                keepScreenOn: !0
-                            }), app.globalData.setMainPage(this);
-                            var e = uni.getSystemInfoSync();
+                            app.globalData.setMainPage(this);
                         },
                         onLoad: function() {
-                            this.genRandomCheck(), app.globalData.platform.app ? this.warnTop = 12 : this.warnTop = 40
+                            this.genRandomCheck();
                         },
                         onShow: function() {
-                            if (this.rtl = app.globalData.rtl, logger("log", "onShow rtl", this.rtl, " at pages/main/main.js:85"), this.features = app.globalData.getDeviceFeatures(), this.bluTimer && uni.showLoading({
-                                    title: this.$t("Reading device parameters..."),
-                                    mask: !0
-                                }), !this.initShow) {
-                                this.initShow = !0;
-                                var t = this;
-                                this.$nextTick((function() {
-                                    t.testShow((function() {
-                                        t.bluInitPro()
-                                    }))
-                                }))
+                            this.features = app.globalData.getDeviceFeatures();
+                            if (!this.data.initShow) {
+                                this.data.initShow = true;
+                                this.methods.bluInitPro();
                             }
-                        },
-                        //When the page is ready, this function logs a message and, if LED device mode is enabled, initializes the channel drawing UI.
-                        onReady: function() {
-                            logger("log", "main onready", " at pages/main/main.js:99"), this.ledDevTag && this.chDrawInit()
-                        },
-                        computed: {
-                            functionsShow: function() {
-                                for (var t = [], r = 0; r < this.functions.length; r++) {
-                                    var n = this.functions[r];
-                                    if (this.features.ilda) {
-                                        if (["Christmas broadcast"].includes(n.name)) continue
-                                    } else if (["ILDA"].includes(n.name)) continue;
-                                    !this.features.picsPlay && ["Playlist"].includes(n.name) || t.push(n)
-                                }
-                                return logger("log", "functionsShow", JSON.stringify(t), " at pages/main/main.js:121"), t
-                            }
+                            
                         },
                         methods: {
                             bluInitPro: function() {
-                                app.globalData.blu_cnn_call_back = this.blu_cnn_call_back, app.globalData.blu_rec_call_back = this.blu_rec_call_back, setTimeout((function() {
-                                    bleDeviceController.cnnPreBlu()
-                                }), 10)
-                            },
-                            clearBluTimer: function() {
-                                null != this.bluTimer && (clearTimeout(this.bluTimer), this.bluTimer = null)
+                                app.globalData.blu_cnn_call_back = this.blu_cnn_call_back, 
+                                app.globalData.blu_rec_call_back = this.blu_rec_call_back, 
+                                bleDeviceController.cnnPreBlu()                      
                             },
                             goQueryCmd: function() {
-                                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 3,
-                                    r = this;
-                                if (t > 0) "pages/main/main" == this.getCurPage() && uni.showLoading({
-                                    title: r.$t("Reading device parameters..."),
-                                    mask: !0
-                                }), bleDeviceController.gosend(!1, deviceCommandUtil.getQueryCmd(this.randomCheck)), r.clearBluTimer(), r.bluTimer = setTimeout((function() {
-                                    r.bluTimer = null, r.goQueryCmd(--t)
-                                }), 3e3);
-                                else {
-                                    if (logger("log", "this.debugTag", this.debugTag, " at pages/main/main.js:162"), r.clearBluTimer(), this.debugTag) return void bleDeviceController.setCanSend(!0);
-                                    uni.showToast({
-                                        title: r.$t("Failed to read device parameters"),
-                                        icon: "none",
-                                        duration: 3e3
-                                    })
-                                }
+                                bleDeviceController.gosend(!1, deviceCommandUtil.getQueryCmd(this.data.randomCheck));
                             },
                             blu_cnn_call_back: function(t, r) {
                                 if (1 != t) {
@@ -228,7 +182,7 @@
                                 }
                             },
                             getCurPage: function() {
-                                var e = getCurrentPages();
+                                var e = uni.getCurrentPages();
                                 return e[e.length - 1].route
                             },
 
@@ -279,10 +233,6 @@
                                 this.sendText = e.detail.value
                             },
 
-                            t: function(e) {
-                                var t = this.$t(e);
-                                return t
-                            },
                             cnnLaser: function() {
                                 bleDeviceController.cnnLaser()
                             },
@@ -386,149 +336,7 @@
                             sendLastCmd: function(e) {
                                 this.lastCmdTime = (new Date).getTime(), this.sendCmd2(e)
                             },
-                            chDrawInit: function() {
-                                var e = this,
-                                    t = uni.createSelectorQuery().in(e);
-                                setTimeout((function() {
-                                    t.select("#cvView").boundingClientRect((function(t) {
-                                        e.chCanvas.w = t.width / 4, e.chCanvas.h = t.height, e.chDraw.w = .6 * e.chCanvas.w;
-                                        var r = .95 * e.chCanvas.h;
-                                        e.chPer = r / 255, e.chDraw.h = r, e.refreshAllChDraw()
-                                    })).exec()
-                                }), 200)
-                            },                
-                            getIteratorHelper: function(e, t) {
-                            // This function provides an iterator for the given object 'e'.
-                            },
-                            refreshAllChDraw: function() {
-                                var e, t = getIteratorHelper(this.xyCnf.xy);
-                                try {
-                                    for (t.s(); !(e = t.n()).done;) {
-                                        var r = e.value,
-                                            h = r["value"],
-                                            a = "chCanvas" + r["name"],
-                                            i = !this.xyCnf.auto;
-                                        this.drawChCanvas(a, this.chDraw.w, this.chDraw.h, this.chDraw.max, h, i, this.callBackCh)
-                                    }
-                                } catch (c) {
-                                    t.e(c)
-                                } finally {
-                                    t.f()
-                                }
-                            },
-                            refreshChDraw: function() {
-                                var e = this.xyCnf.xy[this.cnfIdx],
-                                    t = e["value"],
-                                    r = "chCanvas" + e["name"],
-                                    n = !this.xyCnf.auto;
-                                this.drawChCanvas(r, this.chDraw.w, this.chDraw.h, this.chDraw.max, t, n, this.callBackCh)
-                            },
-                            radioPhaseChange: function(e) {
-                                var t = e.detail.value,
-                                    r = parseInt(t);
-                                this.$set(this.xyCnf, "phase", r), this.sendLastCmd(!0)
-                            },
-                            radioChange: function(e) {
-                                var t = e.detail.value,
-                                    r = this.xyCnf.auto;
-                                "auto" == t && (r = !0), "manual" == t && (r = !1), this.$set(this.xyCnf, "auto", r), this.refreshAllChDraw(), this.sendLastCmd(!0)
-                            },
-                            drawChCanvas: function(e, t, r, n, h, a) {
-                                var c = arguments.length > 6 && void 0 !== arguments[6] ? arguments[6] : null,
-                                    o = uni.createCanvasContext(e, this),
-                                    s = t / 2,
-                                    l = (this.chCanvas.w - t) / 2,
-                                    p = (this.chCanvas.h - r) / 2 + s,
-                                    d = l + t,
-                                    b = p + r - t,
-                                    g = l + s,
-                                    j = p,
-                                    x = d - s,
-                                    V = b,
-                                    f = 2 * this.scUnit,
-                                    F = "#24292E",
-                                    k = o.createLinearGradient(x, V + s, g, j - s);
-                                k.addColorStop(0, "#112233"), k.addColorStop(1, "#1E374C"), a ? o.setFillStyle(k) : o.setFillStyle(F), o.beginPath(), o.moveTo(d, b), o.arc(x, V, s, 0, 1 * Math.PI);
-                                var m = r - 2 * s;
-                                o.rect(d - t, b - m, t, m), o.moveTo(l, p), o.arc(g, j, s, Math.PI, 2 * Math.PI), o.fill();
-                                var P = o.createLinearGradient(x, V + s, g, j - s);
-                                P.addColorStop(0, "#008BD1"), P.addColorStop(1, "white"), a ? o.setFillStyle(P) : o.setFillStyle(F), o.beginPath(), o.moveTo(l, p), o.arc(g, j, s, Math.PI, 2 * Math.PI), o.moveTo(d, b), o.arc(x, V, s, 0, 1 * Math.PI), o.beginPath();
-                                var u = r / n,
-                                    X = u * h;
-                                if (X < s) {
-                                    var N = s - X,
-                                        H = s - Math.sqrt(Math.pow(s, 2) - Math.pow(N, 2)),
-                                        z = geometryUtil.lineTheta([d, b], [x, V], [d - H, b + N]);
-                                    o.moveTo(d - H, b + N), o.arc(x, V, s, z, Math.PI - z), o.fill()
-                                } else if (X <= r - s) {
-                                    o.moveTo(d, b), o.arc(x, V, s, 0, 1 * Math.PI);
-                                    var Q = X - s;
-                                    o.rect(d - t, b - Q, t, Q), o.fill()
-                                } else {
-                                    o.moveTo(d, b), o.arc(x, V, s, 0, 1 * Math.PI);
-                                    var R = r - 2 * s;
-                                    if (o.rect(d - t, b - R, t, R), h == n) o.moveTo(l, p), o.arc(g, j, s, Math.PI, 2 * Math.PI);
-                                    else {
-                                        var v = X - (r - s),
-                                            I = s - Math.sqrt(Math.pow(s, 2) - Math.pow(v, 2)),
-                                            w = geometryUtil.lineTheta([l, p], [g, j], [l + I, p - v]);
-                                        o.moveTo(l + I, p - v), o.arc(g, j, s, 2 * Math.PI - w, Math.PI + w)
-                                    }
-                                    o.fill()
-                                }
-                                o.beginPath();
-                                var y = .5 * t;
-                                if (o.setFontSize(y), a ? o.setFillStyle("white") : o.setFillStyle(F), o.setShadow(5 * f, 5 * f, 5 * f, "rgba(0, 0, 0, 0.5)"), o.fillText(h + "", x - o.measureText(h + "").width / 2, j - s + r / 2 + y / 2), o.beginPath(), y = .8 * t, o.setFontSize(y), o.fillText("+", g - o.measureText("+").width / 2, j + y / 3), o.fillText("-", x - o.measureText("-").width / 2, V + y / 3), null != c) {
-                                    var C = l,
-                                        A = V + s;
-                                    c(o, C, A, t, r, s, n, h)
-                                }
-                                o.draw()
-                            },
-
-                            //  changes a channel value by a given amount, ensures it stays within limits,
-                            //  updates the UI, and sends the new value to the device if it changed.
-                            addCnfValusAndSend: function(e) {
-                                if (!this.xyCnf.auto) {
-                                    var t = this.xyCnf.xy[this.cnfIdx].value,
-                                        r = t + Math.floor(e);
-                                    r = r < 0 ? 0 : r, r = r > this.chDraw.max ? this.chDraw.max : r, t != r && (this.$set(this.xyCnf.xy[this.cnfIdx], "value", r), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd(!1))
-                                }
-                            },
-
-                            // chTouchstart initializes the state for a channel adjustment gesture, recording which channel is being adjusted and where the touch started.
-                            chTouchstart: function(e) {
-                                this.cnfIdx = e.currentTarget.dataset.idx;
-                                var t = e.touches[0];
-                                this.chBeginPoint = {
-                                    x: t.x,
-                                    y: t.y
-                                }, this.chEndPoint = null, this.lastRefresh = 0
-                            },
-                            // chTouchmove tracks finger movement, throttles updates to every 100ms, and adjusts the channel value in response to vertical drag gestures.
-                            chTouchmove: function(e) {
-                                var t = e.touches[0];
-                                this.chEndPoint = {
-                                    x: t.x,
-                                    y: t.y
-                                };
-                                var r = (new Date).getTime();
-                                if (r - this.lastRefresh > 100) {
-                                    var n = Math.floor((this.chBeginPoint.y - this.chEndPoint.y) / this.chPer);
-                                    Math.abs(n) >= 1 && (this.chBeginPoint = {
-                                        x: this.chEndPoint.x,
-                                        y: this.chEndPoint.y
-                                    }, this.addCnfValusAndSend(n)), this.lastRefresh = r
-                                }
-                            },
-                            //
-                            chTouchend: function(e) {
-                                if (null == this.chEndPoint) {
-                                    var t = this.chBeginPoint.y > this.chCanvas.h / 2 ? -1 : 1;
-                                    this.addCnfValusAndSend(t)
-                                }
-                                this.chEndPoint = null
-                            }
+             
                         }
                     };
                 t.default = module
@@ -1435,8 +1243,45 @@
             n.r && n.r(r);
             n.d && n.d(r, "log", function() { return noop; });
             n.d && n.d(r, "default", function() { return defaultLogger; });
-        }
+        },
  
+
+        "uni": function (t, r, n) {
+            // Stub implementation of the uni module for testing/build purposes
+            const uni = {
+                getSystemInfoSync: () => ({ statusBarHeight: 20 }),
+                setKeepScreenOn: () => { },
+                getLocale: () => 'en',
+                setLocale: () => { },
+                showLoading: (message) => { },
+                hideLoading: () => { },
+                showToast: () => { },
+                showModal: () => { },
+                createSelectorQuery: () => ({ in: () => ({ select: () => ({ boundingClientRect: (cb) => ({ exec: () => cb({ width: 100, height: 100 }) }) }) }) }),
+                createCanvasContext: () => ({
+                    setFillStyle: () => { },
+                    beginPath: () => { },
+                    moveTo: () => { },
+                    arc: () => { },
+                    rect: () => { },
+                    fill: () => { },
+                    setFontSize: () => { },
+                    setShadow: () => { },
+                    fillText: () => { },
+                    measureText: (text) => ({ width: text.length * 10 }),
+                    draw: () => { },
+                    createLinearGradient: () => ({ addColorStop: () => { } })
+                }),
+                getStorageSync: () => undefined,
+                setStorageSync: () => { },
+                removeStorageSync: () => { },
+                reLaunch: () => { },
+                navigateTo: () => { },
+                nextTick: (cb) => cb(),
+                getCurrentPages: () => [{ route: 'pages/main/main' }],
+            };
+            r.default = uni;
+        }
 			
 	},
 	[
