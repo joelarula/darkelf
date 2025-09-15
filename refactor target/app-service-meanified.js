@@ -12041,7 +12041,7 @@
                         getCmdValue: function(e, r, n) {
                             var h = new RegExp(e + "(.+?)" + r),
                                 a = h.exec(n);
-                            return null !== a ? a[1] : (t("log", "\u672a\u5339\u914d\u5230\u7b26\u5408\u8981\u6c42\u7684\u5b57\u7b26\u4e32", " at pages/test/test.js:455"), "")
+                            return null !== a ? a[1] : (t("log", "No matching string found that meets the requirements", " at pages/test/test.js:455"), "")
                         },
                         dataReced: function(e, r) {
                             t("log", "data ", r, " at pages/test/test.js:461"), this.recDeviceMsgTimer && (clearTimeout(this.recDeviceMsgTimer), this.recDeviceMsgTimer = null);
@@ -20785,26 +20785,26 @@
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
                     },
-                    getCmdStr: function(e) {
+                    getCmdStr: function(commandConfig) {
                         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
-                            r = toFixedWidthHex(e.curMode, 2),
+                            r = toFixedWidthHex(commandConfig.curMode, 2),
                             h = toFixedWidthHex(0, 2),
-                            a = toFixedWidthHex(e.textData.txColor, 2),
-                            c = toFixedWidthHex(e.textData.txSize / 100 * 255, 2),
-                            o = toFixedWidthHex(e.textData.txSize / 100 * 255, 2),
-                            s = toFixedWidthHex(e.textData.runSpeed / 100 * 255, 2),
+                            a = toFixedWidthHex(commandConfig.textData.txColor, 2),
+                            c = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
+                            o = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
+                            s = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2),
                             l = "00",
-                            p = toFixedWidthHex(e.textData.txDist / 100 * 255, 2),
-                            d = toFixedWidthHex(e.prjData.public.rdMode, 2),
-                            j = toFixedWidthHex(e.prjData.public.soundVal / 100 * 255, 2),
+                            p = toFixedWidthHex(commandConfig.textData.txDist / 100 * 255, 2),
+                            d = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2),
+                            j = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2),
                             x = "ffffffff0000";
                         if (null != t) {
                             if (x = "", t.hasOwnProperty("groupList"))
                                 for (var V = 0; V < t.groupList.length; V++) x += toFixedWidthHex(t.groupList[V].color, 2);
-                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(t, "textStopTime") && (x += toFixedWidthHex(e.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(t, "textStopTime") && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
                         }
                         var f = "",
-                            F = e.prjData.prjItem;
+                            F = commandConfig.prjData.prjItem;
                         for (var k in F) {
                             var m = F[k],
                                 P = 0 == m.pyMode ? 0 : 128;
@@ -20817,7 +20817,7 @@
                             f = f + u + X
                         }
                         var z = "";
-                        getFeatureValue(t, "arbPlay") && (z += toFixedWidthHex(e.textData.runDir, 2));
+                        getFeatureValue(t, "arbPlay") && (z += toFixedWidthHex(commandConfig.textData.runDir, 2));
                         for (var Q = "", R = Math.floor(z.length / 2), v = R; v < 44; v++) Q += "00";
                         var I = "c0c1c2c3" + r + h + a + c + o + s + l + p + d + j + x + f + z + Q + "c4c5c6c7";
                         return I.toUpperCase()
@@ -20875,25 +20875,25 @@
                         }
                         return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
                     },
-                    getSettingCmd: function(e) {
-                        var t = toFixedWidthHex(e.valArr[0]),
-                            r = toFixedWidthHex(e.ch, 2),
-                            n = toFixedWidthHex(e.valArr[1], 2),
-                            h = toFixedWidthHex(e.xy, 2),
-                            a = toFixedWidthHex(e.valArr[2], 2),
-                            c = toFixedWidthHex(e.valArr[3], 2),
-                            o = toFixedWidthHex(e.valArr[4], 2),
-                            s = toFixedWidthHex(e.light, 2),
-                            l = toFixedWidthHex(e.cfg, 2);
-                        0 == e.cfg && (a = "FF", c = "FF", o = "FF");
-                        var p = toFixedWidthHex(e.lang, 2),
+                    getSettingCmd: function(settingData) {
+                        var t = toFixedWidthHex(settingData.valArr[0]),
+                            r = toFixedWidthHex(settingData.ch, 2),
+                            n = toFixedWidthHex(settingData.valArr[1], 2),
+                            h = toFixedWidthHex(settingData.xy, 2),
+                            a = toFixedWidthHex(settingData.valArr[2], 2),
+                            c = toFixedWidthHex(settingData.valArr[3], 2),
+                            o = toFixedWidthHex(settingData.valArr[4], 2),
+                            s = toFixedWidthHex(settingData.light, 2),
+                            l = toFixedWidthHex(settingData.cfg, 2);
+                        0 == settingData.cfg && (a = "FF", c = "FF", o = "FF");
+                        var p = toFixedWidthHex(settingData.lang, 2),
                             d = "00010203" + t + r + n + h + a + c + o + s + l + p + "000000000004050607";
                         return d.toUpperCase()
                     },
-                    getCmdValue: function(e, r, n) {
-                        var h = new RegExp(e + "(.+?)" + r),
-                            a = h.exec(n);
-                        return null !== a ? a[1] : (t("log", "\u672a\u5339\u914d\u5230\u7b26\u5408\u8981\u6c42\u7684\u5b57\u7b26\u4e32", e, r, " at utils/funcTools.js:7"), "")
+                    getCmdValue: function(startPattern , endPattern , inputString ) {
+                        var matcher = new RegExp(startPattern  + "(.+?)" + endPattern ),
+                            matchResult = matcher.exec(inputString );
+                        return null !== matchResult ? matchResult[1] : (t("log", "No matching string found that meets the requirements", startPattern , endPattern , " at utils/funcTools.js:7"), "")
                     },
                     getQueryCmd: function(e) {
                         for (var t = "", r = 0; r < e.length; r++) t += toFixedWidthHex(e[r], 2);
