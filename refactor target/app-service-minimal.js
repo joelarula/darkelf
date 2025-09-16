@@ -16,51 +16,63 @@
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
                                 modeCmdSend: "",
-                                functions: [{
-                                    tag: 8,
-                                    name: "Hand-drawn doodle",
-                                    show: !0
-                                }, {
-                                    tag: 4,
-                                    name: "Text playback",
-                                    show: !0
-                                }, {
-                                    tag: 7,
-                                    name: "Personalized programming",
-                                    show: !0
-                                }, {
-                                    tag: 1,
-                                    name: "Random playback",
-                                    show: !0
-                                }, {
-                                    tag: 3,
-                                    name: "Animation playback",
-                                    show: !0
-                                }, {
-                                    tag: 2,
-                                    name: "Timeline playback",
-                                    show: !0
-                                }, {
-                                    tag: 5,
-                                    name: "Christmas broadcast",
-                                    show: !0
-                                }, {
-                                    tag: 6,
-                                    name: "Outdoor playback",
-                                    show: !0
-                                }, {
-                                    tag: 0,
-                                    name: "DMX",
-                                    show: !0
-                                }, {
-                                    tag: 5,
-                                    name: "ILDA",
-                                    show: !1
-                                }, {
-                                    tag: 9,
-                                    name: "Playlist",
-                                    show: !0
-                                }],
+                                functions: [
+                                    {
+                                        tag: 0,
+                                        name: "DMX",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 1,
+                                        name: "Random playback",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 2,
+                                        name: "Timeline playback",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 3,
+                                        name: "Animation playback",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 4,
+                                        name: "Text playback",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 5,
+                                        name: "Christmas broadcast",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 5,
+                                        name: "ILDA",
+                                        show: !1
+                                    },
+                                    {
+                                        tag: 6,
+                                        name: "Outdoor playback",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 7,
+                                        name: "Personalized programming",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 8,
+                                        name: "Hand-drawn doodle",
+                                        show: !0
+                                    },
+                                    {
+                                        tag: 9,
+                                        name: "Playlist",
+                                        show: !0
+                                    }
+                                ].sort((a, b) => a.tag - b.tag),
                                 features: deviceFeatures,
                                 deviceOn: false,
                                 prjIndex: -1,
@@ -79,23 +91,28 @@
                                     autoValue: 0,
                                     // numeric value, possibly representing a phase or mode for the adjustment.
                                     phase: 0,
-                                    xy: [{
-                                        title: "X-axis coarse tuning",
-                                        name: "xBig",
-                                        value: 0
-                                    }, {
-                                        title: "X-axis fine tuning",
-                                        name: "xSmall",
-                                        value: 0
-                                    }, {
-                                        title: "Y-axis coarse tuning",
-                                        name: "yBig",
-                                        value: 0
-                                    }, {
-                                        title: "Y-axis fine tuning",
-                                        name: "ySmall",
-                                        value: 0
-                                    }]
+                                    xy: [
+                                        {
+                                            title: "X-axis coarse tuning",
+                                            name: "xBig",
+                                            value: 0
+                                        },
+                                        {
+                                            title: "X-axis fine tuning",
+                                            name: "xSmall",
+                                            value: 0
+                                        },
+                                        {
+                                            title: "Y-axis coarse tuning",
+                                            name: "yBig",
+                                            value: 0
+                                        },
+                                        {
+                                            title: "Y-axis fine tuning",
+                                            name: "ySmall",
+                                            value: 0
+                                        }
+                                    ]
                                 }
                             }
                         },
@@ -554,7 +571,7 @@
                         // getDeviceFeatures() returns an object indicating which features are supported by the current device, 
                         // based on its type and version.
                         getDeviceFeatures: function() {
-                            var e = {
+                            var features = {
                                     textStopTime: !1,
                                     textDecimalTime: !1,
                                     displayType: 0,
@@ -570,7 +587,55 @@
                                 },
                                 deviceType = this.deviceInfo["deviceType"],
                                 version = this.deviceInfo["version"];
-                            return (1 == deviceType && version >= 1 || 0 == deviceType && version >= 2 || deviceType >= 2) && (e.textStopTime = !0, e.textDecimalTime = !0), (1 == deviceType && version >= 2 || deviceType > 1) && (e.showOutDoorTips = !0), 1 == deviceType && 1 == version && (e.textModeFix01 = !0), 2 == deviceType && (e.xyCnf = !0), 1 != deviceType && 2 != deviceType || (e.ilda = !0), 1 != deviceType && 2 != deviceType || (e.ttlAn = !0), (deviceType >= 2 || version >= 3) && (e.arbPlay = !0), (deviceType >= 3 || version >= 4) && (e.textUpDown = !0), (deviceType >= 3 || version >= 5) && (e.picsPlay = !0), 1 == deviceType && (e.animationFix = !0), e.displayType = deviceType, e
+                            // Determine device features based on deviceType and version
+                            // Each feature is enabled according to specific deviceType/version rules
+                            if (
+                                (deviceType === 1 && version >= 1) ||
+                                (deviceType === 0 && version >= 2) ||
+                                deviceType >= 2
+                            ) {
+                                features.textStopTime = true;
+                                features.textDecimalTime = true;
+                            }
+
+                            if (
+                                (deviceType === 1 && version >= 2) ||
+                                deviceType > 1
+                            ) {
+                                features.showOutDoorTips = true;
+                            }
+
+                            if (deviceType === 1 && version === 1) {
+                                features.textModeFix01 = true;
+                            }
+
+                            if (deviceType === 2) {
+                                features.xyCnf = true;
+                            }
+
+                            if (deviceType === 1 || deviceType === 2) {
+                                features.ilda = true;
+                                features.ttlAn = true;
+                            }
+
+                            if (deviceType >= 2 || version >= 3) {
+                                features.arbPlay = true;
+                            }
+
+                            if (deviceType >= 3 || version >= 4) {
+                                features.textUpDown = true;
+                            }
+
+                            if (deviceType >= 3 || version >= 5) {
+                                features.picsPlay = true;
+                            }
+
+                            if (deviceType === 1) {
+                                features.animationFix = true;
+                            }
+
+                            features.displayType = deviceType;
+                            return features;
                         },
                         saveData: function(e, t) {
                             uni.setStorageSync(e, t)
