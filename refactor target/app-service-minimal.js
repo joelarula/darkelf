@@ -1,8 +1,401 @@
 (this["webpackJsonp"] = this["webpackJsonp"] || []).push([
 
     ["app-service"], {
-		
-		
+			
+        "appStateManager": function(e, t, r) {
+            "use strict";
+            (function(logger) {
+
+                var r = {
+                    globalData: {
+
+                        // List of Bluetooth service UUIDs to connect to
+                        mserviceuuids: [],
+                        // List of Bluetooth characteristic UUIDs for transmitting (TX) data
+                        mtxduuids: [],
+                        // List of Bluetooth characteristic UUIDs for receiving (RX) data
+                        mrxduuids: [],
+                        // 0,1,2
+                        muuidSel: 0,
+                        bleManualDisCnn: !1,
+                        BLEConnectionStateChangeSet: !1,
+                        BluetoothAdapterOpen: false,
+                        ble_device: null,
+                        blu_state: 0,
+                        blu_connect_stop: !1,
+                        blu_connected: 0,
+                        //  global "stop BLE operations" flag
+                        blu_readyRec: !1,
+                        blu_cnn_call_back: null,
+                        blu_rec_call_back: null,
+                        blu_rec_content: null,
+                        blu_data_canSend: !1,
+                        blu_data_cmdSending: !1,
+                        blu_data_send_interval: 100,
+                        deviceInfo: {},
+                        cmd: {
+                            curMode: 0,
+                            settingData: {
+                                dmx: 0,
+                                ch: 0,
+                                xy: 0,
+                                light: 1,
+                                cfg: 0,
+                                lang: 0,
+                                valArr: [1, 10, 10, 10, 10]
+                            },
+                            // prjIndex: The current project index (default 0).
+                            // public: Shared settings for all projects (rdMode, runSpeed, txColor, soundVal).
+                            // prjItem: An object mapping project indices (as strings) to their specific settings, each with pyMode, prjSelected (an array of 4 numbers), 
+                            // and ckValues (an array, initially empty)      
+                            prjData: {
+                                prjIndex: 0,
+                                public: {
+                                    rdMode: 0, // audio trigger mode, 0 or 255
+                                    runSpeed: 50,
+                                    txColor: 9, //colorDisplayOrder
+                                    soundVal: 20 // setting sound sensitivity
+                                },
+                                prjItem: {
+                                    2: {
+                                        pyMode: 0, // 0,255  loop playback, tick play
+                                        prjSelected: [0, 0, 0, 0],
+                                        ckValues: [] // selected items
+                                    },
+                                    3: {
+                                        pyMode: 0,
+                                        prjSelected: [0, 0, 0, 0],
+                                        ckValues: []
+                                    },
+                                    5: {
+                                        pyMode: 0,
+                                        prjSelected: [0, 0, 0, 0],
+                                        ckValues: []
+                                    },
+                                    6: {
+                                        pyMode: 0,
+                                        prjSelected: [0, 0, 0, 0],
+                                        ckValues: []
+                                    }
+                                }
+                            },
+
+                        },
+
+                        // sets the value of blu_data_send_interval in the global data object to the value passed as e.
+                        // It is used to update the interval (in milliseconds) at which Bluetooth data is sent.
+                        setbluDataSendInterval: function(interval) {
+                            this.blu_data_send_interval = interval
+                        },
+
+                        // invokes the registered Bluetooth receive callback with the provided data, 
+                        //  if a callback is set.
+                        setRecCallBack: function(data) {
+                            var callbackFunc = this.blu_rec_call_back;
+                            null != callbackFunc && callbackFunc(data)
+                        },
+
+                        // updates the Bluetooth connection state, saves the device if connected, 
+                        // and notifies any registered callback.
+                        setBluCnnState: function(connectionState , isManualChange) {
+                            this.blu_connected = connectionState , 2 == this.blu_connected && this.saveDevice();
+                            var connectionCallback  = this.blu_cnn_call_back;
+                            null != connectionCallback  && connectionCallback (connectionState , isManualChange)
+                        },
+
+                        setCmdMode: function(mode) {
+                            this.cmd["curMode"] = mode, 
+                            this.cmd["prjData"].prjIndex = mode
+                        },
+                        getCmdData: function(commandKey) {
+                            return this.cmd[commandKey]
+                        },
+
+                        //  function is a setter used to update command-related data within the cmd object. 
+                        // It takes two arguments: e, which is the key indicating which section of the command data to update, 
+                        // and t, which is the new data to set.
+                        // If the key e is "prjData", the function updates the public property of cmd.prjData with t.public. 
+                        // If t.prjIndex is not 1, it also updates the corresponding prjItem entry using the index as a string. 
+                        // Additionally, it synchronizes the runSpeed and txColor properties in cmd.textData with those from 
+                        // t.public. The use of void ensures the function returns undefined after these assignments,
+                        //  exiting early for this case.
+
+                        // For all other keys, the function simply assigns t to cmd[e]. If the key is "textData", 
+                        // it also updates cmd.prjData.public.runSpeed and cmd.prjData.public.txColor 
+                        // to match the new values in t. This ensures that related properties stay consistent across different 
+                        // sections of the command data structure.
+
+                        setCmdData: function(key, data) {
+                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex 
+                                && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), 
+                                    this.cmd.textData.runSpeed = data.public.runSpeed, 
+                                    void(this.cmd.textData.txColor = data.public.txColor);
+                            this.cmd[key] = data, "textData" == key 
+                                && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
+                        },
+
+                        // restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
+                        readSetting: function() {
+                            switch (this.muuidSel = this.readData("lastsel") || 0, this.muuidSel) {
+                                case 0:
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    break;
+                                case 1:
+                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"], this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
+                                    break;
+                                case 2:
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    break
+                            }
+                        },
+
+                        saveTipsParm: function(e) {
+                            var t = e ? "0" : "1";
+                            this.saveData("tips", t)
+                        },
+                        getTipsParm: function() {
+                            var e = this.readData("tips");
+                            return "1" != e
+                        },
+                        setDeviceInfo: function(deviceType, version, userType) {
+                            this.saveData("deviceType", deviceType), 
+                            this.saveData("version", version), 
+                            this.saveData("userType", userType), 
+                            this.deviceInfo["deviceType"] = deviceType, 
+                            this.deviceInfo["version"] = version, 
+                            this.deviceInfo["userType"] = userType
+                        },
+                        getDeviceInfo: function() {
+                            var e = this.readData("deviceType");
+                            "" == e && (e = 0);
+                            var t = this.readData("version");
+                            "" == t && (t = 0);
+                            var r = this.readData("userType");
+                            return "" == r && (r = 0), {
+                                deviceType: parseInt(e),
+                                version: parseInt(t),
+                                userType: parseInt(r)
+                            }
+                        },
+
+                        // getDeviceFeatures() returns an object indicating which features are supported by the current device, 
+                        // based on its type and version.
+                        getDeviceFeatures: function() {
+                            var features = {
+                                    textStopTime: false,
+                                    textDecimalTime: false,
+                                    displayType: 0,
+                                    showOutDoorTips: false,
+                                    xyCnf: false,
+                                    arbPlay: false,
+                                    ilda: false,
+                                    // device supports TTL analog
+                                    ttlAn: false,
+                                    picsPlay: false,
+                                    textUpDown: false,
+                                    animationFix: false
+                                },
+                                deviceType = this.deviceInfo["deviceType"],
+                                version = this.deviceInfo["version"];
+                            // Determine device features based on deviceType and version
+                            // Each feature is enabled according to specific deviceType/version rules
+                            //  "00 - 02" represents a device with type 0 and version 2,
+                            if (
+                                (deviceType === 1 && version >= 1) ||
+                                (deviceType === 0 && version >= 2) ||
+                                deviceType >= 2
+                            ) {
+                                features.textStopTime = true;
+                                features.textDecimalTime = true;
+                            }
+
+                            if (
+                                (deviceType === 1 && version >= 2) ||
+                                deviceType > 1
+                            ) {
+                                features.showOutDoorTips = true;
+                            }
+
+                            if (deviceType === 1 && version === 1) {
+                                features.textModeFix01 = true;
+                            }
+
+                            if (deviceType === 2) {
+                                features.xyCnf = true;
+                            }
+
+                            if (deviceType === 1 || deviceType === 2) {
+                                features.ilda = true;
+                                features.ttlAn = true;
+                            }
+
+                            if (deviceType >= 2 || version >= 3) {
+                                features.arbPlay = true;
+                            }
+
+                            if (deviceType >= 3 || version >= 4) {
+                                features.textUpDown = true;
+                            }
+
+                            if (deviceType >= 3 || version >= 5) {
+                                features.picsPlay = true;
+                            }
+
+                            if (deviceType === 1) {
+                                features.animationFix = true;
+                            }
+
+                            features.displayType = deviceType;
+                            return features;
+                        },
+                        saveData: function(e, t) {
+                            uni.setStorageSync(e, t)
+                        },
+                        readData: function(e) {
+                            var t = uni.getStorageSync(e);
+                            return t
+                        },
+                        deleteData: function(e) {
+                            uni.removeStorageSync(e)
+                        },
+
+                        savelastsel: function(t) {
+                            this.saveData("lastsel", t), logger("log", "Writelastsel ", t, " at App.vue:328")
+                        },
+
+                        // restores the last used Bluetooth device from persistent storage into the ble_device property.
+                        readDevice: function() {
+                            this.ble_device = this.readData("device")
+                        },
+                        saveDevice: function() {
+                            this.saveData("device", this.ble_device)
+                        },
+
+                        clearDevice: function() {
+                            this.ble_device = null, this.saveDevice()
+                        },
+
+                        createBLEConnection: function(deviceId) {
+                            var r = this,
+                                callbackFunc = arguments.length > 1 && void 0 !== arguments[1] 
+                                    ? arguments[1] 
+                                    : null;
+ 
+                            this.blu_connected = -1, 
+                            uni.createBLEConnection({
+                                deviceId: deviceId,
+                                timeout: 6e3,
+                                success: function(e) {
+                                    callbackFunc && callbackFunc(!0)
+                                },
+                                fail: function(h) {
+                                    r.bleManualDisCnn 
+                                        ? callbackFunc && callbackFunc(!1) 
+                                        : r.doCloseBLEConnection(deviceId, (function(e) {
+                                            callbackFunc && callbackFunc(!1)
+                                    }))
+                                }
+                            })
+                        },
+
+                        doCloseBLEConnection: function(deviceId) {
+                            var callbackFunc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
+
+                            this.bleManualDisCnn = true;
+                            var n = this,
+                                h = setTimeout((function() {
+                                    h = null, n.bleManualDisCnn = !1, callbackFunc && callbackFunc(!0)
+                                }), 200);
+                            uni.closeBLEConnection({
+                                deviceId: deviceId,
+                                success: function(t) {
+                                    logger("log", "doCloseBLEConnection success", t, " at App.vue:384"), h 
+                                        && callbackFunc && callbackFunc(!0)
+                                },
+                                fail: function(t) {
+                                    logger("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h 
+                                        && callbackFunc && callbackFunc(!1)
+                                },
+                                complete: function() {
+                                    logger("log", "doCloseBLEConnection complete", " at App.vue:394"), h 
+                                        && clearTimeout(h), this.bleManualDisCnn = !1
+                                }
+                            })
+                        },
+                        closeBLEConnection: function() {
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            if (this.blu_connected) {
+                                var device = this.ble_device;
+                                device ? this.doCloseBLEConnection(device.deviceId, (function(r) {
+                                    logger("log", "do callback", " at App.vue:409"), 
+                                    callbackFunc && callbackFunc(r)
+                                })) : callbackFunc && callbackFunc(!0)
+                            } else callbackFunc && callbackFunc(!0)
+                        },
+                        doCloseBluetoothAdapter: function() {
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            this.bleOpenCloseCount--, this.BluetoothAdapterOpen = !1, uni.closeBluetoothAdapter({
+                                success: function(e) {
+                                    callbackFunc && callbackFunc(!0)
+                                },
+                                fail: function(r) {
+                                    logger("log", "closeBluetoothAdapter fail", r, " at App.vue:424"), 
+                                    callbackFunc && callbackFunc(!1)
+                                }
+                            })
+                        },
+                        closeBluetoothAdapter: function() {
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            this.BluetoothAdapterOpen ? this.doCloseBluetoothAdapter(callbackFunc) : callbackFunc && callbackFunc(!0)
+                        },
+                        openBluetoothAdapter: function() {
+                            var t = this,
+                                callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            if (this.BluetoothAdapterOpen) callbackFunc && callbackFunc(!0);
+                            else {
+                                logger("log", "this.bleOpenCloseCount", this.bleOpenCloseCount, " at App.vue:440"), this.bleOpenCloseCount++;
+                                var n = this;
+                                uni.openBluetoothAdapter({
+                                    success: function(e) {
+                                        t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), callbackFunc && callbackFunc(!0)
+                                    },
+                                    fail: function(h) {
+                                        logger("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
+                                    }
+                                })
+                            }
+                        },
+                        setBLEConnectionStateChange: function() {
+                            if (!this.BLEConnectionStateChangeSet) {
+                                this.BLEConnectionStateChangeSet = !0;
+                                var t = this;
+                                uni.onBLEConnectionStateChange((function(result) {
+                                    t.blu_data_cmdSending = !1, 
+                                    result.connected || (logger("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"), 
+                                    t.bleManualDisCnn || t.doCloseBLEConnection(result.deviceId), 
+                                    t.ble_device && t.ble_device.deviceId != result.deviceId || (t.blu_data_canSend = !1, 
+                                    t.setBluCnnState(0, !0)))
+                                }))
+                            }
+                        },
+                    },
+                    onLaunch: function() {
+                        this.globalData.getDeviceInfo(),
+                        this.globalData.getSysinfo();
+                    },
+                    onHide: function() {
+                        this.globalData.closeBLEConnection((function(t) {
+                            this.globalData.blu_state = 0,
+                            this.globalData.setBluCnnState(0, false), 
+                            this.globalData.closeBluetoothAdapter()
+                        }))
+                    }
+                };
+                t.default = r
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+
+
 		"mainPageComponent": function(e, t, r) {
         "use strict";
             (function(logger) {
@@ -72,7 +465,7 @@
                                         name: "Playlist",
                                         show: !0
                                     }
-                                ].sort((a, b) => a.tag - b.tag),
+                                ],
                                 features: deviceFeatures,
                                 deviceOn: false,
                                 prjIndex: -1,
@@ -80,44 +473,7 @@
                                 cnnState: false,
                                 randomCheck: [],
                                 initShow: false,
-                                // represents the configuration for X and Y axis adjustments, 
-                                // likely for a device or UI component that allows fine-tuning of two-dimensional positioning.
-                                // This configuration is used throughout the code to manage, display, 
-                                //  and update the state of X and Y axis controls, including rendering UI elements and sending commands to the device.
-                                xyCnf: {
-                                    // boolean indicating whether automatic adjustment is enabled.
-                                    auto: !0,
-                                    // a numeric value related to automatic adjustment.
-                                    autoValue: 0,
-                                    // numeric value, possibly representing a phase or mode for the adjustment.
-                                    phase: 0,
-                                    xy: [
-                                        {
-                                            title: "X-axis coarse tuning",
-                                            name: "xBig",
-                                            value: 0
-                                        },
-                                        {
-                                            title: "X-axis fine tuning",
-                                            name: "xSmall",
-                                            value: 0
-                                        },
-                                        {
-                                            title: "Y-axis coarse tuning",
-                                            name: "yBig",
-                                            value: 0
-                                        },
-                                        {
-                                            title: "Y-axis fine tuning",
-                                            name: "ySmall",
-                                            value: 0
-                                        }
-                                    ]
-                                }
                             }
-                        },
-                        created: function() {
-                            app.globalData.setMainPage(this);
                         },
                         onLoad: function() {
                             this.genRandomCheck();
@@ -289,27 +645,7 @@
                                 else this.settingClick(e)
                             },
 
-                            //  ensures that shake commands are sent only when the device is ready, 
-                            // and retries if a previous command is still being processed. 
-                            // It prevents overlapping sends and manages timing for reliable communication.
-                            sendCmd2: function(xyConf) {
-                                if (app.globalData.blu_data_cmdSending) {
-                                    if (null == this.sendTimer) {
-                                        var r = this;
-                                        this.sendTimer = setTimeout((function() {
-                                            r.sendTimer = null, r.sendCmd2(xyConf)
-                                        }), 100)
-                                    }
-                                } else if (!(this.lastCmdTime < this.lastSendTime)) {
-                                    var n = app.globalData.getDeviceFeatures(),
-                                        command = deviceCommandUtil.getShakeCmdStr(app.globalData.cmd, {
-                                            features: n,
-                                            xyCnfSave: xyConf
-                                        }),
-                                        i = bleDeviceController.gosend(!1, command);
-                                    i && (this.lastSendTime = (new Date).getTime())
-                                }
-                            },
+
                             sendLastCmd: function(e) {
                                 this.lastCmdTime = (new Date).getTime(), this.sendCmd2(e)
                             },
@@ -320,492 +656,6 @@
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-        "appStateManager": function(e, t, r) {
-            "use strict";
-            (function(logger) {
-
-                var r = {
-                    globalData: {
-                        $i18n: {
-                            locale: "en-US"
-                        },
-                        $t: {},
-                        MaxSaveFileCount: 50,
-                        MaxListCount: 200,
-                        mainPage: null,
-                        cloudApi: null,
-
-                        // List of Bluetooth service UUIDs to connect to
-                        mserviceuuids: [],
-                        // List of Bluetooth characteristic UUIDs for transmitting (TX) data
-                        mtxduuids: [],
-                        // List of Bluetooth characteristic UUIDs for receiving (RX) data
-                        mrxduuids: [],
-                        // 0,1,2
-                        muuidSel: 0,
-                        img_selecting: !1,
-                        bleOpenCloseCount: 0,
-                        bleManualDisCnn: !1,
-                        BLEConnectionStateChangeSet: !1,
-                        BluetoothAdapterOpen: false,
-                        ble_device: null,
-                        blu_state: 0,
-                        blu_connect_stop: !1,
-                        blu_connected: 0,
-                        //  global "stop BLE operations" flag
-                        blu_readyRec: !1,
-                        blu_cnn_call_back: null,
-                        blu_rec_call_back: null,
-                        blu_rec_content: null,
-                        screen_width_str: "0px",
-                        screen_width_float: 0,
-                        screen_width_page: 0,
-                        screen_height_page: 0,
-                        blu_data_canSend: !1,
-                        blu_data_cmdSending: !1,
-                        blu_data_lastShowTime: 0,
-                        blu_Discovery_lastTime: 0,
-                        blu_data_send_interval: 100,
-                        deviceInfo: {},
-                        langs: {
-                            "zh-Hans": "Chinese",
-                            en: "English"
-                        },
-                        cmd: {
-                            curMode: 0,
-                            settingData: {
-                                dmx: 0,
-                                ch: 0,
-                                xy: 0,
-                                light: 1,
-                                cfg: 0,
-                                lang: 0,
-                                valArr: [1, 10, 10, 10, 10]
-                            },
-                            // prjIndex: The current project index (default 0).
-                            // public: Shared settings for all projects (rdMode, runSpeed, txColor, soundVal).
-                            // prjItem: An object mapping project indices (as strings) to their specific settings, each with pyMode, prjSelected (an array of 4 numbers), 
-                            // and ckValues (an array, initially empty)      
-                            prjData: {
-                                prjIndex: 0,
-                                public: {
-                                    rdMode: 0, // audio trigger mode, 0 or 255
-                                    runSpeed: 50,
-                                    txColor: 9, //colorDisplayOrder
-                                    soundVal: 20 // setting sound sensitivity
-                                },
-                                prjItem: {
-                                    2: {
-                                        pyMode: 0, // 0,255  loop playback, tick play
-                                        prjSelected: [0, 0, 0, 0],
-                                        ckValues: [] // selected items
-                                    },
-                                    3: {
-                                        pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
-                                        ckValues: []
-                                    },
-                                    5: {
-                                        pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
-                                        ckValues: []
-                                    },
-                                    6: {
-                                        pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
-                                        ckValues: []
-                                    }
-                                }
-                            },
-                            textData: {
-                                refresh: !1,
-                                verTag: 0,
-                                runDir: 0,
-                                arrColor: ["red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
-                                txPointTime: 50,
-                                txColor: 9,
-                                txSize: 50,
-                                txDist: 50,
-                                runSpeed: 50,
-                                groupIdex: 0,
-                                groupList: [{
-                                    text: "",
-                                    update: 0,
-                                    color: 9,
-                                    fontIdex: null,
-                                    time: 5,
-                                    xys: [],
-                                    XysRight: [],
-                                    XysUp: [],
-                                    XysDown: []
-                                }]
-                            },
-                            drawData: {
-                                pisObj: {
-                                    txPointTime: 50,
-                                    cnfValus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                                }
-                            },
-                            pgsData: {
-                                pisList: []
-                            },
-                            subsetData: {
-                                xyCnf: {
-                                    auto: !0,
-                                    autoValue: 0,
-                                    phase: 0,
-                                    xy: [{
-                                        title: "X-axis coarse tuning",
-                                        name: "xBig",
-                                        value: 0
-                                    }, {
-                                        title: "X-axis fine tuning",
-                                        name: "xSmall",
-                                        value: 0
-                                    }, {
-                                        title: "Y-axis coarse tuning",
-                                        name: "yBig",
-                                        value: 0
-                                    }, {
-                                        title: "Y-axis fine tuning",
-                                        name: "ySmall",
-                                        value: 0
-                                    }]
-                                }
-                            }
-                        },
-
-                        // sets the value of blu_data_send_interval in the global data object to the value passed as e.
-                        // It is used to update the interval (in milliseconds) at which Bluetooth data is sent.
-                        setbluDataSendInterval: function(interval) {
-                            this.blu_data_send_interval = interval
-                        },
-
-                        // invokes the registered Bluetooth receive callback with the provided data, 
-                        //  if a callback is set.
-                        setRecCallBack: function(data) {
-                            var callbackFunc = this.blu_rec_call_back;
-                            null != callbackFunc && callbackFunc(data)
-                        },
-
-                        // updates the Bluetooth connection state, saves the device if connected, 
-                        // and notifies any registered callback.
-                        setBluCnnState: function(connectionState , isManualChange) {
-                            this.blu_connected = connectionState , 2 == this.blu_connected && this.saveDevice();
-                            var connectionCallback  = this.blu_cnn_call_back;
-                            null != connectionCallback  && connectionCallback (connectionState , isManualChange)
-                        },
-
-                        setCmdMode: function(mode) {
-                            this.cmd["curMode"] = mode, 
-                            this.cmd["prjData"].prjIndex = mode
-                        },
-                        getCmdData: function(commandKey) {
-                            return this.cmd[commandKey]
-                        },
-
-                        //  function is a setter used to update command-related data within the cmd object. 
-                        // It takes two arguments: e, which is the key indicating which section of the command data to update, 
-                        // and t, which is the new data to set.
-                        // If the key e is "prjData", the function updates the public property of cmd.prjData with t.public. 
-                        // If t.prjIndex is not 1, it also updates the corresponding prjItem entry using the index as a string. 
-                        // Additionally, it synchronizes the runSpeed and txColor properties in cmd.textData with those from 
-                        // t.public. The use of void ensures the function returns undefined after these assignments,
-                        //  exiting early for this case.
-
-                        // For all other keys, the function simply assigns t to cmd[e]. If the key is "textData", 
-                        // it also updates cmd.prjData.public.runSpeed and cmd.prjData.public.txColor 
-                        // to match the new values in t. This ensures that related properties stay consistent across different 
-                        // sections of the command data structure.
-
-                        setCmdData: function(key, data) {
-                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex 
-                                && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), 
-                                    this.cmd.textData.runSpeed = data.public.runSpeed, 
-                                    void(this.cmd.textData.txColor = data.public.txColor);
-                            this.cmd[key] = data, "textData" == key 
-                                && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
-                        },
-
-                        // restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
-                        readSetting: function() {
-                            switch (this.muuidSel = this.readData("lastsel") || 0, this.muuidSel) {
-                                case 0:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
-                                    break;
-                                case 1:
-                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"], this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
-                                    break;
-                                case 2:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
-                                    break
-                            }
-                        },
-
-                        saveTipsParm: function(e) {
-                            var t = e ? "0" : "1";
-                            this.saveData("tips", t)
-                        },
-                        getTipsParm: function() {
-                            var e = this.readData("tips");
-                            return "1" != e
-                        },
-                        setDeviceInfo: function(deviceType, version, userType) {
-                            this.saveData("deviceType", deviceType), 
-                            this.saveData("version", version), 
-                            this.saveData("userType", userType), 
-                            this.deviceInfo["deviceType"] = deviceType, 
-                            this.deviceInfo["version"] = version, 
-                            this.deviceInfo["userType"] = userType
-                        },
-                        getDeviceInfo: function() {
-                            var e = this.readData("deviceType");
-                            "" == e && (e = 0);
-                            var t = this.readData("version");
-                            "" == t && (t = 0);
-                            var r = this.readData("userType");
-                            return "" == r && (r = 0), {
-                                deviceType: parseInt(e),
-                                version: parseInt(t),
-                                userType: parseInt(r)
-                            }
-                        },
-
-                        // getDeviceFeatures() returns an object indicating which features are supported by the current device, 
-                        // based on its type and version.
-                        getDeviceFeatures: function() {
-                            var features = {
-                                    textStopTime: !1,
-                                    textDecimalTime: !1,
-                                    displayType: 0,
-                                    showOutDoorTips: !1,
-                                    xyCnf: !1,
-                                    arbPlay: !1,
-                                    ilda: !1,
-                                    // device supports TTL analog
-                                    ttlAn: !1,
-                                    picsPlay: !1,
-                                    textUpDown: !1,
-                                    animationFix: !1
-                                },
-                                deviceType = this.deviceInfo["deviceType"],
-                                version = this.deviceInfo["version"];
-                            // Determine device features based on deviceType and version
-                            // Each feature is enabled according to specific deviceType/version rules
-                            //  "00 - 02" represents a device with type 0 and version 2,
-                            if (
-                                (deviceType === 1 && version >= 1) ||
-                                (deviceType === 0 && version >= 2) ||
-                                deviceType >= 2
-                            ) {
-                                features.textStopTime = true;
-                                features.textDecimalTime = true;
-                            }
-
-                            if (
-                                (deviceType === 1 && version >= 2) ||
-                                deviceType > 1
-                            ) {
-                                features.showOutDoorTips = true;
-                            }
-
-                            if (deviceType === 1 && version === 1) {
-                                features.textModeFix01 = true;
-                            }
-
-                            if (deviceType === 2) {
-                                features.xyCnf = true;
-                            }
-
-                            if (deviceType === 1 || deviceType === 2) {
-                                features.ilda = true;
-                                features.ttlAn = true;
-                            }
-
-                            if (deviceType >= 2 || version >= 3) {
-                                features.arbPlay = true;
-                            }
-
-                            if (deviceType >= 3 || version >= 4) {
-                                features.textUpDown = true;
-                            }
-
-                            if (deviceType >= 3 || version >= 5) {
-                                features.picsPlay = true;
-                            }
-
-                            if (deviceType === 1) {
-                                features.animationFix = true;
-                            }
-
-                            features.displayType = deviceType;
-                            return features;
-                        },
-                        saveData: function(e, t) {
-                            uni.setStorageSync(e, t)
-                        },
-                        readData: function(e) {
-                            var t = uni.getStorageSync(e);
-                            return t
-                        },
-                        deleteData: function(e) {
-                            uni.removeStorageSync(e)
-                        },
-
-                        savelastsel: function(t) {
-                            this.saveData("lastsel", t), logger("log", "Writelastsel ", t, " at App.vue:328")
-                        },
-
-                        // restores the last used Bluetooth device from persistent storage into the ble_device property.
-                        readDevice: function() {
-                            this.ble_device = this.readData("device")
-                        },
-                        saveDevice: function() {
-                            this.saveData("device", this.ble_device)
-                        },
-
-                        clearDevice: function() {
-                            this.ble_device = null, this.saveDevice()
-                        },
-
-                        setMainPage: function(mainPageComponent) {
-                            this.mainPage = mainPageComponent
-                        },
-
-                        createBLEConnection: function(deviceId) {
-                            var r = this,
-                                callbackFunc = arguments.length > 1 && void 0 !== arguments[1] 
-                                    ? arguments[1] 
-                                    : null;
- 
-                            this.blu_connected = -1, 
-                            uni.createBLEConnection({
-                                deviceId: deviceId,
-                                timeout: 6e3,
-                                success: function(e) {
-                                    callbackFunc && callbackFunc(!0)
-                                },
-                                fail: function(h) {
-                                    r.bleManualDisCnn 
-                                        ? callbackFunc && callbackFunc(!1) 
-                                        : r.doCloseBLEConnection(deviceId, (function(e) {
-                                            callbackFunc && callbackFunc(!1)
-                                    }))
-                                }
-                            })
-                        },
-
-                        doCloseBLEConnection: function(deviceId) {
-                            var callbackFunc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
-
-                            this.bleManualDisCnn = true;
-                            var n = this,
-                                h = setTimeout((function() {
-                                    h = null, n.bleManualDisCnn = !1, callbackFunc && callbackFunc(!0)
-                                }), 200);
-                            uni.closeBLEConnection({
-                                deviceId: deviceId,
-                                success: function(t) {
-                                    logger("log", "doCloseBLEConnection success", t, " at App.vue:384"), h 
-                                        && callbackFunc && callbackFunc(!0)
-                                },
-                                fail: function(t) {
-                                    logger("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h 
-                                        && callbackFunc && callbackFunc(!1)
-                                },
-                                complete: function() {
-                                    logger("log", "doCloseBLEConnection complete", " at App.vue:394"), h 
-                                        && clearTimeout(h), this.bleManualDisCnn = !1
-                                }
-                            })
-                        },
-                        closeBLEConnection: function() {
-                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            if (this.blu_connected) {
-                                var device = this.ble_device;
-                                device ? this.doCloseBLEConnection(device.deviceId, (function(r) {
-                                    logger("log", "do callback", " at App.vue:409"), 
-                                    callbackFunc && callbackFunc(r)
-                                })) : callbackFunc && callbackFunc(!0)
-                            } else callbackFunc && callbackFunc(!0)
-                        },
-                        doCloseBluetoothAdapter: function() {
-                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            this.bleOpenCloseCount--, this.BluetoothAdapterOpen = !1, uni.closeBluetoothAdapter({
-                                success: function(e) {
-                                    callbackFunc && callbackFunc(!0)
-                                },
-                                fail: function(r) {
-                                    logger("log", "closeBluetoothAdapter fail", r, " at App.vue:424"), 
-                                    callbackFunc && callbackFunc(!1)
-                                }
-                            })
-                        },
-                        closeBluetoothAdapter: function() {
-                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            this.BluetoothAdapterOpen ? this.doCloseBluetoothAdapter(callbackFunc) : callbackFunc && callbackFunc(!0)
-                        },
-                        openBluetoothAdapter: function() {
-                            var t = this,
-                                callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            if (this.BluetoothAdapterOpen) callbackFunc && callbackFunc(!0);
-                            else {
-                                logger("log", "this.bleOpenCloseCount", this.bleOpenCloseCount, " at App.vue:440"), this.bleOpenCloseCount++;
-                                var n = this;
-                                uni.openBluetoothAdapter({
-                                    success: function(e) {
-                                        t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), callbackFunc && callbackFunc(!0)
-                                    },
-                                    fail: function(h) {
-                                        logger("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
-                                    }
-                                })
-                            }
-                        },
-                        setBLEConnectionStateChange: function() {
-                            if (!this.BLEConnectionStateChangeSet) {
-                                this.BLEConnectionStateChangeSet = !0;
-                                var t = this;
-                                uni.onBLEConnectionStateChange((function(result) {
-                                    t.blu_data_cmdSending = !1, 
-                                    result.connected || (logger("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"), 
-                                    t.bleManualDisCnn || t.doCloseBLEConnection(result.deviceId), 
-                                    t.ble_device && t.ble_device.deviceId != result.deviceId || (t.blu_data_canSend = !1, 
-                                    t.setBluCnnState(0, !0)))
-                                }))
-                            }
-                        },
-                        getSysinfo: function() {
-                            var sysinfo = uni.getSystemInfoSync();
-                            this.screen_width_page = sysinfo.screenWidth;
-                            var n = Math.min(9 * sysinfo.screenHeight / 16, sysinfo.screenWidth);
-                            sysinfo.devicePixelRatio;
-                            this.screen_width_float = n / 750, 
-                            this.screen_width_str = this.screen_width_float + "px", 
-                            this.screen_height_page = sysinfo.safeArea.height
-                        },
-                        t: function(t) {
-                            return logger("log", "app vue $t", t, this.$t(t), " at App.vue:505"), this.$t(t)
-                        }
-                    },
-                    onLaunch: function() {
-                        this.globalData.getDeviceInfo(),
-                        this.globalData.getSysinfo();
-                    },
-                    onShow: function() {
-                        this.globalData.blu_connected || null != this.globalData.mainPage && this.globalData.mainPage.gotoMain(true)
-                    },
-                    onHide: function() {
-                        this.globalData.closeBLEConnection((function(t) {
-                            this.globalData.blu_state = 0,
-                            this.globalData.setBluCnnState(0, false), 
-                            this.globalData.closeBluetoothAdapter()
-                        }))
-                    }
-                };
-                t.default = r
-            }).call(this, r("enhancedConsoleLogger")["default"])
-        },
 
         "DeviceConfigPageController": function(e, t, r) {
             "use strict";
