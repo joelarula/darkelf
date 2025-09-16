@@ -367,7 +367,6 @@
                         blu_Discovery_lastTime: 0,
                         blu_data_send_interval: 100,
                         deviceInfo: {},
-                        rtl: !1,
                         langs: {
                             "zh-Hans": "Chinese",
                             en: "English"
@@ -589,6 +588,7 @@
                                 version = this.deviceInfo["version"];
                             // Determine device features based on deviceType and version
                             // Each feature is enabled according to specific deviceType/version rules
+                            //  "00 - 02" represents a device with type 0 and version 2,
                             if (
                                 (deviceType === 1 && version >= 1) ||
                                 (deviceType === 0 && version >= 2) ||
@@ -802,6 +802,131 @@
                 t.default = r
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
+
+        DeviceConfigPageController: function(e, t, r) {
+            "use strict";
+            (function(logger) {
+                    app = getApp(),
+                    deviceCommandUtil = r("deviceCommandUtils "),
+                    bleDeviceController = r("bleDeviceControlUtils "),
+                    module = (r("geometryAndUuidUtils"), {
+                        data: function() {
+                            var deviceFeatures = app.globalData.getDeviceFeatures();
+                            return {
+                                showCtr: {
+                                    light1: true,
+                                    light2: true,
+                                    light3: true,
+                                    lightExt: false
+                                },
+                                deviceInfo: 0,
+                                features: deviceFeatures,
+                                SetCmdSend: "",
+                                version: "",
+                                machine: "",
+                                dmx: 0,
+
+                                // channel
+                                ch: 0,
+                                xy: 0,
+                                light: 1,
+                                cfg: 0,
+                                valArr: [1, 10, 10, 10, 10],
+                                valRange: [
+                                    [1, 512],
+                                    [10, 100],
+                                    [0, 255],
+                                    [0, 255],
+                                    [0, 255]
+                                ]
+                            }
+                        },
+                        
+                        onLoad: function(e) {
+                            var t = this;
+                            this.version = plus.runtime.version, this.version = this.version.trim();
+                            var settingData = app.globalData.getCmdData("settingData");
+                            settingData.dmx = e.dmx;
+                            var n = this;
+                            Object.keys(settingData).forEach((function(e) {
+                                n.$set(t, e, settingData[e])
+                            })), 
+                            this.deviceInfo = app.globalData.getDeviceInfo(), 
+                            this.machine = ("0" + this.deviceInfo.deviceType).slice(-2) + " - " + ("0" + this.deviceInfo.version).slice(-2), 
+                            this.initData()
+                        },
+
+                        onUnload: function() {
+                            var settingData = {
+                                ch: this.ch, // channel
+                                dmx: this.dmx, // 0 or 1
+                                xy: this.xy, // 0-7 Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+
+                                light: this.light, // 1 single ,2 dual ,3 full
+                                cfg: this.cfg,  //  0 ttl 255 analog
+                                lang: this.lang,
+                                valArr: this.valArr 
+                                // valArr[0]: 1 to 512  // channel
+                                //valArr[1]: 10 to 100   // Display Range
+                                //valArr[2]: 0 to 255 (or 0 to 100 for some device types) R
+                                //valArr[3]: 0 to 255 (or 0 to 100 for some device types) G
+                                //valArr[4]: 0 to 255 (or 0 to 100 for some device types) B
+                            };
+                            app.globalData.setCmdData("settingData", settingData)
+                        },
+
+                        methods: {
+                            sendCmd: function() {
+                                var settingData = {
+                                    ch: this.ch,
+                                    dmx: this.dmx,
+                                    xy: this.xy,
+                                    light: this.light,
+                                    cfg: this.cfg,
+                                    lang: this.lang,
+                                    valArr: this.valArr
+                                };
+                                app.globalData.setCmdData("settingData", settingData);
+                                var command = deviceCommandUtil.getSettingCmd(app.globalData.cmd.settingData);
+                                this.SetCmdSend = command, this.doSendCmd()
+                            },
+                            doSendCmd: function() {
+                                if ("" != this.SetCmdSend) {
+                                    var commandResult = bleDeviceController.gosend(!1, this.SetCmdSend),
+                                        t = this;
+                                    commandResult ? this.SetCmdSend = "" : setTimeout((function() {
+                                        t.doSendCmd()
+                                    }), 100)
+                                }
+                            },
+                            initData: function() {
+                                if (1 == this.deviceInfo.deviceType) {
+                                    this.valRange = [
+                                        [1, 512],
+                                        [10, 100],
+                                        [0, 100],
+                                        [0, 100],
+                                        [0, 100]
+                                    ];
+                                    for (var e = 2; e < 5; e++) this.valArr[e] > this.valRange[e][1] && (this.valArr[e] = this.valRange[e][1])
+                                }(1 == this.deviceInfo.deviceType 
+                                    || 0 == this.deviceInfo.deviceType 
+                                        && this.deviceInfo.version >= 1) && (
+                                            this.showCtr = {
+                                                light1: false,
+                                                light2: false,
+                                                light3: false,
+                                                lightExt: true
+                                            })
+                            },
+   
+
+
+                        }
+                    });
+                t.default = module
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+  
 
         enhancedConsoleLogger: function(t, r, n) {
             "use strict";
