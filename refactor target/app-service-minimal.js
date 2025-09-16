@@ -382,19 +382,23 @@
                                 lang: 0,
                                 valArr: [1, 10, 10, 10, 10]
                             },
+                            // prjIndex: The current project index (default 0).
+                            // public: Shared settings for all projects (rdMode, runSpeed, txColor, soundVal).
+                            // prjItem: An object mapping project indices (as strings) to their specific settings, each with pyMode, prjSelected (an array of 4 numbers), 
+                            // and ckValues (an array, initially empty)      
                             prjData: {
                                 prjIndex: 0,
                                 public: {
-                                    rdMode: 0,
+                                    rdMode: 0, // audio trigger mode, 0 or 255
                                     runSpeed: 50,
-                                    txColor: 9,
-                                    soundVal: 20
+                                    txColor: 9, //colorDisplayOrder
+                                    soundVal: 20 // setting sound sensitivity
                                 },
                                 prjItem: {
                                     2: {
-                                        pyMode: 0,
+                                        pyMode: 0, // 0,255  loop playback, tick play
                                         prjSelected: [0, 0, 0, 0],
-                                        ckValues: []
+                                        ckValues: [] // selected items
                                     },
                                     3: {
                                         pyMode: 0,
@@ -803,7 +807,7 @@
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-        DeviceConfigPageController: function(e, t, r) {
+        "DeviceConfigPageController": function(e, t, r) {
             "use strict";
             (function(logger) {
                     app = getApp(),
@@ -926,9 +930,212 @@
                 t.default = module
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
+
+        "bleDeviceProjectConfigPageComponent": function(e, t, r) {
+            "use strict";
+            (function(e) {
+
+                var app = getApp(),
+                    deviceCommandUtils = r("deviceCommandUtils "),
+                    deviceBleController = r("bleDeviceControlUtils "),
+                    module = {
+                        data: function() {
+                            var deviceFeatures = app.globalData.getDeviceFeatures();
+                            return {
+
+                                prjIndex: 0,
+                                sendCmdParmsTimer: null,
+                                showOutDoorTips: false,
+                                features: deviceFeatures,
+                                colorDisplayOrder: [{
+                                    name: "Red",
+                                    color: "red",
+                                    order: 0,
+                                    idx: 1
+                                }, {
+                                    name: "yellow",
+                                    color: "yellow",
+                                    order: 1,
+                                    idx: 4
+                                }, {
+                                    name: "green",
+                                    color: "green",
+                                    order: 2,
+                                    idx: 2
+                                }, {
+                                    name: "Cyan",
+                                    color: "#00FFFF",
+                                    order: 3,
+                                    idx: 5
+                                }, {
+                                    name: "blue",
+                                    color: "blue",
+                                    order: 4,
+                                    idx: 3
+                                }, {
+                                    name: "purple",
+                                    color: "purple",
+                                    order: 5,
+                                    idx: 6
+                                }, {
+                                    name: "white",
+                                    color: "white",
+                                    order: 6,
+                                    idx: 7
+                                }, {
+                                    name: "Jump",
+                                    color: "transparent",
+                                    order: 7,
+                                    idx: 8
+                                }, {
+                                    name: "RGB",
+                                    color: "transparent",
+                                    order: 8,
+                                    idx: 9
+                                }],
+                                public: {
+                                    txColor: 0, //colorDisplayOrder
+                                    rdMode: 0,
+                                    runSpeed: 10,
+                                    soundVal: 20
+                                },
+                                item: {
+                                    pyMode: 0,
+                                    prjSelected: [0, 0, 0, 0],
+                                    ckValues: []
+                                },
+                            }
+                        },
+                        onLoad: function(e) {
+                            var prjIndex = e.tag,
+                                prjData = app.globalData.getCmdData("prjData"),
+                                projectConfig  = {},
+                                publicSettings  = prjData.public;
+                            if (1 == prjIndex) projectConfig  = {
+                                public: publicSettings ,
+                                prjIndex: prjIndex
+                            };
+                            else {
+                                var index = prjData.prjItem[prjIndex + ""];
+                                projectConfig  = {
+                                    public: publicSettings ,
+                                    item: index,
+                                    prjIndex: prjIndex
+                                };
+                                var selectionBits = this.getCkValues(projectConfig.item.prjSelected);
+                                projectConfig .item["ckValues"] = selectionBits
+                            }
+                            this.prjIndex = projectConfig .prjIndex, 
+                            this.public = projectConfig .public, 
+                            this.item = projectConfig .item, 
+                            6 == this.prjIndex && this.features.showOutDoorTips && (this.showOutDoorTips = !0)
+                        },
+
+
+                        methods: {
+                            sendCmd: function() {
+                                var commandParams = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                                this.refreshShow(), 
+                                    app.globalData.setCmdData("prjData", {
+                                        prjIndex: this.prjIndex,
+                                        public: this.public,
+                                        item: this.item
+                                    }), 
+                                    null == commandParams && (commandParams = {}), 
+                                    commandParams["features"] = app.globalData.getDeviceFeatures();
+                                var command = deviceCommandUtils.getCmdStr(app.globalData.cmd, commandParams),
+                                    r = deviceBleController.gosend(!1, command);
+                                return r
+                            },
+
+
+                            // This function takes an array of numbers, where each number is treated as a 16-bit value. 
+                            // It extracts each bit (from least significant to most significant) from every number 
+                            // and flattens all bits into a single array of 0s and 1s. 
+                            // This is useful for converting compact bitfield representations into a simple array of booleans for UI display or logic.
+                            getCkValues: function(e) {
+                                for (var t = [], r = 0; r < e.length; r++)
+                                    for (var n = e[r], h = 0; h < 16; h++) {
+                                        var a = n >> h & 1;
+                                        t.push(a)
+                                    }
+                                return t
+                            },
+                            //This function performs the inverse operation. 
+                            // It takes an array of bits (0s and 1s) and packs them into an array of four 16-bit integers. 
+                            // For every group of 16 bits, it calculates the corresponding integer 
+                            // by setting the appropriate bits, then stores it in the result array. 
+                            // This is useful for compressing a long list of boolean flags into a smaller, 
+                            // more efficient format for storage or transmission.
+                            getprjSelected: function(e) {
+                                for (var t = 0, r = [0, 0, 0, 0], n = 0; n < e.length; n++) {
+                                    var h = n % 16;
+                                    1 == e[n] && (t += Math.pow(2, h)), 15 == h && (r[(n + 1) / 16 - 1] = t, t = 0)
+                                }
+                                return r
+                            },
+                            // This function handles clicks on "auto" selection buttons. Depending on the value of t, 
+                            // it toggles all bits in ckValues 
+                            // (if t == 2, it inverts each bit; if t == 3, it clears all bits; otherwise, it sets all bits to 1).
+                            //  After updating the bit array, it uses getprjSelected to pack the bits into integers, 
+                            // updates the relevant properties using Vue's $set for reactivity, and sends the updated command.
+                            selectAutoBtnClick: function(selectionAction) {
+                                for (var r = selectionAction, selectionBits  = this.item.ckValues, h = 0; h < selectionBits .length; h++) 2 == r ? 1 == selectionBits [h] ? selectionBits [h] = 0 : selectionBits [h] = 1 : selectionBits [h] = 3 == r ? 0 : 1;
+                                var packedBits = this.getprjSelected(selectionBits );
+                                this.item.prjSelected = packedBits, 
+                                this.item.ckValues = selectionBits, 
+                                this.sendCmd()
+                            },
+                            // This function responds to checkbox group changes. 
+                            // It receives the indices of checked boxes, 
+                            // then sets the corresponding bits in a four-element integer array (r). 
+                            // Each checked index is mapped to a specific bit in the appropriate integer.
+                            //  The packed result is stored in prjSelected, and the updated state is sent.
+                            checkboxChange: function(indices) {
+                                var packedBits = [0, 0, 0, 0];
+                                for (var n = indices.detail.value, h = 0; h < n.length; h++) {
+                                    var a = n[h] - 1,
+                                        i = Math.floor(a / 16),
+                                        c = a % 16,
+                                        o = 1 << c;
+                                    packedBits[i] = packedBits[i] | o
+                                }
+                                this.item.prjSelected = packedBits,
+                                this.sendCmd()
+                            },
+
+                            btnSelectClick: function(selectedIndex ) {
+                                if (0 != this.item.pyMode) {
+                                    var  selectionBits = this.item.ckValues,
+                                        commandParams = null;
+                                    1 == selectionBits[selectedIndex ] 
+                                        ? selectionBits[selectedIndex ] = 0 
+                                            : (selectionBits[selectedIndex ] = 1, commandParams = {
+                                        prjParm: {
+                                            prjIndex: this.prjIndex,
+                                            selIndex: selectedIndex  + 1
+                                        }
+                                    });
+                                    var packedBits = this.getprjSelected(selectionBits);
+                                    this.item.prjSelected = packedBits,
+                                    this.item.ckValues = selectionBits, 
+                                    this.sendCmdParms(commandParams)
+                                }
+                            },
+
+                            sendCmdParms: function(commandParams) {
+                              this.sendCmd(commandParams);
+                            }
+ 
+                        }
+                    };
+                t.default = module
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+
   
 
-        enhancedConsoleLogger: function(t, r, n) {
+        "enhancedConsoleLogger": function(t, r, n) {
             "use strict";
             // Stub logger: provides a default logger and a log method, but does nothing
             function noop() {}
