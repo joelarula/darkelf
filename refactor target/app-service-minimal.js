@@ -134,43 +134,39 @@
                                 && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
                         },
 
-                        // restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
+                        // restores the last used Bluetooth UUID configuration by reading a saved index 
+                        // and updating the relevant UUID arrays for device communication.
                         readSetting: function() {
                             switch (this.muuidSel = this.readData("lastsel") || 0, this.muuidSel) {
                                 case 0:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], 
+                                    this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], 
+                                    this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
                                     break;
                                 case 1:
-                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"], this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
+                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"], 
+                                    this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"], 
+                                    this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
                                     break;
                                 case 2:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], 
+                                    this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], 
+                                    this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
                                     break
                             }
                         },
 
-                        saveTipsParm: function(e) {
-                            var t = e ? "0" : "1";
-                            this.saveData("tips", t)
-                        },
-                        getTipsParm: function() {
-                            var e = this.readData("tips");
-                            return "1" != e
-                        },
                         setDeviceInfo: function(deviceType, version, userType) {
-                            this.saveData("deviceType", deviceType), 
-                            this.saveData("version", version), 
-                            this.saveData("userType", userType), 
                             this.deviceInfo["deviceType"] = deviceType, 
                             this.deviceInfo["version"] = version, 
                             this.deviceInfo["userType"] = userType
                         },
                         getDeviceInfo: function() {
-                            var e = this.readData("deviceType");
+                            var e = his.deviceInfo["deviceType"] ;
                             "" == e && (e = 0);
-                            var t = this.readData("version");
+                            var t = this.deviceInfo["version"];
                             "" == t && (t = 0);
-                            var r = this.readData("userType");
+                            var r = this.deviceInfo["userType"] ;
                             return "" == r && (r = 0), {
                                 deviceType: parseInt(e),
                                 version: parseInt(t),
@@ -248,16 +244,7 @@
                             features.displayType = deviceType;
                             return features;
                         },
-                        saveData: function(e, t) {
-                            uni.setStorageSync(e, t)
-                        },
-                        readData: function(e) {
-                            var t = uni.getStorageSync(e);
-                            return t
-                        },
-                        deleteData: function(e) {
-                            uni.removeStorageSync(e)
-                        },
+
 
                         savelastsel: function(t) {
                             this.saveData("lastsel", t), logger("log", "Writelastsel ", t, " at App.vue:328")
@@ -353,14 +340,15 @@
                                 callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             if (this.BluetoothAdapterOpen) callbackFunc && callbackFunc(!0);
                             else {
-                                logger("log", "this.bleOpenCloseCount", this.bleOpenCloseCount, " at App.vue:440"), this.bleOpenCloseCount++;
+                                this.bleOpenCloseCount++;
                                 var n = this;
                                 uni.openBluetoothAdapter({
                                     success: function(e) {
                                         t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), callbackFunc && callbackFunc(!0)
                                     },
                                     fail: function(h) {
-                                        logger("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
+                                        t.doCloseBluetoothAdapter(), 10001 === h.errCode 
+                                            && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
                                     }
                                 })
                             }
