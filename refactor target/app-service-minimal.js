@@ -8,16 +8,13 @@
             (function(logger) {
 
                 var app = r("appStateManager")["default"],
-                geometryUtil = (r("codePointAt"), r("geometryAndUuidUtils")),
                 deviceCommandUtil = r("deviceCommandUtils "),
                 uni = r("uni"),
                 bleDeviceController = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
-                pages = ["pages/cnn/cnn", "pages/main/main", "pages/lang/lang", "pages/setting/setting"],
-                 module = {
+                module = {
                         data: function() {
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
-                                screen_width: app.globalData.screen_width_str,
                                 modeCmdSend: "",
                                 functions: [{
                                     tag: 8,
@@ -65,17 +62,12 @@
                                     show: !0
                                 }],
                                 features: deviceFeatures,
-                                deviceOn: !1,
+                                deviceOn: false,
                                 prjIndex: -1,
                                 cnnDevice: "Not connected",
-                                cnnState: !1,
+                                cnnState: false,
                                 randomCheck: [],
                                 initShow: false,
-                                ctx: "null",
-                                sendTimer: null,
-                                lastSendTime: 0,
-                                lastCmdTime: 0,
-
                                 // represents the configuration for X and Y axis adjustments, 
                                 // likely for a device or UI component that allows fine-tuning of two-dimensional positioning.
                                 // This configuration is used throughout the code to manage, display, 
@@ -104,27 +96,7 @@
                                         name: "ySmall",
                                         value: 0
                                     }]
-                                },
-                                lastRefresh: 0,
-                                chPer: 1,
-                                chBeginPoint: {
-                                    x: 0,
-                                    y: 0
-                                },
-                                chEndPoint: {
-                                    x: 0,
-                                    y: 0
-                                },
-                                chDraw: {
-                                    w: 0,
-                                    h: 0,
-                                    max: 255
-                                },
-                                chCanvas: {
-                                    w: 0,
-                                    h: 0
-                                },
-                                cnfIdx: 0
+                                }
                             }
                         },
                         created: function() {
@@ -268,55 +240,56 @@
                             // and handles device state checks and navigation logic.
                             prjClick: function(e) {
                                 
-                                var tag = e.currentTarget.dataset.tag;
+                                var mode = e.currentTarget.dataset.tag;
                                 
-                                if (0 != tag)
+                                if (0 != mode)
                                     if (this.deviceOn ) {
                                         
-                                        if (this.prjIndex != tag || 5 == tag && this.features.ilda) return this.prjIndex = tag, 
-                                            app.globalData.setCmdMode(tag), void this.sendCmd();
+                                        if (this.prjIndex != mode || 5 == mode && this.features.ilda) return this.prjIndex = mode, 
+                                            app.globalData.setCmdMode(mode), void this.sendCmd();
                                         
                                         this.sendCmd(), 
                                         
-                                        4 == tag && uni.navigateTo({
+                                        4 == mode && uni.navigateTo({
                                             url: "/sub/pages/text/text"
                                         }), 
 
-                                        7 == tag && uni.navigateTo({
+                                        7 == mode && uni.navigateTo({
                                             url: "/sub2/pages/pgs/pgs"
                                         }), 
                                         
-                                        8 == tag && uni.navigateTo({
+                                        8 == mode && uni.navigateTo({
                                             url: "/sub/pages/draw/draw"
                                         }), 
-                                        9 == tag && uni.navigateTo({
+                                        9 == mode && uni.navigateTo({
                                             url: "/sub/pages/listMaster/listMaster"
                                         }), 
                                         
-                                        tag >= 1 && tag <= 6 && 4 != tag && uni.navigateTo({
-                                            url: "/pages/prj/prj?tag=" + tag
+                                        mode >= 1 && mode <= 6 && 4 != mode && uni.navigateTo({
+                                            url: "/pages/prj/prj?tag=" + mode
                                         })
-                                    } else app.globalData.showModalTips(this.$t("Please turn on the device first"), !0);
+                                    } 
                                 else this.settingClick(e)
                             },
 
                             //  ensures that shake commands are sent only when the device is ready, 
-                            // and retries if a previous command is still being processed. It prevents overlapping sends and manages timing for reliable communication.
-                            sendCmd2: function(t) {
-                                if (logger("log", "app.globalData.blu_data_cmdSending", app.globalData.blu_data_cmdSending, " at pages/main/main.js:489"), app.globalData.blu_data_cmdSending) {
+                            // and retries if a previous command is still being processed. 
+                            // It prevents overlapping sends and manages timing for reliable communication.
+                            sendCmd2: function(xyConf) {
+                                if (app.globalData.blu_data_cmdSending) {
                                     if (null == this.sendTimer) {
                                         var r = this;
                                         this.sendTimer = setTimeout((function() {
-                                            r.sendTimer = null, r.sendCmd2(t)
+                                            r.sendTimer = null, r.sendCmd2(xyConf)
                                         }), 100)
                                     }
                                 } else if (!(this.lastCmdTime < this.lastSendTime)) {
                                     var n = app.globalData.getDeviceFeatures(),
-                                        h = deviceCommandUtil.getShakeCmdStr(app.globalData.cmd, {
+                                        command = deviceCommandUtil.getShakeCmdStr(app.globalData.cmd, {
                                             features: n,
-                                            xyCnfSave: t
+                                            xyCnfSave: xyConf
                                         }),
-                                        i = bleDeviceController.gosend(!1, h);
+                                        i = bleDeviceController.gosend(!1, command);
                                     i && (this.lastSendTime = (new Date).getTime())
                                 }
                             },
@@ -332,10 +305,8 @@
 
         "appStateManager": function(e, t, r) {
             "use strict";
-            (function(e) {
-                Object.defineProperty(t, "__esModule", {
-                    value: !0
-                }), t.default = void 0;
+            (function(logger) {
+
                 var r = {
                     globalData: {
                         $i18n: {
@@ -346,7 +317,6 @@
                         MaxListCount: 200,
                         mainPage: null,
                         cloudApi: null,
-                        appHide: !1,
 
                         // List of Bluetooth service UUIDs to connect to
                         mserviceuuids: [],
@@ -356,13 +326,8 @@
                         mrxduuids: [],
                         // 0,1,2
                         muuidSel: 0,
-                        platform: {
-                            system: "",
-                            app: !1
-                        },
                         img_selecting: !1,
                         bleOpenCloseCount: 0,
-                        bleConnectCount: 0,
                         bleManualDisCnn: !1,
                         BLEConnectionStateChangeSet: !1,
                         BluetoothAdapterOpen: false,
@@ -492,15 +457,15 @@
 
                         // sets the value of blu_data_send_interval in the global data object to the value passed as e.
                         // It is used to update the interval (in milliseconds) at which Bluetooth data is sent.
-                        setbluDataSendInterval: function(e) {
-                            this.blu_data_send_interval = e
+                        setbluDataSendInterval: function(interval) {
+                            this.blu_data_send_interval = interval
                         },
 
                         // invokes the registered Bluetooth receive callback with the provided data, 
                         //  if a callback is set.
-                        setRecCallBack: function(e) {
-                            var t = this.blu_rec_call_back;
-                            null != t && t(e)
+                        setRecCallBack: function(data) {
+                            var callbackFunc = this.blu_rec_call_back;
+                            null != callbackFunc && callbackFunc(data)
                         },
 
                         // updates the Bluetooth connection state, saves the device if connected, 
@@ -510,17 +475,7 @@
                             var connectionCallback  = this.blu_cnn_call_back;
                             null != connectionCallback  && connectionCallback (connectionState , isManualChange)
                         },
-                        showModalTips: function(e) {
-                            var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
-                            t ? uni.showModal({
-                                content: e,
-                                showCancel: !1
-                            }) : uni.showToast({
-                                title: e,
-                                icon: "none",
-                                duration: 1e3
-                            })
-                        },
+
                         setCmdMode: function(mode) {
                             this.cmd["curMode"] = mode, 
                             this.cmd["prjData"].prjIndex = mode
@@ -528,9 +483,6 @@
                         getCmdData: function(commandKey) {
                             return this.cmd[commandKey]
                         },
-
-
-
 
                         //  function is a setter used to update command-related data within the cmd object. 
                         // It takes two arguments: e, which is the key indicating which section of the command data to update, 
@@ -547,11 +499,15 @@
                         // sections of the command data structure.
 
                         setCmdData: function(key, data) {
-                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), this.cmd.textData.runSpeed = data.public.runSpeed, void(this.cmd.textData.txColor = data.public.txColor);
-                            this.cmd[key] = data, "textData" == key && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
+                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex 
+                                && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), 
+                                    this.cmd.textData.runSpeed = data.public.runSpeed, 
+                                    void(this.cmd.textData.txColor = data.public.txColor);
+                            this.cmd[key] = data, "textData" == key 
+                                && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
                         },
 
-                        //restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
+                        // restores the last used Bluetooth UUID configuration by reading a saved index and updating the relevant UUID arrays for device communication.
                         readSetting: function() {
                             switch (this.muuidSel = this.readData("lastsel") || 0, this.muuidSel) {
                                 case 0:
@@ -626,20 +582,9 @@
                         deleteData: function(e) {
                             uni.removeStorageSync(e)
                         },
-                        getLang: function() {
-                            var e = this.readData("lang");
-                            if (!(e in this.langs)) {
-                                var t = uni.getLocale();
-                                e = t in this.langs ? t : "en"
-                            }
-                            return this.rtl = -1 != ["ar"].indexOf(e), e
-                        },
-                        setLang: function(e) {
-                            var t = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
-                            t && this.saveData("lang", e), this.$i18n.locale = e, uni.setLocale(e)
-                        },
+
                         savelastsel: function(t) {
-                            this.saveData("lastsel", t), e("log", "Writelastsel ", t, " at App.vue:328")
+                            this.saveData("lastsel", t), logger("log", "Writelastsel ", t, " at App.vue:328")
                         },
 
                         // restores the last used Bluetooth device from persistent storage into the ble_device property.
@@ -649,86 +594,101 @@
                         saveDevice: function() {
                             this.saveData("device", this.ble_device)
                         },
+
                         clearDevice: function() {
                             this.ble_device = null, this.saveDevice()
                         },
+
                         setMainPage: function(mainPageComponent) {
                             this.mainPage = mainPageComponent
                         },
-                        createBLEConnection: function(t) {
+
+                        createBLEConnection: function(deviceId) {
                             var r = this,
-                                n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
-                            e("log", "this.bleConnectCount", this.bleConnectCount, " at App.vue:349"), this.bleConnectCount++, this.blu_connected = -1, uni.createBLEConnection({
-                                deviceId: t,
+                                callbackFunc = arguments.length > 1 && void 0 !== arguments[1] 
+                                    ? arguments[1] 
+                                    : null;
+ 
+                            this.blu_connected = -1, 
+                            uni.createBLEConnection({
+                                deviceId: deviceId,
                                 timeout: 6e3,
                                 success: function(e) {
-                                    n && n(!0)
+                                    callbackFunc && callbackFunc(!0)
                                 },
                                 fail: function(h) {
-                                    e("log", "createBLEConnection fail:", h, r.bleManualDisCnn, " at App.vue:359"), r.bleManualDisCnn ? n && n(!1) : r.doCloseBLEConnection(t, (function(e) {
-                                        n && n(!1)
+                                    r.bleManualDisCnn 
+                                        ? callbackFunc && callbackFunc(!1) 
+                                        : r.doCloseBLEConnection(deviceId, (function(e) {
+                                            callbackFunc && callbackFunc(!1)
                                     }))
                                 }
                             })
                         },
-                        doCloseBLEConnection: function(t) {
-                            var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
-                            e("log", "doCloseBLEConnection", t, " at App.vue:371"), this.bleManualDisCnn = !0, this.bleConnectCount--;
+
+                        doCloseBLEConnection: function(deviceId) {
+                            var callbackFunc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
+
+                            this.bleManualDisCnn = true;
                             var n = this,
                                 h = setTimeout((function() {
-                                    h = null, n.bleManualDisCnn = !1, r && r(!0)
+                                    h = null, n.bleManualDisCnn = !1, callbackFunc && callbackFunc(!0)
                                 }), 200);
                             uni.closeBLEConnection({
-                                deviceId: t,
+                                deviceId: deviceId,
                                 success: function(t) {
-                                    e("log", "doCloseBLEConnection success", t, " at App.vue:384"), h && r && r(!0)
+                                    logger("log", "doCloseBLEConnection success", t, " at App.vue:384"), h 
+                                        && callbackFunc && callbackFunc(!0)
                                 },
                                 fail: function(t) {
-                                    e("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h && r && r(!1)
+                                    logger("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h 
+                                        && callbackFunc && callbackFunc(!1)
                                 },
                                 complete: function() {
-                                    e("log", "doCloseBLEConnection complete", " at App.vue:394"), h && clearTimeout(h), this.bleManualDisCnn = !1
+                                    logger("log", "doCloseBLEConnection complete", " at App.vue:394"), h 
+                                        && clearTimeout(h), this.bleManualDisCnn = !1
                                 }
                             })
                         },
                         closeBLEConnection: function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            e("log", "closeBLEConnection", this.blu_connected, this.ble_device, " at App.vue:403");
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             if (this.blu_connected) {
-                                var r = this.ble_device;
-                                r ? this.doCloseBLEConnection(r.deviceId, (function(r) {
-                                    e("log", "do callback", " at App.vue:409"), t && t(r)
-                                })) : t && t(!0)
-                            } else t && t(!0)
+                                var device = this.ble_device;
+                                device ? this.doCloseBLEConnection(device.deviceId, (function(r) {
+                                    logger("log", "do callback", " at App.vue:409"), 
+                                    callbackFunc && callbackFunc(r)
+                                })) : callbackFunc && callbackFunc(!0)
+                            } else callbackFunc && callbackFunc(!0)
                         },
                         doCloseBluetoothAdapter: function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             this.bleOpenCloseCount--, this.BluetoothAdapterOpen = !1, uni.closeBluetoothAdapter({
                                 success: function(e) {
-                                    t && t(!0)
+                                    callbackFunc && callbackFunc(!0)
                                 },
                                 fail: function(r) {
-                                    e("log", "closeBluetoothAdapter fail", r, " at App.vue:424"), t && t(!1)
+                                    logger("log", "closeBluetoothAdapter fail", r, " at App.vue:424"), 
+                                    callbackFunc && callbackFunc(!1)
                                 }
                             })
                         },
                         closeBluetoothAdapter: function() {
-                            var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            this.BluetoothAdapterOpen ? this.doCloseBluetoothAdapter(e) : e && e(!0)
+                            var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            this.BluetoothAdapterOpen ? this.doCloseBluetoothAdapter(callbackFunc) : callbackFunc && callbackFunc(!0)
                         },
                         openBluetoothAdapter: function() {
                             var t = this,
-                                r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                            if (this.BluetoothAdapterOpen) r && r(!0);
+                                callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                            if (this.BluetoothAdapterOpen) callbackFunc && callbackFunc(!0);
                             else {
-                                e("log", "this.bleOpenCloseCount", this.bleOpenCloseCount, " at App.vue:440"), this.bleOpenCloseCount++;
+                                logger("log", "this.bleOpenCloseCount", this.bleOpenCloseCount, " at App.vue:440"), this.bleOpenCloseCount++;
                                 var n = this;
                                 uni.openBluetoothAdapter({
                                     success: function(e) {
-                                        t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), r && r(!0)
+                                        t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), callbackFunc && callbackFunc(!0)
                                     },
                                     fail: function(h) {
-                                        e("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), r && r(!1)
+                                        logger("log", "openBluetoothAdapter2", h, " at App.vue:450"), t.doCloseBluetoothAdapter(), 10001 === h.errCode && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
                                     }
                                 })
                             }
@@ -737,40 +697,40 @@
                             if (!this.BLEConnectionStateChangeSet) {
                                 this.BLEConnectionStateChangeSet = !0;
                                 var t = this;
-                                uni.onBLEConnectionStateChange((function(r) {
-                                    t.blu_data_cmdSending = !1, r.connected || (e("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"), t.bleManualDisCnn || t.doCloseBLEConnection(r.deviceId), t.ble_device && t.ble_device.deviceId != r.deviceId || (t.blu_data_canSend = !1, t.setBluCnnState(0, !0)))
+                                uni.onBLEConnectionStateChange((function(result) {
+                                    t.blu_data_cmdSending = !1, 
+                                    result.connected || (logger("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"), 
+                                    t.bleManualDisCnn || t.doCloseBLEConnection(result.deviceId), 
+                                    t.ble_device && t.ble_device.deviceId != result.deviceId || (t.blu_data_canSend = !1, 
+                                    t.setBluCnnState(0, !0)))
                                 }))
                             }
                         },
                         getSysinfo: function() {
-                            var e = uni.getSystemInfoSync();
-                            this.platform.system = e.platform, this.platform.app = !0;
-                            var t = plus.runtime.version,
-                                r = this.readData("appVersion");
-                            t != r && (this.saveData("appVersion", t), plus.runtime.restart()), this.screen_width_page = e.screenWidth;
-                            var n = Math.min(9 * e.screenHeight / 16, e.screenWidth);
-                            e.devicePixelRatio;
-                            this.screen_width_float = n / 750, this.screen_width_str = this.screen_width_float + "px", this.screen_height_page = e.safeArea.height
+                            var sysinfo = uni.getSystemInfoSync();
+                            this.screen_width_page = sysinfo.screenWidth;
+                            var n = Math.min(9 * sysinfo.screenHeight / 16, sysinfo.screenWidth);
+                            sysinfo.devicePixelRatio;
+                            this.screen_width_float = n / 750, 
+                            this.screen_width_str = this.screen_width_float + "px", 
+                            this.screen_height_page = sysinfo.safeArea.height
                         },
                         t: function(t) {
-                            return e("log", "app vue $t", t, this.$t(t), " at App.vue:505"), this.$t(t)
+                            return logger("log", "app vue $t", t, this.$t(t), " at App.vue:505"), this.$t(t)
                         }
                     },
                     onLaunch: function() {
-                        var e = this;
-                        this.globalData.$t = function(t) {
-                            return e.$t(t)
-                        }, this.globalData.$i18n = this.$i18n, this.globalData.deviceInfo = this.globalData.getDeviceInfo(), this.globalData.getSysinfo();
-                        var t = this.globalData.getLang();
-                        this.globalData.setLang(t, !1)
+                        this.globalData.getDeviceInfo(),
+                        this.globalData.getSysinfo();
                     },
                     onShow: function() {
-                        this.globalData.appHide = !1, this.globalData.blu_connected || null != this.globalData.mainPage && this.globalData.mainPage.gotoMain(!0)
+                        this.globalData.blu_connected || null != this.globalData.mainPage && this.globalData.mainPage.gotoMain(true)
                     },
                     onHide: function() {
-                        var e = this;
-                        this.globalData.appHide = !0, this.globalData.img_selecting || this.globalData.closeBLEConnection((function(t) {
-                            e.globalData.blu_state = 0, e.globalData.setBluCnnState(0, !1), e.globalData.closeBluetoothAdapter()
+                        this.globalData.closeBLEConnection((function(t) {
+                            this.globalData.blu_state = 0,
+                            this.globalData.setBluCnnState(0, false), 
+                            this.globalData.closeBluetoothAdapter()
                         }))
                     }
                 };
@@ -793,34 +753,11 @@
             // Stub implementation of the uni module for testing/build purposes
             const uni = {
                 getSystemInfoSync: () => ({ statusBarHeight: 20 }),
-                setKeepScreenOn: () => { },
-                getLocale: () => 'en',
-                setLocale: () => { },
-                showLoading: (message) => { },
-                hideLoading: () => { },
-                showToast: () => { },
-                showModal: () => { },
-                createSelectorQuery: () => ({ in: () => ({ select: () => ({ boundingClientRect: (cb) => ({ exec: () => cb({ width: 100, height: 100 }) }) }) }) }),
-                createCanvasContext: () => ({
-                    setFillStyle: () => { },
-                    beginPath: () => { },
-                    moveTo: () => { },
-                    arc: () => { },
-                    rect: () => { },
-                    fill: () => { },
-                    setFontSize: () => { },
-                    setShadow: () => { },
-                    fillText: () => { },
-                    measureText: (text) => ({ width: text.length * 10 }),
-                    draw: () => { },
-                    createLinearGradient: () => ({ addColorStop: () => { } })
-                }),
                 getStorageSync: () => undefined,
                 setStorageSync: () => { },
                 removeStorageSync: () => { },
                 reLaunch: () => { },
                 navigateTo: () => { },
-                nextTick: (cb) => cb(),
                 getCurrentPages: () => [{ route: 'pages/main/main' }],
             };
             r.default = uni;
