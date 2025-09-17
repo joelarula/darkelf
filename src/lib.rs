@@ -4,3 +4,7 @@ pub mod winblue;
 pub mod util;
 pub mod dmx;
 pub mod devices;
+pub mod command;
+pub mod mock;
+pub mod controller;
+pub mod model;

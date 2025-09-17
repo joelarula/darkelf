@@ -1,3 +1,5 @@
+// Mock implementation of BlueController for testing
+
 use std::error::Error;
 
 use std::future::Future;

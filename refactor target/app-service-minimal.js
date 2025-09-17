@@ -971,6 +971,860 @@
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
+       "deviceCommandUtils ": function(e, t, r) {
+            (function(t) {
+                var n = r("arrayConversionHelper");
+
+                function createIteratorHelper(e, t) {
+                    var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
+                    if (!r) {
+                        if (Array.isArray(e) || (r = function(e, t) {
+                                if (!e) return;
+                                if ("string" === typeof e) return arrayLikeToArray(e, t);
+                                var r = Object.prototype.toString.call(e).slice(8, -1);
+                                "Object" === r && e.constructor && (r = e.constructor.name);
+                                if ("Map" === r || "Set" === r) return Array.from(e);
+                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return arrayLikeToArray(e, t)
+                            }(e)) || t && e && "number" === typeof e.length) {
+                            r && (e = r);
+                            var n = 0,
+                                h = function() {};
+                            return {
+                                s: h,
+                                n: function() {
+                                    return n >= e.length ? {
+                                        done: !0
+                                    } : {
+                                        done: !1,
+                                        value: e[n++]
+                                    }
+                                },
+                                e: function(e) {
+                                    throw e
+                                },
+                                f: h
+                            }
+                        }
+                        throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
+                    }
+                    var i, c = !0,
+                        o = !1;
+                    return {
+                        s: function() {
+                            r = r.call(e)
+                        },
+                        n: function() {
+                            var e = r.next();
+                            return c = e.done, e
+                        },
+                        e: function(e) {
+                            o = !0, i = e
+                        },
+                        f: function() {
+                            try {
+                                c || null == r.return || r.return()
+                            } finally {
+                                if (o) throw i
+                            }
+                        }
+                    }
+                }
+
+                function arrayLikeToArray(e, t) {
+                    (null == t || t > e.length) && (t = e.length);
+                    for (var r = 0, n = new Array(t); r < t; r++) n[r] = e[r];
+                    return n
+                }
+
+                function toFixedWidthHex(e) {
+                    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 4,
+                        r = Math.round(e);
+                    r < 0 && (r = 32768 | -r);
+                    var n = ("0000" + r.toString(16)).slice(-t);
+                    return n
+                }
+
+                function combineNibbles(e, t) {
+                    var r = e << 4 | 15 & t;
+                    return r
+                }
+
+                function splitIntoSegmentsBySumLimit(e, t) {
+                    for (var r = 0, n = [], h = 0, a = 0, i = 0; i < e.length; i++)
+                        if (r + e[i] <= t) a += 1, n.push([h, a]), r += e[i];
+                        else {
+                            tempWidth = r;
+                            while (1) {
+                                if (tempWidth <= t) {
+                                    a += 1, n.push([h, a]), r = tempWidth + e[i];
+                                    break
+                                }
+                                if (tempWidth > t && tempWidth - e[h] < t) {
+                                    a += 1, n.push([h, a]), r += e[i];
+                                    break
+                                }
+                                tempWidth -= e[h], r -= e[h], h += 1, a -= 1
+                            }
+                        } return n
+                }
+
+                function generateSegmentedLayoutData(e, t) {
+                    for (var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0, n = -1, h = [], a = [], c = 200, s = 0, l = 0, p = 0; p < e.length; p++) n != e[p][0] && (n = e[p][0], h.push(e[p][2] * t), s += e[p][2], a.push(e[p][3] * t), l += e[p][3]);
+                    if (127 == r || 127 == r) {
+                        for (var d = 0, b = [], g = 0; g < 9; g++) {
+                            n++;
+                            var j = [{
+                                x: 0,
+                                y: l / 2 + c / 2 + d,
+                                z: 0
+                            }];
+                            b.push([n, j, c, c]), d += c, a.push(c * t)
+                        }
+                        for (var x = splitIntoSegmentsBySumLimit(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += toFixedWidthHex(x[F][0], 2), f += toFixedWidthHex(x[F][1], 2);
+                        return [e.concat(b), V, f, -d * t / 2]
+                    }
+                    for (var k = 0, m = [], P = 0; P < 9; P++) {
+                        n++;
+                        var u = [{
+                            x: s / 2 + c / 2 + k,
+                            y: 0,
+                            z: 0
+                        }];
+                        m.push([n, u, c, c]), k += c, h.push(c * t)
+                    }
+                    for (var X = splitIntoSegmentsBySumLimit(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
+                    return [e.concat(m), N, H, -k * t / 2]
+                }
+
+                function encodeLayoutToCommandData(e, r, n, h) {
+                    var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
+                    if (0 == e.length) return null;
+                    var o = 0,
+                        l = 0,
+                        p = -1,
+                        d = "",
+                        b = "",
+                        g = toFixedWidthHex(a, 2),
+                        j = "",
+                        x = "",
+                        V = 8,
+                        f = .5,
+                        F = V,
+                        k = 0,
+                        m = "00";
+                    m = n.textDecimalTime ? toFixedWidthHex(Math.floor(10 * r), 2) : toFixedWidthHex(Math.floor(r), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
+                    var P = !1;
+                    if (P) t("error", "20241210 - \u5f53\u524d\u4ee3\u7801\u4e3a\u5750\u6807\u8c03\u5f0f\u6a21\u5f0f\uff0c\u4e0d\u53ef\u53d1\u7248", " at utils/funcTools.js:345"), xyss = e, se1 = 0, se2 = 0, xOffset = 0;
+                    else {
+                        var u = generateSegmentedLayoutData(e, f, h);
+                        xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
+                    }
+                    for (var X = 0; X < xyss.length; X++) {
+                        p != xyss[X][0] && (p = xyss[X][0], l > 0 && (j += toFixedWidthHex(k, 2), k = 0), l++, x += toFixedWidthHex(Math.round(Number(xyss[X][2] * f)), 2), V >= 8 && xyss[X][1].length > 1 && F++), F >= 8 && (F = 1);
+                        var N = xyss[X][1];
+                        k += N.length;
+                        for (var H = 0; H < N.length; H++) {
+                            o++;
+                            var z = N[H],
+                                Q = Math.round(Number(z.x * f) + xOffset),
+                                R = Math.round(Number(z.y * f)),
+                                v = Number(z.z),
+                                I = F;
+                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), n.textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + toFixedWidthHex(Q) + toFixedWidthHex(R) + toFixedWidthHex(combineNibbles(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
+                        }
+                    }
+                    return P && t("log", "\u6587\u5b57\u5750\u6807(\u7ed8\u56fe\u8f6f\u4ef6\u683c\u5f0f)", b, " at utils/funcTools.js:408"), j += toFixedWidthHex(k, 2), 0 == o ? null : {
+                        cnt: o,
+                        charCount: l,
+                        cmd: d,
+                        charWidthCmd: x,
+                        charPointCmd: j,
+                        se1: se1,
+                        se2: se2,
+                        ver: g,
+                        time: m
+                    }
+                }
+
+                function padHexStringToByteLength(e, t) {
+                    for (var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "00", n = Math.floor(e.length / 2), h = e, a = n; a < t; a++) h += r;
+                    return h
+                }
+
+                function getBitmaskAndIndex(e) {
+                    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : -1,
+                        r = e - 1;
+                    t > -1 && (r = t - e);
+                    var n = Math.trunc(r / 16),
+                        h = r % 16,
+                        a = Math.pow(2, h),
+                        i = 0;
+                    return i = t > -1 ? 65535 & a : 65535 & ~a, {
+                        idx: n,
+                        val: i,
+                        decBy: t
+                    }
+                }
+
+                function applyBitmaskUpdates(e, t) {
+                    var r, a = n(t),
+                        i = createIteratorHelper(e);
+                    try {
+                        for (i.s(); !(r = i.n()).done;) {
+                            var c = r.value,
+                                o = getBitmaskAndIndex(c, -1);
+                            if (o.idx < a.length) {
+                                var s = a[o.idx] & o.val;
+                                if (a[o.idx] != s) {
+                                    a[o.idx] = s;
+                                    var l = getBitmaskAndIndex(c, 50);
+                                    l.idx < a.length && (a[l.idx] = a[l.idx] | l.val)
+                                }
+                            }
+                        }
+                    } catch (p) {
+                        i.e(p)
+                    } finally {
+                        i.f()
+                    }
+                    return a
+                }
+
+                function getFeatureValue(e, t) {
+                    if (e.hasOwnProperty("features")) {
+                        var r = e.features;
+                        if (r.hasOwnProperty(t)) return r[t]
+                    }
+                    return null
+                }
+
+                function encodeDrawPointCommand(e, t, r, n) {
+                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += toFixedWidthHex(t.cnfValus[s], 2) : 13 == s ? getFeatureValue({
+                        features: r
+                    }, "picsPlay") ? o += toFixedWidthHex(-1 == n ? 10 * t.cnfValus[12] : 10 * n, 2) : o += "00" : 14 == s && r.textStopTime ? o += toFixedWidthHex(t.txPointTime, 2) : o += "00";
+                    if ("00" == h) {
+                        o += h;
+                        for (var l = 0; l < e.length; l++) {
+                            var p = e[l],
+                                d = p[3];
+                            r.textStopTime && (0 == p[2] ? d = 2 : (l < e.length - 1 && 0 == e[l + 1][2] || l == e.length - 1) && (d = 3)), a = a + toFixedWidthHex(p[0].toFixed()) + toFixedWidthHex(p[1].toFixed()) + toFixedWidthHex(combineNibbles(p[2], d), 2)
+                        }
+                        a = o + toFixedWidthHex(e.length) + a
+                    } else o += h, a = o;
+                    return a
+                }
+
+                function drawPointStrToCmd(e, t) {
+                    var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null,
+                        n = "";
+                    return n = null == r ? t.picsPlay ? "f0f1f200" + e + "f4f5f6f7" : "f0f1f2f3" + e + "f4f5f6f7" : "f0f1f2" + toFixedWidthHex(r, 2) + e + "f4f5f6f7", n.toUpperCase()
+                }
+                e.exports = {
+                    test: function(e) {
+                        return "hello---" + e
+                    },
+                    inArray: function(e, t, r) {
+                        for (var n = 0; n < e.length; n++)
+                            if (e[n][t] === r) return n;
+                        return -1
+                    },
+                    ab2hex: function(e) {
+                        var t = Array.prototype.map.call(new Uint8Array(e), (function(e) {
+                            return ("00" + e.toString(16)).slice(-2) + ""
+                        }));
+                        return t.join("").toUpperCase()
+                    },
+                    ab2Str: function(e) {
+                        var t = new Uint8Array(e),
+                            r = String.fromCharCode.apply(null, t);
+                        return r
+                    },
+                    stringToBytes: function(e) {
+                        for (var t, r, n = [], h = 0; h < e.length; h++) {
+                            t = e.charCodeAt(h), r = [];
+                            do {
+                                r.push(255 & t), t >>= 8
+                            } while (t);
+                            n = n.concat(r.reverse())
+                        }
+                        return n
+                    },
+                    getXtsCmd: function(e) {
+                        for (var t = e.split("\n"), r = 0, n = "", h = 0; h < t.length; h++) {
+                            var a = t[h];
+                            if ("" != a) {
+                                r++;
+                                var i = a.split(","),
+                                    c = Number(i[0]) + 400,
+                                    o = Number(i[1]) + 400;
+                                n = n + ("00" + c.toString(16)).slice(-4) + ("00" + o.toString(16)).slice(-4) + ("00" + Number(i[2]).toString(16)).slice(-2) + ("00" + Number(i[3]).toString(16)).slice(-2)
+                            }
+                        }
+                        return 0 == r ? "" : (n = "55667788" + ("00" + r.toString(16)).slice(-2) + n + "88776655", n)
+                    },
+                    getXysCmd: function(e) {
+                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
+                            r = 0,
+                            n = 0,
+                            h = -1,
+                            a = "",
+                            o = "",
+                            l = "",
+                            p = "",
+                            d = toFixedWidthHex(t, 2),
+                            b = 8,
+                            g = .5,
+                            j = b,
+                            x = 0;
+                        b >= 8 && (j = 0);
+                        var V = generateSegmentedLayoutData(e, g);
+                        xyss = V[0], se = V[1] + V[2], xOffset = V[3];
+                        for (var f = 0; f < xyss.length; f++) {
+                            h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += toFixedWidthHex(x, 2), x = 0), n++, p += toFixedWidthHex(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
+                            var F = xyss[f][1];
+                            x += F.length;
+                            for (var k = 0; k < F.length; k++) {
+                                r++;
+                                var m = F[k],
+                                    P = Math.round(Number(m.x * g) + xOffset),
+                                    u = Math.round(Number(m.y * g)),
+                                    X = Number(m.z),
+                                    N = j;
+                                0 == k && (N = 0, X = 1), k == F.length - 1 && (X = 1), 1 == F.length && (X = Number(m.z)), a = a + toFixedWidthHex(P) + toFixedWidthHex(u) + toFixedWidthHex(combineNibbles(N, X), 2), o = o + "\n" + P + "," + u + ",(" + N + "," + X + "),"
+                            }
+                        }
+                        return l += toFixedWidthHex(x, 2), 0 == r ? "" : (a = "A0A1A2A3" + toFixedWidthHex(r) + toFixedWidthHex(n, 2) + a + p + l + se + d + "A4A5A6A7", a.toUpperCase())
+                    },
+                    getXysCmdArr: function(e, r, n) {
+                        for (var h = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0, a = [], c = 0; c < e.length; c++) {
+                            var o = e[c].xys,
+                                s = n;
+                            255 == n && null != e[c].XysRight ? o = e[c].XysRight : 127 == n && null != e[c].XysUp ? o = e[c].XysUp : 128 == n && null != e[c].XysDown ? o = e[c].XysDown : s = 0;
+                            var p = encodeLayoutToCommandData(o, e[c].time, r, s, h);
+                            null != p && a.push(p)
+                        }
+                        if (0 == a.length) return "";
+                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt), g += toFixedWidthHex(a[P].charCount, 2), j += a[P].cmd, x += a[P].charWidthCmd, V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
+                        t("log", d, b, " at utils/funcTools.js:308");
+                        var u = toFixedWidthHex(a.length, 2),
+                            X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
+                        return X.toUpperCase()
+                    },
+                    getCmdStr: function(commandConfig) {
+                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
+                            r = toFixedWidthHex(commandConfig.curMode, 2),
+                            h = toFixedWidthHex(0, 2),
+                            a = toFixedWidthHex(commandConfig.textData.txColor, 2),
+                            c = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
+                            o = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
+                            s = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2),
+                            l = "00",
+                            p = toFixedWidthHex(commandConfig.textData.txDist / 100 * 255, 2),
+                            d = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2),
+                            j = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2),
+                            x = "ffffffff0000";
+                        if (null != t) {
+                            if (x = "", t.hasOwnProperty("groupList"))
+                                for (var V = 0; V < t.groupList.length; V++) x += toFixedWidthHex(t.groupList[V].color, 2);
+                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(t, "textStopTime") && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+                        }
+                        var f = "",
+                            F = commandConfig.prjData.prjItem;
+                        for (var k in F) {
+                            var m = F[k],
+                                P = 0 == m.pyMode ? 0 : 128;
+                            0 != P && null != t && t.hasOwnProperty("prjParm") && t.prjParm.prjIndex == k && (3 == k && getFeatureValue(t, "animationFix") && [2, 4, 11, 13, 19].includes(t.prjParm.selIndex) ? P |= 50 - t.prjParm.selIndex : P |= t.prjParm.selIndex);
+                            var u = toFixedWidthHex(P, 2),
+                                X = "",
+                                N = n(m.prjSelected);
+                            3 == k && getFeatureValue(t, "animationFix") && (N = applyBitmaskUpdates([2, 4, 11, 13, 19], N));
+                            for (var H = 0; H < N.length; H++) X = toFixedWidthHex(N[H]) + X;
+                            f = f + u + X
+                        }
+                        var z = "";
+                        getFeatureValue(t, "arbPlay") && (z += toFixedWidthHex(commandConfig.textData.runDir, 2));
+                        for (var Q = "", R = Math.floor(z.length / 2), v = R; v < 44; v++) Q += "00";
+                        var I = "c0c1c2c3" + r + h + a + c + o + s + l + p + d + j + x + f + z + Q + "c4c5c6c7";
+                        return I.toUpperCase()
+                    },
+                    getShakeCmdStr: function(e) {
+                        var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
+                            n = "";
+                        if (getFeatureValue(r, "xyCnf")) {
+                            n = "00", r.hasOwnProperty("xyCnfSave") && !r.xyCnfSave && (n = "ff");
+                            var a = e.subsetData.xyCnf;
+                            a.auto ? n += toFixedWidthHex(a.autoValue, 2) : n += toFixedWidthHex(255 - a.autoValue, 2), n += toFixedWidthHex(a.phase, 2);
+                            var c, o = createIteratorHelper(a.xy);
+                            try {
+                                for (o.s(); !(c = o.n()).done;) {
+                                    var s = c.value;
+                                    n += toFixedWidthHex(s.value, 2)
+                                }
+                            } catch (d) {
+                                o.e(d)
+                            } finally {
+                                o.f()
+                            }
+                            t("log", "xyCnf", JSON.stringify(a), " at utils/funcTools.js:551")
+                        }
+                        n = padHexStringToByteLength(n, 16, "00");
+                        var l = "10111213" + n + "14151617";
+                        return l.toUpperCase()
+                    },
+                    getDrawPointStr: encodeDrawPointCommand,
+                    getDrawCmdStr: function(e, t, r) {
+                        var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : "00",
+                            h = encodeDrawPointCommand(e, t, r, -1, n);
+                        return drawPointStrToCmd(h, r)
+                    },
+                    drawPointStrToCmd: drawPointStrToCmd,
+                    getPisCmdStr: function(e, r) {
+                        for (var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, h = r.cnfValus, a = "01", c = toFixedWidthHex(e, 2), o = a + c, s = 0; s <= 12; s++) o += toFixedWidthHex(h[s], 2);
+                        var l = toFixedWidthHex(10 * r.playTime, 2);
+                        if (o += l, getFeatureValue(n, "xyCnf")) {
+                            for (var d = 14; d <= 18; d++) o += toFixedWidthHex(h[d], 2);
+                            t("log", "13-17", h[14], h[15], h[16], h[17], h[18], " at utils/funcTools.js:516"), o = padHexStringToByteLength(o, 24, "00")
+                        } else o = padHexStringToByteLength(o, 18, "00");
+                        var b = "d0d1d2d3" + o + "d4d5d6d7";
+                        return b.toUpperCase()
+                    },
+                    getPisListCmdStr: function(e) {
+                        for (var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null, n = toFixedWidthHex(128 | e.length, 2), h = "FF", a = "", c = 0; c < e.length; c++) {
+                            for (var o = "", s = e[c], l = 0; l <= 12; l++) o += toFixedWidthHex(s.cnfValus[l], 2);
+                            var d = toFixedWidthHex(10 * s.playTime, 2);
+                            if (o += d, getFeatureValue(r, "xyCnf")) {
+                                for (var b = s.cnfValus, j = 14; j <= 18; j++) o += toFixedWidthHex(b[j], 2);
+                                t("log", "pgs 14-18", b[14], b[15], b[16], b[17], b[18], " at utils/funcTools.js:488"), o = padHexStringToByteLength(o, 21, "00")
+                            } else o = padHexStringToByteLength(o, 15, "00");
+                            a = a + o + h
+                        }
+                        return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
+                    },
+                    getSettingCmd: function(settingData) {
+                        var t = toFixedWidthHex(settingData.valArr[0]),
+                            r = toFixedWidthHex(settingData.ch, 2),
+                            n = toFixedWidthHex(settingData.valArr[1], 2),
+                            h = toFixedWidthHex(settingData.xy, 2),
+                            a = toFixedWidthHex(settingData.valArr[2], 2),
+                            c = toFixedWidthHex(settingData.valArr[3], 2),
+                            o = toFixedWidthHex(settingData.valArr[4], 2),
+                            s = toFixedWidthHex(settingData.light, 2),
+                            l = toFixedWidthHex(settingData.cfg, 2);
+                        0 == settingData.cfg && (a = "FF", c = "FF", o = "FF");
+                        var p = toFixedWidthHex(settingData.lang, 2),
+                            d = "00010203" + t + r + n + h + a + c + o + s + l + p + "000000000004050607";
+                        return d.toUpperCase()
+                    },
+                    getCmdValue: function(startPattern , endPattern , inputString ) {
+                        var matcher = new RegExp(startPattern  + "(.+?)" + endPattern ),
+                            matchResult = matcher.exec(inputString );
+                        return null !== matchResult ? matchResult[1] : (t("log", "No matching string found that meets the requirements", startPattern , endPattern , " at utils/funcTools.js:7"), "")
+                    },
+                    getQueryCmd: function(e) {
+                        for (var t = "", r = 0; r < e.length; r++) t += toFixedWidthHex(e[r], 2);
+                        var n = "E0E1E2E3" + t + "E4E5E6E7";
+                        return n.toUpperCase()
+                    },
+                    getDrawLineStr: function(e, t) {
+                        for (var r = "", n = 0; n < e.length; n++) {
+                            var h = e[n];
+                            r = r + toFixedWidthHex(h.pt.x) + toFixedWidthHex(h.pt.y) + toFixedWidthHex(combineNibbles(h.color, h.z), 2)
+                        }
+                        return r = "10111213" + toFixedWidthHex(t) + toFixedWidthHex(e.length, 2) + r + "14151617", r.toUpperCase()
+                    },
+                    getFeaturesValue: getFeatureValue
+                }
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+  
+        bleDeviceControlUtils : function(e, t, r) {
+            (function(t) {
+                var appStateManager = getApp(),
+                    deviceCommandUtils = r("deviceCommandUtils ");
+
+                function extractHexValue (startByte , byteLength , hexString) {
+                    var n = 2 * (startByte  - 1),
+                        h = n + 2 * byteLength ,
+                        a = hexString.slice(n, h),
+                        i = parseInt(a, 16);
+                    return i
+                }
+
+                function clampOrDefault(value, min, max, defaultValue ) {
+                    return isNaN(value) || value < min || value > max ? defaultValue  : value
+                }
+
+                // The processReceivedDataFragment function is designed to handle incoming fragments of data, 
+                // likely from a Bluetooth device, and assemble them into complete messages based on specific
+                //  start and end markers. It works by maintaining a buffer, blu_rec_content, in the global 
+                // application state (appStateManager.globalData). When a new fragment (dataFragment) arrives,
+                //  the function checks if the buffer is null. If so, it only initializes the buffer if the 
+                // fragment starts with the expected start marker "E0E1E2E3". Otherwise, it appends the new 
+                // fragment to the existing buffer.
+
+                // Once the buffer is updated, the function checks if it is non-empty. It then searches for 
+                // the last occurrence of the start marker ("E0E1E2E3") and the end marker ("E4E5E6E7") w
+                // ithin the buffer. If the end marker is found at the very end of the buffer, 
+                // it extracts the complete message from the start marker to the end marker, 
+                // calls a callback (setRecCallBack) to process the complete message, 
+                // and clears the buffer. If the end marker is found elsewhere, 
+                // it keeps only the data from the last start marker onward, 
+                // likely waiting for more data to complete the message. Finally,
+                //  it updates the buffer in the global state with the remaining or new data.
+                function processReceivedDataFragment(dataFragment) {
+                    var receiveBuffer = appStateManager.globalData.blu_rec_content;
+                    if (null == receiveBuffer ? dataFragment.startsWith("E0E1E2E3") && (receiveBuffer = dataFragment) : receiveBuffer += dataFragment, "" != receiveBuffer) {
+                        var r = receiveBuffer.lastIndexOf("E0E1E2E3"),
+                            h = receiveBuffer.lastIndexOf("E4E5E6E7"),
+                            currentMessage = receiveBuffer;
+                        h > 0 && (h == receiveBuffer.length - 8 ? (currentMessage = receiveBuffer.slice(r, h + 8), appStateManager.globalData.setRecCallBack(currentMessage), currentMessage = null) : currentMessage = receiveBuffer.slice(r)), appStateManager.globalData.blu_rec_content = currentMessage
+                    }
+                }
+
+                function discoverAndConfigureCharacteristics(deviceId , serviceId , retryCount) {
+                    var callback  = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                    if (appStateManager.globalData.blu_connect_stop) callback  && callback (!1);
+                    else {
+                        var i = !1,
+                            c = "",
+                            s = -1;
+                        uni.getBLEDeviceCharacteristics({
+                            deviceId: deviceId ,
+                            serviceId: serviceId ,
+                            success: function(h) {
+                                s = 0, t("log", "getBLEDeviceCharacteristics success", h.characteristics, " at utils/bluCtrl.js:173");
+                                for (var o = function(o) {
+                                        var characteristicInfo = h.characteristics[o];
+                                        characteristicInfo.properties.read && (c = characteristicInfo.uuid, i && uni.readBLECharacteristicValue({
+                                            deviceId: deviceId ,
+                                            serviceId: serviceId ,
+                                            characteristicId: characteristicInfo.uuid,
+                                            success: function(e) {
+                                                t("log", "readBLECharacteristicValue1:", e, " at utils/bluCtrl.js:184")
+                                            },
+                                            fail: function(e) {
+                                                t("log", "readBLECharacteristicValue1-fail:", e, " at utils/bluCtrl.js:187")
+                                            }
+                                        })), characteristicInfo.properties.write && -1 != appStateManager.globalData.mtxduuids.indexOf(characteristicInfo.uuid) && (appStateManager.globalData.ble_device.characteristicId = characteristicInfo.uuid, appStateManager.globalData.ble_device.serviceId = serviceId , s++), (characteristicInfo.properties.notify || characteristicInfo.properties.indicate) && -1 != appStateManager.globalData.mrxduuids.indexOf(characteristicInfo.uuid) && uni.notifyBLECharacteristicValueChange({
+                                            deviceId: deviceId ,
+                                            serviceId: serviceId ,
+                                            characteristicId: characteristicInfo.uuid,
+                                            state: !0,
+                                            success: function(h) {
+                                                appStateManager.globalData.blu_readyRec = !0, i = !0, "" != c && uni.readBLECharacteristicValue({
+                                                    deviceId: deviceId ,
+                                                    serviceId: serviceId ,
+                                                    characteristicId: characteristicInfo.uuid,
+                                                    success: function(e) {
+                                                        t("log", "readBLECharacteristicValue2:", e, " at utils/bluCtrl.js:217")
+                                                    },
+                                                    fail: function(e) {
+                                                        t("log", "readBLECharacteristicValue2-fail:", e, " at utils/bluCtrl.js:220")
+                                                    }
+                                                }), appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0)
+                                            },
+                                            fail: function(e) {
+                                                s > 0 && (appStateManager.globalData.blu_readyRec = !0, i = !0, appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0))
+                                            }
+                                        })
+                                    }, l = 0; l < h.characteristics.length; l++) o(l)
+                            },
+                            fail: function(e) {
+                                0 == retryCount && appStateManager.globalData.showModalTips(translate("Connection failed") + "-1002"), s = -2
+                            },
+                            complete: function() {
+                                s <= 0 && (retryCount > 0 ? setTimeout((function() {
+                                    discoverAndConfigureCharacteristics(deviceId , serviceId , --retryCount, callback )
+                                }), 1500) : (uni.hideLoading(), callback  && callback (!1), appStateManager.globalData.showModalTips(translate("Connection failed") + "-1001")))
+                            }
+                        })
+                    }
+                }
+
+                function setupCharacteristicNotification(deviceId , serviceId ) {
+                    var callback  = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    appStateManager.globalData.blu_connect_stop ? callback  && callback (!1) : (uni.onBLECharacteristicValueChange((function(characteristicEvent) {
+                        var dataBytes = new Uint8Array(characteristicEvent.value),
+                            valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
+                        deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
+                    })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
+                }
+
+                function discoverAndSetupServices(e, r) {
+                    var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 3,
+                        a = r.callback;
+                    if (appStateManager.globalData.blu_connect_stop) a && a(!1);
+                    else if (h <= 0) a && a(!1);
+                    else {
+                        appStateManager.globalData.blu_readyRec = !1;
+                        var i = e,
+                            c = !1;
+                        uni.getBLEDeviceServices({
+                            deviceId: i,
+                            success: function(e) {
+                                t("log", "services: ", e, " at utils/bluCtrl.js:301");
+                                for (var r = 0; r < e.services.length; r++)
+                                    if (-1 != appStateManager.globalData.mserviceuuids.indexOf(e.services[r].uuid)) {
+                                        c = !0, setupCharacteristicNotification(i, e.services[r].uuid, a);
+                                        break
+                                    }
+                            },
+                            fail: function(e) {
+                                t("log", "getBLEDeviceServices fail:", JSON.stringify(e), " at utils/bluCtrl.js:311")
+                            },
+                            complete: function() {
+                                c || setTimeout((function() {
+                                    discoverAndSetupServices(i, r, --h)
+                                }), 1e3)
+                            }
+                        })
+                    }
+                }
+
+                function connectToDevice(device ) {
+                    var showMsg  = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+                        connectionCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    if (appStateManager.globalData.blu_connect_stop) connectionCallback && connectionCallback(!1);
+                    else if (void 0 != device  && "" != device  && null != device ) {
+                        appStateManager.globalData.readSetting(), appStateManager.globalData.blu_readyRec = !1;
+                        var h = device .deviceId;
+                        appStateManager.globalData.createBLEConnection(h, (function(e) {
+                            e ? (appStateManager.globalData.setBluCnnState(1, !1), discoverAndSetupServices(h, {
+                                showMsg: showMsg ,
+                                callback: connectionCallback
+                            })) : (uni.hideLoading(), showMsg  && appStateManager.globalData.showModalTips(translate("Connection failed"), !0), connectionCallback && connectionCallback(!1))
+                        }))
+                    } else connectionCallback && connectionCallback(!1)
+                }
+
+                function sendBleDataBuffers(sendContext) {
+                    var lastSendTimestamp  = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
+                        sendInterval = 20,
+                        a = appStateManager.globalData.blu_data_send_interval;
+                    if (appStateManager.globalData.platform.app && "android" == appStateManager.globalData.platform.system && (sendInterval = 40), sendContext.showMsg) {
+                        sendContext.count;
+                        var i = Math.floor((sendContext.count - sendContext.sendBufs.length) / sendContext.count * 100),
+                            c = (new Date).getTime();
+                        (100 == i || c - appStateManager.globalData.blu_data_lastShowTime > 200) && (appStateManager.globalData.blu_data_lastShowTime = c, sendContext.callBack ? (uni.hideLoading(), sendContext.callBack(0, i)) : uni.showLoading({
+                            mask: !0
+                        }))
+                    }
+                    if (0 != sendContext.sendBufs.length) {
+                        var nowTimestamp = (new Date).getTime();
+                        lastSendTimestamp  = 0 == lastSendTimestamp  ? nowTimestamp : lastSendTimestamp ;
+                        var timeUntilNextSend = sendInterval - (nowTimestamp - lastSendTimestamp ),
+                            delayBeforeSend  = timeUntilNextSend > 0 ? timeUntilNextSend : 1;
+                        setTimeout((function() {
+                            var currentBuffer  = sendContext.sendBufs.shift();
+                            "split" != currentBuffer  ? (t("log", "send date---", (new Date).getTime() / 1e3, " at utils/bluCtrl.js:441"), uni.writeBLECharacteristicValue({
+                                deviceId: sendContext.device.deviceId,
+                                serviceId: sendContext.device.serviceId,
+                                characteristicId: sendContext.device.characteristicId,
+                                value: currentBuffer ,
+                                success: function(t) {
+                                    sendBleDataBuffers(sendContext, nowTimestamp)
+                                },
+                                fail: function(r) {
+                                    t("log", "writeBLECharacteristicValue fail", r, " at utils/bluCtrl.js:454"), setTimeout((function() {
+                                        sendContext.fail(r)
+                                    }), sendInterval)
+                                },
+                                complete: function(e) {}
+                            })) : setTimeout((function() {
+                                t("log", "sleep---", a, sendInterval, " at utils/bluCtrl.js:436"), sendBleDataBuffers(sendContext, nowTimestamp)
+                            }), a - (nowTimestamp - lastSendTimestamp ))
+                        }), delayBeforeSend )
+                    } else setTimeout((function() {
+                        sendContext.success({})
+                    }), sendInterval)
+                }
+
+                function sendBleBuffersPromise(dataBuffers, deviceInfo, showProgress) {
+                    var progressCallback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                    return new Promise((function(h, a) {
+                        sendBleDataBuffers({
+                            device: deviceInfo,
+                            sendBufs: dataBuffers,
+                            count: dataBuffers.length,
+                            showMsg: showProgress,
+                            callBack: progressCallback,
+                            success: function(e) {
+                                h(e)
+                            },
+                            fail: function(e) {
+                                a(e)
+                            }
+                        })
+                    }))
+                }
+
+                function translate(e) {
+                    return appStateManager.globalData.t(e)
+                }
+
+                function logHexBytes(byteArray) {
+                    for (var r = "", n = 0; n < byteArray.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + byteArray[n]) : r += byteArray[n];
+                    t("log", r, " at utils/bluCtrl.js:494")
+                }
+
+                function splitHexStringToBuffers(hexString) {
+                    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 20;
+                    if ("" == hexString) return [];
+                    var r = new Uint8Array(hexString.match(/[\da-f]{2}/gi).map((function(e) {
+                        return parseInt(e, 16)
+                    })));
+                    if (null == r) return [];
+                    var n = r.buffer.byteLength,
+                        h = 0,
+                        a = [];
+                    while (n > 0) {
+                        var i = n % t,
+                            c = void 0;
+                        n >= t ? (c = new Uint8Array(r.subarray(h, h + t)).buffer, n -= t, h += t) : (c = new Uint8Array(r.subarray(h, h + i)).buffer, n -= i, h += i), a.push(c)
+                    }
+                    return a
+                }
+
+                function hexStringToBufferSequence(hexString) {
+                    var hexSegments = hexString.toUpperCase().split("Z");
+                    t("log", hexSegments, " at utils/bluCtrl.js:530");
+                    for (var bufferList = [], h = 0; h < hexSegments.length; h++) {
+                        t("log", h, hexSegments[h], " at utils/bluCtrl.js:533");
+                        var a = splitHexStringToBuffers(hexSegments[h]);
+                        a.length > 0 && (bufferList.length > 0 && bufferList.push("split"), bufferList = bufferList.concat(a))
+                    }
+                    return bufferList
+                }
+
+                function canSendBleData() {
+                    return appStateManager.globalData.blu_data_canSend
+                }
+                e.exports = {
+                    // Initiates BLE connection if not already connected
+                    cnnPreBlu: function() {
+                        if (t("log", "cnnPreBlu", appStateManager.globalData.blu_state, " at utils/bluCtrl.js:350"), 0 == appStateManager.globalData.blu_state) {
+                            appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1, appStateManager.globalData.readDevice();
+                            var e = appStateManager.globalData.ble_device;
+                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
+                                r && connectToDevice(e, !1, (function(e) {
+                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:365")
+                                }))
+                            })) : appStateManager.globalData.blu_state = 0
+                        }
+                    },
+                    cnnLaser: function() {
+                        uni.navigateTo({
+                            url: "/pages/cnn/cnn",
+                            events: {
+                                acceptDataFromOpenedPage: function(e) {
+                                    setTimeout((function() {
+                                        uni.showLoading({
+                                            title: translate("Connecting....."),
+                                            mask: !0
+                                        }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
+                                        var bleDevice  = appStateManager.globalData.ble_device;
+                                        connectToDevice(bleDevice , !0, (function(connectionSuccess) {
+                                            connectionSuccess ? appStateManager.globalData.blu_state = 0 : (uni.hideLoading(), appStateManager.globalData.blu_state = 2), t("log", "cnnTheBlu", connectionSuccess, " at utils/bluCtrl.js:391")
+                                        }))
+                                    }), 1)
+                                }
+                            }
+                        })
+                    },
+                    setCanSend: function(canSend) {
+                        appStateManager.globalData.blu_data_canSend = canSend
+                    },
+                    getCanSend: canSendBleData,
+                    // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
+                    // cases and UI feedback.
+                    // In summary, gosend returns true if the send process (real or simulated) is started or handled, 
+                    // and false if it is blocked due to an ongoing send or invalid data. The actual BLE send is asynchronous,
+                    //  so the return value does not indicate send success, only that the process was started or handled.
+                    gosend: function(showProgress, hexData) {
+                        var sendCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                        if (canSendBleData() ? logHexBytes(hexData) : t("log", "len:" + hexData.length, hexData, " at utils/bluCtrl.js:548"), 0 == hexData.length || !canSendBleData() && !hexData.startsWith("E0E1E2E3")) return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
+                            appStateManager.globalData.blu_data_cmdSending = !1, sendCallback && sendCallback(1, 100)
+                        }), 20), !0));
+                        if (appStateManager.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
+                        if (2 != appStateManager.globalData.blu_connected) return appStateManager.globalData.showModalTips(translate("Bluetooth not connected")), !0;
+                        showProgress && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), sendCallback ? sendCallback(0, 0) : uni.showLoading({
+                            mask: !0
+                        }));
+                        var bufferSequence = hexStringToBufferSequence(hexData);
+                        if (0 == bufferSequence.length) return !1;
+                        if (appStateManager.globalData.blu_data_cmdSending) return !1;
+                        appStateManager.globalData.blu_data_cmdSending = !0;
+                        var i = bufferSequence,
+                            c = appStateManager.globalData.ble_device;
+                        return sendBleBuffersPromise(i, c, showProgress, sendCallback).then((function(r) {
+                            showProgress && uni.hideLoading(), appStateManager.globalData.blu_data_cmdSending = !1, t("log", "bluSend succ", " at utils/bluCtrl.js:592"), sendCallback && sendCallback(1, 100)
+                        })).catch((function(r) {
+                            showProgress && uni.hideLoading(), t("log", "Sending failed", r, " at utils/bluCtrl.js:596"), appStateManager.globalData.blu_data_cmdSending = !1, sendCallback && sendCallback(-1, 0)
+                        })), !0
+                    },
+                    drawProgress: function(canvas, size , progress ) {
+                        canvas.beginPath(), canvas.setFillStyle("#4C4C4C");
+                        var n = size  - 0,
+                            h = n;
+                        canvas.moveTo(20, 0), canvas.lineTo(0 + n - 20, 0), canvas.arcTo(0 + n, 0, 0 + n, 20, 20), canvas.lineTo(0 + n, 0 + h - 20), canvas.arcTo(0 + n, 0 + h, 0 + n - 20, 0 + h, 20), canvas.lineTo(20, 0 + h), canvas.arcTo(0, 0 + h, 0, 0 + h - 20, 20), canvas.lineTo(0, 20), canvas.arcTo(0, 0, 20, 0, 20), canvas.fill();
+                        var a = size  / 2,
+                            i = a,
+                            c = size  / 3,
+                            o = -Math.PI / 2,
+                            s = 2 * Math.PI * progress  / 100 + o;
+                        canvas.setLineWidth(size  / 30), canvas.beginPath(), canvas.arc(a, i, c, 0, 2 * Math.PI), canvas.setStrokeStyle("#616161"), canvas.stroke(), canvas.beginPath(), canvas.arc(a, i, c, o, s), canvas.setStrokeStyle("#ECECEC"), canvas.stroke(), canvas.beginPath();
+                        var l = progress  + "%",
+                            p = size  / 5;
+                        canvas.setFillStyle("#ECECEC"), canvas.setFontSize(p);
+                        var d = canvas.measureText(l).width;
+                        canvas.fillText(progress  + "%", a - d / 2, i + p / 3), canvas.fill(), canvas.draw()
+                    },
+                    // responsible for parsing and updating the application's global state based on a device's response data,
+                    // typically received as a buffer or hex string. It performs several key tasks:
+                    setCmdData: function(deviceResponseData ) {
+                        t("log", "Device Returned data", deviceResponseData , " at utils/bluCtrl.js:21"), deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", deviceResponseData );
+                        var mainCommandData  = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", deviceResponseData );
+                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue (3, 1, mainCommandData ), 0, 9, 0), appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor, appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue (4, 1, mainCommandData ) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue (6, 1, mainCommandData ) / 255 * 100), 0, 255, 128), appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed, appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue (8, 1, mainCommandData ) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue (9, 1, mainCommandData ), 0, 255, 0), appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue (10, 1, mainCommandData ) / 255 * 100), 0, 255, 0), appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue (15, 1, mainCommandData ), 0, 100, 50), appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue (16, 1, mainCommandData ), 0, 100, 50), appStateManager.globalData.cmd.textData.refresh = !0;
+                        var projectItems = appStateManager.globalData.cmd.prjData.prjItem,
+                            projectItemStartIndex  = 17;
+                        for (var itemKey in projectItems) {
+                            var projectItem = projectItems[itemKey];
+                            projectItem.pyMode = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), projectItem.prjSelected[3] = extractHexValue (projectItemStartIndex  + 1, 2, mainCommandData ), projectItem.prjSelected[2] = extractHexValue (projectItemStartIndex  + 3, 2, mainCommandData ), projectItem.prjSelected[1] = extractHexValue (projectItemStartIndex  + 5, 2, mainCommandData ), projectItem.prjSelected[0] = extractHexValue (projectItemStartIndex  + 7, 2, mainCommandData ), projectItemStartIndex  += 9
+                        }
+                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), projectItemStartIndex  += 1;
+                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0);
+                        var settingCommandData = deviceCommandUtils.getCmdValue("00010203", "04050607", deviceResponseData );
+                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue (1, 2, settingCommandData), 1, 512, 1), appStateManager.globalData.cmd.settingData.ch = extractHexValue (3, 1, settingCommandData), appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue (4, 1, settingCommandData), 10, 100, 10), appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue (5, 1, settingCommandData), 0, 7, 0), appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue (6, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue (7, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue (8, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue (9, 1, settingCommandData), 1, 3, 3), appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue (10, 1, settingCommandData), 0, 255, 0);
+                        var featureCommandData = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", deviceResponseData );
+                        if ("" != featureCommandData) {
+                            var j = appStateManager.globalData.getDeviceFeatures(),
+                                x = 16;
+                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), deviceCommandUtils.getFeaturesValue({
+                                features: j
+                            }, "xyCnf") && (x = 22);
+                            for (var featureConfigList = [], f = clampOrDefault(extractHexValue (1, 1, featureCommandData), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
+                                for (var m = {
+                                        playTime: 0,
+                                        cnfValus: []
+                                    }, P = 0; P < x; P++) {
+                                    var u = clampOrDefault(extractHexValue (3 + k * x + P, 1, featureCommandData), 0, 255, 0);
+                                    m.cnfValus.push(u), 13 == P && (m.playTime = (u / 10).toFixed())
+                                }
+                                t("log", "pis.cnfValus", JSON.stringify(m.cnfValus), " at utils/bluCtrl.js:111"), featureConfigList.push(m)
+                            }
+                            appStateManager.globalData.cmd.pgsData.pisList = featureConfigList
+                        }
+                        var drawConfigData = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", deviceResponseData );
+                        if ("" != drawConfigData)
+                            for (var drawConfigObject = appStateManager.globalData.cmd.drawData.pisObj, configIndex  = 0; configIndex  < 15; configIndex ++) {
+                                var drawConfigParam = clampOrDefault(extractHexValue (configIndex  + 1, 1, drawConfigData), 0, 255, 0);
+                                configIndex  < drawConfigObject.cnfValus.length && (drawConfigObject.cnfValus[configIndex ] = drawConfigParam), 14 == configIndex  && (drawConfigObject.txPointTime = drawConfigParam)
+                            }
+                    }
+                }
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+ 
   
 
         "enhancedConsoleLogger": function(t, r, n) {
