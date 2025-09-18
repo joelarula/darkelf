@@ -4,44 +4,162 @@
 use std::collections::HashMap;
 use log::{debug, info};
 
-/// Trait defining device command operations
-pub trait CommandGenerator {
+const HEADER: &str = "E0E1E2E3";
+const FOOTER: &str = "E4E5E6E7";
+
+/// Generator for device commands
+pub struct CommandGenerator;
+
+impl CommandGenerator {
     // Core conversion utilities
-    fn ab2hex(bytes: &[u8]) -> String;
-    fn ab2str(bytes: &[u8]) -> String;
-    fn string_to_bytes(s: &str) -> Vec<u8>;
-    fn to_fixed_width_hex(value: i32, width: usize) -> String;
-    fn combine_nibbles(high: u8, low: u8) -> u8;
-    fn pad_hex_string_to_byte_length(hex: &str, byte_len: usize, pad: &str) -> String;
+    pub fn ab2hex(bytes: &[u8]) -> String {
+        debug!("ab2hex called with bytes: {:?}", bytes);
+        String::new()
+    }
+
+    pub fn ab2str(bytes: &[u8]) -> String {
+        debug!("ab2str called with bytes: {:?}", bytes);
+        String::new()
+    }
+
+    pub fn string_to_bytes(s: &str) -> Vec<u8> {
+        debug!("string_to_bytes called with s: {}", s);
+        Vec::new()
+    }
+
+    pub fn to_fixed_width_hex(value: i32, width: usize) -> String {
+        debug!("to_fixed_width_hex called with value: {}, width: {}", value, width);
+        String::new()
+    }
+
+    pub fn combine_nibbles(high: u8, low: u8) -> u8 {
+        debug!("combine_nibbles called with high: {}, low: {}", high, low);
+        0
+    }
+
+    pub fn pad_hex_string_to_byte_length(hex: &str, byte_len: usize, pad: &str) -> String {
+        debug!("pad_hex_string_to_byte_length called with hex: {}, byte_len: {}, pad: {}", hex, byte_len, pad);
+        String::new()
+    }
     
     // Command pattern matching
-    fn get_cmd_value(start: &str, end: &str, input: &str) -> Option<String>;
+    pub fn get_cmd_value(start: &str, end: &str, input: &str) -> Option<String> {
+        debug!("get_cmd_value called with start: {}, end: {}, input: {}", start, end, input);
+        None
+    }
     
     // Layout and segmentation functions
-    fn split_into_segments_by_sum_limit(values: &[f64], limit: f64) -> Vec<(usize, usize)>;
-    fn generate_segmented_layout_data(layout: &[Vec<f64>], scale: f64, direction: i32) -> (Vec<Vec<f64>>, String, String, f64);
+    pub fn split_into_segments_by_sum_limit(values: &[f64], limit: f64) -> Vec<(usize, usize)> {
+        debug!("split_into_segments_by_sum_limit called with values: {:?}, limit: {}", values, limit);
+        Vec::new()
+    }
 
-    // Command generation
-    fn get_query_cmd(random_check: &[u8]) -> String;
-    fn get_xts_cmd(coord_data: &str) -> String;
-    fn get_xys_cmd(coords: &[Vec<f64>], version: i32) -> String;
-    fn get_xys_cmd_arr(items: &[LayoutItem], config: &CommandConfig, direction: i32, version: i32) -> String;
+    pub fn generate_segmented_layout_data(layout: &[Vec<f64>], scale: f64, direction: i32) -> (Vec<Vec<f64>>, String, String, f64) {
+        debug!("generate_segmented_layout_data called with layout: {:?}, scale: {}, direction: {}", layout, scale, direction);
+        (Vec::new(), String::new(), String::new(), 0.0)
+    }
+
+    pub fn get_query_cmd(random_data: &[u8]) -> String {
+
+        // Convert each byte to 2-digit hex and collect into a string
+        let encoded_random_bytes: String = random_data
+            .iter()
+            .map(|&byte| Self::to_fixed_width_hex(byte as i32, 2))
+            .collect();
+
+        // Construct the full command with header and footer
+        format!("{}{}{}", HEADER, encoded_random_bytes, FOOTER).to_uppercase()
+    }
+
+    pub fn get_xts_cmd(coord_data: &str) -> String {
+        debug!("get_xts_cmd called with coord_data: {}", coord_data);
+        String::new()
+    }
+
+    pub fn get_xys_cmd(coords: &[Vec<f64>], version: i32) -> String {
+        debug!("get_xys_cmd called with coords: {:?}, version: {}", coords, version);
+        String::new()
+    }
+
+    pub fn get_xys_cmd_arr(items: &[LayoutItem], config: &CommandConfig, direction: i32, version: i32) -> String {
+        debug!("get_xys_cmd_arr called with items len: {}, direction: {}, version: {}", items.len(), direction, version);
+        info!("CommandConfig: {:?}", config);
+        String::new()
+    }
     
     // Drawing commands
-    fn get_draw_line_str(points: &[Point], count: i32) -> String;
-    fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String;
-    fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, time: i32, version: &str) -> String;
+    pub fn get_draw_line_str(points: &[Point], count: i32) -> String {
+        debug!("get_draw_line_str called with points: {:?}, count: {}", points, count);
+        String::new()
+    }
+
+    pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String {
+        debug!("get_draw_cmd_str called with points len: {}", points.len());
+        info!("DrawConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
+
+    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, time: i32, version: &str) -> String {
+        debug!("encode_draw_point_command called with points len: {}, time: {}, version: {}", points.len(), time, version);
+        info!("DrawConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
     
     // Configuration commands
-    fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String;
-    fn get_shake_cmd_str(config: &ShakeConfig, features: Option<&Features>) -> String;
-    fn get_pis_cmd_str(index: i32, config: &PisConfig, features: Option<&Features>) -> String;
-    fn get_pis_list_cmd_str(items: &[PisConfig], features: Option<&Features>) -> String;
-    fn get_setting_cmd(settings: &SettingData) -> String;
+    pub fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
+        debug!("get_cmd_str called");
+        info!("CommandConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
+
+    pub fn get_shake_cmd_str(config: &ShakeConfig, features: Option<&Features>) -> String {
+        debug!("get_shake_cmd_str called");
+        info!("ShakeConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
+
+    pub fn get_pis_cmd_str(index: i32, config: &PisConfig, features: Option<&Features>) -> String {
+        debug!("get_pis_cmd_str called with index: {}", index);
+        info!("PisConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
+
+    pub fn get_pis_list_cmd_str(items: &[PisConfig], features: Option<&Features>) -> String {
+        debug!("get_pis_list_cmd_str called with items len: {}", items.len());
+        info!("Features: {:?}", features);
+        String::new()
+    }
+
+    pub fn get_setting_cmd(settings: &SettingData) -> String {
+        debug!("get_setting_cmd called");
+        info!("SettingData: {:?}", settings);
+        String::new()
+    }
     
     // Feature handling
-    fn get_feature_value(obj: &Features, feature_name: &str) -> Option<bool>;
+    pub fn get_feature_value(_obj: &Features, feature_name: &str) -> Option<bool> {
+        debug!("get_feature_value called with feature_name: {}", feature_name);
+        None
+    }
+
+    
 }
+
+
+fn to_fixed_width_hex(value: f64, width: usize) -> String {
+    // Round the value to nearest integer
+    let mut rounded_value = value.round() as i32;
+    
+    // Handle negative values by setting bit 15 and using absolute value
+    if rounded_value < 0 {
+        rounded_value = 32768 | -rounded_value;
+    }
+    
+    // Convert to hex string and pad with zeros
+    // format! with width specifier handles padding automatically
+    format!("{:0width$x}", rounded_value, width = width)
+}
+
 
 // Data structures needed by the trait methods
 #[derive(Debug, Clone)]
@@ -161,129 +279,4 @@ pub struct SettingData {
     pub lang: u8,
 }
 
-// Default implementation struct - actual implementation will be added later
-pub struct CommandUtils;
 
-impl CommandGenerator for CommandUtils {
-        fn ab2hex(bytes: &[u8]) -> String {
-        debug!("ab2hex called with bytes: {:?}", bytes);
-        "MOCK_HEX".to_string()
-    }
-
-    fn ab2str(bytes: &[u8]) -> String {
-        debug!("ab2str called with bytes: {:?}", bytes);
-        "MOCK_STR".to_string()
-    }
-
-    fn string_to_bytes(s: &str) -> Vec<u8> {
-        debug!("string_to_bytes called with s: {}", s);
-        vec![0, 1, 2, 3]
-    }
-
-    fn to_fixed_width_hex(value: i32, width: usize) -> String {
-        debug!("to_fixed_width_hex called with value: {}, width: {}", value, width);
-        format!("{:0width$x}", value.abs(), width = width)
-    }
-
-    fn combine_nibbles(high: u8, low: u8) -> u8 {
-        debug!("combine_nibbles called with high: {}, low: {}", high, low);
-        (high << 4) | (low & 0x0F)
-    }
-
-    fn pad_hex_string_to_byte_length(hex: &str, byte_len: usize, pad: &str) -> String {
-        debug!("pad_hex_string_to_byte_length called with hex: {}, byte_len: {}, pad: {}", hex, byte_len, pad);
-        let mut result = hex.to_string();
-        while result.len() < byte_len * 2 {
-            result.push_str(pad);
-        }
-        result
-    }
-
-    fn get_cmd_value(start: &str, end: &str, input: &str) -> Option<String> {
-        debug!("get_cmd_value called with start: {}, end: {}, input: {}", start, end, input);
-        Some("MOCK_CMD_VALUE".to_string())
-    }
-
-    fn split_into_segments_by_sum_limit(values: &[f64], limit: f64) -> Vec<(usize, usize)> {
-        debug!("split_into_segments_by_sum_limit called with values: {:?}, limit: {}", values, limit);
-        vec![(0, 1)]
-    }
-
-    fn generate_segmented_layout_data(layout: &[Vec<f64>], scale: f64, direction: i32) -> (Vec<Vec<f64>>, String, String, f64) {
-        debug!("generate_segmented_layout_data called with layout: {:?}, scale: {}, direction: {}", layout, scale, direction);
-        (vec![vec![0.0]], "MOCK_STR1".to_string(), "MOCK_STR2".to_string(), 0.0)
-    }
-
-    fn get_query_cmd(random_check: &[u8]) -> String {
-        debug!("get_query_cmd called with random_check: {:?}", random_check);
-        "E0E1E2E3MOCK_QUERY_CMDE4E5E6E7".to_string()
-    }
-
-    fn get_xts_cmd(coord_data: &str) -> String {
-        debug!("get_xts_cmd called with coord_data: {}", coord_data);
-        "MOCK_XTS_CMD".to_string()
-    }
-
-    fn get_xys_cmd(coords: &[Vec<f64>], version: i32) -> String {
-        debug!("get_xys_cmd called with coords: {:?}, version: {}", coords, version);
-        "MOCK_XYS_CMD".to_string()
-    }
-
-    fn get_xys_cmd_arr(items: &[LayoutItem], config: &CommandConfig, direction: i32, version: i32) -> String {
-        debug!("get_xys_cmd_arr called with items len: {}, direction: {}, version: {}", items.len(), direction, version);
-        info!("CommandConfig: {:?}", config);
-        "MOCK_XYS_CMD_ARR".to_string()
-    }
-
-    fn get_draw_line_str(points: &[Point], count: i32) -> String {
-        debug!("get_draw_line_str called with points: {:?}, count: {}", points, count);
-        "MOCK_DRAW_LINE".to_string()
-    }
-
-    fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String {
-        debug!("get_draw_cmd_str called with points len: {}", points.len());
-        info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        "MOCK_DRAW_CMD".to_string()
-    }
-
-    fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, time: i32, version: &str) -> String {
-        debug!("encode_draw_point_command called with points len: {}, time: {}, version: {}", points.len(), time, version);
-        info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        "MOCK_DRAW_POINT_CMD".to_string()
-    }
-
-    fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
-        debug!("get_cmd_str called");
-        info!("CommandConfig: {:?}, Features: {:?}", config, features);
-        "MOCK_CMD_STR".to_string()
-    }
-
-    fn get_shake_cmd_str(config: &ShakeConfig, features: Option<&Features>) -> String {
-        debug!("get_shake_cmd_str called");
-        info!("ShakeConfig: {:?}, Features: {:?}", config, features);
-        "MOCK_SHAKE_CMD".to_string()
-    }
-
-    fn get_pis_cmd_str(index: i32, config: &PisConfig, features: Option<&Features>) -> String {
-        debug!("get_pis_cmd_str called with index: {}", index);
-        info!("PisConfig: {:?}, Features: {:?}", config, features);
-        "MOCK_PIS_CMD".to_string()
-    }
-
-    fn get_pis_list_cmd_str(items: &[PisConfig], features: Option<&Features>) -> String {
-        debug!("get_pis_list_cmd_str called with items len: {}", items.len());
-        info!("Features: {:?}", features);
-        "MOCK_PIS_LIST_CMD".to_string()
-    }
-
-    fn get_setting_cmd(settings: &SettingData) -> String {
-        debug!("get_setting_cmd called");
-        info!("SettingData: {:?}", settings);
-        "MOCK_SETTING_CMD".to_string()
-    }
-
-    fn get_feature_value(obj: &Features, feature_name: &str) -> Option<bool> {
-        debug!("get_feature_value called with feature_name: {}", feature_name);
-        obj.features.get(feature_name).copied()
-    }
-}

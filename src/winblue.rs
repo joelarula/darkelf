@@ -46,7 +46,6 @@ pub struct WinBlueController {
     ready_to_receive: bool,
     can_send: bool,
     cmd_sending: bool,
-    manual_disconnect: bool,
     connection_state: i32, // -1=connecting, 0=disconnected, 1=connected, 2=ready
     min_send_interval: Duration,
 }
@@ -69,7 +68,6 @@ impl WinBlueController {
             ready_to_receive: false,
             can_send: false,
             cmd_sending: false,
-            manual_disconnect: false,
             connection_state: 0,
             min_send_interval: Duration::from_millis(100), // Same as JS 100ms interval
         })

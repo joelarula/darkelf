@@ -8,3 +8,4 @@ pub mod command;
 pub mod mock;
 pub mod controller;
 pub mod model;
+pub mod device;

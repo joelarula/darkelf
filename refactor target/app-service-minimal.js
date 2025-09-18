@@ -1036,12 +1036,12 @@
                     return n
                 }
 
-                function toFixedWidthHex(e) {
-                    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 4,
-                        r = Math.round(e);
-                    r < 0 && (r = 32768 | -r);
-                    var n = ("0000" + r.toString(16)).slice(-t);
-                    return n
+                function toFixedWidthHex(value) {
+                    var width = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 4,
+                        roundedValue = Math.round(value);
+                    roundedValue < 0 && (roundedValue = 32768 | -roundedValue);
+                    var hexStringResult = ("0000" + roundedValue.toString(16)).slice(-width);
+                    return hexStringResult
                 }
 
                 function combineNibbles(e, t) {
@@ -1420,10 +1420,10 @@
                             matchResult = matcher.exec(inputString );
                         return null !== matchResult ? matchResult[1] : (t("log", "No matching string found that meets the requirements", startPattern , endPattern , " at utils/funcTools.js:7"), "")
                     },
-                    getQueryCmd: function(e) {
-                        for (var t = "", r = 0; r < e.length; r++) t += toFixedWidthHex(e[r], 2);
-                        var n = "E0E1E2E3" + t + "E4E5E6E7";
-                        return n.toUpperCase()
+                    getQueryCmd: function(randomData) {
+                        for (var encodedRandomBytes  = "", i = 0; i < randomData.length; i++) encodedRandomBytes  += toFixedWidthHex(randomData[i], 2);
+                        var queryCommand  = "E0E1E2E3" + encodedRandomBytes  + "E4E5E6E7";
+                        return queryCommand .toUpperCase()
                     },
                     getDrawLineStr: function(e, t) {
                         for (var r = "", n = 0; n < e.length; n++) {
@@ -1437,7 +1437,7 @@
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
   
-        bleDeviceControlUtils : function(e, t, r) {
+        "bleDeviceControlUtils" : function(e, t, r) {
             (function(t) {
                 var appStateManager = getApp(),
                     deviceCommandUtils = r("deviceCommandUtils ");
@@ -1702,12 +1702,15 @@
                 e.exports = {
                     // Initiates BLE connection if not already connected
                     cnnPreBlu: function() {
-                        if (t("log", "cnnPreBlu", appStateManager.globalData.blu_state, " at utils/bluCtrl.js:350"), 0 == appStateManager.globalData.blu_state) {
-                            appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1, appStateManager.globalData.readDevice();
+                        if (0 == appStateManager.globalData.blu_state) {
+                            appStateManager.globalData.blu_state = 1, 
+                            appStateManager.globalData.blu_connect_stop = !1, 
+                            appStateManager.globalData.readDevice();
                             var e = appStateManager.globalData.ble_device;
                             void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
                                 r && connectToDevice(e, !1, (function(e) {
-                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0), t("log", "cnnTheBlu", e, " at utils/bluCtrl.js:365")
+                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0)
+                                   
                                 }))
                             })) : appStateManager.globalData.blu_state = 0
                         }
@@ -1724,7 +1727,10 @@
                                         }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
                                         var bleDevice  = appStateManager.globalData.ble_device;
                                         connectToDevice(bleDevice , !0, (function(connectionSuccess) {
-                                            connectionSuccess ? appStateManager.globalData.blu_state = 0 : (uni.hideLoading(), appStateManager.globalData.blu_state = 2), t("log", "cnnTheBlu", connectionSuccess, " at utils/bluCtrl.js:391")
+                                            connectionSuccess 
+                                                ? appStateManager.globalData.blu_state = 0 
+                                                : (uni.hideLoading(), appStateManager.globalData.blu_state = 2)
+                                                
                                         }))
                                     }), 1)
                                 }
