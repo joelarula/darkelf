@@ -77,6 +77,8 @@ pub trait DeviceController: Send + Sync {
 
 type ReceiverCallback = Box<dyn Fn(String) + Send + Sync>;
 
+
+
 pub struct WinBlueController {
     device_info: Option<DeviceInformation>,
     device: Option<BluetoothLEDevice>,
@@ -109,6 +111,21 @@ pub struct WinBlueController {
 enum BufferSegment {
     Data(Vec<u8>),
     Split,
+}
+
+/// Log bytes in the same format as JavaScript logHexBytes function
+fn log_hex_bytes(bytes: &[u8]) {
+    let hex_str: String = bytes.iter().enumerate()
+        .map(|(i, &b)| {
+            if i % 2 == 0 {
+                if i > 0 { format!(", 0x{:02X}", b) }
+                else { format!("0x{:02X}", b) }
+            } else {
+                format!("{:02X}", b)
+            }
+        })
+        .collect();
+    debug!("{}", hex_str);
 }
 
 impl WinBlueController {
@@ -371,33 +388,68 @@ impl WinBlueController {
         }
     }
 
-    /// Get the current content without clearing it
-    fn get_content(&self) -> String {
-        if let Ok(complete) = self.blu_rec_content_complete.lock() {
-            if let Some(msg) = complete.as_ref() {
-                return msg.clone();
+
+    /// Internal implementation of send that handles low-level buffer manipulation
+    pub async fn send_internal(&mut self, bytes: &[u8]) -> Result<(), String> {
+        // Clear the buffer before sending
+        {
+            let mut buffer = self.buffer.lock().unwrap();
+            buffer.clear();
+        }
+
+        // Convert bytes to hex string for processing
+        let hex_string = hex::encode_upper(bytes);
+        debug!("WinBlueController::send_internal called with hex string: {}", hex_string);
+        
+        // Process as hex string to handle potential 'Z' markers
+        let segments = self.split_hex_string_to_buffers(&hex_string, 20);
+        
+        for segment in segments {
+            match segment {
+                BufferSegment::Data(data) => {
+                    // Only validate E0E1E2E3 for 20-byte buffers
+                    if data.len() == 20 && !data.starts_with(&[0xE0, 0xE1, 0xE2, 0xE3]) {
+                        return Err("Invalid command: 20-byte buffer must start with E0E1E2E3".to_string());
+                    }
+                    
+                    // Enforce minimum delay between commands
+                    if let Some(last_time) = self.last_send_time {
+                        let elapsed = last_time.elapsed();
+                        if elapsed < Duration::from_millis(50) {
+                            sleep(Duration::from_millis(50) - elapsed).await;
+                        }
+                    }
+                    
+                    // Send the data
+                    if let Some(write_char) = &self.write_char {
+                        let writer = DataWriter::new()
+                            .map_err(|e| format!("Failed to create DataWriter: {:?}", e))?;
+                        writer.WriteBytes(&data)
+                            .map_err(|e| format!("Failed to write bytes: {:?}", e))?;
+                        let buffer = writer.DetachBuffer()
+                            .map_err(|e| format!("Failed to detach buffer: {:?}", e))?;
+
+                        write_char.WriteValueWithOptionAsync(&buffer, GattWriteOption::WriteWithoutResponse)
+                            .map_err(|e| format!("Failed to write characteristic: {:?}", e))?
+                            .get()
+                            .map_err(|e| format!("Failed to complete write: {:?}", e))?;
+                    } else {
+                        return Err("Write characteristic not found".to_string());
+                    }
+                }
+                BufferSegment::Split => {
+                    // Add delay for split marker
+                    sleep(Duration::from_millis(100)).await;
+                }
             }
         }
-        let content = self.blu_rec_content.lock().unwrap();
-        content.iter().cloned().collect()
+
+        // Update last send time
+        self.last_send_time = Some(Instant::now());
+        Ok(())
     }
 
-    // These methods are now handled directly by the DeviceController trait implementation
 
-    async fn verify_response(&self, expected: &str, timeout_ms: u64) -> Result<(), String> {
-        let start = Instant::now();
-        let timeout = Duration::from_millis(timeout_ms);
-        
-        while start.elapsed() < timeout {
-            let content = self.get_content();
-            if content.contains(expected) {
-                return Ok(());
-            }
-            sleep(Duration::from_millis(50)).await;
-        }
-        
-        Err(format!("Timeout waiting for response containing '{}'", expected))
-    }
     
     pub async fn send(&mut self, bytes: &[u8]) -> Result<(), String> {
         // Clear the buffer before sending
@@ -542,6 +594,7 @@ impl WinBlueController {
 
 impl DeviceController for WinBlueController {
     fn connect(&mut self) -> AsyncResult<()> {
+        debug!("DeviceController::connect called");
         // Clone necessary state
         let device_info = self.device_info.clone();
         let buffer = self.buffer.clone();
@@ -572,14 +625,31 @@ impl DeviceController for WinBlueController {
         })
     }
     
+
+
     fn send(&mut self, cmd: &str) -> AsyncResult<()> {
+        // Validate command format
+        if !self.can_send {
+            return Box::pin(async move { Err("Device not ready to send".into()) });
+        }
+        if cmd.len() == 0 {
+            return Box::pin(async move { Err("Empty command".into()) });
+        }
+        if !cmd.starts_with("E0E1E2E3") {
+            return Box::pin(async move { Err("Invalid command: must start with E0E1E2E3".into()) });
+        }
+
         // Clone necessary state
         let write_char = self.write_char.clone();
         let sending = self.sending.clone();
         
         // Convert hex string to bytes
         let bytes = match hex::decode(cmd) {
-            Ok(b) => Arc::new(b),
+            Ok(b) => {
+                // Log bytes in JavaScript format
+                debug!("{}", format_hex_bytes(&b));
+                Arc::new(b)
+            },
             Err(e) => return Box::pin(async move { Err(format!("Invalid hex string: {}", e).into()) })
         };
 
@@ -671,4 +741,19 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
         }
     }
     Ok(device_list)
+}
+
+
+/// Format bytes in the same way as JavaScript's logHexBytes function
+fn format_hex_bytes(bytes: &[u8]) -> String {
+    bytes.iter().enumerate()
+        .map(|(i, &b)| {
+            if i % 2 == 0 {
+                if i > 0 { format!(", 0x{:02X}", b) }
+                else { format!("0x{:02X}", b) }
+            } else {
+                format!("{:02X}", b)
+            }
+        })
+        .collect()
 }

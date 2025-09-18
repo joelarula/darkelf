@@ -33,17 +33,16 @@ impl DeviceController for MockController {
         true
     }
 
-    fn send(&mut self, bytes: Vec<u8>) -> AsyncResult<()> {
+    fn send(&mut self, data: &str) -> AsyncResult<()> {
         let fragments = self.fragments.clone();
         let callback = self.callback.clone();
-        let bytes = Arc::new(bytes);
+        let data = data.to_string();
 
         Box::pin(async move {
-            info!("MockController: send({:?})", bytes);
-            let hex_data = hex::encode(&*bytes);
-            fragments.lock().unwrap().push_back(hex_data.clone());
+            info!("MockController: send({:?})", data);
+            fragments.lock().unwrap().push_back(data.clone());
             if let Some(cb) = callback.lock().unwrap().as_ref() {
-                cb(hex_data);
+                cb(data);
             }
             Ok(())
         })

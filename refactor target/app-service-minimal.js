@@ -1658,10 +1658,6 @@
                     }))
                 }
 
-                function translate(e) {
-                    return appStateManager.globalData.t(e)
-                }
-
                 function logHexBytes(byteArray) {
                     for (var r = "", n = 0; n < byteArray.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + byteArray[n]) : r += byteArray[n];
                     t("log", r, " at utils/bluCtrl.js:494")
@@ -1715,28 +1711,7 @@
                             })) : appStateManager.globalData.blu_state = 0
                         }
                     },
-                    cnnLaser: function() {
-                        uni.navigateTo({
-                            url: "/pages/cnn/cnn",
-                            events: {
-                                acceptDataFromOpenedPage: function(e) {
-                                    setTimeout((function() {
-                                        uni.showLoading({
-                                            title: translate("Connecting....."),
-                                            mask: !0
-                                        }), appStateManager.globalData.blu_state = 1, appStateManager.globalData.blu_connect_stop = !1;
-                                        var bleDevice  = appStateManager.globalData.ble_device;
-                                        connectToDevice(bleDevice , !0, (function(connectionSuccess) {
-                                            connectionSuccess 
-                                                ? appStateManager.globalData.blu_state = 0 
-                                                : (uni.hideLoading(), appStateManager.globalData.blu_state = 2)
-                                                
-                                        }))
-                                    }), 1)
-                                }
-                            }
-                        })
-                    },
+
                     setCanSend: function(canSend) {
                         appStateManager.globalData.blu_data_canSend = canSend
                     },
@@ -1748,12 +1723,20 @@
                     //  so the return value does not indicate send success, only that the process was started or handled.
                     gosend: function(showProgress, hexData) {
                         var sendCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                        if (canSendBleData() ? logHexBytes(hexData) : t("log", "len:" + hexData.length, hexData, " at utils/bluCtrl.js:548"), 0 == hexData.length || !canSendBleData() && !hexData.startsWith("E0E1E2E3")) return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
-                            appStateManager.globalData.blu_data_cmdSending = !1, sendCallback && sendCallback(1, 100)
+                        if (canSendBleData() 
+                                ? logHexBytes(hexData) 
+                            :  0 == hexData.length || !canSendBleData() 
+                                && !hexData.startsWith("E0E1E2E3")) 
+                                    return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
+                            appStateManager.globalData.blu_data_cmdSending = !1, 
+                            sendCallback && sendCallback(1, 100)
                         }), 20), !0));
-                        if (appStateManager.globalData.blu_data_cmdSending) return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
-                        if (2 != appStateManager.globalData.blu_connected) return appStateManager.globalData.showModalTips(translate("Bluetooth not connected")), !0;
-                        showProgress && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), sendCallback ? sendCallback(0, 0) : uni.showLoading({
+                        if (appStateManager.globalData.blu_data_cmdSending) 
+                            return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
+                        if (2 != appStateManager.globalData.blu_connected) 
+                            return appStateManager.globalData.showModalTips(translate("Bluetooth not connected")), !0;
+                        showProgress && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), 
+                        sendCallback ? sendCallback(0, 0) : uni.showLoading({
                             mask: !0
                         }));
                         var bufferSequence = hexStringToBufferSequence(hexData);

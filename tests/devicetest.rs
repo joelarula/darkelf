@@ -13,7 +13,7 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
 
     util::setup_logging();
 
-    let controller = MockController::new();
+    let mut controller = MockController::new();
     let _ = controller.connect();
     assert!(controller.is_connected());
 
