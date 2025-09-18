@@ -30,11 +30,15 @@ pub const NOTIFY_UUIDS: [&str; 2] = [
 
 pub trait BlueController: Send + Sync {
     
-    fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>>;
+    fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>>;
         
-    fn send<'a>(&'a mut self, bytes: &'a [u8]) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>>;
-    
-    fn get_content(&self) -> String;
+    fn send<'a>(&'a mut self, command: &str) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>>;
     
     fn is_connected(&self) -> bool;
+
+    fn disconnect<'a>(&'a mut self,) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>>;
+
+    fn set_receiver_callback(&mut self, callback: Box<dyn Fn(String) + Send + Sync>);
+    
+    fn clear_receiver_callback(&mut self);
 }

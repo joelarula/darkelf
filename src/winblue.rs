@@ -14,21 +14,22 @@ use windows::{
 // Wrapper type for notification token to avoid direct EventRegistrationToken dependency
 #[derive(Clone, Copy)]
 struct NotificationToken(i64);
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use tokio::sync::Mutex as TokioMutex;
 use std::error::Error;
 use std::time::Duration;
-use hex::decode;
 use tokio::time::{Instant, sleep};
-use log::{info, warn, error, debug};
-use serialport::{SerialPort, SerialPortType};
+use log::{info, error, debug};
 
 use crate::blue::{self, BlueController};
 
 
-
 pub type Characteristic = GattCharacteristic;
 
+type ReceiverCallback = Box<dyn Fn(String) + Send + Sync>;
+
+
+#[derive(Clone)]
 pub struct WinBlueController {
     device_info: Option<DeviceInformation>,
     device: Option<BluetoothLEDevice>,
@@ -36,7 +37,7 @@ pub struct WinBlueController {
     notify_char: Option<GattCharacteristic>,
     service_uuid: Option<GUID>,
     connected: bool,
-    buffer: Arc<Mutex<String>>,
+    buffer: Arc<TokioMutex<String>>,
     last_send_time: Option<Instant>,
     sending: Arc<TokioMutex<()>>,
     notification_token: Option<NotificationToken>,
@@ -48,6 +49,7 @@ pub struct WinBlueController {
     cmd_sending: bool,
     connection_state: i32, // -1=connecting, 0=disconnected, 1=connected, 2=ready
     min_send_interval: Duration,
+    ble_call_back: Arc<TokioMutex<Option<ReceiverCallback>>>,
 }
 
 impl WinBlueController {
@@ -59,7 +61,7 @@ impl WinBlueController {
             notify_char: None,
             service_uuid: None,
             connected: false,
-            buffer: Arc::new(Mutex::new(String::new())),
+            buffer: Arc::new(TokioMutex::new(String::new())),
             last_send_time: None,
             sending: Arc::new(TokioMutex::new(())),
             notification_token: None,
@@ -70,6 +72,7 @@ impl WinBlueController {
             cmd_sending: false,
             connection_state: 0,
             min_send_interval: Duration::from_millis(100), // Same as JS 100ms interval
+            ble_call_back: Arc::new(TokioMutex::new(None)),
         })
     }
 
@@ -91,58 +94,22 @@ impl WinBlueController {
             self.ready_to_receive = true;
             self.connection_state = 2; // Set to ready
             
-            // Send initialization command (if required)
-            self.send_init_command().await?;
         } else {
             self.connection_state = 0; // Set to disconnected
         }
         Ok(())
     }
 
-    async fn send_init_command(&mut self) -> Result<(), String> {
-        // Clear any pending data
-        {
-            let mut buffer = self.buffer.lock().unwrap();
-            buffer.clear();
-        }
-
-        // Send initialization sequence
-        let init_cmd = "E0E1E2E38BCE183AE4E5E6E70000000000000000"; // Initial setup command
-        let bytes = decode(init_cmd).map_err(|e| format!("Invalid init command: {}", e))?;
-        
-        // Send init command and wait for response
-        self.send_ble(&bytes).await?;
-        debug!("First initialization command sent successfully");
-        
-        // Wait for device to stabilize and verify response
-        self.verify_response("E2E3", 500).await?;
-        debug!("Received response to first initialization command");
-        
-        // Wait additional stabilization time
-        sleep(Duration::from_millis(500)).await;
-        
-        // Clear buffer before next command
-        {
-            let mut buffer = self.buffer.lock().unwrap();
-            buffer.clear();
-        }
-        
-        // Send color mode initialization
-        let color_init = "E0E1E2E3FF01FF32FF0100FF0000000000000000";
-        let color_bytes = decode(color_init).map_err(|e| format!("Invalid color init command: {}", e))?;
-        self.send_ble(&color_bytes).await?;
-        debug!("Color initialization command sent successfully");
-        
-        // Verify color init response
-        self.verify_response("E2E3", 500).await?;
-        debug!("Received response to color initialization command");
-        
-        Ok(())
-    }
-
     async fn send_ble(&mut self, data: &[u8]) -> Result<(), String> {
         if let Some(write_char) = &self.write_char {
             let _lock = self.sending.lock().await;
+            
+            // Log outgoing data
+            let hex = data.iter().map(|b| format!("{:02X}", b)).collect::<String>();
+            let ascii = data.iter()
+                .map(|&b| if b.is_ascii_graphic() { b as char } else { '.' })
+                .collect::<String>();
+            info!("Sending BLE data - HEX: {} ASCII: {}", hex, ascii);
             
             // Create the data writer and store the bytes
             let writer = match DataWriter::new() {
@@ -251,6 +218,7 @@ impl WinBlueController {
     async fn setup_notifications(&mut self, characteristic: &GattCharacteristic) -> Result<(), Box<dyn Error>> {
         debug!("WinBlueController::setup_notifications called for characteristic");
         let buffer_clone = self.buffer.clone();
+        let callback_clone = self.ble_call_back.clone();
 
         // First verify if notifications are supported
         let properties = characteristic.CharacteristicProperties()?;
@@ -274,10 +242,46 @@ impl WinBlueController {
                         let data_reader = DataReader::FromBuffer(&value_buffer)?;
                         data_reader.ReadBytes(&mut value)?;
                         let hex = value.iter().map(|b| format!("{:02X}", b)).collect::<String>();
-                        debug!("Notification received: {}", hex);
+                        let ascii = value.iter()
+                            .map(|&b| if b.is_ascii_graphic() { b as char } else { '.' })
+                            .collect::<String>();
+                        debug!("Received BLE data - HEX: {} ASCII: {}", hex, ascii);
                         
-                        let mut buffer = buffer_clone.lock().unwrap();
-                        *buffer = hex;
+                        let mut buffer = buffer_clone.blocking_lock();
+                        
+                        // Handle empty or new buffer
+                        if buffer.is_empty() && hex.starts_with("E0E1E2E3") {
+                            *buffer = hex;
+                        } else if !buffer.is_empty() {
+                            buffer.push_str(&hex);
+                        }
+                        
+                        if !buffer.is_empty() {
+                            // Find message boundaries
+                            let start_idx = buffer.rfind("E0E1E2E3");
+                            let end_idx = buffer.rfind("E4E5E6E7");
+                            
+                            if let (Some(start), Some(end)) = (start_idx, end_idx) {
+                                if end > 0 && end == buffer.len() - 8 {
+                                    // We have a complete message
+                                    let message = buffer[start..end + 8].to_string();
+                                    buffer.clear(); // Clear buffer after extracting message
+                                    debug!("Complete message received: {}", message);
+                                    
+                                    // Drop the buffer lock before processing
+                                    drop(buffer);
+                                    
+                                    // Call the callback if available
+                                    let callback = callback_clone.blocking_lock();
+                                    if let Some(cb) = callback.as_ref() {
+                                        cb(message);
+                                    }
+                                } else {
+                                    // Keep from last start marker onwards
+                                    *buffer = buffer[start..].to_string();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -311,13 +315,13 @@ impl WinBlueController {
         }
     }
     
-    pub fn add_content(&mut self, content: String) {
-        let mut buffer = self.buffer.lock().unwrap();
+    pub async fn add_content(&mut self, content: String) {
+        let mut buffer = self.buffer.lock().await;
         *buffer = content;
     }
 
-    pub fn get_content(&self) -> String {
-        let buffer = self.buffer.lock().unwrap();
+    pub async fn get_content(&self) -> String {
+        let buffer = self.buffer.lock().await;
         buffer.clone()
     }
 
@@ -325,13 +329,26 @@ impl WinBlueController {
         self.connected
     }
 
+    /// Internal method to process a complete BLE message and invoke the registered callback.
+    /// Used by the notification handler when a full message has been assembled.
+    #[allow(dead_code)]
+    async fn process_received_message(&self, message: String) -> Result<(), Box<dyn Error + Send + Sync>> {
+        if let Some(callback) = self.ble_call_back.lock().await.as_ref() {
+            debug!("Calling callback with message: {}", message);
+            callback(message);
+        }
+        Ok(())
+    }
+
+    // Verifies that the expected response is received within the timeout period
     async fn verify_response(&self, expected: &str, timeout_ms: u64) -> Result<(), String> {
         let start = Instant::now();
         let timeout = Duration::from_millis(timeout_ms);
         
         while start.elapsed() < timeout {
-            let content = self.get_content();
+            let content = self.get_content().await;
             if content.contains(expected) {
+                debug!("Expected response '{}' received", expected);
                 return Ok(());
             }
             sleep(Duration::from_millis(50)).await;
@@ -339,99 +356,184 @@ impl WinBlueController {
         
         Err(format!("Timeout waiting for response containing '{}'", expected))
     }
-    
-    pub async fn send(&mut self, bytes: &[u8]) -> Result<(), String> {
-        // Clear the buffer before sending
-        {
-            let mut buffer = self.buffer.lock().unwrap();
-            buffer.clear();
-        }
+
+    async fn send_buffer_sequence(&mut self, buffers: Vec<Vec<u8>>, total_count: usize) -> Result<(), Box<dyn Error + Send + Sync>> {
+        info!("Starting buffer sequence send - {} total buffers", total_count);
         
-        // Enforce minimum delay between commands
-        if let Some(last_time) = self.last_send_time {
-            let elapsed = last_time.elapsed();
-            if elapsed < self.min_send_interval {
-                sleep(self.min_send_interval - elapsed).await;
+        let platform_send_interval =  Duration::from_millis(20);
+     
+        let mut last_send = Instant::now();
+        let mut remaining_buffers = buffers;
+        let mut last_progress = 0;
+
+        while !remaining_buffers.is_empty() {
+            let elapsed = last_send.elapsed();
+            let delay = if elapsed < platform_send_interval {
+                platform_send_interval - elapsed
+            } else {
+                Duration::from_millis(1)
+            };
+
+            // Wait for the appropriate delay
+            sleep(delay).await;
+
+            // Get next buffer to send
+            if let Some(current_buffer) = remaining_buffers.first() {
+                // Log the buffer we're about to send
+                let hex = current_buffer.iter().map(|b| format!("{:02X}", b)).collect::<String>();
+                let ascii = current_buffer.iter()
+                    .map(|&b| if b.is_ascii_graphic() { b as char } else { '.' })
+                    .collect::<String>();
+                info!("Sending buffer {} of {} - HEX: {} ASCII: {}", 
+                    total_count - remaining_buffers.len() + 1,
+                    total_count,
+                    hex,
+                    ascii);
+            }
+
+            // Calculate and report progress
+            let progress = ((total_count - remaining_buffers.len()) * 100) / total_count;
+            if progress != last_progress {
+                debug!("Send progress: {}%", progress);
+                last_progress = progress;
+            }
+
+            // Get next buffer
+            let current_buffer = remaining_buffers.remove(0);
+            
+            if current_buffer.len() == 1 && current_buffer[0] == 0xFF {
+                // This is a "split" marker - add extra delay
+                sleep(platform_send_interval).await;
+                continue;
+            }
+
+            // Send the buffer
+            if let Some(write_char) = &self.write_char {
+                info!("Writing BLE data packet {} of {} ({} bytes)", 
+                    total_count - remaining_buffers.len(), 
+                    total_count,
+                    current_buffer.len());
+                    
+                let writer = DataWriter::new().map_err(|e| e.to_string())?;
+                writer.WriteBytes(&current_buffer).map_err(|e| e.to_string())?;
+                let buffer = writer.DetachBuffer().map_err(|e| e.to_string())?;
+                
+                match write_char.WriteValueWithOptionAsync(
+                    &buffer,
+                    GattWriteOption::WriteWithoutResponse,
+                )?.get() {
+                    Ok(GattCommunicationStatus::Success) => {
+                        info!("Successfully sent BLE packet {} of {} - HEX: {} ASCII: {}", 
+                            total_count - remaining_buffers.len(),
+                            total_count,
+                            current_buffer.iter().map(|b| format!("{:02X}", b)).collect::<String>(),
+                            current_buffer.iter().map(|&b| if b.is_ascii_graphic() { b as char } else { '.' }).collect::<String>());
+                        last_send = Instant::now();
+                    }
+                    Ok(status) => {
+                        error!("Failed to write buffer: {:?}", status);
+                        return Err(format!("Failed to write buffer: {:?}", status).into());
+                    }
+                    Err(e) => {
+                        error!("Error writing buffer: {:?}", e);
+                        return Err(e.into());
+                    }
+                }
             }
         }
 
-        debug!("WinBlueController::send called with {} bytes", bytes.len());
-        if bytes.len() != 20 || !bytes.starts_with(&[0xE0, 0xE1, 0xE2, 0xE3]) {
-            return Err("Invalid command: must be 20 bytes starting with E0E1E2E3".to_string());
+        Ok(())
+    }
+
+    pub async fn send(&mut self, cmd: &str) -> Result<(), Box<dyn Error>> {
+        // Basic validation
+        if cmd.is_empty() {
+            return Ok(());
         }
 
-        let _guard = self.sending.lock().await;
+        info!("Initiating BLE command send: {}", cmd);
+        
+        // Handle non-command data when not ready
+        if !cmd.starts_with("E0E1E2E3") {
+            if !self.can_send {
+                debug!("Simulating send for non-command data");
+                sleep(Duration::from_millis(20)).await;
+                return Ok(());
+            }
+            return Err("Invalid command: must start with E0E1E2E3".into());
+        }
+
+        // Connection checks
         if !self.is_connected() {
-            return Err("Not connected".to_string());
+            return Err("Not connected".into());
         }
 
-        // Check if we can send
-        if !self.can_send {
-            return Err("Device not ready to send".to_string());
+        // Use a combined check of both flags
+        if self.cmd_sending || !self.can_send {
+            error!("Last command is still sending or device not ready");
+            return Err("Previous command still in progress or device not ready".into());
         }
 
-        // Set command sending state
         self.cmd_sending = true;
+        self.can_send = false; // Block new sends until current one completes
 
-        // Send the data
-        let result = if let Some(write_char) = &self.write_char {
-            let writer = DataWriter::new().map_err(|e| e.to_string())?;
-            writer.WriteBytes(bytes).map_err(|e| e.to_string())?;
-            let buffer = writer.DetachBuffer().map_err(|e| e.to_string())?;
-            
-            let result = write_char.WriteValueWithOptionAsync(
-                &buffer,
-                GattWriteOption::WriteWithoutResponse,
-            ).map_err(|e| e.to_string())?.get();
-            
-            match result {
-                Ok(GattCommunicationStatus::Success) => {
-                    debug!("Data sent successfully: {:?}", bytes);
-                    self.last_send_time = Some(Instant::now());
-                    Ok(())
-                }
-                Ok(status) => {
-                    error!("Failed to write data: {:?}", status);
-                    Err(format!("Failed to write data: {:?}", status))
-                }
-                Err(e) => Err(e.to_string())
+        // Prepare buffers
+        let bytes = match hex::decode(cmd) {
+            Ok(b) => b,
+            Err(e) => {
+                self.cmd_sending = false;
+                return Err(format!("Invalid hex string: {}", e).into());
             }
-        } else {
-            Err("Write characteristic not found".to_string())
         };
 
-        // Reset command sending state
-        self.cmd_sending = false;
-
-        result
-    }
-
-
-
-    pub async fn send_animation(&mut self, coordinates: &[[u16; 2]], color: [u8; 3]) -> Result<(), String> {
-        for &[x, y] in coordinates {
-            let command = vec![
-                0xE0, 0xE1, 0xE2, 0xE3,
-                0xC0, 0xC1, 0xC2, 0xC3,
-                (x & 0xFF) as u8, (x >> 8) as u8,
-                (y & 0xFF) as u8, (y >> 8) as u8,
-                color[0], color[1], color[2],
-                1, // z=1 (laser on)
-                0x00, 0x00, 0x00, 0x00,
-            ];
-            self.send(&command).await?;
+        // Split into chunks and add split markers
+        let mut buffers = Vec::new();
+        for chunk in bytes.chunks(20) {
+            if !buffers.is_empty() {
+                buffers.push(vec![0xFF]); // Split marker
+            }
+            buffers.push(chunk.to_vec());
         }
-        // Send laser off command
-        let off_command = vec![
-            0xE0, 0xE1, 0xE2, 0xE3,
-            0xC0, 0xC1, 0xC2, 0xC3,
-            0x00, 0x00, 0x00, 0x00,
-            color[0], color[1], color[2],
-            0, // z=0 (laser off)
-            0x00, 0x00, 0x00, 0x00,
-        ];
-        self.send(&off_command).await
+
+        let total_buffers = buffers.len();
+
+        // Clear receive buffer
+        {
+            let mut buffer = self.buffer.lock().await;
+            buffer.clear();
+        }
+
+        // Send the sequence and ensure cmd_sending is reset
+        let send_result = self.send_buffer_sequence(buffers, total_buffers).await;
+        let verify_result: Result<(), Box<dyn Error + Send + Sync>> = if send_result.is_ok() {
+            debug!("Send completed successfully");
+
+            // Wait for and verify response
+            match self.verify_response("E4E5E6E7", 1000).await {
+                Ok(_) => {
+                    debug!("Command response verified successfully");
+                    Ok(())
+                }
+                Err(e) => {
+                    error!("Failed to verify command response: {}", e);
+                    Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)) as Box<dyn Error + Send + Sync>)
+                }
+            }
+        } else {
+            send_result.map_err(|e| Box::<dyn Error + Send + Sync>::from(e))
+        };
+
+        // Always reset sending state
+        self.cmd_sending = false;
+        self.can_send = true; // Re-enable sending
+        self.last_send_time = Some(Instant::now());
+
+        // Return the result after cleanup
+        // Convert Box<dyn Error + Send + Sync> to Box<dyn Error> for type compatibility
+        verify_result.map_err(|e| e as Box<dyn Error>)
     }
+
+
 
     pub async fn disconnect(&mut self) -> Result<(), Box<dyn Error>> {
         debug!("WinBlueController::disconnect called");
@@ -472,23 +574,127 @@ impl WinBlueController {
         debug!("Device disconnected and resources cleaned up");
         Ok(())
     }
+
+
+    #[allow(dead_code)]
+    fn format_hex_bytes(&mut self,bytes: &[u8]) -> String {
+        bytes.iter().enumerate()
+        .map(|(i, &b)| {
+            if i % 2 == 0 {
+                if i > 0 { format!(", 0x{:02X}", b) }
+                else { format!("0x{:02X}", b) }
+            } else {
+                format!("{:02X}", b)
+            }
+        })
+        .collect()
+    }
 }
 
 impl BlueController for WinBlueController {
-    fn connect<'a>(&'a mut self) -> std::pin::Pin<Box<dyn Future<Output = Result<(), Box<dyn Error>>> + Send + 'a>> {
-        Box::pin(async move { self.connect().await })
+    fn connect<'a>(&'a mut self) -> std::pin::Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        Box::pin(async move { 
+            match self.connect().await {
+                Ok(()) => Ok(()),
+                Err(e) => Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())) as Box<dyn Error + Send + Sync>)
+            }
+        })
     }
-    
-    fn send<'a>(&'a mut self, bytes: &'a [u8]) -> std::pin::Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
-        Box::pin(async move { self.send(bytes).await })
-    }
-    
-    fn get_content(&self) -> String {
-        self.get_content()
+
+    fn send<'a>(&'a mut self, command: &str) -> std::pin::Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        let command = command.to_owned();
+        Box::pin(async move {
+            // Log the outgoing command
+            info!("Sending command - HEX: {} ASCII: {}", 
+                command,
+                command.chars().map(|c| if c.is_ascii_graphic() { c } else { '.' }).collect::<String>());
+            
+            // Pre-validate before any async operations
+            if command.is_empty() {
+                return Ok(());
+            }
+
+            // All error conditions are checked before any async operations or mutex locks
+            if !command.starts_with("E0E1E2E3") {
+                if !self.can_send {
+                    tokio::time::sleep(Duration::from_millis(20)).await;
+                    return Ok(());
+                }
+                return Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, 
+                    "Invalid command: must start with E0E1E2E3")) as Box<dyn Error + Send + Sync>);
+            }
+
+            if !self.is_connected() {
+                error!("Attempted to send command while disconnected");
+                return Err(Box::new(std::io::Error::new(std::io::ErrorKind::NotConnected, "Not connected")) as Box<dyn Error + Send + Sync>);
+            }
+
+            if self.cmd_sending {
+                error!("Attempted to send command while previous command is still in progress");
+                return Err(Box::new(std::io::Error::new(std::io::ErrorKind::WouldBlock, 
+                    "Previous command still in progress")) as Box<dyn Error + Send + Sync>);
+            }
+            
+            info!("Device status check passed, proceeding with send...");
+
+            self.cmd_sending = true;
+            // Convert hex string to bytes
+            let bytes: Vec<u8> = match hex::decode(&command) {
+                Ok(b) => b,
+                Err(e) => {
+                    self.cmd_sending = false;
+                    return Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, 
+                        format!("Invalid hex string: {}", e))) as Box<dyn Error + Send + Sync>);
+                }
+            };
+            
+            info!("Preparing to send command {} ({} bytes)", command, bytes.len());
+            
+            // Split into chunks and add split markers
+            let mut buffers = Vec::new();
+            for chunk in bytes.chunks(20) {
+                if !buffers.is_empty() {
+                    buffers.push(vec![0xFF]); // Split marker
+                }
+                buffers.push(chunk.to_vec());
+            }
+
+            let total_buffers = buffers.len();
+            info!("Split command into {} buffers", total_buffers);
+
+            let result = match self.send_buffer_sequence(buffers, total_buffers).await {
+                Ok(_) => Ok(()),
+                Err(e) => Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())) as Box<dyn Error + Send + Sync>)
+            };
+            self.cmd_sending = false;
+            
+            result
+        })
     }
     
     fn is_connected(&self) -> bool {
         self.is_connected()
+    }
+
+    fn set_receiver_callback(&mut self, callback: Box<dyn Fn(String) + Send + Sync>) {
+        // Use try_lock() instead of blocking_lock() to avoid blocking the async runtime
+        if let Ok(mut cb) = self.ble_call_back.try_lock() {
+            *cb = Some(callback);
+        }
+    }
+    
+    fn clear_receiver_callback(&mut self) {
+        let mut cb = self.ble_call_back.blocking_lock();
+        *cb = None;
+    }
+
+    fn disconnect<'a>(&'a mut self) -> std::pin::Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        Box::pin(async move { 
+            match self.disconnect().await {
+                Ok(()) => Ok(()),
+                Err(e) => Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())) as Box<dyn Error + Send + Sync>)
+            }
+        })
     }
 }
 

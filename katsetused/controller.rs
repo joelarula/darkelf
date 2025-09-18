@@ -50,28 +50,24 @@ pub type Characteristic = GattCharacteristic;
 
 pub type AsyncResult<T> = Pin<Box<dyn Future<Output = Result<T, Box<dyn Error + Send + Sync>>> + Send>>;
 
-pub trait DeviceController: Send + Sync {
-    /// Connect to the BLE device
-    fn connect(&mut self) -> AsyncResult<()>;
+pub trait DeviceController: Send + Sync  {
+    fn connect(&mut self) -> Result<(), Box<dyn Error>> ;
+
+    fn disconnect(&mut self) -> Result<(), Box<dyn Error>> ;
     
-    /// Send data to the device. Data should be a hex string like in JavaScript setCmdData.
-    /// Example: "E0E1E2E3B0B1B2B3..."    
     fn send(&mut self, cmd: &str) -> AsyncResult<()>;
     
-    /// Check if a complete message is available
     fn has_complete_message(&self) -> bool;
-    
-    /// Get and clear the latest complete message if available
+
     fn take_complete_message(&mut self) -> Option<String>;
     
-    /// Register a callback for received messages
     fn set_receiver_callback(&mut self, callback: Box<dyn Fn(String) + Send + Sync>);
     
-    /// Clear the receiver callback
     fn clear_receiver_callback(&mut self);
     
-    /// Check connection status
     fn is_connected(&self) -> bool;
+
+    
 }
 
 
@@ -79,6 +75,7 @@ type ReceiverCallback = Box<dyn Fn(String) + Send + Sync>;
 
 
 
+#[derive(Clone)]
 pub struct WinBlueController {
     device_info: Option<DeviceInformation>,
     device: Option<BluetoothLEDevice>,
@@ -113,20 +110,6 @@ enum BufferSegment {
     Split,
 }
 
-/// Log bytes in the same format as JavaScript logHexBytes function
-fn log_hex_bytes(bytes: &[u8]) {
-    let hex_str: String = bytes.iter().enumerate()
-        .map(|(i, &b)| {
-            if i % 2 == 0 {
-                if i > 0 { format!(", 0x{:02X}", b) }
-                else { format!("0x{:02X}", b) }
-            } else {
-                format!("{:02X}", b)
-            }
-        })
-        .collect();
-    debug!("{}", hex_str);
-}
 
 impl WinBlueController {
     /// Splits a hex string into buffers, handling 'Z' markers like JavaScript implementation
@@ -160,6 +143,81 @@ impl WinBlueController {
         
         result
     }
+
+
+    pub async fn connect(&mut self) -> Result<(), Box<dyn Error>> {
+        debug!("WinBlueController::connect called");
+        self.connect_count += 1;
+        self.connection_state = -1; // Set to connecting
+        
+        if let Some(device_info) = self.device_info.as_ref() {
+            let device_id = device_info.Id()?;
+            debug!("Connecting to BLE device with id: {}", device_id);
+            self.device = Some(BluetoothLEDevice::FromIdAsync(&device_id)?.get()?);
+            self.discover_characteristics().await?;
+            self.connected = true;
+            self.connection_state = 1; // Set to connected
+            debug!("Device connected");
+            
+            // Only set ready_to_receive after successful characteristic setup
+            self.ready_to_receive = true;
+            self.connection_state = 2; // Set to ready
+            
+        } else {
+            self.connection_state = 0; // Set to disconnected
+        }
+        Ok(())
+
+    }
+
+
+        pub async fn discover_characteristics(&mut self) -> Result<(), Box<dyn Error>> {
+        debug!("WinBlueController::discover_characteristics called");
+        if let Some(device) = &self.device {
+            let services_result = device.GetGattServicesAsync()?.get()?;
+            debug!("Enumerating GATT services");
+            for j in 0..services_result.Services()?.Size()? {
+                let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
+                let service_uuid = service.Uuid()?;
+                let service_uuid_str = format!("{:?}", service_uuid).to_uppercase();
+                debug!("Found service UUID: {}", service_uuid_str);
+                if LASER_SERVICE_UUID.contains(&service_uuid_str.as_str()) {
+                    self.service_uuid = Some(service_uuid);
+                    info!("Service UUID: {:?} Found Laser Service uuid", service_uuid);
+                    let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
+                    let characteristics = characteristics_result.Characteristics()?;
+                    debug!("Enumerating characteristics for service: {}", service_uuid_str);
+                    for k in 0..characteristics.Size()? {
+                        let characteristic: GattCharacteristic = characteristics.GetAt(k)?;
+                        let props = characteristic.CharacteristicProperties()?;
+                        let char_uuid: GUID = characteristic.Uuid()?;
+                        let char_uuid_str = format!("{:?}", char_uuid).to_uppercase();
+                        debug!("Characteristic UUID: {} Properties: {:?}", char_uuid_str, props);
+                        if (props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write ||
+                            props & GattCharacteristicProperties::WriteWithoutResponse == GattCharacteristicProperties::WriteWithoutResponse) &&
+                            WRITE_UUIDS.contains(&char_uuid_str.as_str()) {
+                            info!("Write UUID: {:?} Found Laser Service write uuid", char_uuid);
+                                self.write_char = Some(characteristic.clone());
+                            }
+                        if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
+                            props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) &&
+                            NOTIFY_UUIDS.contains(&char_uuid_str.as_str()) {
+                            info!("Notify UUID: {:?} Found Laser Service notification uuid", char_uuid);
+                                self.notify_char = Some(characteristic.clone());
+                        }
+                    }
+                }
+            }
+        } else {
+            return Err("Device not connected".into());
+        }
+        if self.write_char.is_none() || self.notify_char.is_none() {
+            return Err("Required characteristics not found".into());
+        }
+        self.setup_all_notifications().await?;
+        Ok(())
+    }
+    
 
     pub async fn new(device_info: Option<&DeviceInformation>) -> Result<Self, Box<dyn Error>> {
         Ok(Self {
@@ -245,69 +303,7 @@ impl WinBlueController {
         Ok(())
     }
 
-    pub async fn connect(&mut self) -> Result<(), Box<dyn Error>> {
-        // Use the trait implementation but wrap with additional state management
-        debug!("WinBlueController::connect called");
-        self.connect_count += 1;
-        self.connection_state = -1; // Set to connecting
-        
-        // Call the trait implementation through DeviceController
-        DeviceController::connect(self).await.map_err(|e| -> Box<dyn Error> { e })?;
-        
-        // Additional state management after successful connection
-        self.ready_to_receive = true;
-        self.connection_state = 2; // Set to ready
-        Ok(())
-    }
 
-
-
-    pub async fn discover_characteristics(&mut self) -> Result<(), Box<dyn Error>> {
-        debug!("WinBlueController::discover_characteristics called");
-        if let Some(device) = &self.device {
-            let services_result = device.GetGattServicesAsync()?.get()?;
-            debug!("Enumerating GATT services");
-            for j in 0..services_result.Services()?.Size()? {
-                let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
-                let service_uuid = service.Uuid()?;
-                let service_uuid_str = format!("{:?}", service_uuid).to_uppercase();
-                debug!("Found service UUID: {}", service_uuid_str);
-                if LASER_SERVICE_UUID.contains(&service_uuid_str.as_str()) {
-                    self.service_uuid = Some(service_uuid);
-                    info!("Service UUID: {:?} Found Laser Service uuid", service_uuid);
-                    let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
-                    let characteristics = characteristics_result.Characteristics()?;
-                    debug!("Enumerating characteristics for service: {}", service_uuid_str);
-                    for k in 0..characteristics.Size()? {
-                        let characteristic: GattCharacteristic = characteristics.GetAt(k)?;
-                        let props = characteristic.CharacteristicProperties()?;
-                        let char_uuid: GUID = characteristic.Uuid()?;
-                        let char_uuid_str = format!("{:?}", char_uuid).to_uppercase();
-                        debug!("Characteristic UUID: {} Properties: {:?}", char_uuid_str, props);
-                        if (props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write ||
-                            props & GattCharacteristicProperties::WriteWithoutResponse == GattCharacteristicProperties::WriteWithoutResponse) &&
-                            WRITE_UUIDS.contains(&char_uuid_str.as_str()) {
-                            info!("Write UUID: {:?} Found Laser Service write uuid", char_uuid);
-                                self.write_char = Some(characteristic.clone());
-                            }
-                        if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
-                            props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) &&
-                            NOTIFY_UUIDS.contains(&char_uuid_str.as_str()) {
-                            info!("Notify UUID: {:?} Found Laser Service notification uuid", char_uuid);
-                                self.notify_char = Some(characteristic.clone());
-                        }
-                    }
-                }
-            }
-        } else {
-            return Err("Device not connected".into());
-        }
-        if self.write_char.is_none() || self.notify_char.is_none() {
-            return Err("Required characteristics not found".into());
-        }
-        self.setup_all_notifications().await?;
-        Ok(())
-    }
 
     pub async fn setup_all_notifications(&mut self) -> Result<(), Box<dyn Error>> {
         debug!("WinBlueController::setup_all_notifications called");
@@ -450,183 +446,6 @@ impl WinBlueController {
     }
 
 
-    
-    pub async fn send(&mut self, bytes: &[u8]) -> Result<(), String> {
-        // Clear the buffer before sending
-        {
-            let mut buffer = self.buffer.lock().unwrap();
-            buffer.clear();
-        }
-
-        // Convert bytes to hex string for processing
-        let hex_string = hex::encode_upper(bytes);
-        debug!("WinBlueController::send called with hex string: {}", hex_string);
-        
-        // Process as hex string to handle potential 'Z' markers
-        let segments = self.split_hex_string_to_buffers(&hex_string, 20);
-        
-        for segment in segments {
-            match segment {
-                BufferSegment::Data(data) => {
-                    // Only validate E0E1E2E3 for 20-byte buffers
-                    if data.len() == 20 && !data.starts_with(&[0xE0, 0xE1, 0xE2, 0xE3]) {
-                        return Err("Invalid command: 20-byte buffer must start with E0E1E2E3".to_string());
-                    }
-                    
-                    // Enforce minimum delay between commands
-                    if let Some(last_time) = self.last_send_time {
-                        let elapsed = last_time.elapsed();
-                        if elapsed < self.min_send_interval {
-                            sleep(self.min_send_interval - elapsed).await;
-                        }
-                    }
-                    
-                    self.send_single_buffer(&data).await?;
-                }
-                BufferSegment::Split => {
-                    // Add delay for split marker
-                    sleep(self.fragment_interval).await;
-                }
-            }
-        }
-
-        // Check connection and readiness
-        if !self.is_connected() {
-            return Err("Not connected".to_string());
-        }
-        if !self.can_send {
-            return Err("Device not ready to send".to_string());
-        }
-
-        // Set command sending state
-        self.cmd_sending = true;
-
-        // Use the trait implementation to send
-        let hex_string = hex::encode_upper(bytes);
-        let result = DeviceController::send(self, &hex_string).await
-            .map_err(|e| e.to_string());
-
-        // Update state after sending
-        if result.is_ok() {
-            self.last_send_time = Some(Instant::now());
-        }
-        self.cmd_sending = false;
-
-        result
-    }
-
-    /// Sends a single buffer of data to the BLE device using the write characteristic.
-    async fn send_single_buffer(&mut self, data: &[u8]) -> Result<(), String> {
-        let write_char = match &self.write_char {
-            Some(c) => c,
-            None => return Err("Write characteristic not found".to_string()),
-        };
-
-        let writer = DataWriter::new()
-            .map_err(|e| format!("Failed to create DataWriter: {:?}", e))?;
-        writer.WriteBytes(data)
-            .map_err(|e| format!("Failed to write bytes: {:?}", e))?;
-        let buffer = writer.DetachBuffer()
-            .map_err(|e| format!("Failed to detach buffer: {:?}", e))?;
-
-        let result = write_char.WriteValueWithOptionAsync(
-            &buffer,
-            GattWriteOption::WriteWithoutResponse,
-        )
-        .map_err(|e| format!("Failed to write value async: {:?}", e))?
-        .get()
-        .map_err(|e| format!("Failed to get write result: {:?}", e))?;
-
-        match result {
-            GattCommunicationStatus::Success => {
-                debug!("Single buffer sent successfully: {:?}", data);
-                Ok(())
-            }
-            status => {
-                error!("Failed to write single buffer: {:?}", status);
-                Err(format!("Failed to write single buffer: {:?}", status))
-            }
-        }
-    }
-
-
-
-    pub async fn disconnect(&mut self) -> Result<(), Box<dyn Error>> {
-        debug!("WinBlueController::disconnect called");
-        
-        // Clean up notifications first
-        if let (Some(characteristic), Some(token)) = (&self.notify_char, self.notification_token) {
-            // Disable notifications
-            match characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(
-                GattClientCharacteristicConfigurationDescriptorValue::None
-            )?.get() {
-                Ok(GattCommunicationStatus::Success) => {
-                    debug!("Successfully disabled notifications");
-                },
-                Ok(status) => {
-                    error!("Failed to disable notifications: {:?}", status);
-                },
-                Err(e) => {
-                    error!("Error disabling notifications: {:?}", e);
-                }
-            }
-            
-            // Remove notification handler
-            let windows_token = unsafe { std::mem::transmute(token.0) };
-            match characteristic.RemoveValueChanged(windows_token) {
-                Ok(_) => debug!("Successfully removed notification handler"),
-                Err(e) => error!("Error removing notification handler: {:?}", e)
-            }
-        }
-
-        // Clean up device resources
-        self.device = None;
-        self.write_char = None;
-        self.notify_char = None;
-        self.connected = false;
-        self.notification_token = None;
-        self.cccd_state = None;
-
-        debug!("Device disconnected and resources cleaned up");
-        Ok(())
-    }
-}
-
-impl DeviceController for WinBlueController {
-    fn connect(&mut self) -> AsyncResult<()> {
-        debug!("DeviceController::connect called");
-        // Clone necessary state
-        let device_info = self.device_info.clone();
-        let buffer = self.buffer.clone();
-        let sending = self.sending.clone();
-        let blu_rec_content = self.blu_rec_content.clone();
-        let blu_rec_call_back = self.blu_rec_call_back.clone();
-
-        Box::pin(async move {
-            if let Some(device_info) = device_info.as_ref() {
-                let device_id = device_info.Id().map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
-                let device = BluetoothLEDevice::FromIdAsync(&device_id)
-                    .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?
-                    .get()
-                    .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
-                
-                // Update connection state
-                let _guard = sending.lock().await;
-                // Instead of updating self here, return the device and let the caller update the struct
-                drop(_guard);
-                drop(buffer);
-                drop(blu_rec_content);
-                drop(blu_rec_call_back);
-                // Device connected successfully
-                Ok(())
-            } else {
-                Err("No device info available".into())
-            }
-        })
-    }
-    
-
-
     fn send(&mut self, cmd: &str) -> AsyncResult<()> {
         // Validate command format
         if !self.can_send {
@@ -710,6 +529,192 @@ impl DeviceController for WinBlueController {
     
     fn is_connected(&self) -> bool {
         self.connected
+    }
+
+    
+    /// Core implementation of the send functionality that handles both string and byte input
+    async fn send_impl(&mut self, bytes: &[u8]) -> Result<(), Box<dyn Error + Send + Sync>> {
+        // Check connection and readiness
+        if !self.is_connected() {
+            return Err("Not connected".into());
+        }
+        if !self.can_send {
+            return Err("Device not ready to send".into());
+        }
+
+        // Clear the buffer before sending
+        {
+            let mut buffer = self.buffer.lock().unwrap();
+            buffer.clear();
+        }
+
+        // Convert to hex for processing
+        let hex_string = hex::encode_upper(bytes);
+        debug!("WinBlueController::send called with hex string: {}", hex_string);
+        
+        // Process as hex string to handle potential 'Z' markers
+        let segments = self.split_hex_string_to_buffers(&hex_string, 20);
+        
+        // Acquire send lock and set state
+        let _guard = self.sending.lock().await;
+        self.cmd_sending = true;
+        
+        for segment in segments {
+            match segment {
+                BufferSegment::Data(chunk) => {
+                    // Only validate E0E1E2E3 for 20-byte buffers
+                    if chunk.len() == 20 && !chunk.starts_with(&[0xE0, 0xE1, 0xE2, 0xE3]) {
+                        self.cmd_sending = false;
+                        return Err("Invalid command: 20-byte buffer must start with E0E1E2E3".into());
+                    }
+                    
+                    // Enforce minimum delay between commands
+                    if let Some(last_time) = self.last_send_time {
+                        let elapsed = last_time.elapsed();
+                        if elapsed < self.min_send_interval {
+                            sleep(self.min_send_interval - elapsed).await;
+                        }
+                    }
+                    
+                    // Send the chunk
+                    let write_char = self.write_char.as_ref()
+                        .ok_or_else(|| -> Box<dyn Error + Send + Sync> { "Write characteristic not found".into() })?;
+                        
+                    let writer = DataWriter::new()
+                        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
+                    writer.WriteBytes(&chunk)
+                        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
+                    let buffer = writer.DetachBuffer()
+                        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
+
+                    let result = write_char.WriteValueWithOptionAsync(&buffer, GattWriteOption::WriteWithoutResponse)
+                        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?
+                        .get()
+                        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
+
+                    match result {
+                        GattCommunicationStatus::Success => {
+                            debug!("Chunk sent successfully: {:?}", chunk);
+                        }
+                        status => {
+                            self.cmd_sending = false;
+                            error!("Failed to write chunk: {:?}", status);
+                            return Err(format!("Failed to write chunk: {:?}", status).into());
+                        }
+                    }
+                }
+                BufferSegment::Split => {
+                    sleep(self.fragment_interval).await;
+                }
+            }
+        }
+
+        // Update state after successful send
+        self.last_send_time = Some(Instant::now());
+        self.cmd_sending = false;
+        
+        Ok(())
+    }
+
+
+
+    pub async fn disconnect(&mut self) -> Result<(), Box<dyn Error>> {
+        debug!("WinBlueController::disconnect called");
+        
+        // Clean up notifications first
+        if let (Some(characteristic), Some(token)) = (&self.notify_char, self.notification_token) {
+            // Disable notifications
+            match characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(
+                GattClientCharacteristicConfigurationDescriptorValue::None
+            )?.get() {
+                Ok(GattCommunicationStatus::Success) => {
+                    debug!("Successfully disabled notifications");
+                },
+                Ok(status) => {
+                    error!("Failed to disable notifications: {:?}", status);
+                },
+                Err(e) => {
+                    error!("Error disabling notifications: {:?}", e);
+                }
+            }
+            
+            // Remove notification handler
+            let windows_token = unsafe { std::mem::transmute(token.0) };
+            match characteristic.RemoveValueChanged(windows_token) {
+                Ok(_) => debug!("Successfully removed notification handler"),
+                Err(e) => error!("Error removing notification handler: {:?}", e)
+            }
+        }
+
+        // Clean up device resources
+        self.device = None;
+        self.write_char = None;
+        self.notify_char = None;
+        self.connected = false;
+        self.notification_token = None;
+        self.cccd_state = None;
+
+        debug!("Device disconnected and resources cleaned up");
+        Ok(())
+    }
+}
+
+impl DeviceController for WinBlueController {
+    fn connect(&mut self) -> Result<(), Box<dyn Error>> {
+        match futures::executor::block_on(self.connect()) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e)
+        }
+    }
+
+    fn send(&mut self, cmd: &str) -> AsyncResult<()> {
+        // Clone self since we need to move it into the async block
+        let this = self.clone();
+        
+        // Validate command format
+        if cmd.is_empty() {
+            return Box::pin(async move { Err("Empty command".into()) });
+        }
+        if !cmd.starts_with("E0E1E2E3") {
+            return Box::pin(async move { Err("Invalid command: must start with E0E1E2E3".into()) });
+        }
+
+        let bytes = match hex::decode(cmd) {
+            Ok(b) => b,
+            Err(e) => return Box::pin(async move { Err(format!("Invalid hex string: {}", e).into()) })
+        };
+
+        // Use internal send implementation
+        Box::pin(async move { 
+            this.send_impl(&bytes).await 
+        })
+    }
+
+    fn has_complete_message(&self) -> bool {
+        self.blu_rec_content_complete.lock().unwrap().is_some()
+    }
+
+    fn take_complete_message(&mut self) -> Option<String> {
+        self.blu_rec_content_complete.lock().unwrap().take()
+    }
+
+    fn set_receiver_callback(&mut self, callback: Box<dyn Fn(String) + Send + Sync>) {
+        *self.blu_rec_call_back.lock().unwrap() = Some(callback);
+    }
+
+    fn clear_receiver_callback(&mut self) {
+        *self.blu_rec_call_back.lock().unwrap() = None;
+    }
+
+    fn is_connected(&self) -> bool {
+        self.connected
+    }
+    
+    fn disconnect(&mut self) -> Result<(), Box<dyn Error>> {
+        match futures::executor::block_on(self.disconnect()) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e)
+        }
     }
 }
 

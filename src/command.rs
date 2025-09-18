@@ -60,15 +60,14 @@ impl CommandGenerator {
     }
 
     pub fn get_query_cmd(random_data: &[u8]) -> String {
-
-        // Convert each byte to 2-digit hex and collect into a string
-        let encoded_random_bytes: String = random_data
-            .iter()
-            .map(|&byte| Self::to_fixed_width_hex(byte as i32, 2))
-            .collect();
-
-        // Construct the full command with header and footer
-        format!("{}{}{}", HEADER, encoded_random_bytes, FOOTER).to_uppercase()
+        // Create the middle section using the random bytes
+        let middle = format!("{:02X}{:02X}{:02X}{:02X}", random_data[0], random_data[1], random_data[2], random_data[3]);
+        
+        // Construct the full command: header + middle + footer (12 bytes total)
+        info!("Generating query command with random bytes: {:02X?}", random_data);
+        let cmd = format!("{}{}{}", HEADER, middle, FOOTER).to_uppercase();
+        info!("Generated command: {}", cmd);
+        cmd
     }
 
     pub fn get_xts_cmd(coord_data: &str) -> String {
@@ -142,7 +141,84 @@ impl CommandGenerator {
         None
     }
 
-    
+    /// Verifies the received data against the random verification bytes sent in the query.
+    /// Returns a tuple of (bool, DeviceInfo) where bool indicates if verification passed.
+    pub fn check_received_data(data: &str, random_verify: &[u8]) -> (bool, Option<DeviceInfo>) {
+        info!("Checking received data - data: {}, random_verify: {:02X?}", data, random_verify);
+        
+        // Validation of input lengths
+        if random_verify.len() != 4 || data.len() < 24 {
+            debug!("Invalid input lengths - random_verify: {}, data: {}", random_verify.len(), data.len());
+            return (false, None);
+        }
+
+        // Get the verification part from response (8 bytes)
+        let response_verify = &data[data.len() - 24..data.len() - 16];
+        debug!("Response verification part: {}", response_verify);
+        
+        // Calculate expected response for each byte
+        let mut expected = Vec::with_capacity(4);
+        for (idx, &byte) in random_verify.iter().enumerate() {
+            let transformed = match idx {
+                0 => ((byte.wrapping_add(55) >> 1).wrapping_sub(10)) & 0xFF,
+                1 => (7_u8.wrapping_add((byte.wrapping_sub(68)) << 1)) & 0xFF,
+                2 => (15_u8.wrapping_add((byte.wrapping_add(97)) >> 1)) & 0xFF,
+                3 => (87_u8.wrapping_add((byte.wrapping_sub(127)) >> 1)) & 0xFF,
+                _ => unreachable!()
+            };
+            expected.push(transformed);
+        }
+
+        // Parse received verification bytes
+        let mut received = Vec::with_capacity(4);
+        for i in 0..4 {
+            let hex_pair = &response_verify[i*2..i*2+2];
+            if let Ok(value) = u8::from_str_radix(hex_pair, 16) {
+                received.push(value);
+            } else {
+                debug!("Failed to parse hex value: {}", hex_pair);
+                return (false, None);
+            }
+        }
+
+        // Compare expected with received
+        debug!("Comparing expected values {:02X?} with received values {:02X?}", expected, received);
+        for (exp, rec) in expected.iter().zip(received.iter()) {
+            if exp != rec {
+                info!("Verification mismatch - expected: {:02X}, received: {:02X}", exp, rec);
+                return (false, None);
+            }
+        }
+
+        debug!("Verification passed successfully");
+        // Extract device information
+        let device_status = &data[data.len()-16..data.len()-14];
+        let device_type = &data[data.len()-14..data.len()-12];
+        let version = &data[data.len()-12..data.len()-10];
+        let user_type = &data[data.len()-10..data.len()-8];
+        
+        debug!("Parsing device info - status: {}, type: {}, version: {}, user_type: {}", 
+            device_status, device_type, version, user_type);
+
+        let device_info = DeviceInfo {
+            device_on: u8::from_str_radix(device_status, 16)
+                .map(|v| v != 0).unwrap_or(false),
+            device_type: device_type.to_string(),
+            version: version.to_string(),
+            user_type: user_type.to_string(),
+        };
+
+        info!("Device info parsed successfully: {:?}", device_info);
+        (true, Some(device_info))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DeviceInfo {
+    pub device_on: bool,
+    pub device_type: String,
+    pub version: String,
+    pub user_type: String,
 }
 
 

@@ -1442,45 +1442,7 @@
                 var appStateManager = getApp(),
                     deviceCommandUtils = r("deviceCommandUtils ");
 
-                function extractHexValue (startByte , byteLength , hexString) {
-                    var n = 2 * (startByte  - 1),
-                        h = n + 2 * byteLength ,
-                        a = hexString.slice(n, h),
-                        i = parseInt(a, 16);
-                    return i
-                }
-
-                function clampOrDefault(value, min, max, defaultValue ) {
-                    return isNaN(value) || value < min || value > max ? defaultValue  : value
-                }
-
-                // The processReceivedDataFragment function is designed to handle incoming fragments of data, 
-                // likely from a Bluetooth device, and assemble them into complete messages based on specific
-                //  start and end markers. It works by maintaining a buffer, blu_rec_content, in the global 
-                // application state (appStateManager.globalData). When a new fragment (dataFragment) arrives,
-                //  the function checks if the buffer is null. If so, it only initializes the buffer if the 
-                // fragment starts with the expected start marker "E0E1E2E3". Otherwise, it appends the new 
-                // fragment to the existing buffer.
-
-                // Once the buffer is updated, the function checks if it is non-empty. It then searches for 
-                // the last occurrence of the start marker ("E0E1E2E3") and the end marker ("E4E5E6E7") w
-                // ithin the buffer. If the end marker is found at the very end of the buffer, 
-                // it extracts the complete message from the start marker to the end marker, 
-                // calls a callback (setRecCallBack) to process the complete message, 
-                // and clears the buffer. If the end marker is found elsewhere, 
-                // it keeps only the data from the last start marker onward, 
-                // likely waiting for more data to complete the message. Finally,
-                //  it updates the buffer in the global state with the remaining or new data.
-                function processReceivedDataFragment(dataFragment) {
-                    var receiveBuffer = appStateManager.globalData.blu_rec_content;
-                    if (null == receiveBuffer ? dataFragment.startsWith("E0E1E2E3") && (receiveBuffer = dataFragment) : receiveBuffer += dataFragment, "" != receiveBuffer) {
-                        var r = receiveBuffer.lastIndexOf("E0E1E2E3"),
-                            h = receiveBuffer.lastIndexOf("E4E5E6E7"),
-                            currentMessage = receiveBuffer;
-                        h > 0 && (h == receiveBuffer.length - 8 ? (currentMessage = receiveBuffer.slice(r, h + 8), appStateManager.globalData.setRecCallBack(currentMessage), currentMessage = null) : currentMessage = receiveBuffer.slice(r)), appStateManager.globalData.blu_rec_content = currentMessage
-                    }
-                }
-
+ 
                 function discoverAndConfigureCharacteristics(deviceId , serviceId , retryCount) {
                     var callback  = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
                     if (appStateManager.globalData.blu_connect_stop) callback  && callback (!1);
@@ -1541,14 +1503,6 @@
                     }
                 }
 
-                function setupCharacteristicNotification(deviceId , serviceId ) {
-                    var callback  = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    appStateManager.globalData.blu_connect_stop ? callback  && callback (!1) : (uni.onBLECharacteristicValueChange((function(characteristicEvent) {
-                        var dataBytes = new Uint8Array(characteristicEvent.value),
-                            valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
-                        deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
-                    })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
-                }
 
                 function discoverAndSetupServices(e, r) {
                     var h = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 3,
@@ -1597,6 +1551,68 @@
                     } else connectionCallback && connectionCallback(!1)
                 }
 
+
+
+                function canSendBleData() {
+                    return appStateManager.globalData.blu_data_canSend
+                }
+
+                function logHexBytes(byteArray) {
+                    for (var r = "", n = 0; n < byteArray.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + byteArray[n]) : r += byteArray[n];
+                    t("log", r, " at utils/bluCtrl.js:494")
+                }
+
+               function extractHexValue (startByte , byteLength , hexString) {
+                    var n = 2 * (startByte  - 1),
+                        h = n + 2 * byteLength ,
+                        a = hexString.slice(n, h),
+                        i = parseInt(a, 16);
+                    return i
+                }
+
+                function clampOrDefault(value, min, max, defaultValue ) {
+                    return isNaN(value) || value < min || value > max ? defaultValue  : value
+                }
+
+                function setupCharacteristicNotification(deviceId , serviceId ) {
+                    var callback  = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    appStateManager.globalData.blu_connect_stop ? callback  && callback (!1) 
+                        : (uni.onBLECharacteristicValueChange((function(characteristicEvent) {
+                        var dataBytes = new Uint8Array(characteristicEvent.value),
+                            valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
+                        deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
+                    })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
+                }
+
+
+                // The processReceivedDataFragment function is designed to handle incoming fragments of data, 
+                // likely from a Bluetooth device, and assemble them into complete messages based on specific
+                //  start and end markers. It works by maintaining a buffer, blu_rec_content, in the global 
+                // application state (appStateManager.globalData). When a new fragment (dataFragment) arrives,
+                //  the function checks if the buffer is null. If so, it only initializes the buffer if the 
+                // fragment starts with the expected start marker "E0E1E2E3". Otherwise, it appends the new 
+                // fragment to the existing buffer.
+
+                // Once the buffer is updated, the function checks if it is non-empty. It then searches for 
+                // the last occurrence of the start marker ("E0E1E2E3") and the end marker ("E4E5E6E7") w
+                // ithin the buffer. If the end marker is found at the very end of the buffer, 
+                // it extracts the complete message from the start marker to the end marker, 
+                // calls a callback (setRecCallBack) to process the complete message, 
+                // and clears the buffer. If the end marker is found elsewhere, 
+                // it keeps only the data from the last start marker onward, 
+                // likely waiting for more data to complete the message. Finally,
+                //  it updates the buffer in the global state with the remaining or new data.
+                function processReceivedDataFragment(dataFragment) {
+                    var receiveBuffer = appStateManager.globalData.blu_rec_content;
+                    if (null == receiveBuffer ? dataFragment.startsWith("E0E1E2E3") && (receiveBuffer = dataFragment) : receiveBuffer += dataFragment, "" != receiveBuffer) {
+                        var r = receiveBuffer.lastIndexOf("E0E1E2E3"),
+                            h = receiveBuffer.lastIndexOf("E4E5E6E7"),
+                            currentMessage = receiveBuffer;
+                        h > 0 && (h == receiveBuffer.length - 8 ? (currentMessage = receiveBuffer.slice(r, h + 8), appStateManager.globalData.setRecCallBack(currentMessage), currentMessage = null) : currentMessage = receiveBuffer.slice(r)), appStateManager.globalData.blu_rec_content = currentMessage
+                    }
+                }
+
+
                 function sendBleDataBuffers(sendContext) {
                     var lastSendTimestamp  = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
                         sendInterval = 20,
@@ -1639,29 +1655,6 @@
                     }), sendInterval)
                 }
 
-                function sendBleBuffersPromise(dataBuffers, deviceInfo, showProgress) {
-                    var progressCallback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
-                    return new Promise((function(h, a) {
-                        sendBleDataBuffers({
-                            device: deviceInfo,
-                            sendBufs: dataBuffers,
-                            count: dataBuffers.length,
-                            showMsg: showProgress,
-                            callBack: progressCallback,
-                            success: function(e) {
-                                h(e)
-                            },
-                            fail: function(e) {
-                                a(e)
-                            }
-                        })
-                    }))
-                }
-
-                function logHexBytes(byteArray) {
-                    for (var r = "", n = 0; n < byteArray.length; n++) n % 2 == 0 ? ("" != r && (r += ", "), r = r + "0x" + byteArray[n]) : r += byteArray[n];
-                    t("log", r, " at utils/bluCtrl.js:494")
-                }
 
                 function splitHexStringToBuffers(hexString) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 20;
@@ -1692,31 +1685,31 @@
                     return bufferList
                 }
 
-                function canSendBleData() {
-                    return appStateManager.globalData.blu_data_canSend
+                function sendBleBuffersPromise(dataBuffers, deviceInfo, showProgress) {
+                    var progressCallback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                    return new Promise((function(h, a) {
+                        sendBleDataBuffers({
+                            device: deviceInfo,
+                            sendBufs: dataBuffers,
+                            count: dataBuffers.length,
+                            showMsg: showProgress,
+                            callBack: progressCallback,
+                            success: function(e) {
+                                h(e)
+                            },
+                            fail: function(e) {
+                                a(e)
+                            }
+                        })
+                    }))
                 }
-                e.exports = {
-                    // Initiates BLE connection if not already connected
-                    cnnPreBlu: function() {
-                        if (0 == appStateManager.globalData.blu_state) {
-                            appStateManager.globalData.blu_state = 1, 
-                            appStateManager.globalData.blu_connect_stop = !1, 
-                            appStateManager.globalData.readDevice();
-                            var e = appStateManager.globalData.ble_device;
-                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
-                                r && connectToDevice(e, !1, (function(e) {
-                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0)
-                                   
-                                }))
-                            })) : appStateManager.globalData.blu_state = 0
-                        }
-                    },
 
-                    setCanSend: function(canSend) {
-                        appStateManager.globalData.blu_data_canSend = canSend
-                    },
-                    getCanSend: canSendBleData,
-                    // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
+        
+
+
+                e.exports = {
+
+                // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
                     // cases and UI feedback.
                     // In summary, gosend returns true if the send process (real or simulated) is started or handled, 
                     // and false if it is blocked due to an ongoing send or invalid data. The actual BLE send is asynchronous,
@@ -1751,6 +1744,28 @@
                             showProgress && uni.hideLoading(), t("log", "Sending failed", r, " at utils/bluCtrl.js:596"), appStateManager.globalData.blu_data_cmdSending = !1, sendCallback && sendCallback(-1, 0)
                         })), !0
                     },
+
+                    // Initiates BLE connection if not already connected
+                    cnnPreBlu: function() {
+                        if (0 == appStateManager.globalData.blu_state) {
+                            appStateManager.globalData.blu_state = 1, 
+                            appStateManager.globalData.blu_connect_stop = !1, 
+                            appStateManager.globalData.readDevice();
+                            var e = appStateManager.globalData.ble_device;
+                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
+                                r && connectToDevice(e, !1, (function(e) {
+                                    1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0)
+                                   
+                                }))
+                            })) : appStateManager.globalData.blu_state = 0
+                        }
+                    },
+
+                    setCanSend: function(canSend) {
+                        appStateManager.globalData.blu_data_canSend = canSend
+                    },
+                    getCanSend: canSendBleData,
+       
                     drawProgress: function(canvas, size , progress ) {
                         canvas.beginPath(), canvas.setFillStyle("#4C4C4C");
                         var n = size  - 0,

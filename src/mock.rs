@@ -1,79 +1,60 @@
-use crate::controller::{DeviceController, AsyncResult};
+use crate::blue::BlueController;
 use log::info;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use std::future::Future;
 use std::pin::Pin;
-use hex;
+use std::error::Error;
 
+#[derive(Clone)]
 pub struct MockController {
-    fragments: Arc<Mutex<VecDeque<String>>>,
     callback: Arc<Mutex<Option<Box<dyn Fn(String) + Send + Sync>>>>,
 }
 
-impl DeviceController for MockController {
-    fn connect(&mut self) -> AsyncResult<()> {
-        let fragments = self.fragments.clone();
-        let callback = self.callback.clone();
+impl MockController {
+    pub fn new() -> Self {
+        Self {
+            callback: Arc::new(Mutex::new(None)),
+        }
+    }
+}
 
+impl BlueController for MockController {
+    fn connect<'a>(&'a mut self) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        info!("MockController connected");
+        Box::pin(async { Ok(()) })
+    }
+
+    fn send<'a>(&'a mut self, command: &str) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        let cmd = command.to_string();
+        let cb = self.callback.clone();
         Box::pin(async move {
-            info!("MockController: connect");
-            // Simulate successful connection with notification
-            let msg = "E0E1E2E3AAAAAAAAE4E5E6E7";
-            fragments.lock().unwrap().push_back(msg.to_string());
-            if let Some(cb) = callback.lock().unwrap().as_ref() {
-                cb(msg.to_string());
+            info!("MockController sending command: {}", cmd);
+            if let Some(callback) = cb.lock().unwrap().as_ref() {
+                // Simulate a response after sending the command
+                let response = format!("Response to command: {}", cmd);
+                callback(response);
             }
             Ok(())
         })
     }
 
     fn is_connected(&self) -> bool {
-        info!("MockController: is_connected");
+        info!("is_connected called");
         true
     }
 
-    fn send(&mut self, data: &str) -> AsyncResult<()> {
-        let fragments = self.fragments.clone();
-        let callback = self.callback.clone();
-        let data = data.to_string();
-
-        Box::pin(async move {
-            info!("MockController: send({:?})", data);
-            fragments.lock().unwrap().push_back(data.clone());
-            if let Some(cb) = callback.lock().unwrap().as_ref() {
-                cb(data);
-            }
-            Ok(())
-        })
-    }
-
-    fn has_complete_message(&self) -> bool {
-        info!("MockController: has_complete_message");
-        !self.fragments.lock().unwrap().is_empty()
-    }
-
-    fn take_complete_message(&mut self) -> Option<String> {
-        info!("MockController: take_complete_message");
-        self.fragments.lock().unwrap().pop_front()
+    fn disconnect<'a>(&'a mut self, ) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn Error + Send + Sync>>> + Send + 'a>> {
+        info!("Received disconnect");
+        Box::pin(async { Ok(()) })
     }
 
     fn set_receiver_callback(&mut self, callback: Box<dyn Fn(String) + Send + Sync>) {
-        info!("MockController: set_receiver_callback");
-        *self.callback.lock().unwrap() = Some(callback);
+        self.callback.lock().unwrap().replace(callback);
     }
 
     fn clear_receiver_callback(&mut self) {
-        info!("MockController: clear_receiver_callback");
-        *self.callback.lock().unwrap() = None;
+        self.callback.lock().unwrap().take();
     }
 }
 
-impl MockController {
-    pub fn new() -> Self {
-        MockController {
-            fragments: Arc::new(Mutex::new(VecDeque::new())),
-            callback: Arc::new(Mutex::new(None)),
-        }
-    }
-}
