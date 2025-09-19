@@ -1,8 +1,8 @@
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
-
-use crate::command::{CommandGenerator, DeviceResponse, POWER_ON_CMD, POWER_OFF_CMD};
+use crate::model::{SettingsData, DeviceResponse};
+use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
 pub struct LaserDevice {
@@ -14,7 +14,7 @@ pub struct LaserDevice {
 impl LaserDevice {
 
     /// Get a copy of the current device settings
-    pub fn get_setting(&self) -> Option<crate::command::SettingsData> {
+    pub fn get_setting(&self) -> Option<SettingsData> {
         self.device_info.lock().unwrap()
             .as_ref()
             .map(|resp| resp.settings.clone())
@@ -94,7 +94,7 @@ impl LaserDevice {
     }
 
 
-    pub async fn set_settings(&self, new_settings: crate::command::SettingsData) {
+    pub async fn set_settings(&self, new_settings: SettingsData) {
         let mut info_lock = self.device_info.lock().unwrap();
         if let Some(ref mut response) = *info_lock {
             response.settings = new_settings;
