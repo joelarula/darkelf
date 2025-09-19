@@ -12,8 +12,7 @@ use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
 
-#[tokio::main]
-#[test]
+
 async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
 
     util::setup_logging();

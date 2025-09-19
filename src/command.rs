@@ -6,8 +6,23 @@ use log::{debug, info};
 
 use crate::model::DeviceInfo;
 
-const HEADER: &str = "E0E1E2E3";
-const FOOTER: &str = "E4E5E6E7";
+// Response headers and footers
+pub const HEADER: &str = "E0E1E2E3";
+pub const FOOTER: &str = "E4E5E6E7";
+
+// Power command patterns
+pub const POWER_ON_CMD: &str = "B0B1B2B3FFB4B5B6B7";
+pub const POWER_OFF_CMD: &str = "B0B1B2B300B4B5B6B7";
+
+// Command section markers
+const MAIN_CMD_HEADER: &str = "C0C1C2C3";
+const MAIN_CMD_FOOTER: &str = "C4C5C6C7";
+const SETTINGS_CMD_HEADER: &str = "00010203";
+const SETTINGS_CMD_FOOTER: &str = "04050607";
+const FEATURES_CMD_HEADER: &str = "D0D1D2D3";
+const FEATURES_CMD_FOOTER: &str = "D4D5D6D7";
+const DRAW_CMD_HEADER: &str = "F0F1F2F3";
+const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 
 #[derive(Debug, Clone, Default)]
 pub struct MainCommandData {
@@ -311,8 +326,8 @@ impl CommandGenerator {
     /// Parses a complete device response into structured data
     pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
         // Parse each section using our modular functions
-        let main_cmd = Self::get_cmd_value("C0C1C2C3", "C4C5C6C7", data)?;
-        let settings_cmd = Self::get_cmd_value("00010203", "04050607", data)?;
+        let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
+        let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data)?;
 
         let mut response = DeviceResponse {
             main_data: Self::parse_main_command(&main_cmd)?,
@@ -323,7 +338,7 @@ impl CommandGenerator {
         };
 
         // Parse main command section
-        let main_cmd = match Self::get_cmd_value("C0C1C2C3", "C4C5C6C7", data) {
+        let main_cmd = match Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data) {
             Some(cmd) => cmd,
             None => return None,
         };
@@ -367,7 +382,7 @@ impl CommandGenerator {
         };
 
         // Parse settings section
-        let settings_cmd = Self::get_cmd_value("00010203", "04050607", data);
+        let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data);
         if let Some(settings_cmd) = settings_cmd {
             // Log raw command
             info!("Raw settings command: {}", settings_cmd);
@@ -438,7 +453,7 @@ impl CommandGenerator {
         }
 
         // Parse features section
-        if let Some(features_cmd) = Self::get_cmd_value("D0D1D2D3", "D4D5D6D7", data) {
+        if let Some(features_cmd) = Self::get_cmd_value(FEATURES_CMD_HEADER, FEATURES_CMD_FOOTER, data) {
             let feature_count = Self::clamp_value(Self::extract_hex_value(1, 1, &features_cmd), 0, 127, 0);
             let values_per_feature = 16; // or 22 if xy_config is enabled
 
@@ -466,7 +481,7 @@ impl CommandGenerator {
         }
 
         // Parse draw config section
-        if let Some(draw_cmd) = Self::get_cmd_value("F0F1F2F3", "F4F5F6F7", data) {
+        if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
             for i in 0..15 {
                 let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
                 if i < 14 {

@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use rand;
 
 use crate::model::DeviceInfo;
-use crate::command::{CommandGenerator};
+use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
 pub struct LaserDevice {
@@ -73,12 +73,28 @@ impl LaserDevice {
         }
     }
 
-    pub fn on(&self) {
-        info!("LaserDevice: on");
+    pub async fn on(&self) -> Result<(), String> {
+        info!("LaserDevice: turning on");
+        let mut controller = self.device_controller.lock().unwrap();
+        if !controller.is_connected() {
+            error!("Cannot turn on - device not connected");
+            return Err("Please connect first".to_string());
+        }
+        
+        // Send power on command
+        controller.send(POWER_ON_CMD).await.map_err(|e| e.to_string())
     }
 
-    pub fn off(&self) {
-        info!("LaserDevice: off");
+    pub async fn off(&self) -> Result<(), String> {
+        info!("LaserDevice: turning off");
+        let mut controller = self.device_controller.lock().unwrap();
+        if !controller.is_connected() {
+            error!("Cannot turn off - device not connected");
+            return Err("Please connect first".to_string());
+        }
+        
+        // Send power off command
+        controller.send(POWER_OFF_CMD).await.map_err(|e| e.to_string())
     }
 
     /// Generate random verification bytes
@@ -93,21 +109,6 @@ impl LaserDevice {
         self.device_info.lock().unwrap().device_on
     }
 
-    /// Get the device type
-    pub fn get_device_type(&self) -> String {
-        self.device_info.lock().unwrap().device_type.clone()
-    }
-
-    /// Get the firmware version
-    pub fn get_version(&self) -> String {
-        self.device_info.lock().unwrap().version.clone()
-    }
-
-    /// Get the user type
-    pub fn get_user_type(&self) -> String {
-        self.device_info.lock().unwrap().user_type.clone()
-    }
-    
     /// Get a copy of the entire device info
     pub fn get_device_info(&self) -> DeviceInfo {
         self.device_info.lock().unwrap().clone()

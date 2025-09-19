@@ -22,6 +22,7 @@ use tokio::time::{Instant, sleep};
 use log::{info, error, debug};
 
 use crate::blue::{self, BlueController};
+use crate::command::{HEADER, FOOTER};
 
 
 pub type Characteristic = GattCharacteristic;
@@ -250,7 +251,7 @@ impl WinBlueController {
                         let mut buffer = buffer_clone.blocking_lock();
                         
                         // Handle empty or new buffer
-                        if buffer.is_empty() && hex.starts_with("E0E1E2E3") {
+                        if buffer.is_empty() && hex.starts_with(HEADER) {
                             *buffer = hex;
                         } else if !buffer.is_empty() {
                             buffer.push_str(&hex);
@@ -258,8 +259,8 @@ impl WinBlueController {
                         
                         if !buffer.is_empty() {
                             // Find message boundaries
-                            let start_idx = buffer.rfind("E0E1E2E3");
-                            let end_idx = buffer.rfind("E4E5E6E7");
+                            let start_idx = buffer.rfind(HEADER);
+                            let end_idx = buffer.rfind(FOOTER);
                             
                             if let (Some(start), Some(end)) = (start_idx, end_idx) {
                                 if end > 0 && end == buffer.len() - 8 {
@@ -454,13 +455,13 @@ impl WinBlueController {
         info!("Initiating BLE command send: {}", cmd);
         
         // Handle non-command data when not ready
-        if !cmd.starts_with("E0E1E2E3") {
+        if !cmd.starts_with(HEADER) {
             if !self.can_send {
                 debug!("Simulating send for non-command data");
                 sleep(Duration::from_millis(20)).await;
                 return Ok(());
             }
-            return Err("Invalid command: must start with E0E1E2E3".into());
+            return Err(format!("Invalid command: must start with {}", HEADER).into());
         }
 
         // Connection checks
@@ -509,7 +510,7 @@ impl WinBlueController {
             debug!("Send completed successfully");
 
             // Wait for and verify response
-            match self.verify_response("E4E5E6E7", 1000).await {
+            match self.verify_response(FOOTER, 1000).await {
                 Ok(_) => {
                     debug!("Command response verified successfully");
                     Ok(())
@@ -615,13 +616,13 @@ impl BlueController for WinBlueController {
             }
 
             // All error conditions are checked before any async operations or mutex locks
-            if !command.starts_with("E0E1E2E3") {
+            if !command.starts_with(HEADER) {
                 if !self.can_send {
                     tokio::time::sleep(Duration::from_millis(20)).await;
                     return Ok(());
                 }
                 return Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, 
-                    "Invalid command: must start with E0E1E2E3")) as Box<dyn Error + Send + Sync>);
+                    format!("Invalid command: must start with {}", HEADER))) as Box<dyn Error + Send + Sync>);
             }
 
             if !self.is_connected() {
