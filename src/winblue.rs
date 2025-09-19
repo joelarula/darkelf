@@ -101,65 +101,6 @@ impl WinBlueController {
         Ok(())
     }
 
-    async fn send_ble(&mut self, data: &[u8]) -> Result<(), String> {
-        if let Some(write_char) = &self.write_char {
-            let _lock = self.sending.lock().await;
-            
-            // Log outgoing data
-            let hex = data.iter().map(|b| format!("{:02X}", b)).collect::<String>();
-            let ascii = data.iter()
-                .map(|&b| if b.is_ascii_graphic() { b as char } else { '.' })
-                .collect::<String>();
-            info!("Sending BLE data - HEX: {} ASCII: {}", hex, ascii);
-            
-            // Create the data writer and store the bytes
-            let writer = match DataWriter::new() {
-                Ok(w) => w,
-                Err(e) => return Err(format!("Failed to create DataWriter: {}", e))
-            };
-            
-            if let Err(e) = writer.WriteBytes(data) {
-                return Err(format!("Failed to write bytes to buffer: {}", e));
-            }
-            
-            let buffer = match writer.DetachBuffer() {
-                Ok(b) => b,
-                Err(e) => return Err(format!("Failed to detach buffer: {}", e))
-            };
-            
-            // Write to the characteristic with write without response
-            let result = write_char.WriteValueWithOptionAsync(
-                &buffer,
-                GattWriteOption::WriteWithoutResponse,
-            );
-            
-            let async_op = match result {
-                Ok(op) => op,
-                Err(e) => return Err(format!("Failed to start write operation: {}", e))
-            };
-            
-            let status = match async_op.get() {
-                Ok(s) => s,
-                Err(e) => return Err(format!("Failed to complete write operation: {}", e))
-            };
-            
-            match status {
-                GattCommunicationStatus::Success => {
-                    debug!("Data sent successfully: {:?}", data);
-                    self.last_send_time = Some(Instant::now());
-                    Ok(())
-                }
-                _ => {
-                    error!("Failed to write data: {:?}", status);
-                    Err(format!("Failed to write data: {:?}", status))
-                }
-            }
-        } else {
-            error!("Write characteristic not found");
-            Err("Write characteristic not found".to_string())
-        }
-    }
-
     pub async fn discover_characteristics(&mut self) -> Result<(), Box<dyn Error>> {
         debug!("WinBlueController::discover_characteristics called");
         if let Some(device) = &self.device {
@@ -392,12 +333,6 @@ impl WinBlueController {
                     ascii);
             }
 
-            // Calculate and report progress
-            let progress = ((total_count - remaining_buffers.len()) * 100) / total_count;
-            if progress != last_progress {
-                debug!("Send progress: {}%", progress);
-                last_progress = progress;
-            }
 
             // Get next buffer
             let current_buffer = remaining_buffers.remove(0);
@@ -615,15 +550,6 @@ impl BlueController for WinBlueController {
                 return Ok(());
             }
 
-            // All error conditions are checked before any async operations or mutex locks
-            if !command.starts_with(HEADER) {
-                if !self.can_send {
-                    tokio::time::sleep(Duration::from_millis(20)).await;
-                    return Ok(());
-                }
-                return Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, 
-                    format!("Invalid command: must start with {}", HEADER))) as Box<dyn Error + Send + Sync>);
-            }
 
             if !self.is_connected() {
                 error!("Attempted to send command while disconnected");

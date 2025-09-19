@@ -1397,19 +1397,19 @@
                         return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
                     },
                     getSettingCmd: function(settingData) {
-                        var t = toFixedWidthHex(settingData.valArr[0]),
-                            r = toFixedWidthHex(settingData.ch, 2),
-                            n = toFixedWidthHex(settingData.valArr[1], 2),
-                            h = toFixedWidthHex(settingData.xy, 2),
-                            a = toFixedWidthHex(settingData.valArr[2], 2),
-                            c = toFixedWidthHex(settingData.valArr[3], 2),
-                            o = toFixedWidthHex(settingData.valArr[4], 2),
-                            s = toFixedWidthHex(settingData.light, 2),
-                            l = toFixedWidthHex(settingData.cfg, 2);
-                        0 == settingData.cfg && (a = "FF", c = "FF", o = "FF");
-                        var p = toFixedWidthHex(settingData.lang, 2),
-                            d = "00010203" + t + r + n + h + a + c + o + s + l + p + "000000000004050607";
-                        return d.toUpperCase()
+                        var channel = toFixedWidthHex(settingData.valArr[0]),
+                            channelSetting = toFixedWidthHex(settingData.ch, 2),
+                            displayValue = toFixedWidthHex(settingData.valArr[1], 2),
+                            xy = toFixedWidthHex(settingData.xy, 2),
+                            redValue = toFixedWidthHex(settingData.valArr[2], 2),
+                            greenValue = toFixedWidthHex(settingData.valArr[3], 2),
+                            blueValue = toFixedWidthHex(settingData.valArr[4], 2),
+                            lightMode = toFixedWidthHex(settingData.light, 2),
+                            ttlAnalog = toFixedWidthHex(settingData.cfg, 2);
+                        0 == settingData.cfg && (redValue = "FF", greenValue = "FF", blueValue = "FF");
+                        var lang = toFixedWidthHex(settingData.lang, 2),
+                            command = "00010203" + channel + channelSetting + displayValue + xy + redValue + greenValue + blueValue + lightMode + ttlAnalog + lang + "000000000004050607";
+                        return command.toUpperCase()
                     },
                     getCmdValue: function(startPattern , endPattern , inputString ) {
                         var matcher = new RegExp(startPattern  + "(.+?)" + endPattern ),
@@ -1716,10 +1716,16 @@
                                 ? logHexBytes(hexData) 
                             :  0 == hexData.length || !canSendBleData() 
                                 && !hexData.startsWith("E0E1E2E3")) 
-                                    return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", appStateManager.globalData.blu_data_cmdSending, " at utils/bluCtrl.js:552"), !appStateManager.globalData.blu_data_cmdSending && (appStateManager.globalData.blu_data_cmdSending = !0, setTimeout((function() {
-                            appStateManager.globalData.blu_data_cmdSending = !1, 
-                            sendCallback && sendCallback(1, 100)
-                        }), 20), !0));
+                                    return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", 
+                                        appStateManager.globalData.blu_data_cmdSending, 
+                                        " at utils/bluCtrl.js:552"), 
+                                        !appStateManager.globalData.blu_data_cmdSending 
+                                        && (appStateManager.globalData.blu_data_cmdSending = !0, 
+                                            
+                                            setTimeout((function() {
+                                                appStateManager.globalData.blu_data_cmdSending = !1, 
+                                                sendCallback && sendCallback(1, 100)
+                                            }), 20), !0));
                         if (appStateManager.globalData.blu_data_cmdSending) 
                             return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
                         if (2 != appStateManager.globalData.blu_connected) 

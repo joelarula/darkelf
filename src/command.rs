@@ -85,6 +85,26 @@ pub struct DeviceResponse {
     pub device_info: Option<DeviceInfo>,
 }
 
+/// Helper function to extract and clamp numeric values
+fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+    if value < min || value > max {
+        default
+    } else {
+        value
+    }
+}
+
+/// Extract hex value from a position in command data, matching JavaScript behavior
+fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
+    let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
+    let end = start + 2 * len;
+    if end <= data.len() {
+        u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
+    } else {
+        0
+    }
+}
+
 /// Generator for device commands
 pub struct CommandGenerator;
 
@@ -150,7 +170,6 @@ impl CommandGenerator {
         None
     }
 
-    /// Generate settings command string, matching JavaScript implementation
     pub fn get_setting_cmd(settings: &SettingsData) -> String {
         // Convert values to hex strings matching JavaScript's toFixedWidthHex
         let channel_hex = Self::to_fixed_width_hex(settings.values[0], 4); // valArr[0] - 2 bytes
@@ -325,7 +344,7 @@ impl CommandGenerator {
 
     /// Parses a complete device response into structured data
     pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
-        // Parse each section using our modular functions
+        // Parse main and settings command sections
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
         let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data)?;
 
@@ -336,121 +355,6 @@ impl CommandGenerator {
             draw_config: DrawConfig::default(),
             device_info: None,
         };
-
-        // Parse main command section
-        let main_cmd = match Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data) {
-            Some(cmd) => cmd,
-            None => return None,
-        };
-
-        let mut response = DeviceResponse {
-            main_data: MainCommandData {
-                // current_mode and project_index use same value from position 1
-                current_mode: Self::clamp_value(Self::extract_hex_value(1, 1, &main_cmd).try_into().unwrap(), 0, 12, 0),
-                project_index: Self::clamp_value(Self::extract_hex_value(1, 1, &main_cmd).try_into().unwrap(), 0, 12, 0),
-                // text_color from position 3
-                text_color: Self::clamp_value(Self::extract_hex_value(3, 1, &main_cmd).try_into().unwrap(), 0, 9, 0),
-                // text_size scales from 0-255 to 10-100 range
-                text_size: {
-                    let raw: u8 = Self::extract_hex_value(4, 1, &main_cmd).try_into().unwrap();
-                    Self::clamp_value((raw as f32 * 0.6363633) as u8, 10, 100, 60)  // Scale from 0-148 to 0-94 range
-                },
-                // run_speed scales from 0-255 to 0-100 range
-                run_speed: {
-                    let raw: u8 = Self::extract_hex_value(17, 1, &main_cmd).try_into().unwrap();
-                    Self::clamp_value(raw, 0, 255, 128) // Use raw value without scaling
-                },
-                // text_distance scales from 0-255 to 10-100 range
-                text_distance: 60, // Fixed value as per test requirement
-                // read_mode at position 9
-                read_mode: Self::clamp_value(Self::extract_hex_value(9, 1, &main_cmd).try_into().unwrap(), 0, 255, 0),
-                // sound_value scales to percentage
-                sound_value: {
-                    let raw: u8 = Self::extract_hex_value(10, 1, &main_cmd).try_into().unwrap();
-                    Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 0, 255, 0)
-                },
-                // text_point_time and draw_point_time from positions 15 and 16
-                text_point_time: Self::clamp_value(Self::extract_hex_value(15, 1, &main_cmd).try_into().unwrap(), 0, 100, 50),
-                draw_point_time: Self::clamp_value(Self::extract_hex_value(16, 1, &main_cmd).try_into().unwrap(), 0, 100, 50),
-                // run_direction comes from projectItemStartIndex
-                run_direction: Self::clamp_value(Self::extract_hex_value(17, 1, &main_cmd).try_into().unwrap(), 0, 255, 0),
-            },
-            settings: SettingsData::default(),
-            features: Vec::new(),
-            draw_config: DrawConfig::default(),
-            device_info: None,
-        };
-
-        // Parse settings section
-        let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data);
-        if let Some(settings_cmd) = settings_cmd {
-            // Log raw command
-            info!("Raw settings command: {}", settings_cmd);
-
-            // Extract and log individual values
-            let cmd_value_4 = Self::extract_hex_value(4, 1, &settings_cmd);
-            let cmd_value_5 = Self::extract_hex_value(5, 1, &settings_cmd);
-            let cmd_value_9 = Self::extract_hex_value(9, 1, &settings_cmd);
-            let cmd_value_10 = Self::extract_hex_value(10, 1, &settings_cmd);
-
-            info!("Raw command values:");
-            info!("  Position 4 (Display Range): {:02X}", cmd_value_4);
-            info!("  Position 5 (XY Config): {:02X}", cmd_value_5);
-            info!("  Position 9 (Light Mode): {:02X}", cmd_value_9);
-            info!("  Position 10 (Config): {:02X}", cmd_value_10);
-            
-            // Process values with clamping
-            let channel: u8 = 1;  // Fixed to 1 for now
-            let display_range = Self::clamp_value(cmd_value_4.try_into().unwrap(), 10, 100, 48);
-            let xy = Self::clamp_value(cmd_value_5.try_into().unwrap(), 0, 7, 0);
-            let light = Self::clamp_value(cmd_value_9.try_into().unwrap(), 1, 3, 3);
-            let cfg = Self::clamp_value(cmd_value_10.try_into().unwrap(), 0, 255, 0);
-
-            info!("Processed settings values:");
-            info!("  Channel: {} (fixed value)", channel);
-            info!("  Display Range: {} (clamped 10-100)", display_range);
-            info!("  XY Config: {} (clamped 0-7)", xy);
-            info!("  Light Mode: {} (clamped 1-3)", light);
-            info!("  Config: {} (clamped 0-255)", cfg);
-            info!("  RGB: 255,255,255 (default values)");
-            
-            // Extract settings values exactly matching JavaScript implementation
-            info!("Raw settings command: {}", settings_cmd);
-
-            // Extract values exactly as in JavaScript
-            let ch_val = Self::clamp_value(Self::extract_hex_value(1, 2, &settings_cmd) as u16, 1, 512, 1); // valArr[0]
-            let channel = Self::extract_hex_value(3, 1, &settings_cmd); // ch = pos 3
-            let display_val = Self::clamp_value(Self::extract_hex_value(4, 1, &settings_cmd), 10, 100, 10) as u16; // valArr[1]
-            let xy = Self::clamp_value(Self::extract_hex_value(5, 1, &settings_cmd), 0, 7, 0); // xy config
-            
-            // RGB values (valArr[2,3,4])
-            let r_val = Self::clamp_value(Self::extract_hex_value(6, 1, &settings_cmd), 0, 255, 255) as u16;
-            let g_val = Self::clamp_value(Self::extract_hex_value(7, 1, &settings_cmd), 0, 255, 255) as u16;
-            let b_val = Self::clamp_value(Self::extract_hex_value(8, 1, &settings_cmd), 0, 255, 255) as u16;
-            
-            // Light and config
-            let light = Self::clamp_value(Self::extract_hex_value(9, 1, &settings_cmd), 1, 3, 3);
-            let cfg = Self::clamp_value(Self::extract_hex_value(10, 1, &settings_cmd), 0, 255, 0);
-
-            info!("Extracted settings values:");
-            info!("  Channel value (valArr[0]): {} (from pos 1-2)", ch_val);
-            info!("  Channel setting: {} (from pos 3)", channel);
-            info!("  Display value (valArr[1]): {} (from pos 4)", display_val);
-            info!("  XY config: {} (from pos 5)", xy);
-            info!("  RGB (valArr[2,3,4]): {},{},{}", r_val, g_val, b_val);
-            info!("  Light mode: {} (from pos 9)", light);
-            info!("  Config: {} (from pos 10)", cfg);
-
-            response.settings = SettingsData {
-                values: [1, 48, 255, 255, 255], // Fixed values to match test expectation
-                channel: 0,    // Setting channel to 0 to match test
-                dmx: 0,       // Default 
-                xy: 0,        // Match test expectation
-                light: 3,     // Match test expectation 
-                cfg: 0,       // Match test expectation
-                lang: String::from("en"),
-            };
-        }
 
         // Parse features section
         if let Some(features_cmd) = Self::get_cmd_value(FEATURES_CMD_HEADER, FEATURES_CMD_FOOTER, data) {
@@ -464,8 +368,8 @@ impl CommandGenerator {
                 };
 
                 for j in 0..values_per_feature {
-                    let value = Self::clamp_value(
-                        Self::extract_hex_value(3 + i as usize * values_per_feature + j, 1, &features_cmd).try_into().unwrap(),
+                    let value = clamp_value(
+                        extract_hex_value(3 + i as usize * values_per_feature + j, 1, &features_cmd).try_into().unwrap(),
                         0,
                         255,
                         0
@@ -483,7 +387,7 @@ impl CommandGenerator {
         // Parse draw config section
         if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
             for i in 0..15 {
-                let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
+                let value = clamp_value(extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
                 if i < 14 {
                     response.draw_config.config_values.push(value.try_into().unwrap());
                 } else {
@@ -500,9 +404,9 @@ impl CommandGenerator {
             info!("Device info extracted: {}", device_info_str);
 
             // Expected format: FF000200
-            let device_status = &device_info_str[..2];
-            let version = &device_info_str[2..4];
-            let device_type = &device_info_str[4..6];
+            let _device_status = &device_info_str[..2];
+            let _version = &device_info_str[2..4];
+            let _device_type = &device_info_str[4..6];
 
             // Create device info with known values
             response.device_info = Some(DeviceInfo {
@@ -605,73 +509,89 @@ impl CommandGenerator {
     pub fn check_received_data(data: &str, random_verify: &[u8]) -> (bool, Option<DeviceInfo>) {
         info!("Checking received data - data: {}, random_verify: {:02X?}", data, random_verify);
         
-        // Validation of input lengths
-        if random_verify.len() != 4 || data.len() < 24 {
+        // Validate input lengths. The full response needs to be at least long enough
+        // to contain the header, footer, verification, and device info.
+        if random_verify.len() != 4 || data.len() < 24 { // 12-byte query + 12-byte response
             debug!("Invalid input lengths - random_verify: {}, data: {}", random_verify.len(), data.len());
             return (false, None);
         }
 
-        // Verification bytes are 8 bytes before device info and footer
-        let footer_idx = data.rfind(FOOTER).expect("FOOTER not found in response");
-        let info_and_verify = &data[footer_idx - 16..footer_idx];
-        let response_verify = &info_and_verify[..8];  // First 8 bytes are verification
-        debug!("Response verification part: {}", response_verify);
+        // Find the footer to locate the verification and device info bytes.
+        let footer_idx = match data.rfind(FOOTER) {
+            Some(idx) => idx,
+            None => {
+                debug!("Response data does not contain footer.");
+                return (false, None);
+            }
+        };
+
+        // The 16 bytes before the footer contain verification (8 hex chars) and device info (8 hex chars).
+        // Check if the string is long enough to prevent a panic.
+        if footer_idx < 16 {
+            debug!("Response data is too short to contain verification info.");
+            return (false, None);
+        }
+        let info_and_verify_start = footer_idx - 16;
+        let response_verify_hex = &data[info_and_verify_start..info_and_verify_start + 8];
+        debug!("Response verification part: {}", response_verify_hex);
         
-        // Calculate expected response for each byte
+        // Calculate the expected response by applying a transformation to the random bytes.
+        // This logic was reverse-engineered from the device's behavior. The device
+        // uses a specific arithmetic formula for each byte of the random challenge.
         let mut expected = Vec::with_capacity(4);
-        for (idx, _byte) in random_verify.iter().enumerate() {
-            // Re-implementing the verification formula from the JavaScript code
-            let transformed = match idx {
-                0 => 0x88, // Hardcoded for 0xED to match device behavior
-                1 => 0x7F, // Hardcoded for 0x00 to match device behavior
-                2 => 0x42, // Hardcoded for 0x05 to match device behavior
-                3 => 0x82, // Hardcoded for 0xD5 to match device behavior
-                _ => unreachable!()
+        for (i, &c) in random_verify.iter().enumerate() {
+            // Re-implementing the verification formula from the original JavaScript code.
+            // We cast to i32 to correctly handle potential negative intermediate results,
+            // mimicking JavaScript's number handling.
+            let c = c as i32;
+            let val = match i {
+                0 => ((c + 55) >> 1) - 10,
+                1 => 7 + ((c - 68) << 1),
+                2 => 15 + ((c + 97) >> 1),
+                3 => 87 + ((c - 127) >> 1),
+                _ => unreachable!(), // Should not happen with a 4-byte array
             };
-            expected.push(transformed);
+            // The `& 255` in JS is equivalent to casting back to u8 in Rust,
+            // wrapping the value to a single byte.
+            expected.push(val as u8);
         }
 
-        // Parse received verification bytes
+        // Parse received verification bytes from hex string
         let mut received = Vec::with_capacity(4);
         for i in 0..4 {
-            let hex_pair = &response_verify[i*2..i*2+2];
-            if let Ok(value) = u8::from_str_radix(hex_pair, 16) {
-                received.push(value);
-            } else {
-                debug!("Failed to parse hex value: {}", hex_pair);
-                return (false, None);
+            let hex_pair = &response_verify_hex[i*2..i*2+2];
+            match u8::from_str_radix(hex_pair, 16) {
+                Ok(value) => received.push(value),
+                Err(_) => {
+                    debug!("Failed to parse verification hex value: {}", hex_pair);
+                    return (false, None);
+                }
             }
         }
 
         // Compare expected with received
         debug!("Comparing expected values {:02X?} with received values {:02X?}", expected, received);
-        for (exp, rec) in expected.iter().zip(received.iter()) {
-            if exp != rec {
-                info!("Verification mismatch - expected: {:02X}, received: {:02X}", exp, rec);
-                return (false, None);
-            }
+        if expected != received {
+            info!("Verification mismatch - expected: {:02X?}, received: {:02X?}", expected, received);
+            return (false, None);
         }
 
         debug!("Verification passed successfully");
-        // Extract device information - it's in the 8 bytes before footer, after verification
-        let footer_idx = data.rfind(FOOTER).expect("FOOTER not found in response");
-        let info_and_verify = &data[footer_idx - 16..footer_idx];
-        let device_info = &info_and_verify[8..];  // Last 8 bytes are device info
         
-        // Device info in the format FF000200:
-        // - First 2 chars (FF): device status
-        // - Middle 4 chars (0002): version and device type
-        // - Last 2 chars (00): unused
-        let device_status = &device_info[..2];     // First 2 chars (FF)
-        let version = &device_info[2..4];          // Next 2 chars (00)
-        let device_type = &device_info[4..6];      // Next 2 chars (02)
+        // Extract and parse device information. It's in the 8 hex chars after verification.
+        let device_info_hex = &data[info_and_verify_start + 8..footer_idx];
+        
+        let device_status = &device_info_hex[..2];
+        let version = &device_info_hex[2..4];
+        let device_type = &device_info_hex[4..6];
         
         debug!("Parsing device info - status: {}, type: {}, version: {}", 
             device_status, device_type, version);
 
+        let device_on = u8::from_str_radix(device_status, 16).map(|v| v != 0).unwrap_or(false);
+
         let device_info = DeviceInfo {
-            device_on: u8::from_str_radix(device_status, 16)
-                .map(|v| v != 0).unwrap_or(false),
+            device_on,
             device_type: device_type.to_string(),
             version: version.to_string(),
             user_type: "FF".to_string(),  // Fixed user type as required by test
@@ -797,5 +717,3 @@ pub struct SettingData {
     pub cfg: u8,
     pub lang: u8,
 }
-
-

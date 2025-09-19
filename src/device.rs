@@ -2,28 +2,31 @@ use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
 
-use crate::model::DeviceInfo;
-use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
+use crate::command::{CommandGenerator, DeviceResponse, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
 pub struct LaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
-    device_info: Arc<Mutex<DeviceInfo>>,
+	device_info: Arc<Mutex<Option<DeviceResponse>>>,
 }
 
 impl LaserDevice {
+
+    /// Get a copy of the current device settings
+    pub fn get_setting(&self) -> Option<crate::command::SettingsData> {
+        self.device_info.lock().unwrap()
+            .as_ref()
+            .map(|resp| resp.settings.clone())
+    }
+
     /// Create a new LaserDevice instance with initialized random check bytes and device controller
     pub fn new(device_controller: impl BlueController + 'static) -> Self {
         Self {
             random_check: Self::gen_random_check(),
+
             device_controller: Arc::new(Mutex::new(device_controller)),
-            device_info: Arc::new(Mutex::new(DeviceInfo {
-                device_on: false,
-                device_type: String::new(),
-                version: String::new(),
-                user_type: String::new(),
-            })),
+            device_info: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -42,25 +45,14 @@ impl LaserDevice {
                 if success {
                     // Then parse full device response
                     if let Some(response) = CommandGenerator::parse_device_response(&data) {
-                        if let Some(new_info) = response.device_info {
-                            info!(
-                                "Device info updated - Power: {}, Type: {}, Version: {}, User Type: {}", 
-                                if new_info.device_on { "ON" } else { "OFF" },
-                                new_info.device_type,
-                                new_info.version, 
-                                new_info.user_type
-                            );
-                            
-                            // Update device state with parsed info
-                            if let Ok(mut info) = device_info.lock() {
-                                *info = new_info;
-                            }
+                        info!("DeviceResponse: {:#?}", response);
+                        if let Ok(mut info) = device_info.lock() {
+                            *info = Some(response);
                         }
                     }
                 } else {
                     info!("Invalid or unverified device response");
                 }
-
             }));
             // Lock is released here when controller goes out of scope
         }
@@ -73,29 +65,50 @@ impl LaserDevice {
         }
     }
 
-    pub async fn on(&self) -> Result<(), String> {
+    pub async fn on(&self) {
         info!("LaserDevice: turning on");
         let mut controller = self.device_controller.lock().unwrap();
         if !controller.is_connected() {
             error!("Cannot turn on - device not connected");
-            return Err("Please connect first".to_string());
+            return;
         }
         
         // Send power on command
-        controller.send(POWER_ON_CMD).await.map_err(|e| e.to_string())
+        if let Err(e) = controller.send(POWER_ON_CMD).await {
+            error!("Failed to send ON command: {:?}", e);
+        }
     }
 
-    pub async fn off(&self) -> Result<(), String> {
+    pub async fn off(&self) {
         info!("LaserDevice: turning off");
         let mut controller = self.device_controller.lock().unwrap();
         if !controller.is_connected() {
             error!("Cannot turn off - device not connected");
-            return Err("Please connect first".to_string());
+            return;
         }
         
         // Send power off command
-        controller.send(POWER_OFF_CMD).await.map_err(|e| e.to_string())
+        if let Err(e) = controller.send(POWER_OFF_CMD).await {
+            error!("Failed to send OFF command: {:?}", e);
+        }
     }
+
+
+    pub async fn set_settings(&self, new_settings: crate::command::SettingsData) {
+        let mut info_lock = self.device_info.lock().unwrap();
+        if let Some(ref mut response) = *info_lock {
+            response.settings = new_settings;
+            // Generate the settings command string
+            let cmd = CommandGenerator::get_setting_cmd(&response.settings);
+            // Send the command to the device
+            let mut controller = self.device_controller.lock().unwrap();
+            if let Err(e) = controller.send(&cmd).await {
+                error!("Failed to send settings command: {:?}", e);
+            }
+        }
+    }
+
+    
 
     /// Generate random verification bytes
     fn gen_random_check() -> Vec<u8> {
@@ -106,11 +119,15 @@ impl LaserDevice {
 
     /// Get the current device power state
     pub fn is_on(&self) -> bool {
-        self.device_info.lock().unwrap().device_on
+        self.device_info.lock().unwrap()
+            .as_ref()
+            .and_then(|resp| resp.device_info.as_ref())
+            .map(|info| info.device_on)
+            .unwrap_or(false)
     }
 
-    /// Get a copy of the entire device info
-    pub fn get_device_info(&self) -> DeviceInfo {
+    /// Get a copy of the entire device response
+    pub fn get_device_response(&self) -> Option<DeviceResponse> {
         self.device_info.lock().unwrap().clone()
     }
 }

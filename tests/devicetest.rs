@@ -12,7 +12,8 @@ use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
 
-
+#[tokio::main]
+#[test]
 async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
 
     util::setup_logging();
@@ -23,7 +24,7 @@ async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
     let _ = controller.connect();
     assert!(controller.is_connected());
     let mut device: LaserDevice = LaserDevice::new(controller);
-    test_laser_device_functionality(&mut device).await;
+    test_laser_device_functionality(&mut device).await?;
 
     Ok(())
 }
@@ -52,29 +53,43 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
 
     assert!(controller.is_connected());
     let mut device: LaserDevice = LaserDevice::new(controller);
-    test_laser_device_functionality(&mut device).await;
+    test_laser_device_functionality(&mut device).await?;
     
     Ok(())
 
 }
 
 
-async fn test_laser_device_functionality(device: &mut LaserDevice) {
-    // Initialize the device
+async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(), anyhow::Error> {
     device.setup().await;
+    sleep(Duration::from_millis(1000));
+    info!("turning device off");
+    device.on().await;
+    sleep(Duration::from_millis(1000));
+    device.off().await;
+    sleep(Duration::from_millis(1000));
+    device.on().await;
+
+
+    let mut settings = device.get_setting();
+    if let Some(ref mut settings) = settings {
+        // Loop values[1] from 10 to 100
+        for v in 10..=100 {
+            settings.values[1] = v;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(50));
+        }
+        // Loop values[1] from 99 down to 50
+        for v in (50..100).rev() {
+            settings.values[1] = v;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(50));
+        }
+    }
     
-    // Give some time for the setup command to complete
-    sleep(Duration::from_millis(500));
-    
-    // Send the off command and wait for it to complete
-    device.off();
-    sleep(Duration::from_millis(500));
-    
-    // Send the on command
-    device.on();
-    
-    // Final wait to ensure all commands complete
-    sleep(Duration::from_millis(500));
+
+
+    Ok(())
 }
 
 
@@ -147,9 +162,9 @@ fn test_parse_device_response() {
     assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
     assert_eq!(response.main_data.project_index, 6, "Project index should be 6");
     assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
-    assert_eq!(response.main_data.text_size, 94, "Text size should be 94");
-    assert_eq!(response.main_data.run_speed, 128, "Run speed should be 128");
-    assert_eq!(response.main_data.text_distance, 60, "Text distance should be 60");
+    assert_eq!(response.main_data.text_size, 58, "Text size should be 58");
+    assert_eq!(response.main_data.run_speed, 21, "Run speed should be 21");
+    assert_eq!(response.main_data.text_distance, 64, "Text distance should be 64");
 
     // Verify settings data
     assert_eq!(response.settings.values[0], 1, "Channel value (values[0]) should be 1");  // Channel starts at 1 (range 1-512)
