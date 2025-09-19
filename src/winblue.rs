@@ -326,7 +326,7 @@ impl WinBlueController {
                 let ascii = current_buffer.iter()
                     .map(|&b| if b.is_ascii_graphic() { b as char } else { '.' })
                     .collect::<String>();
-                info!("Sending buffer {} of {} - HEX: {} ASCII: {}", 
+                debug!("Sending buffer {} of {} - HEX: {} ASCII: {}", 
                     total_count - remaining_buffers.len() + 1,
                     total_count,
                     hex,

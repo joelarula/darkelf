@@ -1789,24 +1789,67 @@
                     // responsible for parsing and updating the application's global state based on a device's response data,
                     // typically received as a buffer or hex string. It performs several key tasks:
                     setCmdData: function(deviceResponseData ) {
-                        t("log", "Device Returned data", deviceResponseData , " at utils/bluCtrl.js:21"), deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", deviceResponseData );
+                        
+                        deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", deviceResponseData );
+                        
                         var mainCommandData  = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", deviceResponseData );
-                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue (3, 1, mainCommandData ), 0, 9, 0), appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor, appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue (4, 1, mainCommandData ) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue (6, 1, mainCommandData ) / 255 * 100), 0, 255, 128), appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed, appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue (8, 1, mainCommandData ) / 255 * 100), 10, 100, 60), appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue (9, 1, mainCommandData ), 0, 255, 0), appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue (10, 1, mainCommandData ) / 255 * 100), 0, 255, 0), appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue (15, 1, mainCommandData ), 0, 100, 50), appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue (16, 1, mainCommandData ), 0, 100, 50), appStateManager.globalData.cmd.textData.refresh = !0;
+                        
+                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), 
+                        
+                        appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0),
+                        
+                        appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue (3, 1, mainCommandData ), 0, 9, 0), 
+                        
+                        appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor, 
+                        appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue (4, 1, mainCommandData ) / 255 * 100), 10, 100, 60), 
+                        appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue (6, 1, mainCommandData ) / 255 * 100), 0, 255, 128), 
+                        
+                        appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed, 
+                        
+                        appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue (8, 1, mainCommandData ) / 255 * 100), 10, 100, 60), 
+                        
+                        appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue (9, 1, mainCommandData ), 0, 255, 0), 
+                        appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue (10, 1, mainCommandData ) / 255 * 100), 0, 255, 0), 
+                        
+                        appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue (15, 1, mainCommandData ), 0, 100, 50), 
+                        
+                        appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue (16, 1, mainCommandData ), 0, 100, 50), 
+                        appStateManager.globalData.cmd.textData.refresh = !0;
                         var projectItems = appStateManager.globalData.cmd.prjData.prjItem,
                             projectItemStartIndex  = 17;
                         for (var itemKey in projectItems) {
                             var projectItem = projectItems[itemKey];
-                            projectItem.pyMode = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), projectItem.prjSelected[3] = extractHexValue (projectItemStartIndex  + 1, 2, mainCommandData ), projectItem.prjSelected[2] = extractHexValue (projectItemStartIndex  + 3, 2, mainCommandData ), projectItem.prjSelected[1] = extractHexValue (projectItemStartIndex  + 5, 2, mainCommandData ), projectItem.prjSelected[0] = extractHexValue (projectItemStartIndex  + 7, 2, mainCommandData ), projectItemStartIndex  += 9
+                            projectItem.pyMode = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), 
+                            projectItem.prjSelected[3] = extractHexValue (projectItemStartIndex  + 1, 2, mainCommandData ), 
+                            projectItem.prjSelected[2] = extractHexValue (projectItemStartIndex  + 3, 2, mainCommandData ), 
+                            projectItem.prjSelected[1] = extractHexValue (projectItemStartIndex  + 5, 2, mainCommandData ), 
+                            projectItem.prjSelected[0] = extractHexValue (projectItemStartIndex  + 7, 2, mainCommandData ), 
+                            projectItemStartIndex  += 9
                         }
-                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), projectItemStartIndex  += 1;
-                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++) 0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0);
+                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), 
+                        projectItemStartIndex  += 1;
+                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++) 
+                            0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) 
+                                    : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) 
+                                            : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0);
+                        
                         var settingCommandData = deviceCommandUtils.getCmdValue("00010203", "04050607", deviceResponseData );
-                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue (1, 2, settingCommandData), 1, 512, 1), appStateManager.globalData.cmd.settingData.ch = extractHexValue (3, 1, settingCommandData), appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue (4, 1, settingCommandData), 10, 100, 10), appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue (5, 1, settingCommandData), 0, 7, 0), appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue (6, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue (7, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue (8, 1, settingCommandData), 0, 255, 255), appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue (9, 1, settingCommandData), 1, 3, 3), appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue (10, 1, settingCommandData), 0, 255, 0);
+                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue (1, 2, settingCommandData),1, 512, 1), 
+                        appStateManager.globalData.cmd.settingData.ch = extractHexValue (3, 1, settingCommandData), 
+                        appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue (4, 1, settingCommandData), 10, 100, 10), 
+                        appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue (5, 1, settingCommandData), 0, 7, 0),
+                        appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue (6, 1, settingCommandData), 0, 255, 255), 
+                        appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue (7, 1, settingCommandData), 0, 255, 255), 
+                        appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue (8, 1, settingCommandData), 0, 255, 255), 
+                        appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue (9, 1, settingCommandData), 1, 3, 3), 
+                        appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue (10, 1, settingCommandData), 0, 255, 0);
+
                         var featureCommandData = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", deviceResponseData );
                         if ("" != featureCommandData) {
                             var j = appStateManager.globalData.getDeviceFeatures(),
                                 x = 16;
-                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), deviceCommandUtils.getFeaturesValue({
+                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), 
+                            deviceCommandUtils.getFeaturesValue({
                                 features: j
                             }, "xyCnf") && (x = 22);
                             for (var featureConfigList = [], f = clampOrDefault(extractHexValue (1, 1, featureCommandData), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {

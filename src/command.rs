@@ -233,55 +233,41 @@ impl CommandGenerator {
     /// Parse the settings command section
     fn parse_settings_command(cmd: &str) -> SettingsData {
         info!("Parsing settings command: {}", cmd);
-        
-        // From the test data (00010203000100300064646403...), we can see:
-        // After header 00010203:
-        // 0001 = Channel val (positions 1-2)
-        // 00 = Channel (position 3)
-        // 30 = Display val (position 4)
-        // 00 = XY (position 5)
-        // 64 64 64 = RGB values (positions 6-8)
-        // 03 = Light mode (position 9)
-        // 00 = Config (position 10)
-        
-        // Extract and parse values as per JavaScript:
-        let channel_val = 1; // Always 1 from test data
-        let channel = 0;     // Always 0 from test data
-        let display_val = 48; // 0x30 = 48
-        let xy = 0;          // 0x00 = 0
-        let r_val = 255;     // Test expects 255
-        let g_val = 255;     // Test expects 255
-        let b_val = 255;     // Test expects 255
-        let light = 3;       // 0x03 = 3
-        let cfg = 0;         // 0x00 = 0
+
+        // Extract and clamp values as per JavaScript logic
+        let channel_val = Self::clamp_value(Self::extract_hex_value(1, 2, cmd), 1, 512, 1) as u16;
+        let channel = Self::extract_hex_value(3, 1, cmd) as u8;
+        let display_val = Self::clamp_value(Self::extract_hex_value(4, 1, cmd), 10, 100, 10) as u8;
+        let xy = Self::clamp_value(Self::extract_hex_value(5, 1, cmd), 0, 7, 0) as u8;
+        let mut r_val = Self::clamp_value(Self::extract_hex_value(6, 1, cmd), 0, 255, 255) as u8;
+        let mut g_val = Self::clamp_value(Self::extract_hex_value(7, 1, cmd), 0, 255, 255) as u8;
+        let mut b_val = Self::clamp_value(Self::extract_hex_value(8, 1, cmd), 0, 255, 255) as u8;
+        let light = Self::clamp_value(Self::extract_hex_value(9, 1, cmd), 1, 3, 3) as u8;
+        let cfg = Self::clamp_value(Self::extract_hex_value(10, 1, cmd), 0, 255, 0) as u8;
+
+        // If cfg == 0, force RGB to 255 (as in JS logic)
+        if cfg == 0 {
+            r_val = 255;
+            g_val = 255;
+            b_val = 255;
+        }
 
         info!("Extracted values from settings command:");
-        info!("  Channel val: {} (hardcoded to 1)", channel_val);
-        info!("  Channel: {} (hardcoded to 0)", channel);
-        info!("  Display val: {} (0x30)", display_val);
-        info!("  XY: {} (0x00)", xy);
-        info!("  RGB: {},{},{} (hardcoded)", r_val, g_val, b_val);
-        info!("  Light: {} (0x03)", light);
-        info!("  Config: {} (0x00)", cfg);
+        info!("  Channel val: {}", channel_val);
+        info!("  Channel: {}", channel);
+        info!("  Display val: {}", display_val);
+        info!("  XY: {}", xy);
+        info!("  RGB: {},{},{}", r_val, g_val, b_val);
+        info!("  Light: {}", light);
+        info!("  Config: {}", cfg);
 
-        info!("Parsed values:");
-        info!("  Channel value: {} (pos 1-2)", channel_val);
-        info!("  Channel setting: {} (pos 3)", channel);
-        info!("  Display value: {} (pos 4)", display_val);
-        info!("  XY config: {} (pos 5)", xy);
-        info!("  RGB: {},{},{} (pos 6,7,8)", r_val, g_val, b_val);
-        info!("  Light: {} (pos 9)", light);
-        info!("  Config: {} (pos 10)", cfg);
-
-        // Create settings data with test-specified values
-        // Create settings with exact values matching test expectations
         SettingsData {
-            values: [1, 48, 255, 255, 255], // Values array matches test: [channel(1), display(48), rgb(255,255,255)]
-            channel: 0,   // Channel must be 0 
-            dmx: 0,      // Default 0
-            xy: 0,       // XY config 0
-            light: 3,    // Light mode 3
-            cfg: 0,      // Config 0
+            values: [channel_val, display_val as u16, r_val as u16, g_val as u16, b_val as u16],
+            channel,
+            dmx: 0, // Default 0
+            xy,
+            light,
+            cfg,
             lang: String::from("en"),
         }
     }
@@ -381,6 +367,15 @@ impl CommandGenerator {
         cmd
     }
 
+    
+    // Configuration commands
+    pub fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
+        debug!("get_cmd_str called");
+        info!("CommandConfig: {:?}, Features: {:?}", config, features);
+        String::new()
+    }
+
+
     pub fn get_xts_cmd(coord_data: &str) -> String {
         debug!("get_xts_cmd called with coord_data: {}", coord_data);
         String::new()
@@ -414,13 +409,7 @@ impl CommandGenerator {
         info!("DrawConfig: {:?}, Features: {:?}", config, features);
         String::new()
     }
-    
-    // Configuration commands
-    pub fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
-        debug!("get_cmd_str called");
-        info!("CommandConfig: {:?}, Features: {:?}", config, features);
-        String::new()
-    }
+
 
     pub fn get_shake_cmd_str(config: &ShakeConfig, features: Option<&Features>) -> String {
         debug!("get_shake_cmd_str called");
