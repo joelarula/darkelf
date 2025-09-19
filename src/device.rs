@@ -64,8 +64,6 @@ impl LaserDevice {
         let cmd = CommandGenerator::get_query_cmd(&self.random_check);
         debug!("get_query_cmd: {}", cmd);        
         let mut controller = self.device_controller.lock().unwrap();
-       // let init_cmd = "E0E1E2E38BCE183AE4E5E6E70000000000000000";
-        //let init_cmdB = "E0E1E2E38BCE183AE4E5E6E7";
         if let Err(e) = controller.send(&cmd).await {
             error!("Failed to send command: {:?}", e);
         }

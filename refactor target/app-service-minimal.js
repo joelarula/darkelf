@@ -573,7 +573,8 @@
                             // and synchronizes the project index with the current command mode, 
                             // probably to simulate or test device behavior with known data.
                             testFunc: function() {
-                                bleDeviceController.setCmdData("E0E1E2E3B0B1B2B300B4B5B6B7C0C1C2C30400098080800080003309FFFFFF320000000000000000000000000000000000000000000000000000000000000000000000000000FF035393C06600000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001000A00FFFFFF020000000000000004050607D0D1D2D3820000FF28000000000000000000003200FF00FF28000000000000000000FF3200FFD4D5D6D7F0F1F2F300000000070102030405060700004466F4F5F6F743E3A317F0000000E4E5E6E7"), this.prjIndex = app.globalData.cmd.curMode
+                                bleDeviceController.setCmdData("E0E1E2E3B0B1B2B300B4B5B6B7C0C1C2C30400098080800080003309FFFFFF320000000000000000000000000000000000000000000000000000000000000000000000000000FF035393C06600000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001000A00FFFFFF020000000000000004050607D0D1D2D3820000FF28000000000000000000003200FF00FF28000000000000000000FF3200FFD4D5D6D7F0F1F2F300000000070102030405060700004466F4F5F6F743E3A317F0000000E4E5E6E7"), 
+                                this.prjIndex = app.globalData.cmd.curMode
                             },
 
                             // sendCmd generates a device command string based on the current mode and features, 
@@ -1783,6 +1784,7 @@
                         var d = canvas.measureText(l).width;
                         canvas.fillText(progress  + "%", a - d / 2, i + p / 3), canvas.fill(), canvas.draw()
                     },
+                    
                     // responsible for parsing and updating the application's global state based on a device's response data,
                     // typically received as a buffer or hex string. It performs several key tasks:
                     setCmdData: function(deviceResponseData ) {
@@ -1826,6 +1828,8 @@
                             }
                     }
                 }
+
+                
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
  

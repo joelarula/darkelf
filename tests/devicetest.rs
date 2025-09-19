@@ -127,5 +127,44 @@ fn test_check_received_data() {
     assert_eq!(device_info.version, "00", "Version should be '00'");
     assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
        
+}
 
+#[test]
+fn test_parse_device_response() {
+    use std::println;
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+    println!("\nTesting parse_device_response");
+
+    let received_data = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+    
+    // Parse the response
+    let response = CommandGenerator::parse_device_response(received_data)
+        .expect("Should successfully parse device response");
+
+    // Verify main command data
+    assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
+    assert_eq!(response.main_data.project_index, 6, "Project index should be 6");
+    assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
+    assert_eq!(response.main_data.text_size, 94, "Text size should be 94");
+    assert_eq!(response.main_data.run_speed, 128, "Run speed should be 128");
+    assert_eq!(response.main_data.text_distance, 60, "Text distance should be 60");
+
+    // Verify settings data
+    assert_eq!(response.settings.values[0], 1, "Settings value[0] should be 1");
+    assert_eq!(response.settings.channel, 48, "Channel should be 48 (hex 0x30)");
+    assert_eq!(response.settings.xy, 0, "XY config should be 0");
+    assert_eq!(response.settings.light, 3, "Light mode should be 3");
+    assert_eq!(response.settings.cfg, 0, "Config should be 0");
+    assert_eq!(response.settings.dmx, 0, "DMX should be 0");
+    assert_eq!(response.settings.lang, "en", "Language should be en");
+
+    // Verify device info
+    let device_info = response.device_info.expect("Device info should be present");
+    assert!(device_info.device_on, "Device should be on");
+    assert_eq!(device_info.device_type, "02", "Device type should be '02'");
+    assert_eq!(device_info.version, "00", "Version should be '00'");
+    assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
 }
