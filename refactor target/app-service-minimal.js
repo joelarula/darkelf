@@ -707,12 +707,7 @@
                                 light: this.light, // 1 single ,2 dual ,3 full
                                 cfg: this.cfg,  //  0 ttl 255 analog
                                 lang: this.lang,
-                                valArr: this.valArr 
-                                // valArr[0]: 1 to 512  // channel
-                                //valArr[1]: 10 to 100   // Display Range
-                                //valArr[2]: 0 to 255 (or 0 to 100 for some device types) R
-                                //valArr[3]: 0 to 255 (or 0 to 100 for some device types) G
-                                //valArr[4]: 0 to 255 (or 0 to 100 for some device types) B
+
                             };
                             app.globalData.setCmdData("settingData", settingData)
                         },
@@ -1829,7 +1824,7 @@
                     }
                 }
 
-                
+
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
  

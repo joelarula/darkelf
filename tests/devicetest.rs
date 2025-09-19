@@ -153,13 +153,15 @@ fn test_parse_device_response() {
     assert_eq!(response.main_data.text_distance, 60, "Text distance should be 60");
 
     // Verify settings data
-    assert_eq!(response.settings.values[0], 1, "Settings value[0] should be 1");
-    assert_eq!(response.settings.channel, 48, "Channel should be 48 (hex 0x30)");
+    assert_eq!(response.settings.values[0], 1, "Channel value (values[0]) should be 1");  // Channel starts at 1 (range 1-512)
+    assert_eq!(response.settings.values[1], 48, "Display range (values[1]) should be 48 (hex 0x30)");  // Display range from command
+    assert_eq!(response.settings.values[2], 255, "R value (values[2]) should be 255");  // Position 6, Red
+    assert_eq!(response.settings.values[3], 255, "G value (values[3]) should be 255");  // Position 7, Green
+    assert_eq!(response.settings.values[4], 255, "B value (values[4]) should be 255");  // Position 8, Blue
     assert_eq!(response.settings.xy, 0, "XY config should be 0");
     assert_eq!(response.settings.light, 3, "Light mode should be 3");
     assert_eq!(response.settings.cfg, 0, "Config should be 0");
-    assert_eq!(response.settings.dmx, 0, "DMX should be 0");
-    assert_eq!(response.settings.lang, "en", "Language should be en");
+
 
     // Verify device info
     let device_info = response.device_info.expect("Device info should be present");

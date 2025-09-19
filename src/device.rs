@@ -37,20 +37,24 @@ impl LaserDevice {
             let mut controller = self.device_controller.lock().unwrap();
             controller.set_receiver_callback(Box::new(move |data| {
                 info!("Received data: {}", data);
-                let (success, new_info) = CommandGenerator::check_received_data(&data, &random_check);
+                // First verify response using random check
+                let (success, _) = CommandGenerator::check_received_data(&data, &random_check);
                 if success {
-                    if let Some(new_info) = new_info {
-                        info!(
-                            "Device info updated - Power: {}, Type: {}, Version: {}, User Type: {}", 
-                            if new_info.device_on { "ON" } else { "OFF" },
-                            new_info.device_type,
-                            new_info.version,
-                            new_info.user_type
-                        );
-                        
-                        // Update device state
-                        if let Ok(mut info) = device_info.lock() {
-                            *info = new_info;
+                    // Then parse full device response
+                    if let Some(response) = CommandGenerator::parse_device_response(&data) {
+                        if let Some(new_info) = response.device_info {
+                            info!(
+                                "Device info updated - Power: {}, Type: {}, Version: {}, User Type: {}", 
+                                if new_info.device_on { "ON" } else { "OFF" },
+                                new_info.device_type,
+                                new_info.version, 
+                                new_info.user_type
+                            );
+                            
+                            // Update device state with parsed info
+                            if let Ok(mut info) = device_info.lock() {
+                                *info = new_info;
+                            }
                         }
                     }
                 } else {
