@@ -25,31 +25,6 @@ const DRAW_CMD_HEADER: &str = "F0F1F2F3";
 const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 
 
-
-
-
-
-/// Helper function to extract and clamp numeric values
-fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
-    if value < min || value > max {
-        default
-    } else {
-        value
-    }
-}
-
-/// Extract hex value from a position in command data, matching JavaScript behavior
-fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
-    let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
-    let end = start + 2 * len;
-    if end <= data.len() {
-        u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
-    } else {
-        0
-    }
-}
-
-/// Generator for device commands
 pub struct CommandGenerator;
 
 impl CommandGenerator {
@@ -173,33 +148,54 @@ impl CommandGenerator {
         }
     }
 
-    /// Extract hex value from a position in command data, matching JavaScript behavior
-    fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
-        debug!("Extracting hex value at pos {} with len {} from data: {}", pos, len, data);
-        
-        // JavaScript: var n = 2 * (startByte - 1)
-        let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
-        // JavaScript: var h = n + 2 * byteLength
-        let end = start + 2 * len;
-        
-        if end <= data.len() && start < data.len() {  // Ensure valid range
-            let hex_str = &data[start..end];
-            debug!("Extracted hex string: {}", hex_str);
-            match u16::from_str_radix(hex_str, 16) {
-                Ok(val) => {
-                    debug!("Parsed value: {}", val);
-                    val
-                },
-                Err(e) => {
-                    debug!("Failed to parse hex value: {}", e);
-                    0
-                }
-            }
-        } else {
-            debug!("Position out of bounds");
-            0
-        }
+
+/// Helper function to extract and clamp numeric values
+//fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+//    if value < min || value > max {
+//        default
+//    } else {
+//        value
+//    }
+//}
+
+/// Extract hex value from a position in command data, matching JavaScript behavior
+fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
+    let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
+    let end = start + 2 * len;
+    if end <= data.len() {
+        u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
+    } else {
+        0
     }
+}
+
+    /// Extract hex value from a position in command data, matching JavaScript behavior
+   // fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
+  //      debug!("Extracting hex value at pos {} with len {} from data: {}", pos, len, data);
+   //     
+    //    // JavaScript: var n = 2 * (startByte - 1)
+   //     let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
+   //     // JavaScript: var h = n + 2 * byteLength
+   //     let end = start + 2 * len;
+   //     
+   //     if end <= data.len() && start < data.len() {  // Ensure valid range
+   //         let hex_str = &data[start..end];
+   //         debug!("Extracted hex string: {}", hex_str);
+   //         match u16::from_str_radix(hex_str, 16) {
+   //             Ok(val) => {
+   //                 debug!("Parsed value: {}", val);
+   //                 val
+   //             },
+   //             Err(e) => {
+   //                 debug!("Failed to parse hex value: {}", e);
+   //                 0
+   //             }
+   //         }
+   //     } else {
+   //         debug!("Position out of bounds");
+   //         0
+   //     }
+   // }
 
     /// Parse the main command section
     fn parse_main_command(cmd: &str) -> Option<MainCommandData> {
@@ -289,8 +285,8 @@ impl CommandGenerator {
                 };
 
                 for j in 0..values_per_feature {
-                    let value = clamp_value(
-                        extract_hex_value(3 + i as usize * values_per_feature + j, 1, &features_cmd).try_into().unwrap(),
+                    let value = Self::clamp_value(
+                        Self::extract_hex_value(3 + i as usize * values_per_feature + j, 1, &features_cmd).try_into().unwrap(),
                         0,
                         255,
                         0
@@ -308,7 +304,7 @@ impl CommandGenerator {
         // Parse draw config section
         if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
             for i in 0..15 {
-                let value = clamp_value(extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
+                let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
                 if i < 14 {
                     response.draw_config.config_values.push(value.try_into().unwrap());
                 } else {

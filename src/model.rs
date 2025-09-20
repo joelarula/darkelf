@@ -1,3 +1,4 @@
+
 #[derive(Debug, Clone)]
 pub struct DeviceInfo {
     pub device_on: bool,
@@ -66,6 +67,67 @@ impl Default for SettingsData {
             light: 3,   // Default to full mode
             cfg: 0,     // Default to TTL
             lang: "en".to_string(), // Default to English
+        }
+    }
+}
+
+/// Represents a color option from the colorDisplayOrder array.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DisplayColor {
+    Red,
+    Yellow,
+    Green,
+    Cyan,
+    Blue,
+    Purple,
+    White,
+    Jump,
+    RGB,
+}
+
+impl DisplayColor {
+    /// Returns the display name for the color.
+    pub fn name(&self) -> &'static str {
+        match self {
+            DisplayColor::Red => "Red",
+            DisplayColor::Yellow => "yellow",
+            DisplayColor::Green => "green",
+            DisplayColor::Cyan => "Cyan",
+            DisplayColor::Blue => "blue",
+            DisplayColor::Purple => "purple",
+            DisplayColor::White => "white",
+            DisplayColor::Jump => "Jump",
+            DisplayColor::RGB => "RGB",
+        }
+    }
+
+    /// Returns the color value as a string (CSS color or hex code).
+    pub fn color(&self) -> &'static str {
+        match self {
+            DisplayColor::Red => "red",
+            DisplayColor::Yellow => "yellow",
+            DisplayColor::Green => "green",
+            DisplayColor::Cyan => "#00FFFF",
+            DisplayColor::Blue => "blue",
+            DisplayColor::Purple => "purple",
+            DisplayColor::White => "white",
+            DisplayColor::Jump => "transparent",
+            DisplayColor::RGB => "transparent",
+        }
+    }
+
+    /// Returns the idx value for the color.
+    pub fn idx(&self) -> u8 {
+        match self {
+            DisplayColor::Red => 1,
+            DisplayColor::Yellow => 4,
+            DisplayColor::Green => 2,
+            DisplayColor::Cyan => 5,
+            DisplayColor::Blue => 3,
+            DisplayColor::Purple => 6,
+            DisplayColor::White => 7,
+            DisplayColor::Jump => 8,
+            DisplayColor::RGB => 9,
         }
     }
 }

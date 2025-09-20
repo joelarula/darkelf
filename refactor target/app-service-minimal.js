@@ -59,22 +59,22 @@
                                 prjItem: {
                                     2: {
                                         pyMode: 0, // 0,255  loop playback, tick play
-                                        prjSelected: [0, 0, 0, 0],
+                                        prjSelected: [0, 0, 0, 0], /// Pattern selection (bitfield)
                                         ckValues: [] // selected items
                                     },
                                     3: {
                                         pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
+                                        prjSelected: [0, 0, 0, 0], /// Pattern selection (bitfield)
                                         ckValues: []
                                     },
                                     5: {
                                         pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
+                                        prjSelected: [0, 0, 0, 0], /// Pattern selection (bitfield)
                                         ckValues: []
                                     },
                                     6: {
                                         pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0],
+                                        prjSelected: [0, 0, 0, 0], 
                                         ckValues: []
                                     }
                                 }
@@ -829,14 +829,14 @@
                                 }],
                                 public: {
                                     txColor: 0, //colorDisplayOrder
-                                    rdMode: 0,
-                                    runSpeed: 10,
-                                    soundVal: 20
+                                    rdMode: 0, // Audio trigger mode	0, 255
+                                    runSpeed: 10, // 1–100 (typical) Playback speed
+                                    soundVal: 20 // Sound sensitivity
                                 },
                                 item: {
-                                    pyMode: 0,
-                                    prjSelected: [0, 0, 0, 0],
-                                    ckValues: []
+                                    pyMode: 0, // Playback mode
+                                    prjSelected: [0, 0, 0, 0], // Pattern selection (bitfield)
+                                    ckValues: [] //Checkbox states (UI) 
                                 },
                             }
                         },
@@ -1306,43 +1306,55 @@
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
                     },
+
+
                     getCmdStr: function(commandConfig) {
-                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
-                            r = toFixedWidthHex(commandConfig.curMode, 2),
-                            h = toFixedWidthHex(0, 2),
-                            a = toFixedWidthHex(commandConfig.textData.txColor, 2),
+                        var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
+                            curModeHex = toFixedWidthHex(commandConfig.curMode, 2),
+                            reservedHex  = toFixedWidthHex(0, 2),
+                            colorHex = toFixedWidthHex(commandConfig.textData.txColor, 2),
                             c = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
                             o = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
-                            s = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2),
+                            runSpeedHex = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2),
                             l = "00",
                             p = toFixedWidthHex(commandConfig.textData.txDist / 100 * 255, 2),
-                            d = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2),
-                            j = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2),
+                            audioTriggerModeHex  = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2),
+                            soundSensitivityHex  = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2),
                             x = "ffffffff0000";
-                        if (null != t) {
-                            if (x = "", t.hasOwnProperty("groupList"))
-                                for (var V = 0; V < t.groupList.length; V++) x += toFixedWidthHex(t.groupList[V].color, 2);
-                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(t, "textStopTime") && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+
+                        if (null != featureParams) {
+                            if (x = "", featureParams.hasOwnProperty("groupList"))
+                                for (var V = 0; V < featureParams.groupList.length; V++) x += toFixedWidthHex(featureParams.groupList[V].color, 2);
+                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(featureParams, "textStopTime") 
+                                && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
                         }
+
                         var f = "",
-                            F = commandConfig.prjData.prjItem;
-                        for (var k in F) {
-                            var m = F[k],
-                                P = 0 == m.pyMode ? 0 : 128;
-                            0 != P && null != t && t.hasOwnProperty("prjParm") && t.prjParm.prjIndex == k && (3 == k && getFeatureValue(t, "animationFix") && [2, 4, 11, 13, 19].includes(t.prjParm.selIndex) ? P |= 50 - t.prjParm.selIndex : P |= t.prjParm.selIndex);
-                            var u = toFixedWidthHex(P, 2),
+                            projectItems = commandConfig.prjData.prjItem;
+                        for (var index in projectItems) {
+                            var projectItem = projectItems[index],
+                                playBackMode = 0 == projectItem.pyMode ? 0 : 128;
+                            0 != playBackMode && null != featureParams 
+                                && featureParams.hasOwnProperty("prjParm") 
+                                    && featureParams.prjParm.prjIndex == index 
+                                        && (3 == index && getFeatureValue(featureParams, "animationFix") 
+                                            && [2, 4, 11, 13, 19].includes(featureParams.prjParm.selIndex) 
+                                                ? playBackMode |= 50 - featureParams.prjParm.selIndex 
+                                                : playBackMode |= featureParams.prjParm.selIndex);
+                            var playBackModeHex = toFixedWidthHex(playBackMode, 2),
                                 X = "",
-                                N = n(m.prjSelected);
-                            3 == k && getFeatureValue(t, "animationFix") && (N = applyBitmaskUpdates([2, 4, 11, 13, 19], N));
-                            for (var H = 0; H < N.length; H++) X = toFixedWidthHex(N[H]) + X;
-                            f = f + u + X
+                                selectionBits = n(projectItem.prjSelected);
+                            3 == index && getFeatureValue(featureParams, "animationFix") && (selectionBits = applyBitmaskUpdates([2, 4, 11, 13, 19], selectionBits));
+                            for (var H = 0; H < selectionBits.length; H++) X = toFixedWidthHex(selectionBits[H]) + X;
+                            f = f + playBackModeHex + X
                         }
-                        var z = "";
-                        getFeatureValue(t, "arbPlay") && (z += toFixedWidthHex(commandConfig.textData.runDir, 2));
-                        for (var Q = "", R = Math.floor(z.length / 2), v = R; v < 44; v++) Q += "00";
-                        var I = "c0c1c2c3" + r + h + a + c + o + s + l + p + d + j + x + f + z + Q + "c4c5c6c7";
-                        return I.toUpperCase()
+                        var runDirection = "";
+                        getFeatureValue(featureParams, "arbPlay") && (runDirection += toFixedWidthHex(commandConfig.textData.runDir, 2));
+                        for (var padding = "", R = Math.floor(runDirection.length / 2), v = R; v < 44; v++) padding += "00";
+                        var command = "c0c1c2c3" + curModeHex + reservedHex  + colorHex + c + o + runSpeedHex + l + p + audioTriggerModeHex  + soundSensitivityHex  + x + f + runDirection + padding + "c4c5c6c7";
+                        return command.toUpperCase()
                     },
+                    
                     getShakeCmdStr: function(e) {
                         var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
                             n = "";
