@@ -7,3 +7,4 @@ pub mod command;
 pub mod mock;
 pub mod model;
 pub mod device;
+pub mod ui;

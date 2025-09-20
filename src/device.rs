@@ -1,3 +1,4 @@
+
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -119,6 +120,20 @@ impl LaserDevice {
 
 
     
+    /// Set the main command data and send the corresponding command to the device
+    pub async fn set_command_data(&self, new_command_data: MainCommandData) {
+        let mut info_lock = self.device_info.lock().unwrap();
+        if let Some(ref mut response) = *info_lock {
+            response.main_data = new_command_data;
+            // Generate the main command string
+            //let cmd = CommandGenerator::get_main_command_cmd(&response.main_data);
+            // Send the command to the device
+            //let mut controller = self.device_controller.lock().unwrap();
+            //if let Err(e) = controller.send(&cmd).await {
+            //    error!("Failed to send main command: {:?}", e);
+           // }
+        }
+    }
 
     /// Generate random verification bytes
     fn gen_random_check() -> Vec<u8> {

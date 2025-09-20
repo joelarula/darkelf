@@ -252,15 +252,6 @@ impl CommandGenerator {
             b_val = 255;
         }
 
-        info!("Extracted values from settings command:");
-        info!("  Channel val: {}", channel_val);
-        info!("  Channel: {}", channel);
-        info!("  Display val: {}", display_val);
-        info!("  XY: {}", xy);
-        info!("  RGB: {},{},{}", r_val, g_val, b_val);
-        info!("  Light: {}", light);
-        info!("  Config: {}", cfg);
-
         SettingsData {
             values: [channel_val, display_val as u16, r_val as u16, g_val as u16, b_val as u16],
             channel,
