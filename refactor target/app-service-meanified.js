@@ -5364,25 +5364,25 @@
             t.default = h
         },
         "handwritingCanvasHelper": function(e, t) {
-            function r(e) {
-                for (var t = -1, r = 0, n = 0, h = 0; h < e.length; h++) {
+            function getTxXySize(e) {
+                for (var t = -1, pointCount = 0, charCount = 0, h = 0; h < e.length; h++) {
                     var a = e[h];
-                    t != a[0] && (t = a[0], n++), r += a[1].length
+                    t != a[0] && (t = a[0], charCount++), pointCount += a[1].length
                 }
                 return {
-                    chCount: n,
-                    ptCount: r
+                    chCount: charCount,
+                    ptCount: pointCount
                 }
             }
 
-            function n(e) {
+            function doDrawPicEx(e) {
                 var t = e;
                 (function(e) {
                     var t = e,
                         n = t.textData,
                         h = 0 == n.groupList.length ? null : n.groupList[n.groupIdex].xys;
                     if (null != h) {
-                        for (var a = n.txColor, i = n.arrColor, c = t.cvWH.w / 2, o = t.cvWH.h / 2, s = t.ctx, l = n.txSize / 100, p = t.cvWH.h / 800 * l, d = "red", b = -1, g = -1, j = r(h), x = 0; x < h.length; x++)
+                        for (var a = n.txColor, i = n.arrColor, c = t.cvWH.w / 2, o = t.cvWH.h / 2, s = t.ctx, l = n.txSize / 100, p = t.cvWH.h / 800 * l, d = "red", b = -1, g = -1, j = getTxXySize(h), x = 0; x < h.length; x++)
                             if (!(h[x][1].length < 2)) {
                                 b != h[x][0] && (g++, s.beginPath(), b = h[x][0], d = a <= 7 ? i[a - 1] : i[g % 7], s.strokeStyle = d);
                                 for (var V = h[x][1], f = 0; f < V.length; f++) {
@@ -5400,8 +5400,8 @@
                 })(t)
             }
             e.exports = {
-                getTxXySize: r,
-                doDrawPicEx: n,
+                getTxXySize: getTxXySize,
+                doDrawPicEx: doDrawPicEx,
                 onReady: function(e) {
                     var t = e,
                         r = uni.createSelectorQuery();
@@ -5421,7 +5421,7 @@
                             w: e[0].width,
                             h: e[0].height
                         }, t.$nextTick((function() {
-                            n(t)
+                            doDrawPicEx(t)
                         }))
                     }))
                 }
@@ -59333,6 +59333,8 @@
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
+        //The values 5363, 50ec, and 8c21 are likely Unicode code points (in hexadecimal). Here’s what they represent as Unicode characters:
+        // The string part after 5363 (e.g., "izlh,pWxD,mYSj,...") is most likely a list of font glyph names, font-specific character codes, or encoded identifiers used to map the Unicode code point 5363 (which is 匣) to specific glyphs in a custom or obfuscated font.
         gylphs2: function(e, t) {
             e.exports = {
                 DrawFonts: {
@@ -66455,22 +66457,32 @@
                 return Vue.extend(r("languageSelectorPageComponentExportWrapper").default)
             })), __definePage("pages/subset/subset", (function() {
                 return Vue.extend(r("featurePageComponentExportWrapper").default)
-            })), __definePage("sub/pages/text/text", (function() {
+            })), 
+            __definePage("sub/pages/text/text", (function() {
                 return Vue.extend(r("someFeaturePageExport").default)
-            })), __definePage("sub/pages/draw/draw", (function() {
+            })), 
+            __definePage("sub/pages/draw/draw", (function() {
                 return Vue.extend(r("mainLayoutComponentExportWrapper").default)
             })), __definePage("sub/pages/cover/cover", (function() {
                 return Vue.extend(r("imageToVectorLinesPageComponentExportWrapper").default)
-            })), __definePage("sub/pages/font/font", (function() {
+            })),
+            
+             __definePage("sub/pages/font/font", (function() {
                 return Vue.extend(r("fontPageComponentExport").default)
-            })), __definePage("sub/pages/files/files", (function() {
+            })), 
+            __definePage("sub/pages/files/files", (function() {
                 return Vue.extend(r("handDrawAndTextFileManagerPageComponentSfcExport").default)
-            })), __definePage("sub/pages/playList/playList", (function() {
+            })), 
+            __definePage("sub/pages/playList/playList", (function() {
                 return Vue.extend(r("scopedFeaturePageComponentExportWrapper").default)
-            })), __definePage("sub/pages/listMaster/listMaster", (function() {
+            })), 
+            __definePage("sub/pages/listMaster/listMaster", (function() {
                 return Vue.extend(r("someFeaturePageExport").default)
-            })), __definePage("sub2/pages/pgs/pgs", (function() {
+
+            })), 
+            __definePage("sub2/pages/pgs/pgs", (function() {
                 return Vue.extend(r("sceneListEditorPageComponentExportWrapper").default)
+
             })), __definePage("sub2/pages/pis/pis", (function() {
                 return Vue.extend(r("scenePatternEditorPageComponentExportWrapperComponentExportWrapper").default)
             }))

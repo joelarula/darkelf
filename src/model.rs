@@ -1,3 +1,21 @@
+use std::collections::HashMap;
+
+/// Represents the available show/playback modes for the device.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PlaybackMode {
+    Dmx = 0,
+    RandomPlayback = 1,
+    TimelinePlayback = 2,
+    AnimationPlayback = 3,
+    TextPlayback = 4,
+    ChristmasBroadcast = 5,
+    //Ilda = 5,
+    OutdoorPlayback = 6,
+    PersonalizedProgramming = 7,
+    HandDrawnDoodle = 8,
+    Playlist = 9,
+}
+
 
 #[derive(Debug, Clone)]
 pub struct DeviceInfo {
@@ -25,9 +43,9 @@ pub struct MainCommandData {
     pub current_mode: u8,
     pub project_index: u8,
     pub text_color: u8,
-    pub text_size: u8,
-    pub run_speed: u8,
-    pub text_distance: u8,
+    pub text_size: u8, // text size 10 - 100
+    pub run_speed: u8, // speed 0 - 100
+    pub text_distance: u8, // text distance 10 - 100
     pub read_mode: u8,
     pub sound_value: u8,
     pub text_point_time: u8,
@@ -70,6 +88,113 @@ impl Default for SettingsData {
         }
     }
 }
+
+
+
+// Data structures needed by the trait methods
+#[derive(Debug, Clone)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub z: i32,
+    pub color: u8,
+}
+
+#[derive(Debug)]
+pub struct LayoutItem {
+    pub xys: Vec<Vec<f64>>,
+    pub time: f64,
+    pub xys_right: Option<Vec<Vec<f64>>>,
+    pub xys_up: Option<Vec<Vec<f64>>>,
+    pub xys_down: Option<Vec<Vec<f64>>>,
+}
+
+#[derive(Debug)]
+pub struct Features {
+    pub features: HashMap<String, bool>,
+    pub group_list: Option<Vec<ColorGroup>>,
+    pub prj_parm: Option<ProjectParams>,
+    pub xy_cnf_save: Option<bool>,
+}
+
+#[derive(Debug)]
+pub struct ColorGroup {
+    pub color: u8,
+}
+
+#[derive(Debug)]
+pub struct ProjectParams {
+    pub prj_index: i32,
+    pub sel_index: i32,
+}
+
+#[derive(Debug)]
+pub struct CommandConfig {
+    pub cur_mode: i32,
+    pub text_data: TextData,
+    pub prj_data: ProjectData,
+}
+
+#[derive(Debug)]
+pub struct TextData {
+    pub tx_color: u8,
+    pub tx_size: f64,
+    pub run_speed: f64,
+    pub tx_dist: f64,
+    pub tx_point_time: u8,
+    pub run_dir: u8,
+}
+
+#[derive(Debug)]
+pub struct ProjectData {
+    pub public: PublicData,
+    pub prj_item: HashMap<i32, ProjectItem>,
+}
+
+#[derive(Debug)]
+pub struct PublicData {
+    pub rd_mode: u8, // audio trigger mode
+    pub sound_val: f64, // sound sensitivity
+}
+
+#[derive(Debug)]
+pub struct ProjectItem {
+    pub py_mode: i32, //  playBackMode  0 : 128;
+    pub prj_selected: Vec<u16>, // selected show
+}
+
+// Struct moved to top-level definition
+
+#[derive(Debug)]
+pub struct ShakeConfig {
+    pub subset_data: SubsetData,
+}
+
+#[derive(Debug)]
+pub struct SubsetData {
+    pub xy_cnf: XYConfig,
+}
+
+#[derive(Debug)]
+pub struct XYConfig {
+    pub auto: bool,
+    pub auto_value: u8,
+    pub phase: u8,
+    pub xy: Vec<XYValue>,
+}
+
+#[derive(Debug)]
+pub struct XYValue {
+    pub value: u8,
+}
+
+#[derive(Debug)]
+pub struct PisConfig {
+    pub cnf_valus: Vec<u8>,
+    pub play_time: f64,
+}
+
+
 
 /// Represents a color option from the colorDisplayOrder array.
 #[derive(Debug, Clone, PartialEq, Eq)]

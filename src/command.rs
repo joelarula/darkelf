@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use log::{debug, info};
 
-use crate::model::{DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, MainCommandData, SettingsData};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisConfig, Point, SettingsData, ShakeConfig};
 
 // Response headers and footers
 pub const HEADER: &str = "E0E1E2E3";
@@ -28,6 +28,21 @@ const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 pub struct CommandGenerator;
 
 impl CommandGenerator {
+    /// Applies bitmask updates to the selection_bits vector at the given indices.
+    /// For each index in indices, toggles the bit (XOR with 1) at that position in selection_bits.
+    /// This matches the JavaScript logic of applyBitmaskUpdates([indices], N).
+    /// Applies bitmask updates to the selection_bits vector at the given indices.
+    /// For each index in indices, toggles the bit at (index / 16) in selection_bits,
+    /// using (1 << (index % 16)), matching the JavaScript algorithm.
+    fn apply_bitmask_updates(indices: &[usize], selection_bits: &mut [u16]) {
+        for &idx in indices {
+            let arr_idx = idx / 16;
+            let bit = idx % 16;
+            if arr_idx < selection_bits.len() {
+                selection_bits[arr_idx] ^= 1 << bit;
+            }
+        }
+    }
     // Core conversion utilities
     pub fn ab2hex(bytes: &[u8]) -> String {
         debug!("ab2hex called with bytes: {:?}", bytes);
@@ -359,7 +374,112 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     pub fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
         debug!("get_cmd_str called");
         info!("CommandConfig: {:?}, Features: {:?}", config, features);
-        String::new()
+
+        // Main header and footer
+        let mut cmd = String::new();
+
+        // Main section fields
+        let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
+        let reserved_hex = Self::to_fixed_width_hex(0, 2);
+        let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
+        let tx_size_scaled = (config.text_data.tx_size / 100.0 * 255.0).round() as u8;
+        let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+        let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+        let run_speed_scaled = (config.text_data.run_speed / 100.0 * 255.0).round() as u8;
+        let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
+        let l = "00".to_string();
+        let tx_dist_scaled = (config.text_data.tx_dist / 100.0 * 255.0).round() as u8;
+        let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
+        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
+        let sound_sensitivity_hex = Self::to_fixed_width_hex((config.prj_data.public.sound_val / 100.0 * 255.0).round() as u8, 2);
+
+        // x: group color segment
+        let mut x = "ffffffff0000".to_string();
+        if let Some(features) = features {
+            x.clear();
+            if let Some(group_list) = &features.group_list {
+                for group in group_list {
+                    x += &Self::to_fixed_width_hex(group.color, 2);
+                }
+            }
+            x += "ffffffff";
+            x = x.chars().take(8).collect();
+            if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
+                x += &Self::to_fixed_width_hex(config.text_data.tx_point_time, 2);
+            }
+            x += "0000";
+            x = x.chars().take(12).collect();
+        }
+
+        // f: project items
+        let mut f = String::new();
+        for (index, project_item) in &config.prj_data.prj_item {
+            let mut play_back_mode = if project_item.py_mode == 0 { 0 } else { 128 };
+            if play_back_mode != 0 {
+                if let Some(features) = features {
+                    if let Some(prj_parm) = &features.prj_parm {
+                        if prj_parm.prj_index == *index as i32 {
+                            if *index == 3 && Self::get_feature_value(features, "animationFix").unwrap_or(false) && [2, 4, 11, 13, 19].contains(&prj_parm.sel_index) {
+                                play_back_mode |= 50 - prj_parm.sel_index;
+                            } else {
+                                play_back_mode |= prj_parm.sel_index;
+                            }
+                        }
+                    }
+                }
+            }
+            let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
+            // N: selection bits
+            let mut selection_bits = project_item.prj_selected.clone();
+            if let Some(features) = features {
+                if *index == 3 && Self::get_feature_value(features, "animationFix").unwrap_or(false) {
+                    // applyBitmaskUpdates([2, 4, 11, 13, 19], N)
+                    Self::apply_bitmask_updates(&[2, 4, 11, 13, 19], &mut selection_bits);
+                }
+            }
+            let mut x_str = String::new();
+            for &val in selection_bits.iter().rev() {
+                x_str += &Self::to_fixed_width_hex(val, 2);
+            }
+            f += &(play_back_mode_hex + &x_str);
+        }
+
+        // z: run direction if arbPlay
+        let mut z = String::new();
+        if let Some(features) = features {
+            if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
+                z += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
+            }
+        }
+
+        // Q: padding
+        let mut q = String::new();
+        let r = z.len() / 2;
+        for _ in r..44 {
+            q += "00";
+        }
+
+        // Compose command using header/footer constants
+        let command = format!(
+            "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
+            MAIN_CMD_HEADER,
+            cur_mode_hex,
+            reserved_hex,
+            color_hex,
+            tx_size_scaled_a_hex,
+            tx_size_scaled_b_hex,
+            run_speed_hex,
+            l,
+            tx_dist_scaled_hex,
+            audio_trigger_mode_hex,
+            sound_sensitivity_hex,
+            x,
+            f,
+            z,
+            q,
+            MAIN_CMD_FOOTER
+        );
+        command.to_uppercase()
     }
 
 
@@ -523,117 +643,3 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 }
 
 
-
-
-// Data structures needed by the trait methods
-#[derive(Debug, Clone)]
-pub struct Point {
-    pub x: f64,
-    pub y: f64,
-    pub z: i32,
-    pub color: u8,
-}
-
-#[derive(Debug)]
-pub struct LayoutItem {
-    pub xys: Vec<Vec<f64>>,
-    pub time: f64,
-    pub xys_right: Option<Vec<Vec<f64>>>,
-    pub xys_up: Option<Vec<Vec<f64>>>,
-    pub xys_down: Option<Vec<Vec<f64>>>,
-}
-
-#[derive(Debug)]
-pub struct Features {
-    pub features: HashMap<String, bool>,
-    pub group_list: Option<Vec<ColorGroup>>,
-    pub prj_parm: Option<ProjectParams>,
-    pub xy_cnf_save: Option<bool>,
-}
-
-#[derive(Debug)]
-pub struct ColorGroup {
-    pub color: u8,
-}
-
-#[derive(Debug)]
-pub struct ProjectParams {
-    pub prj_index: i32,
-    pub sel_index: i32,
-}
-
-#[derive(Debug)]
-pub struct CommandConfig {
-    pub cur_mode: i32,
-    pub text_data: TextData,
-    pub prj_data: ProjectData,
-}
-
-#[derive(Debug)]
-pub struct TextData {
-    pub tx_color: u8,
-    pub tx_size: f64,
-    pub run_speed: f64,
-    pub tx_dist: f64,
-    pub tx_point_time: u8,
-    pub run_dir: u8,
-}
-
-#[derive(Debug)]
-pub struct ProjectData {
-    pub public: PublicData,
-    pub prj_item: HashMap<i32, ProjectItem>,
-}
-
-#[derive(Debug)]
-pub struct PublicData {
-    pub rd_mode: u8,
-    pub sound_val: f64,
-}
-
-#[derive(Debug)]
-pub struct ProjectItem {
-    pub py_mode: i32,
-    pub prj_selected: Vec<u16>,
-}
-
-// Struct moved to top-level definition
-
-#[derive(Debug)]
-pub struct ShakeConfig {
-    pub subset_data: SubsetData,
-}
-
-#[derive(Debug)]
-pub struct SubsetData {
-    pub xy_cnf: XYConfig,
-}
-
-#[derive(Debug)]
-pub struct XYConfig {
-    pub auto: bool,
-    pub auto_value: u8,
-    pub phase: u8,
-    pub xy: Vec<XYValue>,
-}
-
-#[derive(Debug)]
-pub struct XYValue {
-    pub value: u8,
-}
-
-#[derive(Debug)]
-pub struct PisConfig {
-    pub cnf_valus: Vec<u8>,
-    pub play_time: f64,
-}
-
-#[derive(Debug)]
-pub struct SettingData {
-    pub val_arr: Vec<u8>,
-    pub ch: u8,
-    pub xy: u8,
-    pub light: u8,
-    pub cfg: u8,
-    pub lang: u8,
-}
