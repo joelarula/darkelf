@@ -3395,18 +3395,18 @@
                     }
                 }
 
-                function m(e, t, r) {
-                    for (var n = t / 800, h = [], a = [], i = 0, c = 0, o = 99999, s = 99999, l = 0; l < e.length; l++) {
-                        var p = e[l],
+                function normalizeAndCenterPolylines (polyLinePoints, targetWidth, r) {
+                    for (var n = targetWidth / 800, h = [], a = [], i = 0, c = 0, o = 99999, s = 99999, index = 0; index < polyLinePoints.length; index++) {
+                        var p = polyLinePoints[index],
                             d = [p[0] * n, p[1] * n, p[2], p[3]];
                         i < d[0] && (i = d[0]), c < d[1] && (c = d[1]), o > d[0] && (o = d[0]), s > d[1] && (s = d[1])
                     }
                     var b = -o,
-                        g = i - o + .1 * t,
-                        j = t;
-                    r || (g = t, b = t / 2 - ((i - o) / 2 + o), j = c - s + .1 * t);
-                    for (var x = 0; x < e.length; x++) {
-                        var V = e[x],
+                        g = i - o + .1 * targetWidth,
+                        j = targetWidth;
+                    r || (g = targetWidth, b = targetWidth / 2 - ((i - o) / 2 + o), j = c - s + .1 * targetWidth);
+                    for (var x = 0; x < polyLinePoints.length; x++) {
+                        var V = polyLinePoints[x],
                             f = [V[0] * n, V[1] * n, V[2], V[3]];
                         0 == f[2] && a.length > 0 && (h.push(a), a = []), a.push({
                             x: f[0] + b,
@@ -3421,14 +3421,14 @@
                     }
                 }
 
-                function P(e) {
+                function getCharHexCode (e) {
                     var t = e[0],
                         r = t.charCodeAt(0),
                         n = r.toString(16);
                     return n.toLowerCase()
                 }
 
-                function u(e) {
+                function unpackEncodedNumber(e) {
                     var t = e % 10,
                         r = function(e) {
                             var t, r, n;
@@ -3443,28 +3443,28 @@
                         l = Math.floor((e - s) / o - 400);
                     return s = Math.floor((s - t) / 10 - 400), [s, l, i, c]
                 }
-                var X = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
+                var numericsAndAlphas = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
 
-                function N(e) {
-                    for (var t = 0, r = 0; r < e.length; r++) t = 64 * t + X.indexOf(e.charAt(r));
+                function base64CustomToInt(e) {
+                    for (var t = 0, r = 0; r < e.length; r++) t = 64 * t + numericsAndAlphas.indexOf(e.charAt(r));
                     return t
                 }
 
-                function H(e) {
+                function decodePackedNumberList (inputString) {
                     for (var t = [], r = function(e) {
                             for (var t = e.split(","), r = [], n = 0; n < t.length; n++) {
-                                var h = N(t[n]);
+                                var h = base64CustomToInt(t[n]);
                                 r.push(h)
                             }
                             return r
-                        }(e), n = 0; n < r.length; n++) {
-                        var h = u(r[n]);
+                        }(inputString), n = 0; n < r.length; n++) {
+                        var h = unpackEncodedNumber(r[n]);
                         t.push(h)
                     }
                     return t
                 }
 
-                function z(e) {
+                function mirrorPolylineFields (e) {
                     for (var t = [], r = [], h = 0; h < e.length; h++) {
                         var a = spreadToArrayHelper(e[h], 4),
                             i = a[0],
@@ -3479,9 +3479,9 @@
                     }
                 }
 
-                function Q(e, r) {
-                    for (var n = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], h = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], a = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], i = 400, c = [], o = [], s = [], l = "", p = 0; p < r.length; p++) {
-                        var d = P(r[p]),
+                function getCharacterPolylineData (polyLinelookup, characters) {
+                    for (var n = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], h = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], a = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], i = 400, c = [], o = [], s = [], l = "", p = 0; p < characters.length; p++) {
+                        var d = getCharHexCode (characters[p]),
                             b = [],
                             g = [],
                             j = [],
@@ -3489,20 +3489,20 @@
                             V = i,
                             f = i,
                             F = i / 3;
-                        if (d in e) {
-                            var k = e[d];
-                            if (n && (k = H(k)), a) {
+                        if (d in polyLinelookup) {
+                            var k = polyLinelookup[d];
+                            if (n && (k = decodePackedNumberList (k)), a) {
                                 t("log", "xysVer", JSON.stringify(k), " at utils/TextLine.js:680");
                                 var u = JSON.parse(JSON.stringify(k));
-                                u = z(u);
-                                var X = m(u.xysUp, i, h);
+                                u = mirrorPolylineFields (u);
+                                var X = normalizeAndCenterPolylines (u.xysUp, i, h);
                                 g = X.lines, f = X.w, F = X.h;
-                                var N = m(u.xysDown, i, h);
+                                var N = normalizeAndCenterPolylines (u.xysDown, i, h);
                                 j = N.lines
                             }
-                            var Q = m(k, i, h);
+                            var Q = normalizeAndCenterPolylines (k, i, h);
                             b = Q.lines, x = Q.w, V = Q.h
-                        } else l += r[p];
+                        } else l += characters[p];
                         c.push({
                             lines: b,
                             w: x,
@@ -3544,7 +3544,7 @@
                                 xxyyUp: [],
                                 xxyyDown: l
                             };
-                            i = Q(t.data, r, !0, h, n), c = layoutAndSimplifyShapes (i.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
+                            i = getCharacterPolylineData (t.data, r, !0, h, n), c = layoutAndSimplifyShapes (i.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
                         }
                         return {
                             xxyy: c,

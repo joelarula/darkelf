@@ -12200,7 +12200,7 @@
                 c = Object(i["a"])(h["default"], n["b"], n["c"], !1, null, null, null, !1, n["a"], void 0);
             t["default"] = c.exports
         },
-        "codePointAt": function(t, r, n) {
+        "opentypejs": function(t, r, n) {
             (function(h, a) {
                 var i, c, o, s = n("typeofHelper");
                 (function(e, n) {
