@@ -3345,6 +3345,7 @@
                             b = [],
                             g = [],
                             j = "";
+                            //https://github.com/opentypejs/opentype.js/tree/master/test
                         return fontLoader.load(fontBinaryData , (function(e, loadedFontOpentype) {
                             if (e) t("log", "\u52a0\u8f7d\u5b57\u4f53\u5f02\u5e38: " + e, " at utils/TextLine.js:496");
                             else
