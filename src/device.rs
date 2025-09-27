@@ -126,11 +126,11 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
     /// Set the playback mode on the device
     pub async fn set_playback_mode(&self, playback_mode: u8) {
-        let cmd = CommandGenerator::get_playback_mode_cmd(playback_mode);
-        let mut controller = self.device_controller.lock().unwrap();
-        if let Err(e) = controller.send(&cmd).await {
-            error!("Failed to send playback mode command: {:?}", e);
-        }
+      //  let cmd = CommandGenerator::get_playback_mode_cmd(playback_mode);
+      //  let mut controller = self.device_controller.lock().unwrap();
+      //  if let Err(e) = controller.send(&cmd).await {
+      //      error!("Failed to send playback mode command: {:?}", e);
+      //  }
     }
 
 

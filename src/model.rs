@@ -138,9 +138,9 @@ pub struct CommandConfig {
 #[derive(Debug)]
 pub struct TextData {
     pub tx_color: u8,
-    pub tx_size: f64,
-    pub run_speed: f64,
-    pub tx_dist: f64,
+    pub tx_size: u8,
+    pub run_speed: u8,
+    pub tx_dist: u8,
     pub tx_point_time: u8,
     pub run_dir: u8,
 }
@@ -154,12 +154,12 @@ pub struct ProjectData {
 #[derive(Debug)]
 pub struct PublicData {
     pub rd_mode: u8, // audio trigger mode
-    pub sound_val: f64, // sound sensitivity
+    pub sound_val: u8, // sound sensitivity
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ProjectItem {
-    pub py_mode: i32, //  playBackMode  0 : 128;
+    pub py_mode: u8, //  playBackMode  0 : 128;
     pub prj_selected: Vec<u16>, // selected show
 }
 

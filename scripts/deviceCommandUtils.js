@@ -14,6 +14,68 @@ module.exports = function(exports, require, module, dependencyResolver) {
 };
 
 // ...existing code...
+// Utility function to test getCmdStr export
+function testShowCmd(exportsObj) {
+
+ const commandConfig = {
+  curMode: 6, // Change mode (e.g., 2)
+  textData: {
+    txColor: 5,      // Change color (e.g., 5)
+    txSize: 50,     // Font size (default 100)
+    runSpeed: 50,    // Run speed (default 80)
+    txDist: 50,      // Text distance (default 50)
+    runDir: 1,       // Run direction (default 1)
+    txPointTime: 10, // Point time (default 10)
+  },
+  prjData: {
+    public: {
+      rdMode: 1,     // Audio trigger mode (e.g., 1)
+      soundVal: 77, // Sound sensitivity (e.g., 120)
+    },
+    prjItem: [
+      {
+        pyMode: 128,         // Change pyMode (e.g., 128)
+        prjSelected: [255,255,255,255], // Selection bits (default)
+      },
+      {
+        pyMode: 128,
+        prjSelected: [255,255,255,255],
+      },
+      {
+        pyMode: 128,
+        prjSelected: [255,255,255,255],
+      },
+      {
+        pyMode: 128,
+        prjSelected: [255, 255, 255, 255],
+      }
+    ]
+  }
+};
+
+  if (typeof exportsObj.getCmdStr === 'function') {
+    const result = exportsObj.getCmdStr(commandConfig,{});
+    console.log('Result of getCmdStr:', result);
+  } else {
+    console.error('getCmdStr function not found in module exports.');
+  }
+}
+
+
+
+function testGetQueryCmd(exportsObj) {
+
+  var randomCheck = [];
+  for (var e = 0; e < 4; e++) randomCheck[e] = Math.floor(256 * Math.random());
+  console.log('Random check array:', randomCheck);
+
+  if (typeof exportsObj.getQueryCmd === 'function') {
+    const result = exportsObj.getQueryCmd(randomCheck);
+    console.log('Result of getQueryCmd:', result);
+  } else {
+    console.error('getQueryCmd function not found in module exports.');
+  }
+}
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
@@ -74,12 +136,10 @@ if (targetModule && typeof targetModule === 'function') {
     // Exported functions may be on fakeModule.exports.exports or fakeModule.exports
     const exported = fakeModule.exports.exports || fakeModule.exports;
     console.log('Module keys:', Object.keys(exported));
-    if (typeof exported.getQueryCmd === 'function') {
-      const result = exported.getQueryCmd([1,2,3,4]);
-      console.log('Result of getQueryCmd:', result);
-    } else {
-      console.error('getQueryCmd function not found in module exports.');
-    }
+
+    testGetQueryCmd(exported);
+    testShowCmd(exported);
+
   } catch (err) {
     console.error('Error calling module function:', err);
   }

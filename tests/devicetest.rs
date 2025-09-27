@@ -3,6 +3,8 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use darkelf::blue::BlueController as _;
+use darkelf::model::{CommandConfig, MainCommandData, ProjectData, ProjectItem, PublicData, TextData};
+use darkelf::ui::console::DeviceCommand;
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::mock::MockController;
 use darkelf::util;
@@ -61,15 +63,40 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
 
 
 async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(), anyhow::Error> {
+    
     device.setup().await;
-    sleep(Duration::from_millis(1000));
-    info!("turning device off");
-    device.on().await;
-    sleep(Duration::from_millis(1000));
-    device.off().await;
-    sleep(Duration::from_millis(1000));
     device.on().await;
 
+
+   // test_playback_command(device).await;
+
+    test_on_off(device).await;
+    test_settings(device).await;
+
+    Ok(())
+}
+
+//async fn test_playback_command(device: &mut LaserDevice) {
+
+  //  let mut cmd: MainCommandData = device.get_command_data().expect("Device should return command data");
+
+ //   cmd.current_mode = 0;
+
+  //  let cmd_str = CommandGenerator::get_cmd_str(cmd, None);
+
+//}
+
+async fn test_on_off(device: &mut LaserDevice) {
+    for _ in 0..3 {
+        info!("Turning device off");
+        device.off().await;
+        sleep(Duration::from_millis(500));
+        info!("Turning device on");
+        device.on().await;
+        sleep(Duration::from_millis(500));
+    }
+}
+async fn test_settings(device: &mut LaserDevice) {
 
     let mut settings = device.get_setting();
     if let Some(ref mut settings) = settings {
@@ -86,14 +113,7 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
             sleep(Duration::from_millis(50));
         }
     }
-    
-
-
-    Ok(())
 }
-
-
-
 
 #[test]
 fn test_check_received_data() {
@@ -183,4 +203,50 @@ fn test_parse_device_response() {
     assert_eq!(device_info.device_type, "02", "Device type should be '02'");
     assert_eq!(device_info.version, "00", "Version should be '00'");
     assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
+}
+
+
+
+#[test]
+fn test_compose_main_command() {
+    use std::println;
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+    println!("\nTesting compose_main_command");
+
+// Example object:
+let command_config = CommandConfig {
+    cur_mode: 6,
+    text_data: TextData {
+        tx_color: 5,
+        tx_size: 50,
+        run_speed: 50,
+        tx_dist: 50,
+        run_dir: 1,
+        tx_point_time: 10,
+    },
+    prj_data: ProjectData {
+        public: PublicData {
+            rd_mode: 1,
+            sound_val: 77,
+        },
+        prj_item: {
+            let mut map = std::collections::HashMap::new();
+            map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map
+        },
+    },
+};
+
+    let cmd_str = CommandGenerator::get_cmd_str(&command_config, None);
+    println!("Composed command string: {}", cmd_str);
+
+  let testStr2 ="C0C1C2C3060005808080008001C4FFFFFFFF00008000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
+    assert_eq!(cmd_str, testStr2, "Composed command string should match expected");
+
 }

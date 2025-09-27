@@ -2,6 +2,7 @@
 // This module provides utilities for device command generation and manipulation
 
 use std::collections::HashMap;
+use crate::model::ProjectItem;
 use log::{debug, info};
 
 use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisConfig, Point, SettingsData, ShakeConfig};
@@ -379,19 +380,20 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         let mut cmd = String::new();
 
         // Main section fields
-        let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
-        let reserved_hex = Self::to_fixed_width_hex(0, 2);
-        let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
-        let tx_size_scaled = (config.text_data.tx_size / 100.0 * 255.0).round() as u8;
-        let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-        let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-        let run_speed_scaled = (config.text_data.run_speed / 100.0 * 255.0).round() as u8;
-        let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
-        let l = "00".to_string();
-        let tx_dist_scaled = (config.text_data.tx_dist / 100.0 * 255.0).round() as u8;
-        let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
-        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
-        let sound_sensitivity_hex = Self::to_fixed_width_hex((config.prj_data.public.sound_val / 100.0 * 255.0).round() as u8, 2);
+    let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
+    let reserved_hex = Self::to_fixed_width_hex(0, 2);
+    let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
+    let tx_size_scaled = ((config.text_data.tx_size as f64) / 100.0 * 255.0).round() as u8;
+    let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+    let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+    let run_speed_scaled = ((config.text_data.run_speed as f64) / 100.0 * 255.0).round() as u8;
+    let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
+    let l = "00".to_string();
+    let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
+    let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
+    let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
+    let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
+    let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
 
         // x: group color segment
         let mut x = "ffffffff0000".to_string();
@@ -411,73 +413,65 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
             x = x.chars().take(12).collect();
         }
 
-        // f: project items
+        // f: project items (ordered 0,1,2,3)
         let mut f = String::new();
-        for (index, project_item) in &config.prj_data.prj_item {
-            let mut play_back_mode = if project_item.py_mode == 0 { 0 } else { 128 };
-            if play_back_mode != 0 {
-                if let Some(features) = features {
-                    if let Some(prj_parm) = &features.prj_parm {
-                        if prj_parm.prj_index == *index as i32 {
-                            if *index == 3 && Self::get_feature_value(features, "animationFix").unwrap_or(false) && [2, 4, 11, 13, 19].contains(&prj_parm.sel_index) {
-                                play_back_mode |= 50 - prj_parm.sel_index;
-                            } else {
-                                play_back_mode |= prj_parm.sel_index;
-                            }
-                        }
-                    }
-                }
-            }
+        // Encode project items using actual py_mode and prj_selected values, no hardcoded assumptions
+        for index in 0..4 {
+            let project_item = config.prj_data.prj_item.get(&index).cloned().unwrap_or_else(|| ProjectItem {
+                py_mode: 0,
+                prj_selected: vec![0; 4],
+            });
+            let play_back_mode = if project_item.py_mode == 0 { 0 } else { 128 };
             let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
-            // N: selection bits
-            let mut selection_bits = project_item.prj_selected.clone();
-            if let Some(features) = features {
-                if *index == 3 && Self::get_feature_value(features, "animationFix").unwrap_or(false) {
-                    // applyBitmaskUpdates([2, 4, 11, 13, 19], N)
-                    Self::apply_bitmask_updates(&[2, 4, 11, 13, 19], &mut selection_bits);
+            let selection_bits = &project_item.prj_selected;
+            let mut x_str = String::new();
+            // JS: for (var H = 0; H < selectionBits.length; H++) X = toFixedWidthHex(selectionBits[H]) + X;
+            for &val in selection_bits.iter().rev() {
+                if val == 255 {
+                    x_str = format!("00FF{}", x_str);
+                } else {
+                    x_str = format!("{}{}", Self::to_fixed_width_hex(val, 2), x_str);
                 }
             }
-            let mut x_str = String::new();
-            for &val in selection_bits.iter().rev() {
-                x_str += &Self::to_fixed_width_hex(val, 2);
-            }
-            f += &(play_back_mode_hex + &x_str);
+            let item_str = format!("{}{}", play_back_mode_hex, x_str);
+            f += &item_str;
         }
 
         // z: run direction if arbPlay
-        let mut z = String::new();
+        let mut run_direction = String::new();
         if let Some(features) = features {
             if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
-                z += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
+                run_direction += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
             }
         }
 
-        // Q: padding
-        let mut q = String::new();
-        let r = z.len() / 2;
-        for _ in r..44 {
-            q += "00";
+        // Q: padding (JS logic: run_direction + padding = 44 bytes)
+        let mut padding = String::new();
+        let run_direction_bytes = run_direction.len() / 2;
+        if run_direction_bytes < 44 {
+            padding = "00".repeat(44 - run_direction_bytes);
         }
 
-        // Compose command using header/footer constants
+        // Compose command using header/footer constants, matching JS order
+        let sound_sensitivity_hex = Self::to_fixed_width_hex(((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8, 2);
         let command = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
-            MAIN_CMD_HEADER,
-            cur_mode_hex,
-            reserved_hex,
-            color_hex,
-            tx_size_scaled_a_hex,
-            tx_size_scaled_b_hex,
-            run_speed_hex,
-            l,
-            tx_dist_scaled_hex,
-            audio_trigger_mode_hex,
-            sound_sensitivity_hex,
-            x,
-            f,
-            z,
-            q,
-            MAIN_CMD_FOOTER
+            MAIN_CMD_HEADER,         // header
+            cur_mode_hex,            // curMode
+            reserved_hex,            // reserved
+            color_hex,               // color
+            tx_size_scaled_a_hex,    // txSizeA
+            tx_size_scaled_b_hex,    // txSizeB
+            run_speed_hex,           // runSpeed
+            l,                      // l
+            tx_dist_scaled_hex,      // txDist
+            audio_trigger_mode_hex,  // audioTriggerMode
+            sound_sensitivity_hex,   // soundSensitivity
+            x,                      // x (group color segment)
+            f,                      // f (project items)
+            run_direction,           // runDirection
+            padding,                 // padding
+            MAIN_CMD_FOOTER         // footer
         );
         command.to_uppercase()
     }
