@@ -110,17 +110,26 @@ impl LaserDevice {
             .map(|resp| resp.settings.clone())
     }
 
-    pub async fn set_settings(&self, new_settings: SettingsData) {
+pub async fn set_settings(&self, new_settings: SettingsData) {
+    let cmd = CommandGenerator::get_setting_cmd(&new_settings);
+    let mut controller = self.device_controller.lock().unwrap();
+    if let Ok(_) = controller.send(&cmd).await {
         let mut info_lock = self.device_info.lock().unwrap();
         if let Some(ref mut response) = *info_lock {
             response.settings = new_settings;
-            // Generate the settings command string
-            let cmd = CommandGenerator::get_setting_cmd(&response.settings);
-            // Send the command to the device
-            let mut controller = self.device_controller.lock().unwrap();
-            if let Err(e) = controller.send(&cmd).await {
-                error!("Failed to send settings command: {:?}", e);
-            }
+        }
+    } else {
+        error!("Failed to send settings command");
+    }
+}
+
+
+    /// Set the playback mode on the device
+    pub async fn set_playback_mode(&self, playback_mode: u8) {
+        let cmd = CommandGenerator::get_playback_mode_cmd(playback_mode);
+        let mut controller = self.device_controller.lock().unwrap();
+        if let Err(e) = controller.send(&cmd).await {
+            error!("Failed to send playback mode command: {:?}", e);
         }
     }
 

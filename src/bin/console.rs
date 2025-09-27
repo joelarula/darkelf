@@ -68,27 +68,25 @@ fn main() -> eframe::Result<()> {
 
                     device.setup().await;
 
-
                     loop {
                         // Handle incoming commands (non-blocking)
                         if let Ok(cmd) = device_command_incomming.try_recv() {
-                             match cmd {
+                            match cmd {
                                 DeviceCommand::SetSettings(settings) => {
                                     device.set_settings(settings).await;
                                 }
                                 DeviceCommand::On(on) => {
-                                    if(on) {
-                                        log::info!("Turning ON device");
+                                    if (on) {
                                         device.on().await;
                                     } else {
-                                        log::info!("Turning OFF device");
                                         device.off().await;
                                     }
-
+                                }
+                                DeviceCommand::ToggleMode(playback_mode) => {
+                                    device.setPlaybackMode(playback_mode).await;
                                 }
                             }
                         }
-
 
                         let response_opt = device.get_device_response();
                         if let Some(response) = response_opt {

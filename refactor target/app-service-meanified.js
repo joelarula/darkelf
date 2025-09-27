@@ -1,4 +1,5 @@
-(this["webpackJsonp"] = this["webpackJsonp"] || []).push([
+globalThis["webpackJsonp"] = globalThis["webpackJsonp"] || [];
+globalThis["webpackJsonp"].push([
     ["app-service"], {
         "mainLayoutComponent": function(e, t, r) {
             "use strict";
