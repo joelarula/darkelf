@@ -59,7 +59,7 @@ pub struct SettingsData {
     pub channel: u8,       // DMX 
     pub dmx: u8,           // 0 or 1
     pub xy: u8,            // Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+ (0-7)
-    pub light: u8,         // 1=single, 2=dual, 3=full
+    pub light: u8,         // 1=single, 2=dual, 3=full rgb
     pub cfg: u8,           // 0=ttl, 255=analog
     pub lang: String,      // Language setting
 }
