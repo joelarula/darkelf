@@ -68,10 +68,17 @@ impl LaserDevice {
             error!("Cannot turn on - device not connected");
             return;
         }
-        
         // Send power on command
         if let Err(e) = controller.send(POWER_ON_CMD).await {
             error!("Failed to send ON command: {:?}", e);
+        }
+        // Update device_info to reflect device is on
+        if let Ok(mut info) = self.device_info.lock() {
+            if let Some(ref mut resp) = *info {
+                if let Some(ref mut dev_info) = resp.device_info {
+                    dev_info.device_on = true;
+                }
+            }
         }
     }
 
@@ -82,10 +89,17 @@ impl LaserDevice {
             error!("Cannot turn off - device not connected");
             return;
         }
-        
         // Send power off command
         if let Err(e) = controller.send(POWER_OFF_CMD).await {
             error!("Failed to send OFF command: {:?}", e);
+        }
+        // Update device_info to reflect device is off
+        if let Ok(mut info) = self.device_info.lock() {
+            if let Some(ref mut resp) = *info {
+                if let Some(ref mut dev_info) = resp.device_info {
+                    dev_info.device_on = false;
+                }
+            }
         }
     }
 
@@ -153,6 +167,8 @@ impl LaserDevice {
 
     /// Get a copy of the entire device response
     pub fn get_device_response(&self) -> Option<DeviceResponse> {
-        self.device_info.lock().unwrap().clone()
+        self.device_info.try_lock().unwrap()
+            .as_ref()
+            .map(|resp| resp.clone())
     }
 }

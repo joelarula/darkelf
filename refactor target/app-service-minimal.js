@@ -1092,9 +1092,9 @@
                     return [e.concat(m), N, H, -k * t / 2]
                 }
 
-                function encodeLayoutToCommandData(e, r, n, h) {
+                function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {
                     var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
-                    if (0 == e.length) return null;
+                    if (0 == polylineSegments .length) return null;
                     var o = 0,
                         l = 0,
                         p = -1,
@@ -1108,11 +1108,11 @@
                         F = V,
                         k = 0,
                         m = "00";
-                    m = n.textDecimalTime ? toFixedWidthHex(Math.floor(10 * r), 2) : toFixedWidthHex(Math.floor(r), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
+                    m = commandOptions .textDecimalTime ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) : toFixedWidthHex(Math.floor(segmentTime ), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
                     var P = !1;
-                    if (P) t("error", "20241210 - \u5f53\u524d\u4ee3\u7801\u4e3a\u5750\u6807\u8c03\u5f0f\u6a21\u5f0f\uff0c\u4e0d\u53ef\u53d1\u7248", " at utils/funcTools.js:345"), xyss = e, se1 = 0, se2 = 0, xOffset = 0;
+                    if (P) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), xyss = polylineSegments , se1 = 0, se2 = 0, xOffset = 0;
                     else {
-                        var u = generateSegmentedLayoutData(e, f, h);
+                        var u = generateSegmentedLayoutData(polylineSegments , f, mirrorMode );
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
                     }
                     for (var X = 0; X < xyss.length; X++) {
@@ -1126,10 +1126,10 @@
                                 R = Math.round(Number(z.y * f)),
                                 v = Number(z.z),
                                 I = F;
-                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), n.textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + toFixedWidthHex(Q) + toFixedWidthHex(R) + toFixedWidthHex(combineNibbles(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
+                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), commandOptions .textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + toFixedWidthHex(Q) + toFixedWidthHex(R) + toFixedWidthHex(combineNibbles(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
                         }
                     }
-                    return P && t("log", "\u6587\u5b57\u5750\u6807(\u7ed8\u56fe\u8f6f\u4ef6\u683c\u5f0f)", b, " at utils/funcTools.js:408"), j += toFixedWidthHex(k, 2), 0 == o ? null : {
+                    return P && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), j += toFixedWidthHex(k, 2), 0 == o ? null : {
                         cnt: o,
                         charCount: l,
                         cmd: d,
@@ -1291,16 +1291,28 @@
                         }
                         return l += toFixedWidthHex(x, 2), 0 == r ? "" : (a = "A0A1A2A3" + toFixedWidthHex(r) + toFixedWidthHex(n, 2) + a + p + l + se + d + "A4A5A6A7", a.toUpperCase())
                     },
-                    getXysCmdArr: function(e, r, n) {
-                        for (var h = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0, a = [], c = 0; c < e.length; c++) {
-                            var o = e[c].xys,
-                                s = n;
-                            255 == n && null != e[c].XysRight ? o = e[c].XysRight : 127 == n && null != e[c].XysUp ? o = e[c].XysUp : 128 == n && null != e[c].XysDown ? o = e[c].XysDown : s = 0;
-                            var p = encodeLayoutToCommandData(o, e[c].time, r, s, h);
+                    getXysCmdArr: function(polylinePoints, commandType, mirrored) {
+                        for (var h = arguments.length > 3 && void 0 !== arguments[3] 
+                                ? arguments[3] 
+                                : 0, a = [], c = 0; c < polylinePoints.length; c++) {
+                            var o = polylinePoints[c].xys,
+                                s = mirrored;
+                            255 == mirrored && null != polylinePoints[c].XysRight 
+                                ? o = polylinePoints[c].XysRight 
+                                : 127 == mirrored && null != polylinePoints[c].XysUp 
+                                    ? o = polylinePoints[c].XysUp 
+                                    : 128 == mirrored && null != polylinePoints[c].XysDown 
+                                        ? o = polylinePoints[c].XysDown 
+                                        : s = 0;
+                            var p = encodeLayoutToCommandData(o, polylinePoints[c].time, commandType, s, h);
                             null != p && a.push(p)
                         }
                         if (0 == a.length) return "";
-                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt), g += toFixedWidthHex(a[P].charCount, 2), j += a[P].cmd, x += a[P].charWidthCmd, V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
+                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) 
+                            d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt), 
+                            g += toFixedWidthHex(a[P].charCount, 2), 
+                            j += a[P].cmd, x += a[P].charWidthCmd, 
+                            V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
                         t("log", d, b, " at utils/funcTools.js:308");
                         var u = toFixedWidthHex(a.length, 2),
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
@@ -1888,7 +1900,6 @@
 
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-
 
         "textPlaybackPageComponent ": function(e, t, r) {
             "use strict";
@@ -2809,8 +2820,7 @@
             }
         },
 
-    
-    "fontRegistryModule ": function(e, t, r) {
+        "fontRegistryModule ": function(e, t, r) {
             var mergedDrawFontsUtils = r("mergedDrawFontsUtils"),
                 h = [{
                     name: "Single Line Font",
@@ -3526,7 +3536,7 @@
                 }
                 e.exports = {
                     getTextLines: getTextLines,
-                    getXXYY: function(e, t, r, n) {
+                    getXXYY: function(fontData, inputMode , inputText , mirrorVertical ) {
                         var h = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],
                             a = arguments.length > 5 && void 0 !== arguments[5] ? arguments[5] : 5,
                             i = {},
@@ -3535,16 +3545,16 @@
                             s = [],
                             l = [],
                             d = [];
-                        if (1 == t.mode) i = getTextLines(e, t.data, r, a, n), c = layoutAndSimplifyShapes (i.linesArr, !1, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !1, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !1, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !1, h, !0, !0);
+                        if (1 == inputMode .mode) i = getTextLines(fontData, inputMode .data, inputText , a, mirrorVertical ), c = layoutAndSimplifyShapes (i.linesArr, !1, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !1, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !1, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !1, h, !0, !0);
                         else {
-                            if (2 != t.mode) return {
+                            if (2 != inputMode .mode) return {
                                 xxyy: [],
                                 notRec: "",
                                 XxyyRight: [],
                                 xxyyUp: [],
                                 xxyyDown: l
                             };
-                            i = getCharacterPolylineData (t.data, r, !0, h, n), c = layoutAndSimplifyShapes (i.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
+                            i = getCharacterPolylineData (inputMode .data, inputText , !0, h, mirrorVertical ), c = layoutAndSimplifyShapes (i.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
                         }
                         return {
                             xxyy: c,
@@ -3554,21 +3564,21 @@
                             xxyyDown: l
                         }
                     },
-                    dealObjLines: function(e) {
+                    dealObjLines: function(polylinePoints) {
                         for (var t = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], r = 20, n = [], h = [], a = {
                                 left: 99999,
                                 top: -99999,
                                 right: -99999,
                                 bottom: 99999
-                            }, i = e, c = 0; c < i.length; c++) {
+                            }, i = polylinePoints, c = 0; c < i.length; c++) {
                             var o = [i[c][0], i[c][1]];
                             a.left = Math.min(a.left, o[0]), a.top = Math.max(a.top, o[1]), a.right = Math.max(a.right, o[0]), a.bottom = Math.min(a.bottom, o[1])
                         }
-                        for (var s = (a.right - a.left) / 2 + a.left, l = (a.top - a.bottom) / 2 - a.top, p = 0; p < e.length; p++) {
-                            var d = e[p],
+                        for (var s = (a.right - a.left) / 2 + a.left, l = (a.top - a.bottom) / 2 - a.top, p = 0; p < polylinePoints.length; p++) {
+                            var d = polylinePoints[p],
                                 b = d[3];
-                            if (t && 0 != h.length && 0 != d[2] && p < e.length - 1) {
-                                var g = e[p + 1];
+                            if (t && 0 != h.length && 0 != d[2] && p < polylinePoints.length - 1) {
+                                var g = polylinePoints[p + 1];
                                 if (0 != g[2]) {
                                     var x = calculateAngleBetweenPoints_B(h, d, g);
                                     if (0 == x || x >= 166) continue;
@@ -3579,9 +3589,9 @@
                         }
                         return n
                     },
-                    dealImgLines: function(e) {
-                        for (var t = [], r = 0; r < e.length; r++) {
-                            var n = markPolylineCorners(e[r], 135, !1);
+                    dealImgLines: function(polylinePoints) {
+                        for (var t = [], index = 0; index < polylinePoints.length; index++) {
+                            var n = markPolylineCorners(polylinePoints[index], 135, !1);
                             n = rotatePolylineToCornerStart(n, 135), t.push.apply(t, arrayConversionHelper(n))
                         }
                         return t
@@ -3605,7 +3615,6 @@
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
   
-
         "spreadToArrayHelper": function(e, t, r) {
             var n = r("arrayIfArrayHelper"),
                 h = r("iterableToArrayLimitHelper"),
@@ -3616,8 +3625,6 @@
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
         
-
-
         arrayConversionHelper: function(e, t, r) {
             var n = r("arrayToArrayLikeHelper"),
                 h = r("b893"),
