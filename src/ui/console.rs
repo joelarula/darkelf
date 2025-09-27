@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use tokio::sync::{Mutex, mpsc};
 
-use crate::model::DeviceResponse;
+use crate::model::{DeviceResponse, PlaybackMode};
 
 use crate::ui::{settings, buttons, statusbar}; 
 
@@ -20,7 +20,7 @@ pub struct Console {
     pub x_sign: Sign,
     pub y_sign: Sign,
     pub on: bool,
-    pub mode: i32,
+    pub mode: PlaybackMode,
     pub device_connected: bool,
     pub device_name: Option<String>,
     pub device_state: Option<DeviceResponse>,
@@ -39,7 +39,7 @@ impl Console {
                 x_sign: Sign::Plus,
                 y_sign: Sign::Plus,
                 on: false,
-                mode: 1,
+                mode: PlaybackMode::RandomPlayback,
                 device_connected: false,
                 device_name: None,
                 device_state: None,
@@ -78,6 +78,7 @@ impl Default for Light {
 pub enum DeviceCommand {
     On(bool),
     SetSettings(crate::model::SettingsData),
+    ToggleMode(PlaybackMode)
 }
 
 
