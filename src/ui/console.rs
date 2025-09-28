@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::collections::HashMap;
 
 use tokio::sync::{Mutex, mpsc};
 
@@ -27,14 +28,29 @@ pub struct Console {
     pub device_state: Option<DeviceResponse>,
     incomming_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
+    /// Maps playback mode/item to a vector of 0/1 bits (length 50)
+    pub playback_selections: HashMap<u8, Vec<u8>>, // key: playback mode/item, value: 50 bits (0/1)
 }
 
 
 impl Console {
         pub fn new(device_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,device_command: mpsc::UnboundedSender<DeviceCommand>) -> Self {
+            let mut playback_selections = HashMap::new();
+            // Initialize with required playback modes, all bits 0
+            use crate::model::PlaybackMode;
+            for key in [
+                PlaybackMode::TimelinePlayback as u8,
+                PlaybackMode::AnimationPlayback as u8,
+                PlaybackMode::ChristmasBroadcast as u8,
+                PlaybackMode::OutdoorPlayback as u8,
+            ] {
+                playback_selections.insert(key, vec![0u8; 50]);
+            }
             Self {
                 channel: 1,
                 display_range: 50,
+               // sound_sensitivity: 128,
+               // playback_speed: 50,
                 light: Light::Mono,
                 x_y_interchange: false,
                 x_sign: Sign::Plus,
@@ -46,6 +62,7 @@ impl Console {
                 device_state: None,
                 incomming_channel: device_channel,
                 command_sender: device_command,
+                playback_selections,
             }
         }
     }
@@ -79,7 +96,10 @@ impl Default for Light {
 pub enum DeviceCommand {
     On(bool),
     SetSettings(crate::model::SettingsData),
-    SetMode(PlaybackMode)
+    SetMode {
+        mode: PlaybackMode,
+        selected_shows: Option<Vec<u8>>,
+    },
 }
 
 
@@ -151,7 +171,7 @@ impl eframe::App for Console {
 
             // Central panel (fills the remaining space)
             egui::CentralPanel::default().show(ctx, |ui| {
-                show_selector_grid(ui);
+                show_selector_grid(ui, self);
             });
 
         }else{
@@ -167,9 +187,9 @@ impl eframe::App for Console {
 
 
 impl Console {
-    pub fn set_playback(&mut self, mode: PlaybackMode) {
+    pub fn set_playback(&mut self, mode: PlaybackMode, selected_shows: Option<Vec<u8>>) {
         self.mode = mode;
-        let _ = self.command_sender.send(DeviceCommand::SetMode(mode));
+        let _ = self.command_sender.send(DeviceCommand::SetMode { mode, selected_shows });
     }
     pub fn parse_xy_map(&mut self, xy_map: &u8)  {
         // Map: 0-3 normal, 4-7 interchange

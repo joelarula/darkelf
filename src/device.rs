@@ -133,8 +133,7 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
 
     /// Set the playback mode on the device
-    pub async fn set_playback_mode(&self, playback_mode: PlaybackMode) {
-
+    pub async fn set_playback_mode(&self, playback_mode: PlaybackMode, selected_shows: Option<Vec<u8>>) {
         if let Some(command_config) = self.command_config_from_main(playback_mode) {
             let cmd = CommandGenerator::get_cmd_str(&command_config, None);
             let mut controller = self.device_controller.lock().unwrap();

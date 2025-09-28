@@ -20,7 +20,7 @@ pub fn show_mode_buttons(console: &mut Console, ctx: &egui::Context) {
 }
 
 fn handle_mode_change(console: &mut Console, mode: PlaybackMode) {
-    console.set_playback(mode);
+    console.set_playback(mode, None);
 }
 
 fn mode_toggle(ui: &mut egui::Ui, console: &mut Console, mode: PlaybackMode, label: &str) {

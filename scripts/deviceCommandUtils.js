@@ -32,24 +32,24 @@ function testShowCmd(exportsObj) {
       rdMode: 1,     // Audio trigger mode (e.g., 1)
       soundVal: 77, // Sound sensitivity (e.g., 120)
     },
-    prjItem: [
-      {
+    prjItem: {
+       2:{
         pyMode: 128,         // Change pyMode (e.g., 128)
-        prjSelected: [255,255,255,255], // Selection bits (default)
+        prjSelected: [21845,21845,21845,1], // Selection bits (default)
       },
-      {
+      3: {
         pyMode: 128,
-        prjSelected: [255,255,255,255],
+        prjSelected: [1,0,0,2],
       },
-      {
+      5: {
         pyMode: 128,
-        prjSelected: [255,255,255,255],
+        prjSelected: [0,0,0,0],
       },
-      {
+      6: {
         pyMode: 128,
-        prjSelected: [255, 255, 255, 255],
+        prjSelected: [65535, 65535, 65535, 3],
       }
-    ]
+    }
   }
 };
 

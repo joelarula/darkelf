@@ -1,28 +1,4 @@
-#[test]
-fn test_pack_bits_to_prj_selected_first_last_50() {
-    // Create a bit vector with only the first and last bit set to 1, rest are 0 (50 bits)
-    let mut bits = vec![0u8; 50];
-    bits[0] = 1;
-    bits[49] = 1;
-    // Pad to 64 bits
-    bits.extend(vec![0u8; 14]);
-    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
 
-    // Pack bits into prj_selected Vec<u8>
-    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
-    println!("Packed prj_selected for first and last of 50 set: {:?}", packed);
-    for (i, val) in packed.iter().enumerate() {
-        println!("packed[{}] = 0x{:04X}", i, val);
-    }
-
-    // Unpack back to bits and check
-    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
-    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
-    assert_eq!(unpacked[0], 1, "First bit should be 1");
-    assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
-    assert_eq!(&unpacked[1..49], vec![0u8; 48].as_slice(), "Bits 1-48 should be 0");
-    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Bits 50-63 should be 0");
-}
 use std::env;
 use std::thread::sleep;
 use std::time::Duration;
@@ -297,24 +273,24 @@ fn test_compose_main_command() {
 let command_config = CommandConfig {
     cur_mode: 6,
     text_data: TextData {
-        tx_color: 5,
+        tx_color: 5, // color
         tx_size: 50,
-        run_speed: 50,
+        run_speed: 50, // speed
         tx_dist: 50,
         run_dir: 1,
         tx_point_time: 10,
     },
     prj_data: ProjectData {
         public: PublicData {
-            rd_mode: 1,
-            sound_val: 77,
+            rd_mode: 1, // audio trigger mode
+            sound_val: 77, // sound sensitivity
         },
         prj_item: {
             let mut map = std::collections::HashMap::new();
-            map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![21845, 21845, 21845, 1] });
+            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![1, 0, 0, 2] });
+            map.insert(5, ProjectItem { py_mode: 128, prj_selected: vec![0, 0, 0, 0] });
+            map.insert(6, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
             map
         },
     },
@@ -324,7 +300,7 @@ let command_config = CommandConfig {
     println!("Composed command string: {}", cmd_str);
 
 
-    let test_str2 = "C0C1C2C3060005808080008001C4FFFFFFFF00008000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
+    let test_str2 = "C0C1C2C3060005808080008001C4FFFFFFFF0000800001555555555555800002000000000001800000000000000000800003FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
     assert_eq!(cmd_str, test_str2, "Composed command string should match expected");
 }
 
@@ -370,3 +346,55 @@ fn test_pack_bits_to_prj_selected_50_selected() {
     assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
 }
 
+#[test]
+fn test_pack_bits_to_prj_selected_first_last_50() {
+    // Create a bit vector with only the first and last bit set to 1, rest are 0 (50 bits)
+    let mut bits = vec![0u8; 50];
+    bits[0] = 1;
+    bits[49] = 1;
+    // Pad to 64 bits
+    bits.extend(vec![0u8; 14]);
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+
+    // Pack bits into prj_selected Vec<u8>
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    println!("Packed prj_selected for first and last of 50 set: {:?}", packed);
+    for (i, val) in packed.iter().enumerate() {
+        println!("packed[{}] = 0x{:04X}", i, val);
+    }
+
+    // Unpack back to bits and check
+    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
+    assert_eq!(unpacked[0], 1, "First bit should be 1");
+    assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
+    assert_eq!(&unpacked[1..49], vec![0u8; 48].as_slice(), "Bits 1-48 should be 0");
+    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Bits 50-63 should be 0");
+}
+
+#[test]
+fn test_pack_bits_to_prj_selected_every_second_1() {
+    // Create a bit vector with every second bit set to 1, rest are 0 (50 bits)
+    let mut bits = Vec::with_capacity(50);
+    for i in 0..50 {
+        bits.push(if i % 2 == 0 { 1 } else { 0 });
+    }
+    // Pad to 64 bits
+    bits.extend(vec![0u8; 14]);
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+
+    // Pack bits into prj_selected Vec<u8>
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    println!("Packed prj_selected for every second bit set: {:?}", packed);
+    for (i, val) in packed.iter().enumerate() {
+        println!("packed[{}] = 0x{:04X}", i, val);
+    }
+
+    // Unpack back to bits and check every second bit is 1, rest are 0
+    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
+    for i in 0..50 {
+        assert_eq!(unpacked[i], if i % 2 == 0 { 1 } else { 0 }, "Bit {} should be {}", i, if i % 2 == 0 { 1 } else { 0 });
+    }
+    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
+}

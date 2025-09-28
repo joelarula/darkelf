@@ -440,28 +440,21 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
             x = x.chars().take(12).collect();
         }
 
-        // f: project items (ordered 0,1,2,3)
+        // f: project items (ordered by protocol: TimelinePlayback, AnimationPlayback, ChristmasBroadcast, OutdoorPlayback)
         let mut f = String::new();
-        // Encode project items using actual py_mode and prj_selected values, no hardcoded assumptions
-        for index in 0..4 {
-            let project_item = config.prj_data.prj_item.get(&index).cloned().unwrap_or_else(|| ProjectItem {
-                py_mode: 0,
+        let prj_keys = [2, 3, 5, 6];
+        for &key in prj_keys.iter() {
+            let project_item = config.prj_data.prj_item.get(&key).cloned().unwrap_or_else(|| ProjectItem {
+                py_mode: 128,
                 prj_selected: vec![0; 4],
             });
             let play_back_mode = if project_item.py_mode == 0 { 0 } else { 128 };
             let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
-            let selection_bits = &project_item.prj_selected;
-            let mut x_str = String::new();
-            // JS: for (var H = 0; H < selectionBits.length; H++) X = toFixedWidthHex(selectionBits[H]) + X;
-            for &val in selection_bits.iter().rev() {
-                if val == 255 {
-                    x_str = format!("00FF{}", x_str);
-                } else {
-                    x_str = format!("{}{}", Self::to_fixed_width_hex(val, 2), x_str);
-                }
+            let mut prj_selected_hex = String::new();
+            for &val in project_item.prj_selected.iter().rev() {
+                prj_selected_hex.push_str(&Self::to_fixed_width_hex(val, 4));
             }
-            let item_str = format!("{}{}", play_back_mode_hex, x_str);
-            f += &item_str;
+            f.push_str(&format!("{}{}", play_back_mode_hex, prj_selected_hex));
         }
 
         // z: run direction if arbPlay
@@ -545,11 +538,6 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         String::new()
     }
 
-    pub fn get_pis_cmd_str(index: i32, config: &PisConfig, features: Option<&Features>) -> String {
-        debug!("get_pis_cmd_str called with index: {}", index);
-        info!("PisConfig: {:?}, Features: {:?}", config, features);
-        String::new()
-    }
 
     pub fn get_pis_list_cmd_str(items: &[PisConfig], features: Option<&Features>) -> String {
         debug!("get_pis_list_cmd_str called with items len: {}", items.len());

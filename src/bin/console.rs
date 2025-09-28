@@ -82,8 +82,8 @@ fn main() -> eframe::Result<()> {
                                         device.off().await;
                                     }
                                 }
-                                DeviceCommand::SetMode(playback_mode) => {
-                                    device.set_playback_mode(playback_mode).await;
+                                DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
+                                    device.set_playback_mode(playback_mode, selected_shows).await;
                                 }
                             }
                         }
@@ -94,8 +94,6 @@ fn main() -> eframe::Result<()> {
                                 .send(DeviceMessage::DeviceResponse(response));
                         }
 
-                        // Simulate device state update every 500ms
-                        //let _ = ui_tx_clone.send(DeviceState { value: device_value });
                         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                     }
                 }
