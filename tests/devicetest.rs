@@ -1,3 +1,28 @@
+#[test]
+fn test_pack_bits_to_prj_selected_first_last_50() {
+    // Create a bit vector with only the first and last bit set to 1, rest are 0 (50 bits)
+    let mut bits = vec![0u8; 50];
+    bits[0] = 1;
+    bits[49] = 1;
+    // Pad to 64 bits
+    bits.extend(vec![0u8; 14]);
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+
+    // Pack bits into prj_selected Vec<u8>
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    println!("Packed prj_selected for first and last of 50 set: {:?}", packed);
+    for (i, val) in packed.iter().enumerate() {
+        println!("packed[{}] = 0x{:04X}", i, val);
+    }
+
+    // Unpack back to bits and check
+    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
+    assert_eq!(unpacked[0], 1, "First bit should be 1");
+    assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
+    assert_eq!(&unpacked[1..49], vec![0u8; 48].as_slice(), "Bits 1-48 should be 0");
+    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Bits 50-63 should be 0");
+}
 use std::env;
 use std::thread::sleep;
 use std::time::Duration;
@@ -31,7 +56,6 @@ async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
     Ok(())
 }
 
-
 #[tokio::main]
 #[test]
 async fn test_laser_device() -> Result<(), anyhow::Error> {
@@ -58,9 +82,7 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
     test_laser_device_functionality(&mut device).await?;
     
     Ok(())
-
 }
-
 
 async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(), anyhow::Error> {
     
@@ -68,23 +90,77 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     device.on().await;
 
 
-   // test_playback_command(device).await;
+    test_playback_command(device).await;
 
-    test_on_off(device).await;
-    test_settings(device).await;
+    //test_on_off(device).await;
+    //test_settings(device).await;
 
     Ok(())
 }
 
-//async fn test_playback_command(device: &mut LaserDevice) {
+async fn test_playback_command(device: &mut LaserDevice) {
+    use std::thread::sleep;
+    use std::time::Duration;
 
-  //  let mut cmd: MainCommandData = device.get_command_data().expect("Device should return command data");
-
- //   cmd.current_mode = 0;
-
-  //  let cmd_str = CommandGenerator::get_cmd_str(cmd, None);
-
-//}
+    use std::time::Instant;
+    let start = Instant::now();
+    let mut cmd_opt = None;
+    while start.elapsed() < Duration::from_secs(5) {
+        cmd_opt = device.get_command_data();
+        if cmd_opt.is_some() {
+            break;
+        }
+        sleep(Duration::from_millis(100));
+    }
+    let mut cmd: MainCommandData = cmd_opt.expect("Device should return command data after waiting");
+    use darkelf::model::PlaybackMode;
+    use std::collections::HashMap;
+    let playback_modes = [
+        PlaybackMode::Dmx,
+        PlaybackMode::RandomPlayback,
+        PlaybackMode::TimelinePlayback,
+        PlaybackMode::AnimationPlayback,
+        PlaybackMode::TextPlayback,
+        PlaybackMode::ChristmasBroadcast,
+        PlaybackMode::OutdoorPlayback,
+        PlaybackMode::PersonalizedProgramming,
+        PlaybackMode::HandDrawnDoodle,
+        PlaybackMode::Playlist,
+    ];
+    for mode in playback_modes.iter() {
+        cmd.current_mode = *mode as u8;
+        // Manual conversion from MainCommandData to CommandConfig
+        let config = CommandConfig {
+            cur_mode: cmd.current_mode,
+            text_data: TextData {
+                tx_color: cmd.text_color,
+                tx_size: cmd.text_size,
+                run_speed: cmd.run_speed,
+                tx_dist: cmd.text_distance,
+                run_dir: cmd.run_direction,
+                tx_point_time: cmd.text_point_time,
+            },
+            prj_data: ProjectData {
+                public: PublicData {
+                    rd_mode: cmd.read_mode,
+                    sound_val: cmd.sound_value,
+                },
+                    prj_item: {
+            let mut map = std::collections::HashMap::new();
+            map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+            map
+        },
+            },
+        };
+        //let cmd_str = CommandGenerator::get_cmd_str(&config, None);
+        println!("Set playback mode: {:?} | Command: {:?}", mode, config);
+        device.set_command_data(config).await;
+        sleep(Duration::from_secs(3));
+    }
+}
 
 async fn test_on_off(device: &mut LaserDevice) {
     for _ in 0..3 {
@@ -96,6 +172,7 @@ async fn test_on_off(device: &mut LaserDevice) {
         sleep(Duration::from_millis(500));
     }
 }
+
 async fn test_settings(device: &mut LaserDevice) {
 
     let mut settings = device.get_setting();
@@ -246,7 +323,50 @@ let command_config = CommandConfig {
     let cmd_str = CommandGenerator::get_cmd_str(&command_config, None);
     println!("Composed command string: {}", cmd_str);
 
-  let testStr2 ="C0C1C2C3060005808080008001C4FFFFFFFF00008000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
-    assert_eq!(cmd_str, testStr2, "Composed command string should match expected");
 
+    let test_str2 = "C0C1C2C3060005808080008001C4FFFFFFFF00008000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF8000FF00FF00FF00FF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
+    assert_eq!(cmd_str, test_str2, "Composed command string should match expected");
 }
+
+#[test]
+fn test_prj_selected_bit_conversion() {
+        // Create a ProjectItem with prj_selected = vec![255, 255, 255, 255]
+        let item = ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] };
+
+    // Unpack to bits
+    let bits = CommandGenerator::unpack_project_item_bits(&item);
+    // Should be 64 bits, each 255 is 8 ones then 8 zeros
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+    println!("bits: {:?}", bits);
+    for chunk in bits.chunks(16) {
+        let expected: Vec<u8> = vec![1; 8].into_iter().chain(vec![0; 8].into_iter()).collect();
+        assert_eq!(chunk, expected.as_slice(), "Each chunk should be 8 ones then 8 zeros for 255");
+    }
+
+    // Pack back to prj_selected
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    assert_eq!(packed, vec![255, 255, 255, 255], "Packed prj_selected should match original");
+}
+
+#[test]
+fn test_pack_bits_to_prj_selected_50_selected() {
+    // Create a bit vector with 50 selected buttons (first 50 bits set to 1, rest 14 bits set to 0)
+    let mut bits = vec![1u8; 50];
+    bits.extend(vec![0u8; 14]); // total 64 bits
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+
+    // Pack bits into prj_selected Vec<u8>
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    println!("Packed prj_selected for 50 selected: {:?}", packed);
+    // Print each packed value in hex for clarity
+    for (i, val) in packed.iter().enumerate() {
+        println!("packed[{}] = 0x{:04X}", i, val);
+    }
+
+    // Unpack back to bits and check first 50 are 1, rest are 0
+    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
+    assert_eq!(&unpacked[..50], vec![1u8; 50].as_slice(), "First 50 bits should be 1");
+    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
+}
+

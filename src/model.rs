@@ -72,6 +72,7 @@ pub struct DeviceResponse {
     pub features: Vec<FeatureConfig>,
     pub draw_config: DrawConfig,
     pub device_info: Option<DeviceInfo>,
+    pub prj_data: Option<ProjectData>,
 }
 
 
@@ -130,7 +131,7 @@ pub struct ProjectParams {
 
 #[derive(Debug)]
 pub struct CommandConfig {
-    pub cur_mode: i32,
+    pub cur_mode: u8,
     pub text_data: TextData,
     pub prj_data: ProjectData,
 }
@@ -145,13 +146,13 @@ pub struct TextData {
     pub run_dir: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ProjectData {
     pub public: PublicData,
     pub prj_item: HashMap<i32, ProjectItem>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PublicData {
     pub rd_mode: u8, // audio trigger mode
     pub sound_val: u8, // sound sensitivity
@@ -160,7 +161,7 @@ pub struct PublicData {
 #[derive(Debug, Clone)]
 pub struct ProjectItem {
     pub py_mode: u8, //  playBackMode  0 : 128;
-    pub prj_selected: Vec<u16>, // selected show
+    pub prj_selected: Vec<u16>, // selected shows
 }
 
 // Struct moved to top-level definition

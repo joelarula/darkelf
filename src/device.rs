@@ -1,8 +1,8 @@
-
+use crate::model::{MainCommandData, CommandConfig, TextData, ProjectData, PublicData, ProjectItem};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
-use crate::model::{SettingsData, DeviceResponse,MainCommandData};
+use crate::model::{ DeviceResponse, PlaybackMode, SettingsData};
 use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
@@ -10,6 +10,7 @@ pub struct LaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
 	device_info: Arc<Mutex<Option<DeviceResponse>>>,
+    playback_items: std::collections::HashMap<u8, ProjectItem>,
 }
 
 impl LaserDevice {
@@ -20,9 +21,16 @@ impl LaserDevice {
     pub fn new(device_controller: impl BlueController + 'static) -> Self {
         Self {
             random_check: Self::gen_random_check(),
-
             device_controller: Arc::new(Mutex::new(device_controller)),
             device_info: Arc::new(Mutex::new(None)),
+            playback_items: {
+            let mut map = std::collections::HashMap::new();
+                map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+                map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+                map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+                map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+                map
+            },
         }
     }
 
@@ -125,12 +133,23 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
 
     /// Set the playback mode on the device
-    pub async fn set_playback_mode(&self, playback_mode: u8) {
-      //  let cmd = CommandGenerator::get_playback_mode_cmd(playback_mode);
-      //  let mut controller = self.device_controller.lock().unwrap();
-      //  if let Err(e) = controller.send(&cmd).await {
-      //      error!("Failed to send playback mode command: {:?}", e);
-      //  }
+    pub async fn set_playback_mode(&self, playback_mode: PlaybackMode) {
+
+        if let Some(command_config) = self.command_config_from_main(playback_mode) {
+            let cmd = CommandGenerator::get_cmd_str(&command_config, None);
+            let mut controller = self.device_controller.lock().unwrap();
+            if let Ok(_) = controller.send(&cmd).await {
+                // Update main_data in device_info
+                let mut info_lock = self.device_info.lock().unwrap();
+                if let Some(ref mut resp) = *info_lock {
+                    resp.main_data.current_mode = playback_mode as u8;
+                }
+            } else {
+                error!("Failed to send playback mode command");
+            }
+        } else {
+            error!("Failed to generate command config for playback mode");
+        }
     }
 
 
@@ -144,17 +163,17 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
     
     /// Set the main command data and send the corresponding command to the device
-    pub async fn set_command_data(&self, new_command_data: MainCommandData) {
+    pub async fn set_command_data(&self, command_data: CommandConfig) {
         let mut info_lock = self.device_info.lock().unwrap();
         if let Some(ref mut response) = *info_lock {
-            response.main_data = new_command_data;
-            // Generate the main command string
-            //let cmd = CommandGenerator::get_main_command_cmd(&response.main_data);
+
+          //  response.main_data = command_data.main_data;
+            let cmd = CommandGenerator::get_cmd_str(&command_data, None);
             // Send the command to the device
-            //let mut controller = self.device_controller.lock().unwrap();
-            //if let Err(e) = controller.send(&cmd).await {
-            //    error!("Failed to send main command: {:?}", e);
-           // }
+            let mut controller = self.device_controller.lock().unwrap();
+            if let Err(e) = controller.send(&cmd).await {
+                error!("Failed to send main command: {:?}", e);
+            }
         }
     }
 
@@ -180,4 +199,36 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
             .as_ref()
             .map(|resp| resp.clone())
     }
+
+
+    /// Converts a MainCommandData to a CommandConfig with default prj_item
+fn command_config_from_main(&self, playback_mode: PlaybackMode) -> Option<CommandConfig> {
+    if let Some(resp) = self.get_device_response() {
+        let main = resp.main_data.clone();
+        let text_data = TextData {
+            tx_color: main.text_color,
+            tx_size: main.text_size,
+            run_speed: main.run_speed,
+            tx_dist: main.text_distance,
+            tx_point_time: main.text_point_time,
+            run_dir: main.run_direction,
+        };
+        let prj_data = resp.prj_data.clone().unwrap_or_else(|| ProjectData {
+            public: PublicData {
+                rd_mode: main.read_mode,
+                sound_val: main.sound_value,
+            },
+            prj_item: self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect(),
+        });
+        Some(CommandConfig {
+            cur_mode: playback_mode as u8,
+            text_data,
+            prj_data,
+        })
+    } else {
+        None
+    }
 }
+}
+
+

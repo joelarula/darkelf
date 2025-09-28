@@ -1,7 +1,7 @@
 // Rust translation of deviceCommandUtils module
 // This module provides utilities for device command generation and manipulation
 
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use crate::model::ProjectItem;
 use log::{debug, info};
 
@@ -29,6 +29,8 @@ const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 pub struct CommandGenerator;
 
 impl CommandGenerator {
+
+
     /// Applies bitmask updates to the selection_bits vector at the given indices.
     /// For each index in indices, toggles the bit (XOR with 1) at that position in selection_bits.
     /// This matches the JavaScript logic of applyBitmaskUpdates([indices], N).
@@ -281,12 +283,37 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
         let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data)?;
 
+        // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
+        // This assumes project item info is encoded in main_cmd or another section
+        // You may need to adjust parsing logic to match your protocol
+        let mut prj_item = std::collections::HashMap::new();
+        // Match JS parsing order for prj_selected fields
+        let mut project_item_start_index = 17;
+        for idx in 0..4 {
+            let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &main_cmd), 0, 255, 0) as u8;
+            let mut prj_selected = vec![0u16; 4];
+            prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &main_cmd);
+            prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &main_cmd);
+            prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &main_cmd);
+            prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &main_cmd);
+            prj_item.insert(idx as i32, ProjectItem { py_mode, prj_selected });
+            project_item_start_index += 9;
+        }
+
+        // Example: parse PublicData from main_cmd
+        let rd_mode = Self::extract_hex_value(2, 1, &main_cmd) as u8;
+        let sound_val = Self::extract_hex_value(3, 1, &main_cmd) as u8;
+        let public = crate::model::PublicData { rd_mode, sound_val };
+
+        let prj_data = crate::model::ProjectData { public, prj_item };
+
         let mut response = DeviceResponse {
             main_data: Self::parse_main_command(&main_cmd)?,
             settings: Self::parse_settings_command(&settings_cmd),
             features: Vec::new(),
             draw_config: DrawConfig::default(),
             device_info: None,
+            prj_data: Some(prj_data),
         };
 
         // Parse features section
@@ -377,7 +404,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         info!("CommandConfig: {:?}, Features: {:?}", config, features);
 
         // Main header and footer
-        let mut cmd = String::new();
+    // let mut cmd = String::new();
 
         // Main section fields
     let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
@@ -392,8 +419,8 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
     let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
     let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
-    let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
-    let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
+    // let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
+    // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
 
         // x: group color segment
         let mut x = "ffffffff0000".to_string();
@@ -633,6 +660,34 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
         info!("Device info parsed successfully: {:?}", device_info);
         (true, Some(device_info))
+    }
+
+
+    /// Unpacks prj_selected from ProjectItem into a flat Vec<u8> of bits (0/1), matching JS getCkValues
+    pub fn unpack_project_item_bits(project_item: &crate::model::ProjectItem) -> Vec<u8> {
+        let mut bits = Vec::with_capacity(project_item.prj_selected.len() * 16);
+        for &n in &project_item.prj_selected {
+            for h in 0..16 {
+                let a = ((n >> h) & 1) as u8;
+                bits.push(a);
+            }
+        }
+        bits
+    }
+
+    /// Packs a flat Vec<u8> of bits (0/1) into a Vec<u16>, inverse of unpack_project_item_bits
+    pub fn pack_bits_to_prj_selected(bits: &[u8]) -> Vec<u16> {
+        let mut prj_selected = Vec::new();
+        for chunk in bits.chunks(16) {
+            let mut val = 0u16;
+            for (h, &bit) in chunk.iter().enumerate() {
+                if bit != 0 {
+                    val |= 1 << h;
+                }
+            }
+            prj_selected.push(val);
+        }
+        prj_selected
     }
 }
 

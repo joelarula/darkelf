@@ -4,7 +4,7 @@ use tokio::sync::{Mutex, mpsc};
 
 use crate::model::{DeviceResponse, PlaybackMode};
 
-use crate::ui::{settings, buttons, statusbar}; 
+use crate::ui::{buttons, playback_settings, settings, statusbar}; 
 
 pub enum DeviceMessage {
     DeviceResponse(DeviceResponse),
@@ -78,7 +78,7 @@ impl Default for Light {
 pub enum DeviceCommand {
     On(bool),
     SetSettings(crate::model::SettingsData),
-    ToggleMode(PlaybackMode)
+    SetMode(PlaybackMode)
 }
 
 
@@ -132,10 +132,25 @@ impl eframe::App for Console {
             }
         }
 
+
         buttons::show_mode_buttons(self, ctx);
         statusbar::show_status_bar(self, ctx);
-        settings::show_settings_panel(self, ctx); 
-      
+
+        use crate::model::PlaybackMode;
+        let show_playback_settings = matches!(
+            self.mode,
+            PlaybackMode::TimelinePlayback
+                | PlaybackMode::AnimationPlayback
+                | PlaybackMode::TextPlayback
+                | PlaybackMode::ChristmasBroadcast
+                | PlaybackMode::OutdoorPlayback
+        );
+        if show_playback_settings {
+            playback_settings::show_playback_settings_ui(ctx);
+        }
+
+        settings::show_settings_panel(self, ctx);
+
         // Central panel (fills the remaining space)
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.label("Hello, dark elf!");
@@ -145,6 +160,10 @@ impl eframe::App for Console {
 
 
 impl Console {
+    pub fn set_playback(&mut self, mode: PlaybackMode) {
+        self.mode = mode;
+        let _ = self.command_sender.send(DeviceCommand::SetMode(mode));
+    }
     pub fn parse_xy_map(&mut self, xy_map: &u8)  {
         // Map: 0-3 normal, 4-7 interchange
         self.x_y_interchange = *xy_map >= 4;
