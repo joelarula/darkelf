@@ -25,10 +25,10 @@ impl LaserDevice {
             device_info: Arc::new(Mutex::new(None)),
             playback_items: {
             let mut map = std::collections::HashMap::new();
-                map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-                map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-                map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-                map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
+                map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
+                map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
+                map.insert(5, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
+                map.insert(6, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
                 map
             },
         }
@@ -214,7 +214,7 @@ fn command_config_from_main(&self, playback_mode: PlaybackMode) -> Option<Comman
         };
         let prj_data = resp.prj_data.clone().unwrap_or_else(|| ProjectData {
             public: PublicData {
-                rd_mode: main.read_mode,
+                rd_mode: main.audio_mode,
                 sound_val: main.sound_value,
             },
             prj_item: self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect(),

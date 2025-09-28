@@ -118,7 +118,7 @@ async fn test_playback_command(device: &mut LaserDevice) {
             },
             prj_data: ProjectData {
                 public: PublicData {
-                    rd_mode: cmd.read_mode,
+                    rd_mode: cmd.audio_mode,
                     sound_val: cmd.sound_value,
                 },
                     prj_item: {
@@ -233,7 +233,7 @@ fn test_parse_device_response() {
 
     // Verify main command data
     assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
-    assert_eq!(response.main_data.project_index, 6, "Project index should be 6");
+    assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
     assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
     assert_eq!(response.main_data.text_size, 58, "Text size should be 58");
     assert_eq!(response.main_data.run_speed, 21, "Run speed should be 21");

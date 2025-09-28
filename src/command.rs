@@ -219,7 +219,6 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     fn parse_main_command(cmd: &str) -> Option<MainCommandData> {
         Some(MainCommandData {
             current_mode: Self::clamp_value(Self::extract_hex_value(1, 1, cmd) as u8, 0, 12, 0),
-            project_index: Self::clamp_value(Self::extract_hex_value(1, 1, cmd) as u8, 0, 12, 0),
             text_color: Self::clamp_value(Self::extract_hex_value(3, 1, cmd) as u8, 0, 9, 0),
             text_size: {
                 let raw = Self::extract_hex_value(4, 1, cmd);
@@ -233,7 +232,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
                 let raw = Self::extract_hex_value(8, 1, cmd);
                 Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 10, 100, 60)
             },
-            read_mode: Self::clamp_value(Self::extract_hex_value(9, 1, cmd) as u8, 0, 255, 0),
+            audio_mode: Self::clamp_value(Self::extract_hex_value(9, 1, cmd) as u8, 0, 255, 0),
             sound_value: {
                 let raw = Self::extract_hex_value(10, 1, cmd);
                 Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 0, 255, 0)

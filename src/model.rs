@@ -41,12 +41,11 @@ pub struct DrawConfig {
 #[derive(Debug, Clone, Default)]
 pub struct MainCommandData {
     pub current_mode: u8,
-    pub project_index: u8,
     pub text_color: u8,
     pub text_size: u8, // text size 10 - 100
     pub run_speed: u8, // speed 0 - 100
     pub text_distance: u8, // text distance 10 - 100
-    pub read_mode: u8,
+    pub audio_mode: u8,
     pub sound_value: u8,
     pub text_point_time: u8,
     pub draw_point_time: u8,
