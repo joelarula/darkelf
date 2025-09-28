@@ -1195,27 +1195,49 @@ globalThis["webpackJsonp"].push([
                     return null
                 }
 
-                function encodeDrawPointCommand(e, t, r, n) {
-                    for (var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00", a = "", o = "", s = 0; s < 15; s++) s <= 11 ? o += toFixedWidthHex(t.cnfValus[s], 2) : 13 == s ? getFeatureValue({
-                        features: r
-                    }, "picsPlay") ? o += toFixedWidthHex(-1 == n ? 10 * t.cnfValus[12] : 10 * n, 2) : o += "00" : 14 == s && r.textStopTime ? o += toFixedWidthHex(t.txPointTime, 2) : o += "00";
+                function encodeDrawPointCommand(points, config, features, pointTimeValue) {
+                    for (var h = arguments.length > 4 && void 0 !== arguments[4] 
+                            ? arguments[4] 
+                            : "00", a = "", o = "", index = 0; index < 15; index++) 
+                                index <= 11 
+                                    ? o += toFixedWidthHex(config.cnfValus[index], 2) 
+                                        : 13 == index 
+                                            ? getFeatureValue({
+                                                features: features
+                                            }, "picsPlay") 
+                                                ? o += toFixedWidthHex(-1 == pointTimeValue 
+                                                    ? 10 * config.cnfValus[12] 
+                                                    : 10 * pointTimeValue, 2) 
+                                                : o += "00" : 14 == index && features.textStopTime 
+                                                    ? o += toFixedWidthHex(config.txPointTime, 2) : o += "00";
                     if ("00" == h) {
                         o += h;
-                        for (var l = 0; l < e.length; l++) {
-                            var p = e[l],
-                                d = p[3];
-                            r.textStopTime && (0 == p[2] ? d = 2 : (l < e.length - 1 && 0 == e[l + 1][2] || l == e.length - 1) && (d = 3)), a = a + toFixedWidthHex(p[0].toFixed()) + toFixedWidthHex(p[1].toFixed()) + toFixedWidthHex(combineNibbles(p[2], d), 2)
+                        for (var ix = 0; ix < points.length; ix++) {
+                            var point = points[ix],
+                                d = point[3];
+                            features.textStopTime && (0 == point[2] 
+                                ? d = 2 
+                                : (ix < points.length - 1 && 0 == points[ix + 1][2] || ix == points.length - 1) 
+                                    && (d = 3)), 
+                                    a = a + toFixedWidthHex(point[0].toFixed()) + toFixedWidthHex(point[1].toFixed()) + toFixedWidthHex(combineNibbles(point[2], d), 2)
                         }
-                        a = o + toFixedWidthHex(e.length) + a
+                        a = o + toFixedWidthHex(points.length) + a
                     } else o += h, a = o;
                     return a
                 }
 
-                function drawPointStrToCmd(e, t) {
-                    var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null,
-                        n = "";
-                    return n = null == r ? t.picsPlay ? "f0f1f200" + e + "f4f5f6f7" : "f0f1f2f3" + e + "f4f5f6f7" : "f0f1f2" + toFixedWidthHex(r, 2) + e + "f4f5f6f7", n.toUpperCase()
+                function drawPointStrToCmd(pointString, config) {
+                    var headerSuffix  = arguments.length > 2 && void 0 !== arguments[2] 
+                        ? arguments[2] 
+                        : null,
+                        commandStr  = "";
+                    return commandStr  = null == headerSuffix  
+                        ? config.picsPlay 
+                            ? "f0f1f200" + pointString + "f4f5f6f7" 
+                            : "f0f1f2f3" + pointString + "f4f5f6f7" 
+                        : "f0f1f2" + toFixedWidthHex(headerSuffix , 2) + pointString + "f4f5f6f7", commandStr .toUpperCase()
                 }
+                
                 e.exports = {
                     test: function(e) {
                         return "hello---" + e
@@ -1393,10 +1415,10 @@ globalThis["webpackJsonp"].push([
                         return l.toUpperCase()
                     },
                     getDrawPointStr: encodeDrawPointCommand,
-                    getDrawCmdStr: function(e, t, r) {
-                        var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : "00",
-                            h = encodeDrawPointCommand(e, t, r, -1, n);
-                        return drawPointStrToCmd(h, r)
+                    getDrawCmdStr: function(drawPoints , drawconfig, features) {
+                        var pointTime = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : "00",
+                            encodedDrawCmd = encodeDrawPointCommand(drawPoints , drawconfig, features, -1, pointTime);
+                        return drawPointStrToCmd(encodedDrawCmd, features)
                     },
                     drawPointStrToCmd: drawPointStrToCmd,
                     getPisCmdStr: function(e, r) {
@@ -2068,7 +2090,7 @@ globalThis["webpackJsonp"].push([
                                 bleManager.gosend(!0, command);
          
                             },
-
+                            // send text command
                             sendCmd: function() {
                                 app.globalData.setCmdData("textData", this.textData);
                                 var command = deviceCommandUtils.getCmdStr(app.globalData.cmd, {
@@ -2706,8 +2728,14 @@ globalThis["webpackJsonp"].push([
                             },
                             sendCmdBtn: function(e) {
                                 var t = this;
-                                this.lastSendTxtCmdComplete && this.createXyByIdex(this.textData.groupIdex, (function() {
-                                    "" != t.textData.groupList[t.textData.groupIdex].text.trim() ? t.checkCurrentGroupOk() && (t.sendColorTag && t.sendCmd(), t.lastSendTxtCmdComplete = !1, t.sendTextCmdMustOk((new Date).getTime()), handwritingCanvasHelper.doDrawPicEx(t)) : app.globalData.showModalTips(t.inputNote, !0)
+                                this.lastSendTxtCmdComplete 
+                                    && this.createXyByIdex(this.textData.groupIdex, (function() {
+                                    "" != t.textData.groupList[t.textData.groupIdex].text.trim() 
+                                        ? t.checkCurrentGroupOk() && (t.sendColorTag && t.sendCmd(), 
+                                            t.lastSendTxtCmdComplete = !1, 
+                                            t.sendTextCmdMustOk((new Date).getTime()), 
+                                            handwritingCanvasHelper.doDrawPicEx(t)) 
+                                                : app.globalData.showModalTips(t.inputNote, !0)
                                 }))
                             },
 
@@ -4008,6 +4036,15 @@ globalThis["webpackJsonp"].push([
                                 }],
                                 MaxDrawPointCount: 800,
                                 drawPointCount: 0,
+
+                                //  drawMode: Number,
+                                //  ps: Array,        // Array of points or grouped points
+                                //  x0: Number,       // X origin
+                                //  y0: Number,       // Y origin
+                                //  z: Number,        // Scale
+                                //  ang: Number,      // Rotation angle
+                                //  lineColor: Number // Color index
+
                                 drawPoints: [],
                                 drawPointsHis: [],
                                 objParm: {
@@ -4171,7 +4208,8 @@ globalThis["webpackJsonp"].push([
                                 })
                             },
                             resetSelectMode: function() {
-                                return !!this.selectMode && (this.selectClick = !1, this.selectMode = !1, this.selectLines = [], this.selectRect = null, this.setCanvasSub(), this.reDraw(this.drawPoints), !0)
+                                return !!this.selectMode && (this.selectClick = !1, this.selectMode = !1, this.selectLines = [], this.selectRect = null, this.setCanvasSub(), 
+                                this.reDraw(this.drawPoints), !0)
                             },
                             btnDrawChange: function(e) {
                                 this.resetSelectMode();
@@ -4202,7 +4240,13 @@ globalThis["webpackJsonp"].push([
                                         draw_line_type: j,
                                         colorSeg: this.colorSeg
                                     });
-                                return this.objParm.lineColor = this.lineColor, 9999 == this.drawMode ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy, handDrawGeometryUtils.drawText(r, this.objParm), this.drawPoints.push(this.objParm)) : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, handDrawGeometryUtils.drawObj(r, this.objParm), this.drawPoints.push(this.objParm)), t.draw(!0), !0
+                                return this.objParm.lineColor = this.lineColor, 
+                                 9999 == this.drawMode 
+                                    ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy, 
+                                        handDrawGeometryUtils.drawText(r, this.objParm),
+                                        this.drawPoints.push(this.objParm)) 
+                                        : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, handDrawGeometryUtils.drawObj(r, this.objParm), 
+                                            this.drawPoints.push(this.objParm)), t.draw(!0), !0
                             },
                             addToHis: function() {
                                 if (!(this.drawPoints.length <= 0)) {
@@ -4261,7 +4305,8 @@ globalThis["webpackJsonp"].push([
                                     if (r.selectMode) {
                                         r.drawSelectRect();
                                         var e = t.selectRect;
-                                        null == e || 0 == e.mx && 0 == e.my && 1 == e.z && e.lastAng - e.startAng == 0 || r.addToHis(), r.reDraw(r.drawPoints)
+                                        null == e || 0 == e.mx && 0 == e.my && 1 == e.z && e.lastAng - e.startAng == 0 
+                                        || r.addToHis(), r.reDraw(r.drawPoints)
                                     } else r.setCanvasSub()
                                 }), 1)
                             },
@@ -4492,13 +4537,15 @@ globalThis["webpackJsonp"].push([
                             backDraw: function(t) {
                                 if (handDrawFileManager.getDrawPointsHisCount() <= 0) return this.resetSelectMode(), void this.clearDraw();
                                 var r = handDrawFileManager.popDrawPointsHis();
-                                e("log", "his", r, " at sub/pages/draw/draw.js:981"), this.drawPoints = r.data, this.drawPointCount = handDrawGeometryUtils.getdrawPointsCnt(this.drawPoints), this.resetSelectMode() || this.reDraw(this.drawPoints)
+                                e("log", "his", r, " at sub/pages/draw/draw.js:981"), this.drawPoints = r.data, 
+                                this.drawPointCount = handDrawGeometryUtils.getdrawPointsCnt(this.drawPoints), 
+                                this.resetSelectMode() || this.reDraw(this.drawPoints)
                             },
-                            reDraw: function(e) {
-                                var t = uni.createCanvasContext("drawCanvas", this);
-                                t.setLineWidth(1);
+                            reDraw: function(points) {
+                                var canvasContext = uni.createCanvasContext("drawCanvas", this);
+                                canvasContext.setLineWidth(1);
                                 var r = {
-                                        ctx: t,
+                                        ctx: canvasContext,
                                         w: this.drawCanvas.w,
                                         h: this.drawCanvas.h,
                                         draw_line_type: j,
@@ -4509,14 +4556,15 @@ globalThis["webpackJsonp"].push([
                                         selectLines: this.selectLines,
                                         selectMode: this.selectMode
                                     },
-                                    h = handDrawGeometryUtils.drawPs(e, r, n);
-                                return t.draw(!0), this.selectMode || this.setCanvasSub(), h
+                                    h = handDrawGeometryUtils.drawPs(points, r, n);
+                                return canvasContext.draw(!0), this.selectMode || this.setCanvasSub(), h
                             },
                             btnColorChange: function(e) {
                                 var t = parseInt(e.currentTarget.dataset.tag);
                                 this.lineColor = t;
                                 for (var r = 0; r < this.selectLines.length; r++) this.selectLines[r].color = this.lineColor;
-                                this.selectLines.length > 0 && (this.selectRect.ang = this.selectRect.lastAng - this.selectRect.startAng + this.selectRect.ang, this.selectRect.startAng = this.selectRect.lastAng, this.reDraw(this.drawPoints))
+                                this.selectLines.length > 0 && (this.selectRect.ang = this.selectRect.lastAng - this.selectRect.startAng + this.selectRect.ang, 
+                                    this.selectRect.startAng = this.selectRect.lastAng, this.reDraw(this.drawPoints))
                             },
                             touchStart: function(e) {
                                 this.points = null, this.points = [], this.lastLinePts = [];
@@ -4738,7 +4786,10 @@ globalThis["webpackJsonp"].push([
                             drawDone: function(t) {
                                 if (!(this.drawPointCount <= 0)) {
                                     var r = (new Date).getTime();
-                                    this.resetSelectMode(), e("log", "Send click time", r - this.lastCompleteTime, " at sub/pages/draw/draw.js:1355"), r - this.lastCompleteTime > 300 ? this.sendCmd() : e("log", "Send click too frequently", " at sub/pages/draw/draw.js:1357")
+                                    this.resetSelectMode(), e("log", "Send click time", r - this.lastCompleteTime, " at sub/pages/draw/draw.js:1355"),
+                                     r - this.lastCompleteTime > 300 
+                                        ? this.sendCmd() 
+                                        : e("log", "Send click too frequently", " at sub/pages/draw/draw.js:1357")
                                 }
                             },
                             parmSet: function(e) {
@@ -4773,7 +4824,8 @@ globalThis["webpackJsonp"].push([
                                 var h = this,
                                     i = handDrawGeometryUtils.reSizeDrawPoints(h.drawPoints, this.drawCanvas.w, this.drawCanvas.h),
                                     c = JSON.parse(JSON.stringify(h.pisObj));
-                                n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(fileName, "", i, h.drawPointCount, c, h.features, r), r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = fileName)
+                                n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(fileName, "", i, h.drawPointCount, c, h.features, r),
+                                r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = fileName)
                             },
                             saveDeskTop: function() {
                                 this.saveDrawPic("saveDeskTopFile_001", !0)
@@ -4854,10 +4906,11 @@ globalThis["webpackJsonp"].push([
                                     r = handDrawFileManager.getHandDrawImg(e, t);
                                 if (r) {
                                     if (r.pointCnt <= 0) return !1;
-                                    if (r.pointCnt > 800) return app.globalData.showModalTips(this.$t("\u8d85\u51fa\u6700\u5927\u70b9\u6570") + 800, !0), !1;
+                                    if (r.pointCnt > 800) return app.globalData.showModalTips(this.$t("Exceeds the maximum number of points") + 800, !0), !1;
                                     this.drawPointCount = r.pointCnt, this.addToHis();
                                     var n = handDrawGeometryUtils.reSizeDrawPoints(r.drawPoints, handDrawGeometryUtils.defaultWith, handDrawGeometryUtils.defaultHeight, this.drawCanvas.w, this.drawCanvas.h);
-                                    return this.drawPoints = n, r.pisObj && this.$set(this, "pisObj", r.pisObj), this.selectLines = [], this.selectMode = !1, this.needReDraw = !0, !0
+                                    return this.drawPoints = n,
+                                        r.pisObj && this.$set(this, "pisObj", r.pisObj), this.selectLines = [], this.selectMode = !1, this.needReDraw = !0, !0
                                 }
                                 return !1
                             },

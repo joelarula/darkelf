@@ -1,47 +1,7 @@
-# MainLayoutComponent UI Mock
+The drawPoints format is designed to be compatible with canvas drawing because each object contains all the necessary geometric and style information required for rendering on a canvas. Here’s how the compatibility works:
 
-A structured markdown outline representing the main UI layout and interactive elements.
-
----
-
-## Navigation Bar
-- **Title:** _[dynamic, e.g. ntitle]_
-- **Background Color:** `#10161C`
-
----
-
-## Main Panel
-
-### Color Selection
-- **Display-Color-Group**
-  - Two rows of color buttons (5 per row)
-  - Each button:
-    - Color preview (circle/square)
-    - Name label
-    - Active indicator for selected color
-
-### Segment Selection
-- **Segment-Color-Group**
-  - Two rows of segment buttons (5 per row)
-  - Each button:
-    - Color preview (circle/square)
-    - Name label
-    - Active indicator for selected segment
-
----
-
-### Canvas Area
-- **Draw Canvas**
-  - Main canvas (background: `#0D1B22`, rounded corners)
-  - Overlay/sub-layer canvases for drawing
-  - Touch/mouse events for drawing
-
----
-
-### Drawing & Font Controls
-- **Font Selector**
-  - Dropdown showing current font name
-  - Trigger to select/change font
-- **Add Image Button**
-- **Single-line Text Input**
-
+Geometry: The ps property holds the point data (coordinates or grouped points) that define the shape, polyline, or text outline. These can be directly used with canvas drawing commands like moveTo, lineTo, and arc.
+Positioning: The x0 and y0 properties specify the origin or reference point, allowing the drawing to be placed accurately on the canvas.
+Scaling and Rotation: The z (scale) and ang (angle) properties enable transformations such as resizing and rotating, which are supported by canvas context methods (scale, rotate, or manual coordinate transformation).
+Styling: The lineColor property provides the color index, which is mapped to actual color values for stroke and fill styles on the canvas.
+The module uses these properties to construct drawing instructions for the canvas context, applying transformations and styles as needed. Functions like drawObj, drawText, and drawLine extract the relevant data from each drawPoints object and issue the appropriate canvas API calls, ensuring seamless rendering of complex shapes, polylines, and text.
