@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+pub const MAX_DRAW_POINT_COUNT: usize = 800;
+
 /// Represents the available show/playback modes for the device.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PlaybackMode {
@@ -72,6 +74,7 @@ pub struct DeviceResponse {
     pub draw_config: DrawConfig,
     pub device_info: Option<DeviceInfo>,
     pub prj_data: Option<ProjectData>,
+    pub pis_obj: Option<PisObject>,
 }
 
 
@@ -188,12 +191,12 @@ pub struct XYValue {
     pub value: u8,
 }
 
-#[derive(Debug)]
-pub struct PisConfig {
-    pub cnf_valus: Vec<u8>,
-    pub play_time: f64,
+// cnf_valus[12] playback time configuration.
+#[derive(Debug, Clone)]
+pub struct PisObject {
+    pub tx_point_time: u32,
+    pub cnf_valus: [u32; 13],
 }
-
 
 
 /// Represents a color option from the colorDisplayOrder array.
@@ -274,6 +277,111 @@ impl DisplayColor {
             DisplayColor::White => 7,
             DisplayColor::Jump => 8,
             DisplayColor::RGB => 9,
+        }
+    }
+}
+
+
+#[derive(Debug, Clone)]
+pub enum PisObjNote {
+    PatternSelection(Vec<(u16, &'static str)>),
+    PatternType(Vec<(u16, &'static str)>),
+    Color(Vec<(u16, &'static str)>),
+    WaterFlow(Vec<(u16, &'static str)>),
+    PatternSize(Vec<(u16, &'static str)>),
+    Expansion(Vec<(u16, &'static str)>),
+    Rotation(Vec<(u16, &'static str)>),
+    WaterSurfaceRotation(Vec<(u16, &'static str)>),
+    VerticalRotation(Vec<(u16, &'static str)>),
+    WaterSurfaceMotion(Vec<(u16, &'static str)>),
+    VerticalMotion(Vec<(u16, &'static str)>),
+    WaterWidth(Vec<(u16, &'static str)>),
+}
+
+impl PisObjNote {
+    pub fn get_notes(category: usize) -> Option<PisObjNote> {
+        match category {
+            0 => Some(PisObjNote::PatternSelection(vec![
+                (256, "Pattern Selection"),
+            ])),
+            1 => Some(PisObjNote::PatternType(vec![
+                (25, "Straight Line Pattern"),
+                (25, "Arc Pattern"),
+                (25, "Bright Spot Pattern"),
+                (25, "Dot Pattern"),
+                (25, "Christmas Pattern"),
+                (25, "Animation Group 1"),
+                (25, "Animation Group 2"),
+                (25, "Animation Group 3"),
+                (25, "Animation Group 4"),
+                (31, "Animation Group 5"),
+            ])),
+            2 => Some(PisObjNote::Color(vec![
+                (10, "White"),
+                (10, "Red"),
+                (10, "Blue"),
+                (10, "Pink"),
+                (10, "Cyan"),
+                (10, "Yellow"),
+                (10, "Green"),
+                (10, "Overall Color Change"),
+                (13, "Rainbow Colors"),
+                (18, "2-Segment Color"),
+                (21, "3-Segment Color"),
+                (18, "4-Segment Color"),
+                (33, "8-Segment Color"),
+                (36, "16-Segment Color"),
+                (35, "32-Segment Color"),
+                (2, "Color Gradient Drawing"),
+            ])),
+            3 => Some(PisObjNote::WaterFlow(vec![
+                (10, "Non-Flowing Water"),
+                (118, "Forward Flowing Water"),
+                (128, "Reverse Flowing Water"),
+            ])),
+            4 => Some(PisObjNote::PatternSize(vec![
+                (256, "Pattern Size"),
+            ])),
+            5 => Some(PisObjNote::Expansion(vec![
+                (16, "Expand Manual Selection"),
+                (40, "From Small to Large Expansion"),
+                (40, "From Large to Small Expansion"),
+                (40, "Large to Small Expansion"),
+                (120, "Preview No Function"),
+            ])),
+            6 => Some(PisObjNote::Rotation(vec![
+                (128, "Rotation Angle"),
+                (64, "Forward Rotation Speed"),
+                (64, "Reverse Rotation Speed"),
+            ])),
+            7 => Some(PisObjNote::WaterSurfaceRotation(vec![
+                (128, "Water Surface Rotation Position"),
+                (128, "Water Surface Rotation Speed"),
+            ])),
+            8 => Some(PisObjNote::VerticalRotation(vec![
+                (128, "Vertical Rotation Position"),
+                (128, "Vertical Rotation Speed"),
+            ])),
+            9 => Some(PisObjNote::WaterSurfaceMotion(vec![
+                (128, "Water Surface Rotation"),
+                (128, "Water Surface Movement"),
+            ])),
+            10 => Some(PisObjNote::VerticalMotion(vec![
+                (128, "Vertical Rotation Position"),
+                (128, "Vertical Rotation Movement"),
+            ])),
+            11 => Some(PisObjNote::WaterWidth(vec![
+                (2, "Non-Flowing Water"),
+                (31, "Flowing Water Width 1"),
+                (32, "Flowing Water Width 2"),
+                (32, "Flowing Water Width 3"),
+                (32, "Flowing Water Width 4"),
+                (32, "Flowing Water Width 5"),
+                (32, "Flowing Water Width 6"),
+                (32, "Flowing Water Width 7"),
+                (31, "Flowing Water Width 8"),
+            ])),
+            _ => None,
         }
     }
 }

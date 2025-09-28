@@ -5,7 +5,7 @@
 use crate::model::ProjectItem;
 use log::{debug, info};
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisConfig, Point, SettingsData, ShakeConfig};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisObject, Point, SettingsData, ShakeConfig};
 
 // Response headers and footers
 pub const HEADER: &str = "E0E1E2E3";
@@ -307,6 +307,35 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
         let prj_data = crate::model::ProjectData { public, prj_item };
 
+        // PisObject extraction from main_cmd
+        // PisObject extraction from main_cmd
+        let tx_point_time = Self::clamp_value(Self::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
+        let mut cnf_valus_vec = Vec::new();
+        for i in 0..13 {
+            cnf_valus_vec.push(Self::clamp_value(Self::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
+        }
+        let mut cnf_valus_arr = [0u32; 13];
+        for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
+            cnf_valus_arr[i] = *val;
+        }
+        let mut pis_obj = PisObject {
+            tx_point_time: tx_point_time as u32,
+            cnf_valus: cnf_valus_arr,
+        };
+
+        // If draw config section exists, update PisObject fields from draw config data
+        if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
+            for i in 0..15 {
+                let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd) as u32, 0, 255, 0);
+                if i < pis_obj.cnf_valus.len() {
+                    pis_obj.cnf_valus[i] = value;
+                }
+                if i == 14 {
+                    pis_obj.tx_point_time = value;
+                }
+            }
+        }
+
         let mut response = DeviceResponse {
             main_data: Self::parse_main_command(&main_cmd)?,
             settings: Self::parse_settings_command(&settings_cmd),
@@ -314,6 +343,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
             draw_config: DrawConfig::default(),
             device_info: None,
             prj_data: Some(prj_data),
+            pis_obj: Some(pis_obj),
         };
 
         // Parse features section
@@ -539,7 +569,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     }
 
 
-    pub fn get_pis_list_cmd_str(items: &[PisConfig], features: Option<&Features>) -> String {
+    pub fn get_pis_list_cmd_str(items: &[PisObject], features: Option<&Features>) -> String {
         debug!("get_pis_list_cmd_str called with items len: {}", items.len());
         info!("Features: {:?}", features);
         String::new()

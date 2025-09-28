@@ -4037,12 +4037,12 @@ globalThis["webpackJsonp"].push([
                             }
                         },
                         onLoad: function() {
-                            var e = r("picArrayShapes");
-                            this.objCount = e.picArray.length;
-                            var t = r("fontRegistryModule ");
-                            this.fontNameList = t.getFontNameList();
-                            var n = app.globalData.getCmdData("drawData");
-                            this.pisObj = n.pisObj, handDrawFileManager.clearDrawPointsHis()
+                            var picArrayShapes = r("picArrayShapes");
+                            this.objCount = picArrayShapes.picArray.length;
+                            var fontRegistryModule = r("fontRegistryModule ");
+                            this.fontNameList = fontRegistryModule.getFontNameList();
+                            var drawData = app.globalData.getCmdData("drawData");
+                            this.pisObj = drawData.pisObj, handDrawFileManager.clearDrawPointsHis()
                         },
                         onUnload: function() {
                             e("log", "onunload", " at sub/pages/draw/draw.js:203"), this.saveDeskTop()
@@ -4080,10 +4080,10 @@ globalThis["webpackJsonp"].push([
                             sendCmd: function() {
                                 var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "00",
                                     t = (new Date).getTime(),
-                                    r = [];
-                                "00" == e && (r = this.reDraw(this.drawPoints));
-                                var n = deviceCommandUtils.getDrawCmdStr(r, this.pisObj, this.features, e),
-                                    h = bleDeviceControlUtils.gosend("00" == e, n, this.sendComplete);
+                                    points = [];
+                                "00" == e && (points = this.reDraw(this.drawPoints));
+                                var drawCommand = deviceCommandUtils.getDrawCmdStr(points, this.pisObj, this.features, e),
+                                    h = bleDeviceControlUtils.gosend("00" == e, drawCommand, this.sendComplete);
                                 return h && (this.lastSendtime = t), h
                             },
                             sendLastCmd: function() {
@@ -4668,7 +4668,12 @@ globalThis["webpackJsonp"].push([
                             },
                             addCnfValusAndSend: function(e) {
                                 var t = this.pisObj.cnfValus[this.cnfIdx] + Math.floor(e);
-                                t = t < 0 ? 0 : t, t = t > this.chDraw.max ? this.chDraw.max : t, this.pisObj.cnfValus[this.cnfIdx] != t && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("66"))
+                                t = t < 0 ? 0 : t, t = t > this.chDraw.max 
+                                    ? this.chDraw.max 
+                                    : t, this.pisObj.cnfValus[this.cnfIdx] != t 
+                                        && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), 
+                                        this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), 
+                                        this.sendLastCmd("66"))
                             },
                             callBackCh: function(e, t, r, n, h, a, i, c) {
                                 if (this.cnfIdx in this.pisObjNote) {
@@ -4761,14 +4766,14 @@ globalThis["webpackJsonp"].push([
                                     }
                                 })
                             },
-                            saveDrawPic: function(t) {
+                            saveDrawPic: function(fileName) {
                                 var r = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                                     n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : -1;
-                                e("log", "saveDrawPic", t, JSON.stringify(this.pisObj), " at sub/pages/draw/draw.js:1398");
+                                e("log", "saveDrawPic", fileName, JSON.stringify(this.pisObj), " at sub/pages/draw/draw.js:1398");
                                 var h = this,
                                     i = handDrawGeometryUtils.reSizeDrawPoints(h.drawPoints, this.drawCanvas.w, this.drawCanvas.h),
                                     c = JSON.parse(JSON.stringify(h.pisObj));
-                                n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(t, "", i, h.drawPointCount, c, h.features, r), r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = t)
+                                n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(fileName, "", i, h.drawPointCount, c, h.features, r), r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = fileName)
                             },
                             saveDeskTop: function() {
                                 this.saveDrawPic("saveDeskTopFile_001", !0)
@@ -4959,14 +4964,14 @@ globalThis["webpackJsonp"].push([
         },
 
 
-        handDrawGeometryUtils : function(e, t, r) {
+        "handDrawGeometryUtils" : function(e, t, r) {
             (function(t) {
                 var spreadToArrayHelper = r("spreadToArrayHelper"),
                     handDrawFileManager = r("handDrawFileManager"),
                     fontGeometryUtils = r("fontGeometryUtils "),
                     colors = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"];
 
-                function c(e, t, r, n, h) {
+                function rotatePointAroundCenter(e, t, r, n, h) {
                     var a = n - t,
                         i = h - r,
                         c = t + (a * Math.cos(e) - i * Math.sin(e)),
@@ -4977,7 +4982,7 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function o(e, t) {
+                function rotatePointsAroundBoundingBoxCenter(e, t) {
                     for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = [], h = r ? 1 : -1, a = {
                             left: 99999,
                             top: 99999,
@@ -4989,26 +4994,26 @@ globalThis["webpackJsonp"].push([
                     }
                     for (var s = (a.right - a.left) / 2 + a.left, l = (a.bottom - a.top) / 2 + a.top, p = 0; p < e.length; p++) {
                         var d = e[p],
-                            b = c(t, s, l, d[0], h * d[1]);
+                            b = rotatePointAroundCenter(t, s, l, d[0], h * d[1]);
                         n.push([b.x, h * b.y, d[2], d[3]])
                     }
                     return n
                 }
 
-                function s(e, t) {
+                function rotateGroupsOfPoints(e, t) {
                     for (var r = [], n = 0; n < e.length; n++) {
                         var h = e[n],
-                            a = o(h, t, !0);
+                            a = rotatePointsAroundBoundingBoxCenter(h, t, !0);
                         r.push(a)
                     }
                     return r
                 }
 
-                function l(e, t, r, n) {
+                function calculateRotationOffset(e, t, r, n) {
                     r = -r;
                     var h = t + e.w,
                         a = r + e.h,
-                        i = c(n, t, r, h, a),
+                        i = rotatePointAroundCenter(n, t, r, h, a),
                         o = {
                             mx: i.x - h,
                             my: i.y - a
@@ -5016,7 +5021,7 @@ globalThis["webpackJsonp"].push([
                     return o
                 }
 
-                function p(e) {
+                function rotateAndOffsetGroupedPoints(e) {
                     for (var t = e.ps, r = e.x0, n = e.y0, h = e.ang, a = [], i = {
                             left: 99999,
                             top: 99999,
@@ -5026,7 +5031,7 @@ globalThis["webpackJsonp"].push([
                         var p = t[s][1];
                         if (o != t[s][0]) {
                             o = t[s][0], i["w"] = (i.right - i.left) / 2 + i.left, i["h"] = (i.bottom - i.top) / 2 + i.top;
-                            var d = l(i, r, n, h);
+                            var d = calculateRotationOffset(i, r, n, h);
                             i["mx"] = d.mx, i["my"] = d.my, a.push(i), i = {
                                 left: 99999,
                                 top: 99999,
@@ -5040,14 +5045,14 @@ globalThis["webpackJsonp"].push([
                         }
                         if (s == t.length - 1) {
                             i["w"] = (i.right - i.left) / 2 + i.left, i["h"] = (i.bottom - i.top) / 2 + i.top;
-                            var j = l(i, r, n, h);
+                            var j = calculateRotationOffset(i, r, n, h);
                             i["mx"] = j.mx, i["my"] = j.my, a.push(i)
                         }
                     }
                     for (var x = [], V = 0; V < t.length; V++) {
                         for (var f = t[V][1], F = [], k = a[t[V][0]], m = 0; m < f.length; m++) {
                             var P = f[m],
-                                u = c(h, k.w, k.h, P.x, -P.y);
+                                u = rotatePointAroundCenter(h, k.w, k.h, P.x, -P.y);
                             F.push({
                                 x: u.x + k.mx,
                                 y: -(u.y + k.my),
@@ -5059,7 +5064,7 @@ globalThis["webpackJsonp"].push([
                     return x
                 }
 
-                function d(e, t) {
+                function getPointCount(e, t) {
                     var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
                     if (-1 == e) {
                         if (r) return t.length;
@@ -5073,7 +5078,7 @@ globalThis["webpackJsonp"].push([
                     return t.length
                 }
 
-                function b(e, t) {
+                function getAdjustedRectangle(e, t) {
                     var r = t,
                         n = e.left + e.mx - r,
                         h = e.top + e.my - r,
@@ -5087,10 +5092,10 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function g(e, t, r) {
+                function drawTransformedPolyline(e, t, r) {
                     var n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
                         h = arguments.length > 4 && void 0 !== arguments[4] && arguments[4],
-                        a = o(t.ps[r], t.ang, !0),
+                        a = rotatePointsAroundBoundingBoxCenter(t.ps[r], t.ang, !0),
                         c = e.ctx,
                         s = t.lineColor,
                         l = s >= 8 ? 1 : s,
@@ -5121,18 +5126,18 @@ globalThis["webpackJsonp"].push([
                     return c.stroke(), F
                 }
 
-                function j(e, t) {
+                function drawAllTransformedPolylines(e, t) {
                     for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3], h = t.ps, a = [], i = 0; i < h.length; i++) {
-                        var c = g(e, t, i, r, n);
+                        var c = drawTransformedPolyline(e, t, i, r, n);
                         r && (a = a.concat(c))
                     }
                     return a
                 }
 
-                function x(e, t) {
+                function drawTransformedObject(e, t) {
                     var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
                         n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
-                        h = o(t.ps, t.ang),
+                        h = rotatePointsAroundBoundingBoxCenter(t.ps, t.ang),
                         a = [],
                         c = 800 / e.w,
                         s = e.w / 2,
@@ -5170,10 +5175,10 @@ globalThis["webpackJsonp"].push([
                     return l.fill(), a
                 }
 
-                function V(e, t) {
+                function drawTransformedText(e, t) {
                     var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
                         n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
-                        h = p(t),
+                        h = rotateAndOffsetGroupedPoints(t),
                         a = [],
                         c = t.lineColor,
                         o = colors,
@@ -5214,7 +5219,7 @@ globalThis["webpackJsonp"].push([
                     return a
                 }
 
-                function f(e, t, r, n, h) {
+                function resizeGroupedPoints(e, t, r, n, h) {
                     for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
                         for (var l = a[s], p = [], d = 0; d < l.length; d++) {
                             var b = l[d];
@@ -5236,7 +5241,7 @@ globalThis["webpackJsonp"].push([
                     return x
                 }
 
-                function F(e, t, r, n, h) {
+                function resizeStructuredGroupedPoints(e, t, r, n, h) {
                     for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
                         for (var l = a[s][1], p = [], d = 0; d < l.length; d++) {
                             var b = l[d];
@@ -5262,7 +5267,7 @@ globalThis["webpackJsonp"].push([
                     return x
                 }
 
-                function k(e, t, r, n, h) {
+                function resizeFlatGroupedPoints(e, t, r, n, h) {
                     for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
                         var l = a[s];
                         i.push([l[0] * c, l[1] * o, l[2], l[3]])
@@ -5285,44 +5290,44 @@ globalThis["webpackJsonp"].push([
                     defaultHeight: 300,
                     colorSeg: [{
                         color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
-                        name: "\u5f69\u8679(8\u6bb5)"
+                        name: "Rainbow (8 segments)"
                     }, {
                         color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
-                        name: "\u5f69\u8679(8\u6bb5)"
+                        name: "Rainbow (8 segments)"
                     }, {
                         color: [3, 3, 3, 3, 3, 3, 3, 3, 7, 7, 7, 7, 7, 7, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7],
-                        name: "PICK_3 4\u6bb5"
+                        name: "PICK_3 4 segments"
                     }, {
                         color: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6],
-                        name: "PICK_4 4\u6bb5"
+                        name: "PICK_4 4 segments"
                     }, {
                         color: [7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2],
-                        name: "\u767d\u7eff\u76f8\u95f4(8\u6bb5)"
+                        name: "White-Green (8 segments)"
                     }, {
                         color: [3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7],
-                        name: "\u767d\u84dd\u76f8\u95f4(8\u6bb5)"
+                        name: "White-Blue (8 segments)"
                     }, {
                         color: [7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1],
-                        name: "\u767d\u7ea2\u76f8\u95f4(8\u6bb5)"
+                        name: "White-Red (8 segments)"
                     }, {
                         color: [4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5],
-                        name: "\u9752\u9ec4\u76f8\u95f4(8\u6bb5)"
+                        name: "Green-Yellow (8 segments)"
                     }, {
                         color: [7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1],
-                        name: "\u767d\u7ea2\u76f8\u95f4(16\u6bb5)"
+                        name: "White-Red (16 segments)"
                     }, {
                         color: [6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5],
-                        name: "\u9752\u7d2b\u76f8\u95f4(16\u6bb5)"
+                        name: "Blue-Green (16 segments)"
                     }, {
                         color: [6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4],
-                        name: "\u9ec4\u7d2b\u76f8\u95f4(16\u6bb5)"
+                        name: "Yellow-Brown (16 segments)"
                     }, {
                         color: [4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3],
-                        name: "\u84dd\u9ec4\u76f8\u95f4(16\u6bb5)"
+                        name: "Purple-Yellow (16 segments)"
                     }],
-                    getPointCount: d,
+                    getPointCount: getPointCount,
                     getTextRect: function(e, t) {
-                        txXy = p(e);
+                        txXy = rotateAndOffsetGroupedPoints(e);
                         for (var r = 0; r < txXy.length; r++)
                             for (var n = txXy[r][1], h = 0; h < n.length; h++) {
                                 var a = [n[h].x * e.z + e.x0, e.y0 - n[h].y * e.z];
@@ -5331,7 +5336,7 @@ globalThis["webpackJsonp"].push([
                         return t
                     },
                     getLineRect: function(e, t) {
-                        for (var r = s(e.ps, e.ang), n = 0; n < r.length; n++)
+                        for (var r = rotateGroupsOfPoints(e.ps, e.ang), n = 0; n < r.length; n++)
                             for (var h = r[n], a = 0; a < h.length; a++) {
                                 var i = [h[a][0] * e.z + e.x0, e.y0 + h[a][1] * e.z];
                                 t.left = Math.min(t.left, i[0]), t.top = Math.min(t.top, i[1]), t.right = Math.max(t.right, i[0]), t.bottom = Math.max(t.bottom, i[1])
@@ -5339,7 +5344,7 @@ globalThis["webpackJsonp"].push([
                         return t
                     },
                     getObjRect: function(e, t) {
-                        ps = o(e.ps, e.ang);
+                        ps = rotatePointsAroundBoundingBoxCenter(e.ps, e.ang);
                         for (var r = 0; r < ps.length; r++) {
                             var n = [ps[r][0] * e.z + e.x0, e.y0 - ps[r][1] * e.z];
                             t.left = Math.min(t.left, n[0]), t.top = Math.min(t.top, n[1]), t.right = Math.max(t.right, n[0]), t.bottom = Math.max(t.bottom, n[1])
@@ -5424,9 +5429,9 @@ globalThis["webpackJsonp"].push([
                         var h = Math.atan2(t - n, e - r);
                         return h
                     },
-                    calcAngXY: c,
-                    calcObjAngXY: o,
-                    calcLinesAngXY: s,
+                    calcAngXY: rotatePointAroundCenter,
+                    calcObjAngXY: rotatePointsAroundBoundingBoxCenter,
+                    calcLinesAngXY: rotateGroupsOfPoints,
                     pointInRectangle: function(e, t, r, h, a, i) {
                         var c = r.x,
                             o = h.x,
@@ -5458,7 +5463,7 @@ globalThis["webpackJsonp"].push([
                     },
                     getSelectRectInfo: function(e) {
                         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2,
-                            r = b(e, t),
+                            r = getAdjustedRectangle(e, t),
                             n = r.left,
                             h = r.top,
                             a = r.width,
@@ -5466,10 +5471,10 @@ globalThis["webpackJsonp"].push([
                             o = n + a / 2,
                             s = h + i / 2,
                             l = e.lastAng - e.startAng + e.ang,
-                            p = c(l, o, s, n, h),
-                            d = c(l, o, s, n + a, h),
-                            g = c(l, o, s, n + a, h + i),
-                            j = c(l, o, s, n, h + i),
+                            p = rotatePointAroundCenter(l, o, s, n, h),
+                            d = rotatePointAroundCenter(l, o, s, n + a, h),
+                            g = rotatePointAroundCenter(l, o, s, n + a, h + i),
+                            j = rotatePointAroundCenter(l, o, s, n, h + i),
                             x = {
                                 x0: o,
                                 y0: s,
@@ -5503,18 +5508,18 @@ globalThis["webpackJsonp"].push([
                         var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 20,
                             h = n / 2,
                             a = n / 5,
-                            i = c(e, t, r, t - h, r),
-                            o = c(e, t, r, t + h, r),
-                            s = c(e, t, r, t - h + a, r - a),
-                            l = c(e, t, r, t - h + a, r + a),
-                            p = c(e, t, r, t + h - a, r - a),
-                            d = c(e, t, r, t + h - a, r + a),
-                            b = c(e, t, r, t, r - h),
-                            g = c(e, t, r, t, r + h),
-                            j = c(e, t, r, t - a, r - h + a),
-                            x = c(e, t, r, t + a, r - h + a),
-                            V = c(e, t, r, t - a, r + h - a),
-                            f = c(e, t, r, t + a, r + h - a),
+                            i = rotatePointAroundCenter(e, t, r, t - h, r),
+                            o = rotatePointAroundCenter(e, t, r, t + h, r),
+                            s = rotatePointAroundCenter(e, t, r, t - h + a, r - a),
+                            l = rotatePointAroundCenter(e, t, r, t - h + a, r + a),
+                            p = rotatePointAroundCenter(e, t, r, t + h - a, r - a),
+                            d = rotatePointAroundCenter(e, t, r, t + h - a, r + a),
+                            b = rotatePointAroundCenter(e, t, r, t, r - h),
+                            g = rotatePointAroundCenter(e, t, r, t, r + h),
+                            j = rotatePointAroundCenter(e, t, r, t - a, r - h + a),
+                            x = rotatePointAroundCenter(e, t, r, t + a, r - h + a),
+                            V = rotatePointAroundCenter(e, t, r, t - a, r + h - a),
+                            f = rotatePointAroundCenter(e, t, r, t + a, r + h - a),
                             F = {
                                 p1: i,
                                 p2: o,
@@ -5531,10 +5536,10 @@ globalThis["webpackJsonp"].push([
                             };
                         return F
                     },
-                    calcTextAngXY: p,
-                    drawText: V,
-                    drawObj: x,
-                    drawLine: j,
+                    calcTextAngXY: rotateAndOffsetGroupedPoints,
+                    drawText: drawTransformedText,
+                    drawObj: drawTransformedObject,
+                    drawLine: drawAllTransformedPolylines,
                     drawPs: function(e, t, r) {
                         var n = [],
                             h = t.ctx;
@@ -5545,15 +5550,15 @@ globalThis["webpackJsonp"].push([
                             if (r && (s = r.selectLines.length > i && r.selectLines[i].sel & r.selectMode, s && null != r.selectRect)) {
                                 var l = r.selectRect.lastAng - r.selectRect.startAng;
                                 1 != r.selectRect.z ? (r.selectLines[i].mx0 = r.selectLines[i].mx0 * r.selectRect.z, r.selectLines[i].my0 = r.selectLines[i].my0 * r.selectRect.z, o.x0 = r.selectLines[i].mx0 + r.selectRect.x0, o.y0 = r.selectLines[i].my0 + r.selectRect.y0, l = r.selectRect.lastAng - r.selectRect.startAng + r.selectRect.ang, o.z = o.z * r.selectRect.z) : (o.x0 = o.x0 + r.selectRect.mx + r.selectRect.width * (r.selectRect.z - 1) * .5, o.y0 = o.y0 + r.selectRect.my + r.selectRect.height * (r.selectRect.z - 1) * .5), null != r.selectLines[i].color && (o.lineColor = r.selectLines[i].color);
-                                var p = c(l, r.selectRect.x0, r.selectRect.y0, o.x0, o.y0);
+                                var p = rotatePointAroundCenter(l, r.selectRect.x0, r.selectRect.y0, o.x0, o.y0);
                                 o.x0 = p.x, o.y0 = p.y, o.ang = r.selectRect.lastAng - r.selectRect.startAng + o.ang
                             }
-                            a = -1 == o.drawMode ? j(t, o, !0, s) : 9999 == o.drawMode ? V(t, o, !0, s) : x(t, o, !0, s), n = n.concat(a)
+                            a = -1 == o.drawMode ? drawAllTransformedPolylines(t, o, !0, s) : 9999 == o.drawMode ? drawTransformedText(t, o, !0, s) : drawTransformedObject(t, o, !0, s), n = n.concat(a)
                         }
                         return r && null != r.selectRect && (r.selectRect.left = r.selectRect.left + r.selectRect.mx, r.selectRect.top = r.selectRect.top + r.selectRect.my, r.selectRect.width = r.selectRect.width * r.selectRect.z, r.selectRect.height = r.selectRect.height * r.selectRect.z, r.selectRect.z = 1, r.selectRect.mx = 0, r.selectRect.my = 0), n
                     },
                     getdrawPointsCnt: function(e) {
-                        for (var t = 0, r = 0; r < e.length; r++) t += d(e[r].drawMode, e[r].ps);
+                        for (var t = 0, r = 0; r < e.length; r++) t += getPointCount(e[r].drawMode, e[r].ps);
                         return t
                     },
                     reSizeDrawPoints: function(e, r, n) {
@@ -5564,7 +5569,7 @@ globalThis["webpackJsonp"].push([
                         for (var c = 0; c < e.length; c++) {
                             var o = e[c],
                                 s = [];
-                            s = -1 == o.drawMode ? f(o, r, n, h, a) : 9999 == o.drawMode ? F(o, r, n, h, a) : k(o, r, n, h, a), i.push(s)
+                            s = -1 == o.drawMode ? resizeGroupedPoints(o, r, n, h, a) : 9999 == o.drawMode ? resizeStructuredGroupedPoints(o, r, n, h, a) : resizeFlatGroupedPoints(o, r, n, h, a), i.push(s)
                         }
                         return i
                     }
