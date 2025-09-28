@@ -286,16 +286,17 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         // This assumes project item info is encoded in main_cmd or another section
         // You may need to adjust parsing logic to match your protocol
         let mut prj_item = std::collections::HashMap::new();
-        // Match JS parsing order for prj_selected fields
+        // Use keys [2, 3, 5, 6] for project items
+        let prj_keys = [2, 3, 5, 6];
         let mut project_item_start_index = 17;
-        for idx in 0..4 {
+        for &key in prj_keys.iter() {
             let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &main_cmd), 0, 255, 0) as u8;
             let mut prj_selected = vec![0u16; 4];
             prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &main_cmd);
             prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &main_cmd);
             prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &main_cmd);
             prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &main_cmd);
-            prj_item.insert(idx as i32, ProjectItem { py_mode, prj_selected });
+            prj_item.insert(key, ProjectItem { py_mode, prj_selected });
             project_item_start_index += 9;
         }
 

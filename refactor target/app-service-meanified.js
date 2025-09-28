@@ -365,7 +365,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.operateAciton
                         }
-                    }, [e._v(e._$s(57, "t0-0", e._s(e.$t(e.selectLines.length > 0 ? "\u5220\u9664" : "\u6e05\u7a7a"))))]), n("view", {
+                    }, [e._v(e._$s(57, "t0-0", e._s(e.$t(e.selectLines.length > 0 ? "Delete" : "Clear"))))]), n("view", {
                         staticClass: e._$s(58, "sc", "opr-btn btn-linear btn-back"),
                         style: e._$s(58, "s", e.rtl ? "border-bottom-left-radius: 40rem; border-top-left-radius: 40rem; " : "border-bottom-right-radius: 40rem; border-top-right-radius: 40rem;"),
                         attrs: {
@@ -374,7 +374,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.backDraw
                         }
-                    }, [e._v(e._$s(58, "t0-0", e._s(e.$t("\u56de\u9000"))))])]), n("view", [n("view", {
+                    }, [e._v(e._$s(58, "t0-0", e._s(e.$t("Back"))))])]), n("view", [n("view", {
                         staticClass: e._$s(60, "sc", "opr-btn"),
                         style: e._$s(60, "s", (e.rtl ? "border-bottom-right-radius: 40rem; border-top-right-radius: 40rem; " : "border-bottom-left-radius: 40rem; border-top-left-radius: 40rem;") + "color: blue; background-color: #51D1EA;"),
                         attrs: {
@@ -383,7 +383,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.parmSet
                         }
-                    }, [e._v(e._$s(60, "t0-0", e._s(e.$t("\u914d\u7f6e"))))]), n("view", {
+                    }, [e._v(e._$s(60, "t0-0", e._s(e.$t("Configure"))))]), n("view", {
                         staticClass: e._$s(61, "sc", "opr-btn btn-linear"),
                         style: e._$s(61, "s", e.rtl ? "border-bottom-left-radius: 40rem; border-top-left-radius: 40rem;" : "border-bottom-right-radius: 40rem; border-top-right-radius: 40rem; color: white;"),
                         attrs: {
@@ -392,7 +392,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.drawDone
                         }
-                    }, [e._v(e._$s(61, "t0-0", e._s(e.$t("\u53d1\u9001"))))])])]), e._$s(62, "i", e.showSending) ? [n("view"), n("canvas", {
+                    }, [e._v(e._$s(61, "t0-0", e._s(e.$t("Send"))))])])]), e._$s(62, "i", e.showSending) ? [n("view"), n("canvas", {
                         attrs: {
                             id: "progressCanvas",
                             _i: 64
@@ -426,7 +426,7 @@ globalThis["webpackJsonp"].push([
                         attrs: {
                             _i: 73
                         }
-                    }), e._v(e._$s(72, "t1-0", e._s(e.$t("\u4e0d\u518d\u63d0\u793a"))))])]), n("view", {
+                    }), e._v(e._$s(72, "t1-0", e._s(e.$t("Don't show again"))))])]), n("view", {
                         staticClass: e._$s(74, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 74
@@ -434,7 +434,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.tipsClose
                         }
-                    }, [e._v(e._$s(74, "t0-0", e._s(e.$t("\u786e\u5b9a"))))])])])]), n("uni-popup", {
+                    }, [e._v(e._$s(74, "t0-0", e._s(e.$t("Confirm"))))])])])]), n("uni-popup", {
                         ref: "popup",
                         attrs: {
                             "mask-click": !1,
@@ -497,7 +497,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.parmReset
                         }
-                    }, [e._v(e._$s(88, "t0-0", e._s(e.$t("\u91cd\u7f6e"))))]), n("view", {
+                    }, [e._v(e._$s(88, "t0-0", e._s(e.$t("Reset"))))]), n("view", {
                         staticClass: e._$s(89, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 89
@@ -505,14 +505,14 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.parmClose
                         }
-                    }, [e._v(e._$s(89, "t0-0", e._s(e.$t("\u786e\u5b9a"))))])])])]), n("uni-popup", {
+                    }, [e._v(e._$s(89, "t0-0", e._s(e.$t("Confirm"))))])])])]), n("uni-popup", {
                         ref: "classNamePopup",
                         attrs: {
                             "mask-click": !1,
                             animation: !1,
                             _i: 90
                         }
-                    }, [n("view", [n("view", [n("view"), n("view", [e._v(e._$s(94, "t0-0", e._s(e.$t("\u4fdd\u5b58\u81f3\u6587\u4ef6\u5939"))))]), n("picker", {
+                    }, [n("view", [n("view", [n("view"), n("view", [e._v(e._$s(94, "t0-0", e._s(e.$t("Save to folder"))))]), n("picker", {
                         attrs: {
                             value: e._$s(95, "a-value", e.handDrawClassIdx),
                             range: e._$s(95, "a-range", e.handDrawClassName),
@@ -44514,7 +44514,7 @@ globalThis["webpackJsonp"].push([
                     c = {
                         data: function() {
                             return {
-                                ntitle: this.$t("Settings\u80cc\u666f\u56fe\u7247"),
+                                ntitle: this.$t("Setting background image"),
                                 debugTag: h.globalData.mainPage.debugTag,
                                 screen_width: h.globalData.screen_width_str,
                                 screen_width_float: h.globalData.screen_width_float,
@@ -45352,11 +45352,11 @@ globalThis["webpackJsonp"].push([
                             checked: e._$s(10, "a-checked", e.genCfg.double),
                             _i: 10
                         }
-                    }), e._v(e._$s(9, "t1-0", e._s(e.$t("\u63cf\u8fb9"))))])]) : e._e(), e._$s(11, "i", e.genLine && e.debugTag && !e.genCfg.double) ? r("view", {
+                    }), e._v(e._$s(9, "t1-0", e._s(e.$t("outline"))))])]) : e._e(), e._$s(11, "i", e.genLine && e.debugTag && !e.genCfg.double) ? r("view", {
                         attrs: {
                             _i: 11
                         }
-                    }, [r("label", [e._v(e._$s(12, "t0-0", e._s(e.$t("\u9600\u503c"))))]), r("slider", {
+                    }, [r("label", [e._v(e._$s(12, "t0-0", e._s(e.$t("threshold"))))]), r("slider", {
                         attrs: {
                             value: e._$s(13, "a-value", e.genCfg.effects2),
                             _i: 13
@@ -45368,7 +45368,7 @@ globalThis["webpackJsonp"].push([
                         attrs: {
                             _i: 14
                         }
-                    }, [r("label", [e._v(e._$s(15, "t0-0", e._s(e.$t("\u7cbe\u5ea6"))))]), r("slider", {
+                    }, [r("label", [e._v(e._$s(15, "t0-0", e._s(e.$t("accuracy"))))]), r("slider", {
                         attrs: {
                             value: e._$s(16, "a-value", e.genCfg.effects),
                             _i: 16
@@ -45388,7 +45388,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.chooseImage
                         }
-                    }, [e._v(e._$s(18, "t0-0", e._s(e.$t("\u9009\u62e9\u56fe\u7247"))))]), r("button", {
+                    }, [e._v(e._$s(18, "t0-0", e._s(e.$t("Select Image"))))]), r("button", {
                         staticClass: e._$s(19, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 19
@@ -45396,7 +45396,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.okClick
                         }
-                    }, [e._v(e._$s(19, "t0-0", e._s(e.$t("\u8bbe\u4e3a\u80cc\u666f"))))]), r("button", {
+                    }, [e._v(e._$s(19, "t0-0", e._s(e.$t("Set as background"))))]), r("button", {
                         staticClass: e._$s(20, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 20
@@ -45404,7 +45404,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.genLineClick
                         }
-                    }, [e._v(e._$s(20, "t0-0", e._s(e.$t("\u8bc6\u522b\u56fe\u6848"))))])]) : e._e(), e._$s(21, "i", e.genLine) ? r("view", {
+                    }, [e._v(e._$s(20, "t0-0", e._s(e.$t("Recognize Pattern"))))])]) : e._e(), e._$s(21, "i", e.genLine) ? r("view", {
                         attrs: {
                             _i: 21
                         }
@@ -45416,7 +45416,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.chooseImage
                         }
-                    }, [e._v(e._$s(22, "t0-0", e._s(e.$t("\u9009\u62e9\u56fe\u7247"))))]), r("button", {
+                    }, [e._v(e._$s(22, "t0-0", e._s(e.$t("Select Image"))))]), r("button", {
                         staticClass: e._$s(23, "sc", "opr-btn"),
                         attrs: {
                             _i: 23
@@ -45424,7 +45424,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.backClick
                         }
-                    }, [e._v(e._$s(23, "t0-0", e._s(e.$t("\u8fd4\u56de"))))]), r("button", {
+                    }, [e._v(e._$s(23, "t0-0", e._s(e.$t("Return"))))]), r("button", {
                         staticClass: e._$s(24, "sc", "opr-btn btn-linear"),
                         attrs: {
                             _i: 24
@@ -45432,7 +45432,7 @@ globalThis["webpackJsonp"].push([
                         on: {
                             click: e.lineOkClick
                         }
-                    }, [e._v(e._$s(24, "t0-0", e._s(e.$t("\u786e\u5b9a"))))])]) : e._e()])], 1)
+                    }, [e._v(e._$s(24, "t0-0", e._s(e.$t("Confirm"))))])]) : e._e()])], 1)
                 },
                 a = []
         },
@@ -66464,10 +66464,10 @@ globalThis["webpackJsonp"].push([
             })), 
             __definePage("sub/pages/draw/draw", (function() {
                 return Vue.extend(r("mainLayoutComponentExportWrapper").default)
-            })), __definePage("sub/pages/cover/cover", (function() {
+            })), 
+            __definePage("sub/pages/cover/cover", (function() {
                 return Vue.extend(r("imageToVectorLinesPageComponentExportWrapper").default)
-            })),
-            
+            })),        
              __definePage("sub/pages/font/font", (function() {
                 return Vue.extend(r("fontPageComponentExport").default)
             })), 

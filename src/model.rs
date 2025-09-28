@@ -197,17 +197,38 @@ pub struct PisConfig {
 
 
 /// Represents a color option from the colorDisplayOrder array.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DisplayColor {
-    Red,
-    Yellow,
-    Green,
-    Cyan,
-    Blue,
-    Purple,
-    White,
-    Jump,
-    RGB,
+    Red = 1,
+    Yellow = 4,
+    Green = 2,
+    Cyan = 5,
+    Blue = 3,
+    Purple = 6,
+    White = 7,
+    Jump = 8,
+    RGB = 9,
+}
+
+impl DisplayColor {
+    pub fn from_u8(val: u8) -> Option<Self> {
+        match val {
+            1 => Some(DisplayColor::Red),
+            2 => Some(DisplayColor::Green),
+            3 => Some(DisplayColor::Blue),
+            4 => Some(DisplayColor::Yellow),
+            5 => Some(DisplayColor::Cyan),
+            6 => Some(DisplayColor::Purple),
+            7 => Some(DisplayColor::White),
+            8 => Some(DisplayColor::Jump),
+            9 => Some(DisplayColor::RGB),
+            _ => None,
+        }
+    }
+
+    pub fn value(&self) -> u8 {
+        *self as u8
+    }
 }
 
 impl DisplayColor {

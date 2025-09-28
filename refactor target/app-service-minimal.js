@@ -3626,7 +3626,7 @@ globalThis["webpackJsonp"].push([
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
         
-        arrayConversionHelper: function(e, t, r) {
+        "arrayConversionHelper": function(e, t, r) {
             var n = r("arrayToArrayLikeHelper"),
                 h = r("b893"),
                 a = r("toConsumableArrayHelper"),
@@ -3636,7 +3636,1945 @@ globalThis["webpackJsonp"].push([
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-        arrayToArrayLikeHelper: function(e, t, r) {
+
+        "handDrawPageComponent": function(e, t, r) {
+            "use strict";
+            (function(e) {
+                var n = r("esModuleInteropHelper");
+                Object.defineProperty(t, "__esModule", {
+                    value: !0
+                }), t.default = void 0;
+                var h = n(r("uniPopupComponentExportWrapper")),
+                    app = getApp(),
+                    codePointAt = r("codePointAt"),
+                    textLineVectorizer = r("textLineVectorizer "),
+                    deviceCommandUtils = r("deviceCommandUtils "),
+                    handDrawFileManager = r("handDrawFileManager"),
+                    bleDeviceControlUtils = r("bleDeviceControlUtils "),
+                    colors = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
+                    fontGeometryUtils = r("fontGeometryUtils "),
+                    handDrawGeometryUtils = r("handDrawGeometryUtils "),
+                    g = [15, 5],
+                    j = [20, 20],
+                    x = {
+                        data: function() {
+                            var e = 0 | app.globalData.readData("draw_fontIdex"),
+                                t = app.globalData.getDeviceFeatures(),
+                                r = app.globalData.getTipsParm(),
+                                n = handDrawFileManager.handDrawClassFix,
+                                h = 650 * app.globalData.screen_width_float;
+                            return {
+                                screen_width: app.globalData.screen_width_str,
+                                scUnit: app.globalData.screen_width_float,
+                                rtl: app.globalData.rtl,
+                                ntitle: this.$t("Hand-drawn doodle"),
+                                inputText: "",
+                                inputNote: this.$t("Please enter text"),
+                                fontIdex: e,
+                                fontNameList: [],
+                                selectModeRange: [32, 32],
+                                selectMode: !1,
+                                selectClick: !1,
+                                selectPoints: [],
+                                selectLines: [],
+                                selectRect: null,
+                                selectDistance: null,
+                                features: t,
+                                showTips: r,
+                                textToLeft: !0,
+                                zoomObj: !1,
+                                showSending: !1,
+                                needReDraw: !1,
+                                lineCtx: null,
+                                showChineseWarn: !1,
+                                lastCmdTime: 0,
+                                lastSendtime: 0,
+                                lastCompleteTime: 0,
+                                showCanvas: !0,
+                                drawMode: -1,
+                                createTextPointsTimer: null,
+                                drawTimerSub: null,
+                                lineColor: 9,
+                                subCanvasStartPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                subCanvasEndPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                lastPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                lastLinePts: [],
+                                linePtsSendSn: 0,
+                                sendLineMode: 0,
+                                drawCanvas: {
+                                    w: 0,
+                                    h: 0
+                                },
+                                btnDrawGroup: {
+                                    w: 0,
+                                    h: 0,
+                                    x: "true",
+                                    y: "false",
+                                    wrap: "nowrap"
+                                },
+                                points: [],
+                                OutPts: [],
+                                drawAddFileName: "",
+                                currSelectedFile: "",
+                                handDrawClass: n,
+                                handDrawClassName: [],
+                                handDrawClassIdx: 0,
+                                lastRefresh: 0,
+                                chPer: 1,
+                                chBeginPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                chEndPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                chDraw: {
+                                    w: 0,
+                                    h: 0,
+                                    max: 255
+                                },
+                                chCanvas: {
+                                    w: 0,
+                                    h: 0
+                                },
+                                cnfIdx: 4,
+                                pisObj: {
+                                    txPointTime: 50,
+                                    cnfValus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                },
+                                pisObjNote: {
+                                    0: [
+                                        [256, this.$t("Pattern Selection")]
+                                    ],
+                                    1: [
+                                                                            [25, this.$t("Straight Line Pattern")],
+                                                                            [25, this.$t("Arc Pattern")],
+                                                                            [25, this.$t("Bright Spot Pattern")],
+                                                                            [25, this.$t("Dot Pattern")],
+                                                                            [25, this.$t("Christmas Pattern")],
+                                                                            [25, this.$t("Animation Group 1")],
+                                                                            [25, this.$t("Animation Group 2")],
+                                                                            [25, this.$t("Animation Group 3")],
+                                                                            [25, this.$t("Animation Group 4")],
+                                                                            [31, this.$t("Animation Group 5")]
+                                    ],
+                                    2: [
+[10, this.$t("White")],
+[10, this.$t("Red")],
+[10, this.$t("Blue")],
+[10, this.$t("Pink")],
+[10, this.$t("Cyan")],
+[10, this.$t("Yellow")],
+[10, this.$t("Green")],
+[10, this.$t("Overall Color Change")],
+[13, this.$t("Rainbow Colors")],
+[18, this.$t("2-Segment Color")],
+[21, this.$t("3-Segment Color")],
+[18, this.$t("4-Segment Color")],
+[33, this.$t("8-Segment Color")],
+[36, this.$t("16-Segment Color")],
+[35, this.$t("32-Segment Color")],
+[2, this.$t("Color Gradient Drawing")]
+                                    ],
+                                    3: [
+                                        [10, this.$t("Non-Flowing Water")],
+                                        [118, this.$t("Forward Flowing Water")],
+                                        [128, this.$t("Reverse Flowing Water")]
+                                    ],
+                                    4: [
+                                     [256, this.$t("Pattern Size")]
+                                    ],
+                                    5: [
+                                        [16, this.$t("Expand Manual Selection")],
+                                        [40, this.$t("From Small to Large Expansion")],
+                                        [40, this.$t("From Large to Small Expansion")],
+                                        [40, this.$t("Large to Small Expansion")],
+                                        [120, this.$t("Preview No Function")]
+                                    ],
+                                    6: [
+                                        [128, this.$t("Rotation Angle")],
+                                        [64, this.$t("Forward Rotation Speed")],
+                                        [64, this.$t("Reverse Rotation Speed")]
+                                    ],
+                                    7: [
+                                        [128, this.$t("Water Surface Rotation Position")],
+                                        [128, this.$t("Water Surface Rotation Speed")]
+                                    ],
+                                    8: [
+                                        [128, this.$t("Vertical Rotation Position")],
+                                        [128, this.$t("Vertical Rotation Speed")]
+                                    ],
+                                    9: [
+                                        [128, this.$t("Water Surface Rotation")],
+                                        [128, this.$t("Water Surface Movement")]
+                                    ],
+                                    10: [
+                                        [128, this.$t("Vertical Rotation Position")],
+                                        [128, this.$t("Vertical Rotation Movement")]
+                                    ],
+                                    11: [
+                                        [2, this.$t("Non-Flowing Water")],
+                                        [31, this.$t("Flowing Water Width 1")],
+                                        [32, this.$t("Flowing Water Width 2")],
+                                        [32, this.$t("Flowing Water Width 3")],
+                                        [32, this.$t("Flowing Water Width 4")],
+                                        [32, this.$t("Flowing Water Width 5")],
+                                        [32, this.$t("Flowing Water Width 6")],
+                                        [32, this.$t("Flowing Water Width 7")],
+                                        [31, this.$t("Flowing Water Width 8")]
+                                    ]
+                                },
+                                cnfList: [{
+         name: this.$t("Pattern Size"),
+                                    value: 255,
+                                    idx: 4
+                                }, {
+                                    name: this.$t("Pattern Expansion"),
+                                    value: 255,
+                                    idx: 5
+                                }, {
+                                    name: this.$t("Pattern Rotation"),
+                                    value: 255,
+                                    idx: 6
+                                }, {
+                                    name: this.$t("Water Surface Rotation"),
+                                    value: 255,
+                                    idx: 7
+                                }, {
+                                    name: this.$t("Vertical Rotation"),
+                                    value: 255,
+                                    idx: 8
+                                }, {
+                                    name: this.$t("Water Surface Movement"),
+                                    value: 255,
+                                    idx: 9
+                                }, {
+                                    name: this.$t("Vertical Movement"),
+                                    value: 255,
+                                    idx: 10
+                                }, {
+                                    name: this.$t("Flowing Water"),
+                                    value: 255,
+                                    idx: 11
+                                }],
+                                colorSeg: [{
+                                    color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
+                                    name: "Flowing Water (8 segments)"
+                                }, {
+                                    color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
+                                    name: "Flowing Water (8 segments)"
+                                }, {
+                                    color: [3, 3, 3, 3, 3, 3, 3, 3, 7, 7, 7, 7, 7, 7, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7],
+                                    name: "Pick 3 (4 segments)"
+                                }, {
+                                    color: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6],
+                                    name: "Pick 4 (4 segments)"
+                                }, {
+                                    color: [7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2],
+                                    name: "White Green (8 segments)"
+                                }, {
+                                    color: [3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7],
+                                    name: "White Blue (8 segments)"
+                                }, {
+                                    color: [7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1],
+                                    name: "White Red (8 segments)"
+                                }, {
+                                    color: [4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5],
+                                    name: "Green Yellow (8 segments)"
+                                }, {
+                                    color: [7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1],
+                                    name: "White Red (16 segments)"
+                                }, {
+                                    color: [6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5],
+                                    name: "Blue Green (16 segments)"
+                                }, {
+                                    color: [6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4],
+                                    name: "Yellow Purple (16 segments)"
+                                }, {
+                                    color: [4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3],
+                                    name: "Blue Yellow (16 segments)"
+                                }],
+                                segDisplayOrder: [{
+                                   name: "Pick 3 (4 segments)",
+                                    color: "color-seg-1",
+                                    order: 0,
+                                    idx: 11
+                                }, {
+                                    name: "Pick 4 (4 segments)",
+                                    color: "color-seg-2",
+                                    order: 1,
+                                    idx: 12
+                                }, {
+                 name: "White Green (8 segments)",
+                                    color: "color-seg-3",
+                                    order: 2,
+                                    idx: 13
+                                }, {
+                                    name: "White Blue (8 segments)",
+                                    color: "color-seg-4",
+                                    order: 3,
+                                    idx: 14
+                                }, {
+                                    name: "White Red (8 segments)",
+                                    color: "color-seg-5",
+                                    order: 4,
+                                    idx: 15
+                                }, {
+                                    name: "Green Yellow (8 segments)",
+                                    color: "color-seg-6",
+                                    order: 5,
+                                    idx: 16
+                                }, {
+                                    name: "White Red (16 segments)",
+                                    color: "color-seg-7",
+                                    order: 6,
+                                    idx: 17
+                                }, {
+                                    name: "Blue Purple (16 segments)",
+                                    color: "color-seg-8",
+                                    order: 7,
+                                    idx: 18
+                                }, {
+                                    name: "Yellow Purple (16 segments)",
+                                    color: "color-seg-9",
+                                    order: 8,
+                                    idx: 19
+                                }, {
+                                    name: "Blue Yellow (16 segments)",
+                                    color: "color-seg-10",
+                                    order: 9,
+                                    idx: 20
+                                }],
+                                colorDisplayOrder: [{
+                                name: "Red",
+                                    color: "red",
+                                    order: 0,
+                                    idx: 1
+                                }, {
+                                    name: "Yellow",
+                                    color: "yellow",
+                                    order: 1,
+                                    idx: 4
+                                }, {
+                                    name: "Green",
+                                    color: "green",
+                                    order: 2,
+                                    idx: 2
+                                }, {
+                                    name: "Blue",
+                                    color: "#00FFFF",
+                                    order: 3,
+                                    idx: 5
+                                }, {
+                                    name: "Purple",
+                                    color: "blue",
+                                    order: 4,
+                                    idx: 3
+                                }, {
+                                    name: "Blue",
+                                    color: "purple",
+                                    order: 5,
+                                    idx: 6
+                                }, {
+                                    name: "White",
+                                    color: "white",
+                                    order: 6,
+                                    idx: 7
+                                }, {
+                                    name: "Transparent",
+                                    color: "transparent",
+                                    order: 7,
+                                    idx: 8
+                                }, {
+                                    name: "Default",
+                                    color: "transparent",
+                                    order: 8,
+                                    idx: 9
+                                }, {
+                                    name: "Gradient",
+                                    color: "transparent",
+                                    order: 9,
+                                    idx: 10
+                                }],
+                                MaxDrawPointCount: 800,
+                                drawPointCount: 0,
+                                drawPoints: [],
+                                drawPointsHis: [],
+                                objParm: {
+                                    x0: 0,
+                                    y0: 0,
+                                    z: 1,
+                                    ang: 0,
+                                    ps: null,
+                                    lineColor: 0
+                                },
+                                obj: [
+                                    [0, 200, 0, 1],
+                                    [300, -200, 2, 1],
+                                    [-300, -200, 2, 1],
+                                    [0, 200, 2, 1]
+                                ],
+                                objCount: 0,
+                                xxyy: [],
+                                position: {
+                                    x: h,
+                                    y: h
+                                },
+                                startPosition: {
+                                    x: 0,
+                                    y: 0
+                                }
+                            }
+                        },
+                        onLoad: function() {
+                            var e = r("picArrayShapes");
+                            this.objCount = e.picArray.length;
+                            var t = r("fontRegistryModule ");
+                            this.fontNameList = t.getFontNameList();
+                            var n = app.globalData.getCmdData("drawData");
+                            this.pisObj = n.pisObj, handDrawFileManager.clearDrawPointsHis()
+                        },
+                        onUnload: function() {
+                            e("log", "onunload", " at sub/pages/draw/draw.js:203"), this.saveDeskTop()
+                        },
+                        onReady: function() {
+                            var e = this;
+                            setTimeout((function() {
+                                e.initShow()
+                            }), 20)
+                        },
+                        onHide: function() {
+                            this.saveDeskTop()
+                        },
+                        onShow: function() {
+                            var e = this;
+                            this.needReDraw && (this.needReDraw = !1, setTimeout((function() {
+                                e.reDraw(e.drawPoints)
+                            }), 10))
+                        },
+                        components: {
+                            uniPopup: h.default
+                        },
+                        computed: {
+                            inputTextX: {
+                                get: function() {
+                                    return this.inputText
+                                },
+                                set: function(e) {
+                                    var t = e.replace("\n", "");
+                                    this.inputText = t, this.resetSelectMode()
+                                }
+                            }
+                        },
+                        methods: {
+                            sendCmd: function() {
+                                var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "00",
+                                    t = (new Date).getTime(),
+                                    r = [];
+                                "00" == e && (r = this.reDraw(this.drawPoints));
+                                var n = deviceCommandUtils.getDrawCmdStr(r, this.pisObj, this.features, e),
+                                    h = bleDeviceControlUtils.gosend("00" == e, n, this.sendComplete);
+                                return h && (this.lastSendtime = t), h
+                            },
+                            sendLastCmd: function() {
+                                var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "00",
+                                    t = this;
+                                t.lastCmdTime <= t.lastSendtime || setTimeout((function() {
+                                    t.lastCmdTime <= t.lastSendtime || (t.sendCmd(e), t.lastCmdTime > t.lastSendtime && t.sendLastCmd(e))
+                                }), 10)
+                            },
+                            initShow: function() {
+                                var e = this,
+                                    t = uni.createSelectorQuery().in(e);
+                                uni.showLoading({
+                                    mask: !0
+                                }), t.select("#drawCanvasContainer0").boundingClientRect((function(t) {
+                                    e.drawCanvas.w = t.height, e.$set(e.drawCanvas, "h", t.height), setTimeout((function() {
+                                        var t = uni.createSelectorQuery().in(e);
+                                        t.select("#btn_draw_group").boundingClientRect((function(t) {
+                                            e.setBtnDrawGroup(t.width, t.height), setTimeout((function() {
+                                                e.readFontBase64(), e.setCanvasSub(), e.restoreDeskTop()
+                                            }), 1e3)
+                                        })).exec()
+                                    }), 100)
+                                })).exec()
+                            },
+                            inputBlur: function(e) {
+                                this.createTextPoints(), this.drawMode = 9999
+                            },
+                            refreshTextPoints: function() {
+                                var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 1500;
+                                null != this.createTextPointsTimer && (clearTimeout(this.createTextPointsTimer), this.createTextPointsTimer);
+                                var t = this;
+                                this.createTextPointsTimer = setTimeout((function() {
+                                    t.createTextPointsTimer, t.createTextPoints(), t.drawMode = 9999
+                                }), e)
+                            },
+                            setBtnDrawGroup: function(e, t) {
+                                var r = 2 * this.scUnit;
+                                t >= 90 * r ? (this.$set(this.btnDrawGroup, "h", t), this.$set(this.btnDrawGroup, "w", e), this.$set(this.btnDrawGroup, "x", "hidden"), this.$set(this.btnDrawGroup, "y", "auto"), this.$set(this.btnDrawGroup, "wrap", "wrap")) : (t = t < 60 * r ? 50 * r : t, this.$set(this.btnDrawGroup, "x", "auto"), this.$set(this.btnDrawGroup, "y", "hidden"), this.$set(this.btnDrawGroup, "wrap", "nowrap"), this.$set(this.btnDrawGroup, "h", t), this.$set(this.btnDrawGroup, "w", e))
+                            },
+                            createTextPoints: function() {
+                                if ("" == this.inputText) this.xxyy = [];
+                                else {
+                                    uni.showLoading({
+                                        title: this.$t("\u6b63\u5728\u751f\u6210\u5750\u6807\u70b9..."),
+                                        mask: !0
+                                    });
+                                    var e = textLineVectorizer.getXXYY(codePointAt, fontGeometryUtils.fontData, this.inputText, !1, this.textToLeft);
+                                    uni.hideLoading(), this.xxyy = e.xxyy, fontGeometryUtils.ifHasChinese(e.notRec) && 1001 == fontGeometryUtils.fontData.sn && app.globalData.showModalTips(this.$t("\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c"), !0)
+                                }
+                            },
+                            readFontBase64: function() {
+                                var e = this,
+                                    t = r("fontRegistryModule "),
+                                    n = t.getFontList(this),
+                                    h = n[this.fontIdex].file,
+                                    a = n[this.fontIdex].mode,
+                                    i = n[this.fontIdex].sn;
+                                n = null, uni.showLoading({
+                                    mask: !0,
+                                    title: this.$t("\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...")
+                                }), fontGeometryUtils.readTTF(h, a, (function(t, r) {
+                                    fontGeometryUtils.fontData = {
+                                        data: t,
+                                        mode: r,
+                                        sn: i
+                                    }, e.createTextPoints(), uni.hideLoading()
+                                }))
+                            },
+                            onFontChange: function(e) {
+                                this.setFontIdex(e.detail.value)
+                            },
+                            setFontIdex: function(e) {
+                                this.fontIdex != e && (this.fontIdex = e, app.globalData.saveData("draw_fontIdex", this.fontIdex), this.readFontBase64(), this.drawMode = 9999)
+                            },
+                            fontSelect: function(t) {
+                                var r = this;
+                                uni.navigateTo({
+                                    url: "/sub/pages/font/font?fontIdex=" + this.fontIdex,
+                                    events: {
+                                        acceptDataFromOpenedPage: function(t) {
+                                            e("log", "acceptDataFromOpenedPage", t, " at sub/pages/draw/draw.js:390"), r.setFontIdex(t.fontIdex)
+                                        }
+                                    }
+                                })
+                            },
+                            resetSelectMode: function() {
+                                return !!this.selectMode && (this.selectClick = !1, this.selectMode = !1, this.selectLines = [], this.selectRect = null, this.setCanvasSub(), this.reDraw(this.drawPoints), !0)
+                            },
+                            btnDrawChange: function(e) {
+                                this.resetSelectMode();
+                                var t = e.currentTarget.dataset.tag;
+                                if (9999 == t && this.textToLeft && (this.textToLeft = !1, this.refreshTextPoints(0)), 9998 == t && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), t = 9999), t >= 0 && t < 9999) {
+                                    var n = r("picArrayShapes"),
+                                        h = n.picArray;
+                                    this.obj = textLineVectorizer.dealObjLines(h[t], !1)
+                                }
+                                this.drawMode = t
+                            },
+                            getCurrentPointCount: function() {
+                                return -1 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.points, !0) : 9999 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.xxyy) : handDrawGeometryUtils.getPointCount(this.drawMode, this.obj)
+                            },
+                            dealTouchEnd: function() {
+                                if (-1 == this.drawMode) this.points = fontGeometryUtils.dealLine(this.points, !1);
+                                else if (Math.abs(this.subCanvasStartPoint.x - this.subCanvasEndPoint.x) < 20 && 8888 != this.drawMode && Math.abs(this.subCanvasStartPoint.y - this.subCanvasEndPoint.y) < 20) return !1;
+                                8888 == this.drawMode && (this.drawMode = 8887);
+                                var e = this.getCurrentPointCount();
+                                if (this.drawPointCount + e > 800) return app.globalData.showModalTips(this.$t("\u8d85\u51fa\u6700\u5927\u70b9\u6570") + 800 + "\uff0c" + this.$t("\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931"), !1), !1;
+                                if (this.drawPointCount = this.drawPointCount + e, -1 == this.drawMode) return this.touchEnd(null), !0;
+                                this.addToHis();
+                                var t = uni.createCanvasContext("drawCanvas", this),
+                                    r = (this.objParm.x0, this.objParm.y0, this.objParm.z, this.objParm.ang, this.lineColor, {
+                                        ctx: t,
+                                        w: this.drawCanvas.w,
+                                        h: this.drawCanvas.h,
+                                        draw_line_type: j,
+                                        colorSeg: this.colorSeg
+                                    });
+                                return this.objParm.lineColor = this.lineColor, 9999 == this.drawMode ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy, handDrawGeometryUtils.drawText(r, this.objParm), this.drawPoints.push(this.objParm)) : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, handDrawGeometryUtils.drawObj(r, this.objParm), this.drawPoints.push(this.objParm)), t.draw(!0), !0
+                            },
+                            addToHis: function() {
+                                if (!(this.drawPoints.length <= 0)) {
+                                    for (var e = [], t = 0; t < this.drawPoints.length; t++) {
+                                        var r = this.drawPoints[t];
+                                        e.push({
+                                            drawMode: r.drawMode,
+                                            ps: r.ps,
+                                            x0: r.x0,
+                                            y0: r.y0,
+                                            z: r.z,
+                                            ang: r.ang,
+                                            lineColor: r.lineColor
+                                        })
+                                    }
+                                    handDrawFileManager.pushDrawPointsHis(e)
+                                }
+                            },
+                            setCanvasSub: function() {
+                                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+                                e("log", "setCanvasSub", " at sub/pages/draw/draw.js:501");
+                                var r = !1;
+                                t || (t = uni.createCanvasContext("drawCanvasSub", this), t.clearRect(0, 0, this.drawCanvas.w, this.drawCanvas.h), r = !0), t.setFillStyle("white"), t.setFontSize(10), t.fillText(this.drawPointCount + "/800", .01 * this.drawCanvas.w, .99 * this.drawCanvas.h);
+                                var n = 16;
+                                t.setFontSize(n), t.setLineDash(g);
+                                var h = this.drawCanvas.w - 12,
+                                    a = this.drawCanvas.h - 12,
+                                    i = 10;
+                                t.moveTo(h + i, a), t.arc(h, a, i, 0, 2 * Math.PI);
+                                var c = this.$t("\u7f16\u8f91") + " ",
+                                    o = t.measureText(c).width;
+                                Number.isNaN(o) && (o = t.measureText(c).width), this.selectModeRange[0] = this.drawCanvas.w - (h - i - o + i), t.fillText(c, h - i - o, (2 * i - n) / 2 + a - i + n), t.setStrokeStyle("white"), t.stroke(), this.selectMode && null == this.selectRect && (t.beginPath(), t.arc(h, a, i - 3, 0, 2 * Math.PI), t.setFillStyle("yellow"), t.fill()), r && t.draw()
+                            },
+                            drawSelectRect: function() {
+                                var e = null,
+                                    t = null != this.selectRect ? this.selectRect : this.getRect(this.drawPoints);
+                                if (this.selectRect = t, null != t) {
+                                    "ang" in this.selectRect == 0 && (this.selectRect["ang"] = 0, this.selectRect["startAng"] = 0, this.selectRect["lastAng"] = 0);
+                                    var r = handDrawGeometryUtils.getSelectRectInfo(t);
+                                    this.selectRect["x0"] = r.x0, this.selectRect["y0"] = r.y0, e = uni.createCanvasContext("drawCanvasSub", this), e.clearRect(0, 0, this.drawCanvas.w, this.drawCanvas.h);
+                                    var n = t.lastAng - t.startAng + t.ang,
+                                        h = handDrawGeometryUtils.getCenterCorss(n, r.x0, r.y0, 20);
+                                    e.beginPath(), e.setLineDash(g), e.setStrokeStyle("#51D1EA"), e.setLineWidth(1), e.moveTo(r.p1.x, r.p1.y), e.lineTo(r.p2.x, r.p2.y), e.lineTo(r.p3.x, r.p3.y), e.lineTo(r.p4.x, r.p4.y), e.lineTo(r.p1.x, r.p1.y), e.stroke(), e.beginPath(), e.setLineDash([]), e.setStrokeStyle("yellow"), e.setLineWidth(1), e.moveTo(h.p1.x, h.p1.y), e.lineTo(h.p2.x, h.p2.y), e.moveTo(h.p11.x, h.p11.y), e.lineTo(h.p1.x, h.p1.y), e.lineTo(h.p12.x, h.p12.y), e.moveTo(h.p21.x, h.p21.y), e.lineTo(h.p2.x, h.p2.y), e.lineTo(h.p22.x, h.p22.y), e.moveTo(h.p3.x, h.p3.y), e.lineTo(h.p4.x, h.p4.y), e.moveTo(h.p31.x, h.p31.y), e.lineTo(h.p3.x, h.p3.y), e.lineTo(h.p32.x, h.p32.y), e.moveTo(h.p41.x, h.p41.y), e.lineTo(h.p4.x, h.p4.y), e.lineTo(h.p42.x, h.p42.y), e.stroke(), e.beginPath()
+                                }
+                                this.setCanvasSub(e), null != e && e.draw()
+                            },
+                            touchEndSub: function(e) {
+                                var t = this;
+                                null != this.drawTimerSub && (clearInterval(this.drawTimerSub), this.drawTimerSub = null);
+                                var r = this;
+                                if (!this.selectClick && !this.selectMode && this.drawMode >= -1 && this.dealTouchEnd() && this.setDrawPointsSelect(!0), !this.selectClick && this.selectMode) {
+                                    var n = this.selectRect;
+                                    null != n && Math.abs(this.subCanvasStartPoint.x - this.subCanvasEndPoint.x) < 4 && Math.abs(this.subCanvasStartPoint.y - this.subCanvasEndPoint.y) < 4 && (this.subCanvasStartPoint.x < n.left + n.mx || this.subCanvasStartPoint.x > n.left + n.mx + n.width * n.z || this.subCanvasStartPoint.y < n.top + n.my || this.subCanvasStartPoint.y > n.top + n.my + n.height * n.z) && this.resetSelectMode()
+                                }
+                                setTimeout((function() {
+                                    if (r.selectMode) {
+                                        r.drawSelectRect();
+                                        var e = t.selectRect;
+                                        null == e || 0 == e.mx && 0 == e.my && 1 == e.z && e.lastAng - e.startAng == 0 || r.addToHis(), r.reDraw(r.drawPoints)
+                                    } else r.setCanvasSub()
+                                }), 1)
+                            },
+                            touchMoveSub: function(e) {
+                                if (!this.selectClick) {
+                                    var t = e.touches[0],
+                                        r = t.x,
+                                        n = t.y;
+                                    if (-1 != this.drawMode || this.selectMode) {
+                                        var h = this.drawCanvas;
+                                        r = r < 0 ? 0 : r, r = r > h.w ? h.w : r, n = n < 0 ? 0 : n, n = n > h.h ? h.h : n;
+                                        var a = r - this.subCanvasEndPoint.x,
+                                            i = n - this.subCanvasEndPoint.y;
+                                        if (!(Math.abs(a) < 5 && Math.abs(i) < 5)) {
+                                            this.subCanvasEndPoint.x = r, this.subCanvasEndPoint.y = n;
+                                            var c = {
+                                                    w: this.drawCanvas.w - 8,
+                                                    h: this.drawCanvas.h - 8
+                                                },
+                                                o = 0,
+                                                l = 0;
+                                            if (this.selectMode && null != this.selectRect) {
+                                                var p = this.selectRect.z,
+                                                    d = this.selectRect.mx,
+                                                    g = this.selectRect.my,
+                                                    j = handDrawGeometryUtils.getSelectRectInfo(this.selectRect, 0),
+                                                    x = handDrawGeometryUtils.getUiRectSize(j),
+                                                    V = 1;
+                                                if (2 === e.touches.length) {
+                                                    var f = handDrawFileManager.getDistance(e.touches);
+                                                    V = f / this.selectDistance, this.selectDistance = f;
+                                                    var F = V,
+                                                        k = V;
+                                                    x.width * V > c.w && (F = c.w / x.width), x.height * V > c.h && (k = c.h / x.height), V = Math.min(F, k), a = this.selectRect.width * p / 2 * (1 - V), i = this.selectRect.height * p / 2 * (1 - V)
+                                                } else {
+                                                    if (this.zoomObj) return;
+                                                    if (this.selectRect.rotate) {
+                                                        var m = handDrawGeometryUtils.calcAngle(this.selectRect.x0, this.selectRect.y0, r, n),
+                                                            P = this.selectRect.lastAng;
+                                                        this.selectRect.lastAng = m;
+                                                        var u = handDrawGeometryUtils.getSelectRectInfo(this.selectRect, 0),
+                                                            X = handDrawGeometryUtils.getUiRectSize(u);
+                                                        this.selectRect.lastAng = P;
+                                                        if (X.left < 4 && (o = 4 - X.left), X.left + X.width > this.drawCanvas.w - 4) {
+                                                            if (0 != o) return;
+                                                            o = this.drawCanvas.w - 4 - (X.left + X.width)
+                                                        }
+                                                        if (X.top < 4 && (l = 4 - X.top), X.top + X.height > this.drawCanvas.h - 4) {
+                                                            if (0 != l) return;
+                                                            l = this.drawCanvas.h - 4 - (X.top + X.height)
+                                                        }
+                                                        this.selectRect.lastAng = m, a = 0, i = 0
+                                                    }
+                                                }
+                                                var N = x.left + a,
+                                                    H = x.top + i;
+                                                N = Math.max(N, 4), H = Math.max(H, 4);
+                                                var z = x.width * V,
+                                                    Q = x.height * V,
+                                                    R = N + z,
+                                                    v = H + Q;
+                                                N = Math.min(this.drawCanvas.w - 4, R) - z, H = Math.min(this.drawCanvas.h - 4, v) - Q, d = N - x.left + d + o, g = H - x.top + g + l;
+                                                var I = this.selectRect.lastAng - this.selectRect.startAng;
+                                                this.selectRect.mx == d && this.selectRect.my == g && 1 == V && 0 == I || (this.selectRect.mx = d, this.selectRect.my = g, this.selectRect.z = p * V, this.drawSelectRect())
+                                            }
+                                        }
+                                    } else this.touchMove(e)
+                                }
+                            },
+                            touchStartSub: function(e) {
+                                var t = this;
+                                null != this.drawTimerSub && (clearInterval(this.drawTimerSub), this.drawTimerSub = null);
+                                var r = this,
+                                    n = e.touches[0],
+                                    h = n.x,
+                                    a = n.y;
+                                if (this.subCanvasStartPoint.x = h, this.subCanvasStartPoint.y = a, this.subCanvasEndPoint.x = h, this.subCanvasEndPoint.y = a, this.zoomObj = !1, 2 === e.touches.length && (this.selectDistance = handDrawFileManager.getDistance(e.touches), this.zoomObj = !0), this.selectClick = !1, this.drawCanvas.w - this.selectModeRange[0] < h && this.drawCanvas.h - this.selectModeRange[1] < a) return this.selectClick = !0, this.selectDistance = null, null != this.selectRect ? this.selectMode = !0 : this.selectMode = !this.selectMode, this.selectLines = [], this.selectRect = null, void(this.selectMode && this.tipOpen());
+                                if (this.selectMode) {
+                                    if (null != this.selectRect) {
+                                        this.selectRect["rotate"] = !1;
+                                        var i = handDrawGeometryUtils.getSelectRectInfo(this.selectRect);
+                                        this.selectRect["x0"] = i.x0, this.selectRect["y0"] = i.y0, this.selectRect.ang = this.selectRect.ang + this.selectRect.lastAng - this.selectRect.startAng, this.selectRect.startAng = 0, this.selectRect.lastAng = 0;
+                                        if (Math.abs(h - i.x0) < 30 && Math.abs(a - i.y0) < 30) return;
+                                        return this.selectRect["rotate"] = !0, this.selectRect.startAng = handDrawGeometryUtils.calcAngle(this.selectRect.x0, this.selectRect.y0, h, a), void(this.selectRect.lastAng = this.selectRect.startAng)
+                                    }
+                                    return this.selectPoints = [
+                                        [h, a]
+                                    ], this.selectLines = [], void(this.drawTimerSub = setInterval((function() {
+                                        if (null != t.selectPoints) {
+                                            var e = r.selectPoints[r.selectPoints.length - 1];
+                                            if (!(Math.abs(e[0] - r.subCanvasEndPoint.x) < 4 && Math.abs(e[1] - r.subCanvasEndPoint.y) < 4)) {
+                                                r.selectPoints.push([r.subCanvasEndPoint.x, r.subCanvasEndPoint.y]);
+                                                var n = uni.createCanvasContext("drawCanvasSub", r);
+                                                n.setStrokeStyle("yellow"), n.setLineDash([]);
+                                                for (var h = r.selectPoints.length - 2; h < r.selectPoints.length; h++) 0 == h ? n.moveTo(r.selectPoints[h][0], r.selectPoints[h][1]) : n.lineTo(r.selectPoints[h][0], r.selectPoints[h][1]);
+                                                n.stroke(), n.draw(!0), r.checkObjectSelect(r.drawPoints)
+                                            }
+                                        }
+                                    }), 20))
+                                }
+                                this.drawMode < -1 || (-1 != this.drawMode ? this.drawTimerSub = setInterval((function() {
+                                    var e = r.subCanvasEndPoint.x - r.subCanvasStartPoint.x,
+                                        n = r.subCanvasEndPoint.y - r.subCanvasStartPoint.y;
+                                    if (!(Math.abs(e) + Math.abs(n) < 15)) {
+                                        var h = {
+                                            w: 800,
+                                            h: 800
+                                        };
+                                        9999 == r.drawMode && (h = handDrawGeometryUtils.getTextLineSize(r.xxyy, r.textToLeft));
+                                        var a = r.subCanvasStartPoint.x + e / 2,
+                                            i = r.subCanvasStartPoint.y + n / 2,
+                                            c = Math.abs(e / h.w),
+                                            o = Math.abs(n / h.h),
+                                            s = c > o ? o : c;
+                                        r.objParm = {
+                                            x0: a,
+                                            y0: i,
+                                            z: s,
+                                            ang: 0,
+                                            ps: null,
+                                            lineColor: r.lineColor
+                                        };
+                                        var l = uni.createCanvasContext("drawCanvasSub", r),
+                                            p = {
+                                                ctx: l,
+                                                w: t.drawCanvas.w,
+                                                h: t.drawCanvas.h,
+                                                draw_line_type: j,
+                                                colorSeg: t.colorSeg
+                                            };
+                                        l.clearRect(0, 0, r.drawCanvas.w, r.drawCanvas.h), 9999 == r.drawMode ? (r.objParm.ps = r.xxyy, handDrawGeometryUtils.drawText(p, r.objParm)) : (r.objParm.ps = r.obj, handDrawGeometryUtils.drawObj(p, r.objParm)), l.closePath(), l.beginPath(), l.setLineDash(g), l.setStrokeStyle("#51D1EA"), l.setLineWidth(1);
+                                        var d = r.subCanvasStartPoint.x < r.subCanvasEndPoint.x ? r.subCanvasStartPoint.x : r.subCanvasEndPoint.x,
+                                            x = r.subCanvasStartPoint.y < r.subCanvasEndPoint.y ? r.subCanvasStartPoint.y : r.subCanvasEndPoint.y;
+                                        l.strokeRect(d, x, Math.abs(e), Math.abs(n)), l.stroke(), t.setCanvasSub(l), l.draw()
+                                    }
+                                }), 50) : this.touchStart(e))
+                            },
+                            checkObjectSelect: function(e) {
+                                if (0 != e.length && 0 != this.selectPoints.length)
+                                    for (var t = [this.selectPoints[this.selectPoints.length - 2], this.selectPoints[this.selectPoints.length - 1]], r = 0; r < e.length; r++)
+                                        if (this.selectLines.length < r + 1 && this.selectLines.push({
+                                                sel: !1,
+                                                mx0: 0,
+                                                my0: 0,
+                                                color: null
+                                            }), !this.selectLines[r].sel) {
+                                            var n = e[r],
+                                                h = n.x0,
+                                                a = n.y0,
+                                                i = n.z,
+                                                c = n.ps,
+                                                o = n.ang;
+                                            if (-1 == n.drawMode) {
+                                                var s = handDrawGeometryUtils.calcLinesAngXY(c, o);
+                                                this.selectLines[r].sel = handDrawGeometryUtils.checkLine(s, h, a, i, t)
+                                            } else if (9999 == n.drawMode) {
+                                                var l = handDrawGeometryUtils.calcTextAngXY(n);
+                                                this.selectLines[r].sel = handDrawGeometryUtils.checkText(l, h, a, i, t)
+                                            } else {
+                                                var p = handDrawGeometryUtils.calcObjAngXY(c, o);
+                                                this.selectLines[r].sel = handDrawGeometryUtils.checkObj(p, h, a, i, t)
+                                            }
+                                        }
+                            },
+                            setDrawPointsSelect: function() {
+                                var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0],
+                                    t = this.drawPoints;
+                                if (0 != t.length) {
+                                    this.selectRect = null, this.selectLines = [];
+                                    for (var r = 0; r < t.length; r++) this.selectLines.length < r + 1 && this.selectLines.push({
+                                        sel: !1,
+                                        mx0: 0,
+                                        my0: 0,
+                                        color: null
+                                    }), e ? r == t.length - 1 && (this.selectLines[r].sel = !0) : this.selectLines[r].sel = !0;
+                                    this.selectMode = !0
+                                }
+                            },
+                            getRect: function(e) {
+                                if (this.selectDistance = null, 0 == e.length) return null;
+                                if (this.selectLines.length != e.length) return null;
+                                for (var t = !1, r = {
+                                        left: 99999,
+                                        top: 99999,
+                                        right: -99999,
+                                        bottom: -99999
+                                    }, n = 0; n < e.length; n++)
+                                    if (this.selectLines[n].sel) {
+                                        t = !0;
+                                        var h = e[n];
+                                        r = -1 == h.drawMode ? handDrawGeometryUtils.getLineRect(h, r) : 9999 == h.drawMode ? handDrawGeometryUtils.getTextRect(h, r) : handDrawGeometryUtils.getObjRect(h, r)
+                                    } if (t) {
+                                    for (var a = (r.right - r.left) / 2 + r.left, i = (r.bottom - r.top) / 2 + r.top, c = 0; c < e.length; c++)
+                                        if (this.selectLines[c].sel) {
+                                            var o = e[c];
+                                            this.selectLines[c].mx0 = o.x0 - a, this.selectLines[c].my0 = o.y0 - i
+                                        } var s = {
+                                        left: r.left,
+                                        top: r.top,
+                                        width: r.right - r.left,
+                                        height: r.bottom - r.top,
+                                        mx: 0,
+                                        my: 0,
+                                        z: 1
+                                    };
+                                    return s
+                                }
+                                return null
+                            },
+                            operateAciton: function(e) {
+                                this.selectLines.length > 0 ? this.deleteObj() : this.clearDraw(null)
+                            },
+                            deleteObj: function() {
+                                this.addToHis();
+                                for (var t = this.drawPoints.length - 1; t >= 0; t--) {
+                                    var r = this.selectLines.length > t && this.selectLines[t].sel & this.selectMode;
+                                    r && null != this.selectRect && (this.drawPoints.splice(t, 1), e("log", "drawPoints", this.drawPoints, " at sub/pages/draw/draw.js:950"))
+                                }
+                                this.resetSelectMode() || this.reDraw(this.drawPoints)
+                            },
+                            clearDraw: function(e) {
+                                handDrawFileManager.clearDrawPointsHis(), this.points = [], this.drawPoints = [], this.drawPointCount = 0, this.linePtsSendSn = 0;
+                                var t = uni.createCanvasContext("imgCanvas", this);
+                                t.draw();
+                                var r = uni.createCanvasContext("drawCanvas", this);
+                                r.draw(), this.resetSelectMode() || this.setCanvasSub()
+                            },
+                            backDraw: function(t) {
+                                if (handDrawFileManager.getDrawPointsHisCount() <= 0) return this.resetSelectMode(), void this.clearDraw();
+                                var r = handDrawFileManager.popDrawPointsHis();
+                                e("log", "his", r, " at sub/pages/draw/draw.js:981"), this.drawPoints = r.data, this.drawPointCount = handDrawGeometryUtils.getdrawPointsCnt(this.drawPoints), this.resetSelectMode() || this.reDraw(this.drawPoints)
+                            },
+                            reDraw: function(e) {
+                                var t = uni.createCanvasContext("drawCanvas", this);
+                                t.setLineWidth(1);
+                                var r = {
+                                        ctx: t,
+                                        w: this.drawCanvas.w,
+                                        h: this.drawCanvas.h,
+                                        draw_line_type: j,
+                                        colorSeg: this.colorSeg
+                                    },
+                                    n = {
+                                        selectRect: this.selectRect,
+                                        selectLines: this.selectLines,
+                                        selectMode: this.selectMode
+                                    },
+                                    h = handDrawGeometryUtils.drawPs(e, r, n);
+                                return t.draw(!0), this.selectMode || this.setCanvasSub(), h
+                            },
+                            btnColorChange: function(e) {
+                                var t = parseInt(e.currentTarget.dataset.tag);
+                                this.lineColor = t;
+                                for (var r = 0; r < this.selectLines.length; r++) this.selectLines[r].color = this.lineColor;
+                                this.selectLines.length > 0 && (this.selectRect.ang = this.selectRect.lastAng - this.selectRect.startAng + this.selectRect.ang, this.selectRect.startAng = this.selectRect.lastAng, this.reDraw(this.drawPoints))
+                            },
+                            touchStart: function(e) {
+                                this.points = null, this.points = [], this.lastLinePts = [];
+                                var t = e.touches[0];
+                                this.lastPoint.x = t.x, this.lastPoint.y = t.y, this.lastPoint.time = 0;
+                                var r = uni.createCanvasContext("drawCanvasSub", this);
+                                this.lineCtx = r, r.setLineDash([]);
+                                var n = this.lineColor >= 8 ? 1 : this.lineColor;
+                                r.setStrokeStyle(colors[n]), r.setFillStyle(colors[n]), this.points.push([this.lastPoint.x, this.lastPoint.y]);
+                                var h = {
+                                    x: this.lastPoint.x,
+                                    y: this.lastPoint.y
+                                };
+                                this.lastLinePts.push({
+                                    pt: h,
+                                    color: 0,
+                                    z: 1,
+                                    time: (new Date).getTime()
+                                }), r.moveTo(this.lastPoint.x, this.lastPoint.y)
+                            },
+                            touchMove: function(e) {
+                                var t = e.touches[0],
+                                    r = {
+                                        x: t.x,
+                                        y: t.y
+                                    };
+                                if (0 == this.lastPoint.time) return this.lastPoint.x = t.x, this.lastPoint.y = t.y, this.lastPoint.time = (new Date).getTime(), this.points = [], this.points.push([this.lastPoint.x, this.lastPoint.y]), void this.lineCtx.moveTo(this.lastPoint.x, this.lastPoint.y);
+                                var n = (new Date).getTime();
+                                if (!(n - this.lastPoint.time <= 2) && !(Math.abs(r.x - this.lastPoint.x) + Math.abs(r.y - this.lastPoint.y) < 3)) {
+                                    this.lastPoint = {
+                                        x: r.x,
+                                        y: r.y,
+                                        time: (new Date).getTime()
+                                    }, this.sendLinePts(this.lastLinePts) && (this.lastLinePts = []);
+                                    var h = this.lineColor >= 8 ? 1 : this.lineColor;
+                                    this.lastLinePts.push({
+                                        pt: r,
+                                        color: h,
+                                        z: 0,
+                                        time: (new Date).getTime()
+                                    }), this.points.push([this.lastPoint.x, this.lastPoint.y]), this.lineCtx.lineTo(this.lastPoint.x, this.lastPoint.y), this.lineCtx.stroke(), this.lineCtx.draw(!0), this.lineCtx.moveTo(this.lastPoint.x, this.lastPoint.y)
+                                }
+                            },
+                            sendLinePts: function(t) {
+                                var r = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                                if (1 != this.sendLineMode) return !0;
+                                if (t.length > 0 && (r || (new Date).getTime() - t[0].time > 50)) {
+                                    if (r) {
+                                        if (1 == t.length) {
+                                            var n = this.lineColor >= 8 ? 1 : this.lineColor;
+                                            t.push({
+                                                pt: t[0].pt,
+                                                color: n,
+                                                z: 1
+                                            })
+                                        }
+                                        t[t.length - 1].z = 1, e("log", "sendLinePts", t, " at sub/pages/draw/draw.js:1072")
+                                    }
+                                    var h = deviceCommandUtils.getDrawLineStr(t, this.linePtsSendSn),
+                                        a = this.sendLineCmd(h, r);
+                                    return e("log", "sendLinePts", t.length, a, this.linePtsSendSn, " at sub/pages/draw/draw.js:1076"), a
+                                }
+                                return !1
+                            },
+                            sendLineCmd: function(e, t) {
+                                var r = this,
+                                    n = bleDeviceControlUtils.gosend(!1, e);
+                                return n && (this.linePtsSendSn = this.linePtsSendSn + 1), !t || n ? n : (setTimeout((function() {
+                                    r.sendLineCmd(e, t)
+                                }), 10), !1)
+                            },
+                            touchEnd: function(t) {
+                                this.addToHis(), this.sendLinePts(this.lastLinePts, !0);
+                                var r = uni.createCanvasContext("drawCanvas", this),
+                                    n = handDrawGeometryUtils.covertPoints(this.points, this.lineColor, this.drawCanvas);
+                                n["ang"] = 0, e("log", "res", n, " at sub/pages/draw/draw.js:1097");
+                                var h = {
+                                    ctx: r,
+                                    w: this.drawCanvas.w,
+                                    h: this.drawCanvas.h,
+                                    draw_line_type: j,
+                                    colorSeg: this.colorSeg
+                                };
+                                handDrawGeometryUtils.drawLine(h, n), this.drawPoints.push(n), r.draw(!0)
+                            },
+                            sendComplete: function(e, t) {
+                                if (0 == e) {
+                                    this.showSending = !0;
+                                    var r = uni.createCanvasContext("progressCanvas", this);
+                                    bleDeviceControlUtils.drawProgress(r, 300 * this.scUnit, t)
+                                } else this.showSending = !1, this.lastCompleteTime = (new Date).getTime()
+                            },
+                            parmClose: function(e) {
+                                this.$refs.popup.close(), this.showCanvas = !0, this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("88")
+                            },
+                            chClick: function(e) {
+                                this.cnfIdx = e, this.refreshChDraw()
+                            },
+                            drawChCanvas: function(e, t, r, n) {
+                                var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : null,
+                                    a = uni.createCanvasContext("chCanvas", this),
+                                    i = e / 3;
+                                a.setFontSize(i);
+                                var c = e / 2,
+                                    o = .95 * (this.chCanvas.w - e),
+                                    s = (this.chCanvas.h - t) / 2 + c,
+                                    l = o + e,
+                                    p = s + t - e,
+                                    d = o + c,
+                                    g = s,
+                                    j = l - c,
+                                    x = p,
+                                    V = 2 * this.scUnit,
+                                    f = a.createLinearGradient(j, x + c, d, g - c);
+                                f.addColorStop(0, "#112233"), f.addColorStop(1, "#1E374C"), a.setFillStyle(f), a.beginPath(), a.moveTo(l, p), a.arc(j, x, c, 0, 1 * Math.PI);
+                                var F = t - 2 * c;
+                                a.rect(l - e, p - F, e, F), a.moveTo(o, s), a.arc(d, g, c, Math.PI, 2 * Math.PI), a.fill();
+                                var k = a.createLinearGradient(j, x + c, d, g - c);
+                                k.addColorStop(0, "#008BD1"), k.addColorStop(1, "white"), a.setFillStyle(k), a.beginPath(), a.moveTo(o, s), a.arc(d, g, c, Math.PI, 2 * Math.PI), a.moveTo(l, p), a.arc(j, x, c, 0, 1 * Math.PI), a.beginPath();
+                                var m = t / r,
+                                    P = m * n;
+                                if (P < c) {
+                                    var u = c - P,
+                                        X = c - Math.sqrt(Math.pow(c, 2) - Math.pow(u, 2)),
+                                        N = handDrawGeometryUtils.lineTheta([l, p], [j, x], [l - X, p + u]);
+                                    a.moveTo(l - X, p + u), a.arc(j, x, c, N, Math.PI - N), a.fill()
+                                } else if (P <= t - c) {
+                                    a.moveTo(l, p), a.arc(j, x, c, 0, 1 * Math.PI);
+                                    var H = P - c;
+                                    a.rect(l - e, p - H, e, H), a.fill()
+                                } else {
+                                    a.moveTo(l, p), a.arc(j, x, c, 0, 1 * Math.PI);
+                                    var z = t - 2 * c;
+                                    if (a.rect(l - e, p - z, e, z), n == r) a.moveTo(o, s), a.arc(d, g, c, Math.PI, 2 * Math.PI);
+                                    else {
+                                        var Q = P - (t - c),
+                                            R = c - Math.sqrt(Math.pow(c, 2) - Math.pow(Q, 2)),
+                                            v = handDrawGeometryUtils.lineTheta([o, s], [d, g], [o + R, s - Q]);
+                                        a.moveTo(o + R, s - Q), a.arc(d, g, c, 2 * Math.PI - v, Math.PI + v)
+                                    }
+                                    a.fill()
+                                }
+                                if (a.beginPath(), a.setFontSize(26 * V), a.setFillStyle("white"), a.setShadow(5 * V, 5 * V, 5 * V, "rgba(0, 0, 0, 0.5)"), a.fillText(n + "", j - a.measureText(n + "").width / 2, g - c + t / 2 + i / 2), a.beginPath(), a.setFontSize(40 * V), a.fillText("+", d - a.measureText("+").width / 2, g + i / 2), a.fillText("-", j - a.measureText("-").width / 2, x + i), null != h) {
+                                    var I = o,
+                                        w = x + c;
+                                    h(a, I, w, e, t, c, r, n)
+                                }
+                                a.draw()
+                            },
+                            addCnfValusAndSend: function(e) {
+                                var t = this.pisObj.cnfValus[this.cnfIdx] + Math.floor(e);
+                                t = t < 0 ? 0 : t, t = t > this.chDraw.max ? this.chDraw.max : t, this.pisObj.cnfValus[this.cnfIdx] != t && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("66"))
+                            },
+                            callBackCh: function(e, t, r, n, h, a, i, c) {
+                                if (this.cnfIdx in this.pisObjNote) {
+                                    var o = 2 * this.scUnit,
+                                        s = 10 * o;
+                                    e.beginPath(), e.setLineWidth(1), e.setShadow(0, 0, 0, "rgba(0, 0, 0, 0)"), e.setStrokeStyle("#414339"), e.setFillStyle("#928F9F"), e.setFontSize(s);
+                                    var l = this.pisObjNote[this.cnfIdx],
+                                        p = .8 * t;
+                                    t -= 1, e.moveTo(p, r), e.lineTo(t + a - 2, r), e.stroke();
+                                    for (var d = 0, b = 0, g = !1, j = 0; j < l.length; j++) {
+                                        l[j][0];
+                                        var x = l[j][0] * this.chPer,
+                                            V = l[j][1],
+                                            f = Math.round(r - x - d);
+                                        f < r - h && (f = r - h);
+                                        var F = 0;
+                                        x + d < a ? F = Math.round(a - Math.sqrt(Math.pow(a, 2) - Math.pow(a - x - d, 2))) : x + d > h - a && x + d < h ? F = Math.round(a - Math.sqrt(Math.pow(a, 2) - Math.pow(a - h + x + d, 2))) : x + d >= h && (F = a - 2), e.moveTo(p, f), e.lineTo(t + F, f), e.stroke(), b <= c && c < b + l[j][0] && (e.beginPath(), e.setFillStyle("#FFFFFF"), g = !0), b += l[j][0], e.fillText(V, p - e.measureText(V).width, r - d - (x - s / 2) / 2), d = x + d, g && (e.beginPath(), e.setFillStyle("#928F9F"))
+                                    }
+                                    e.stroke()
+                                }
+                            },
+                            refreshChDraw: function() {
+                                var e = this.pisObj.cnfValus[this.cnfIdx];
+                                this.drawChCanvas(this.chDraw.w, this.chDraw.h, this.chDraw.max, e, this.callBackCh)
+                            },
+                            chTouchstart: function(e) {
+                                var t = e.touches[0];
+                                this.chBeginPoint = {
+                                    x: t.x,
+                                    y: t.y
+                                }, this.chEndPoint = null, this.lastRefresh = 0
+                            },
+                            chTouchmove: function(e) {
+                                var t = e.touches[0];
+                                this.chEndPoint = {
+                                    x: t.x,
+                                    y: t.y
+                                };
+                                var r = (new Date).getTime();
+                                if (r - this.lastRefresh > 100) {
+                                    var n = Math.floor((this.chBeginPoint.y - this.chEndPoint.y) / this.chPer);
+                                    Math.abs(n) >= 1 && (this.chBeginPoint = {
+                                        x: this.chEndPoint.x,
+                                        y: this.chEndPoint.y
+                                    }, this.addCnfValusAndSend(n)), this.lastRefresh = r
+                                }
+                            },
+                            chTouchend: function(e) {
+                                if (null == this.chEndPoint) {
+                                    var t = this.chBeginPoint.y > this.chCanvas.h / 2 ? -1 : 1;
+                                    this.addCnfValusAndSend(t)
+                                }
+                                this.chEndPoint = null
+                            },
+                            slPointTimeChange: function(e) {
+                                var t = e.detail.value;
+                                this.pisObj.txPointTime = t, this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("88")
+                            },
+                            parmReset: function(e) {
+                                this.$set(this.pisObj, "cnfValus", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("66")
+                            },
+                            drawDone: function(t) {
+                                if (!(this.drawPointCount <= 0)) {
+                                    var r = (new Date).getTime();
+                                    this.resetSelectMode(), e("log", "Send click time", r - this.lastCompleteTime, " at sub/pages/draw/draw.js:1355"), r - this.lastCompleteTime > 300 ? this.sendCmd() : e("log", "Send click too frequently", " at sub/pages/draw/draw.js:1357")
+                                }
+                            },
+                            parmSet: function(e) {
+                                this.showCanvas = !1, this.$refs.popup.open("bottom");
+                                var t = this,
+                                    r = uni.createSelectorQuery().in(t);
+                                this.$nextTick((function() {
+                                    r.select("#chCanvas").boundingClientRect((function(e) {
+                                        t.chCanvas.w = e.width, t.chCanvas.h = e.height;
+                                        var r = .9 * t.chCanvas.h;
+                                        t.chPer = r / 255, t.chDraw.w = t.chCanvas.w / 3, t.chDraw.h = r, t.refreshChDraw()
+                                    })).exec()
+                                }))
+                            },
+                            drawAddClick: function(t) {
+                                var r = this,
+                                    n = [this.$t("\u53e6\u5b58\u6587\u4ef6"), this.$t("\u9009\u62e9\u6587\u4ef6")];
+                                this.currSelectedFile && n.push(this.$t("\u4fdd\u5b58\u6587\u4ef6")), uni.showActionSheet({
+                                    itemList: n,
+                                    success: function(e) {
+                                        0 == e.tapIndex && r.drawAddAddClick(), 1 == e.tapIndex && r.drawAddSelectClick(), 2 == e.tapIndex && r.drawAddSaveClick()
+                                    },
+                                    fail: function(t) {
+                                        e("log", t.errMsg, " at sub/pages/draw/draw.js:1392")
+                                    }
+                                })
+                            },
+                            saveDrawPic: function(t) {
+                                var r = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+                                    n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : -1;
+                                e("log", "saveDrawPic", t, JSON.stringify(this.pisObj), " at sub/pages/draw/draw.js:1398");
+                                var h = this,
+                                    i = handDrawGeometryUtils.reSizeDrawPoints(h.drawPoints, this.drawCanvas.w, this.drawCanvas.h),
+                                    c = JSON.parse(JSON.stringify(h.pisObj));
+                                n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(t, "", i, h.drawPointCount, c, h.features, r), r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = t)
+                            },
+                            saveDeskTop: function() {
+                                this.saveDrawPic("saveDeskTopFile_001", !0)
+                            },
+                            restoreDeskTop: function() {
+                                var e = this.getDrawByName("saveDeskTopFile_001", !0);
+                                e && (this.needReDraw = !1, this.reDraw(this.drawPoints))
+                            },
+                            picNameInputCancelClick: function(e) {
+                                this.showCanvas = !0, this.$refs.classNamePopup.close()
+                            },
+                            picNameNewInput: function(e) {
+                                this.drawAddFileName = e.detail.value
+                            },
+                            picNameInputOkClick: function(e) {
+                                var t = handDrawFileManager.combiFileName(this.handDrawClass[this.handDrawClassIdx], this.drawAddFileName);
+                                if ("" == t) uni.showModal({
+                                    content: this.$t("\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a"),
+                                    showCancel: !1,
+                                    success: function(e) {},
+                                    fail: function(e) {},
+                                    complete: function() {}
+                                });
+                                else {
+                                    var r = handDrawFileManager.getHandDrawImg(t);
+                                    r ? uni.showModal({
+                                        content: this.$t("\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165"),
+                                        showCancel: !1,
+                                        success: function(e) {},
+                                        fail: function(e) {}
+                                    }) : (this.saveDrawPic(t, !1, 3), this.picNameInputCancelClick(null))
+                                }
+                            },
+                            checkAndAddImagFile: function(t) {
+                                var r = this;
+                                uni.showModal({
+                                    title: this.$t("\u8bf7\u8f93\u5165\u6587\u4ef6\u540d"),
+                                    placeholderText: t,
+                                    editable: !0,
+                                    success: function(n) {
+                                        if (n.confirm) {
+                                            var h = "" == n.content ? t : n.content;
+                                            if ("" == h) uni.showModal({
+                                                content: r.$t("\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a"),
+                                                showCancel: !1,
+                                                success: function(e) {},
+                                                fail: function(e) {},
+                                                complete: function() {
+                                                    r.checkAndAddImagFile(t)
+                                                }
+                                            });
+                                            else {
+                                                var a = handDrawFileManager.getHandDrawImg(h);
+                                                a ? uni.showModal({
+                                                    content: r.$t("\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed"),
+                                                    showCancel: !0,
+                                                    success: function(e) {
+                                                        e.confirm ? r.saveDrawPic(h) : r.checkAndAddImagFile(t)
+                                                    },
+                                                    fail: function(e) {}
+                                                }) : r.saveDrawPic(h)
+                                            }
+                                        } else n.cancel && e("log", "\u7528\u6237\u70b9\u51fb\u53d6\u6d88", " at sub/pages/draw/draw.js:1501")
+                                    }
+                                })
+                            },
+                            drawAddAddClick: function() {
+                                if (0 != this.drawPointCount) {
+                                    var e = handDrawFileManager.getHandDrawNames();
+                                    e.count >= 50 ? app.globalData.showModalTips(this.$t("\u5df2\u8d85\u8fc7\u6700\u5927\u6587\u4ef6\u6570\u91cf ") + 50, !0) : e.noSpace ? app.globalData.showModalTips(this.$t("\u5b58\u50a8\u7a7a\u95f4\u4e0d\u8db3"), !0) : (this.handDrawClassName = handDrawFileManager.getHandDrawClassName(), this.$set(this, "handDrawClassIdx", 0), this.drawAddFileName = handDrawFileManager.getNewFileName(), this.showCanvas = !1, this.$refs.classNamePopup.open("center"))
+                                } else app.globalData.showModalTips(this.$t("\u8bf7\u5148\u7ed8\u5236\u56fe\u6848"))
+                            },
+                            handDrawClassPickerChange: function(e) {
+                                this.handDrawClassIdx = parseInt(e.detail.value)
+                            },
+                            getDrawByName: function(e) {
+                                var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+                                    r = handDrawFileManager.getHandDrawImg(e, t);
+                                if (r) {
+                                    if (r.pointCnt <= 0) return !1;
+                                    if (r.pointCnt > 800) return app.globalData.showModalTips(this.$t("\u8d85\u51fa\u6700\u5927\u70b9\u6570") + 800, !0), !1;
+                                    this.drawPointCount = r.pointCnt, this.addToHis();
+                                    var n = handDrawGeometryUtils.reSizeDrawPoints(r.drawPoints, handDrawGeometryUtils.defaultWith, handDrawGeometryUtils.defaultHeight, this.drawCanvas.w, this.drawCanvas.h);
+                                    return this.drawPoints = n, r.pisObj && this.$set(this, "pisObj", r.pisObj), this.selectLines = [], this.selectMode = !1, this.needReDraw = !0, !0
+                                }
+                                return !1
+                            },
+                            drawAddSaveClick: function() {
+                                if (0 != this.drawPointCount) {
+                                    var e = this;
+                                    uni.showModal({
+                                        content: e.$t("\u4fdd\u5b58\u6587\u4ef6") + this.currSelectedFile + "?",
+                                        showCancel: !0,
+                                        success: function(t) {
+                                            t.confirm && e.saveDrawPic(e.currSelectedFile)
+                                        },
+                                        fail: function(e) {}
+                                    })
+                                } else app.globalData.showModalTips(this.$t("\u8bf7\u5148\u7ed8\u5236\u56fe\u6848"))
+                            },
+                            drawAddSelectClick: function() {
+                                var t = this;
+                                uni.navigateTo({
+                                    url: "/sub/pages/files/files",
+                                    events: {
+                                        acceptDataFromOpenedPage: function(r) {
+                                            e("log", "acceptDataFromOpenedPage", r, " at sub/pages/draw/draw.js:1580"), t.currSelectedFile = r.fileName, t.getDrawByName(r.fileName)
+                                        }
+                                    },
+                                    success: function(e) {
+                                        e.eventChannel.emit("acceptDataFromOpenerPage", {
+                                            callFrom: "draw"
+                                        })
+                                    },
+                                    fail: function(t) {
+                                        e("log", t, " at sub/pages/draw/draw.js:1589")
+                                    }
+                                })
+                            },
+                            tipsCheckboxChange: function(e) {
+                                var t = e.detail.value;
+                                this.showTips = !t.includes("tips"), app.globalData.saveTipsParm(this.showTips)
+                            },
+                            tipOpen: function() {
+                                this.showTips && (this.showCanvas = !1, this.$refs.tips.open("center"))
+                            },
+                            tipsClose: function(e) {
+                                this.$refs.tips.close(), this.showCanvas = !0
+                            },
+                            onBtnSetTouchStart: function(e) {
+                                this.startPosition.x = e.touches[0].clientX - this.position.x, this.startPosition.y = e.touches[0].clientY - this.position.y
+                            },
+                            onBtnSetTouchMove: function(e) {
+                                this.position.x = e.touches[0].clientX - this.startPosition.x, this.position.y = e.touches[0].clientY - this.startPosition.y
+                            },
+                            onBtnSetTouchEnd: function() {},
+                            onBtnSetClick: function(e) {
+                                uni.navigateTo({
+                                    url: "/pages/subset/subset"
+                                })
+                            },
+                            chooseImag: function(t) {
+                                var r = this;
+                                this.resetSelectMode(), app.globalData.img_selecting = !0, uni.chooseImage({
+                                    count: 1,
+                                    sizeType: ["original", "compressed"],
+                                    sourceType: ["album", "camera"],
+                                    success: function(e) {
+                                        var t = e.tempFilePaths[0];
+                                        uni.navigateTo({
+                                            url: "/sub/pages/cover/cover",
+                                            events: {
+                                                acceptDataFromOpenedPage: function(e) {
+                                                    if (null != e) {
+                                                        if (0 == e.mode && null != e.data) {
+                                                            var t = uni.createCanvasContext("imgCanvas", r);
+                                                            t.drawImage(e.data, 0, 0, r.drawCanvas.w, r.drawCanvas.h), t.draw()
+                                                        }
+                                                        if (1 == e.mode && null != e.data) {
+                                                            r.obj = textLineVectorizer.dealImgLines(e.data), r.drawMode = 8888;
+                                                            var n = r.drawCanvas.w / e.size * .8;
+                                                            r.objParm = {
+                                                                x0: r.drawCanvas.w / 2,
+                                                                y0: r.drawCanvas.w / 2,
+                                                                z: n,
+                                                                ang: 0,
+                                                                ps: r.obj,
+                                                                lineColor: r.lineColor
+                                                            }, r.touchEndSub()
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            success: function(e) {
+                                                e.eventChannel.emit("acceptDataFromOpenerPage", t)
+                                            }
+                                        })
+                                    },
+                                    complete: function(t) {
+                                        e("log", "app.globalData.img_selecting", app.globalData.img_selecting, " at sub/pages/draw/draw.js:1668"), app.globalData.img_selecting = !1
+                                    }
+                                })
+                            }
+                        }
+                    };
+                t.default = x
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+
+
+        handDrawGeometryUtils : function(e, t, r) {
+            (function(t) {
+                var spreadToArrayHelper = r("spreadToArrayHelper"),
+                    handDrawFileManager = r("handDrawFileManager"),
+                    fontGeometryUtils = r("fontGeometryUtils "),
+                    colors = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"];
+
+                function c(e, t, r, n, h) {
+                    var a = n - t,
+                        i = h - r,
+                        c = t + (a * Math.cos(e) - i * Math.sin(e)),
+                        o = r + (a * Math.sin(e) + i * Math.cos(e));
+                    return {
+                        x: c,
+                        y: o
+                    }
+                }
+
+                function o(e, t) {
+                    for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = [], h = r ? 1 : -1, a = {
+                            left: 99999,
+                            top: 99999,
+                            right: -99999,
+                            bottom: -99999
+                        }, i = 0; i < e.length; i++) {
+                        var o = [e[i][0], h * e[i][1]];
+                        a.left = Math.min(a.left, o[0]), a.top = Math.min(a.top, o[1]), a.right = Math.max(a.right, o[0]), a.bottom = Math.max(a.bottom, o[1])
+                    }
+                    for (var s = (a.right - a.left) / 2 + a.left, l = (a.bottom - a.top) / 2 + a.top, p = 0; p < e.length; p++) {
+                        var d = e[p],
+                            b = c(t, s, l, d[0], h * d[1]);
+                        n.push([b.x, h * b.y, d[2], d[3]])
+                    }
+                    return n
+                }
+
+                function s(e, t) {
+                    for (var r = [], n = 0; n < e.length; n++) {
+                        var h = e[n],
+                            a = o(h, t, !0);
+                        r.push(a)
+                    }
+                    return r
+                }
+
+                function l(e, t, r, n) {
+                    r = -r;
+                    var h = t + e.w,
+                        a = r + e.h,
+                        i = c(n, t, r, h, a),
+                        o = {
+                            mx: i.x - h,
+                            my: i.y - a
+                        };
+                    return o
+                }
+
+                function p(e) {
+                    for (var t = e.ps, r = e.x0, n = e.y0, h = e.ang, a = [], i = {
+                            left: 99999,
+                            top: 99999,
+                            right: -99999,
+                            bottom: -99999
+                        }, o = 0, s = 0; s < t.length; s++) {
+                        var p = t[s][1];
+                        if (o != t[s][0]) {
+                            o = t[s][0], i["w"] = (i.right - i.left) / 2 + i.left, i["h"] = (i.bottom - i.top) / 2 + i.top;
+                            var d = l(i, r, n, h);
+                            i["mx"] = d.mx, i["my"] = d.my, a.push(i), i = {
+                                left: 99999,
+                                top: 99999,
+                                right: -99999,
+                                bottom: -99999
+                            }
+                        }
+                        for (var b = 0; b < p.length; b++) {
+                            var g = [p[b].x, -p[b].y];
+                            i.left = Math.min(i.left, g[0]), i.top = Math.min(i.top, g[1]), i.right = Math.max(i.right, g[0]), i.bottom = Math.max(i.bottom, g[1])
+                        }
+                        if (s == t.length - 1) {
+                            i["w"] = (i.right - i.left) / 2 + i.left, i["h"] = (i.bottom - i.top) / 2 + i.top;
+                            var j = l(i, r, n, h);
+                            i["mx"] = j.mx, i["my"] = j.my, a.push(i)
+                        }
+                    }
+                    for (var x = [], V = 0; V < t.length; V++) {
+                        for (var f = t[V][1], F = [], k = a[t[V][0]], m = 0; m < f.length; m++) {
+                            var P = f[m],
+                                u = c(h, k.w, k.h, P.x, -P.y);
+                            F.push({
+                                x: u.x + k.mx,
+                                y: -(u.y + k.my),
+                                z: P.z
+                            })
+                        }
+                        x.push([t[V][0], F, t[V][2], t[V][3]])
+                    }
+                    return x
+                }
+
+                function d(e, t) {
+                    var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+                    if (-1 == e) {
+                        if (r) return t.length;
+                        for (var n = 0, h = 0; h < t.length; h++) n += t[h].length;
+                        return n
+                    }
+                    if (9999 == e) {
+                        for (var a = 0, i = 0; i < t.length; i++) a += t[i][1].length;
+                        return a
+                    }
+                    return t.length
+                }
+
+                function b(e, t) {
+                    var r = t,
+                        n = e.left + e.mx - r,
+                        h = e.top + e.my - r,
+                        a = e.width * e.z + 2 * r,
+                        i = e.height * e.z + 2 * r;
+                    return {
+                        left: n,
+                        top: h,
+                        width: a,
+                        height: i
+                    }
+                }
+
+                function g(e, t, r) {
+                    var n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        h = arguments.length > 4 && void 0 !== arguments[4] && arguments[4],
+                        a = o(t.ps[r], t.ang, !0),
+                        c = e.ctx,
+                        s = t.lineColor,
+                        l = s >= 8 ? 1 : s,
+                        p = s - 9,
+                        d = null;
+                    p >= 0 && (d = e.colorSeg[p]);
+                    var b = t.x0,
+                        g = t.y0,
+                        j = t.z;
+                    c.beginPath(), h ? c.setLineDash(e.draw_line_type) : c.setLineDash([]), c.setStrokeStyle(colors[l]), c.setFillStyle(colors[l]);
+                    for (var x = a, V = 800 / e.w, f = e.w / 2, F = [], k = 0; k < x.length; k++) {
+                        var m = [x[k][0] * j + b, x[k][1] * j + g, x[k][2], x[k][3]];
+                        if (0 == k) c.moveTo(m[0], m[1]);
+                        else {
+                            var P = [x[k - 1][0] * j + b, x[k - 1][1] * j + g];
+                            P[0] == m[0] && P[1] == m[1] ? (c.arc(m[0], m[1], 1, 0, 2 * Math.PI), c.fill(), c.moveTo(m[0], m[1])) : c.lineTo(m[0], m[1])
+                        }
+                        if (s >= 8) {
+                            if (p < 0) l += 1, l = l >= 8 ? 1 : l;
+                            else {
+                                var u = Math.floor(k * d.color.length / x.length);
+                                l = d.color[u]
+                            }
+                            c.setStrokeStyle(colors[l]), c.setFillStyle(colors[l]), c.stroke(), c.beginPath(), c.moveTo(m[0], m[1])
+                        }
+                        n && F.push([(m[0] - f) * V, (f - m[1]) * V, 0 == k ? 0 : l, m[3]])
+                    }
+                    return c.stroke(), F
+                }
+
+                function j(e, t) {
+                    for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3], h = t.ps, a = [], i = 0; i < h.length; i++) {
+                        var c = g(e, t, i, r, n);
+                        r && (a = a.concat(c))
+                    }
+                    return a
+                }
+
+                function x(e, t) {
+                    var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+                        n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        h = o(t.ps, t.ang),
+                        a = [],
+                        c = 800 / e.w,
+                        s = e.w / 2,
+                        l = e.ctx,
+                        p = t.x0,
+                        d = t.y0,
+                        b = t.z;
+                    l.beginPath(), n ? l.setLineDash(e.draw_line_type) : l.setLineDash([]);
+                    var g = t.lineColor,
+                        j = g - 9,
+                        x = g >= 8 ? -1 : g,
+                        V = null;
+                    j >= 0 && (V = e.colorSeg[j]);
+                    for (var f = 0; f < h.length; f++) {
+                        j < 0 ? (x = g >= 8 ? x + 1 : x, x = x >= 8 ? 1 : x) : x = V.color[Math.floor(f * V.color.length / h.length)];
+                        var F = [];
+                        Object.assign(F, h[f]), F[0] = F[0] * b + p, F[1] = -F[1] * b + d, 0 != F[2] && (F[2] = j < 0 ? x : 0 == j ? F[2] : x);
+                        var k = null;
+                        if (f < h.length - 1 && (k = [], Object.assign(k, h[f + 1]), k[2] = j < 0 ? x + 1 : 0 == j ? k[2] : V.color[Math.floor((f + 1) * V.color.length / h.length)]), r && a.push([h[f][0] * c * b + (p - s) * c, h[f][1] * b * c + (-d + s) * c, 0 == f ? 0 : F[2], F[3]]), null != k && F[2] != k[2]) {
+                            var m = 0 == F[2] ? k[2] : F[2];
+                            l.setStrokeStyle(colors[m]), 0 != F[2] && l.lineTo(F[0], F[1]), l.stroke(), l.beginPath(), l.moveTo(F[0], F[1])
+                        } else 0 == F[2] ? l.moveTo(F[0], F[1]) : l.lineTo(F[0], F[1]), null == k && l.setStrokeStyle(colors[F[2]])
+                    }
+                    l.stroke(), l.beginPath();
+                    var P = null;
+                    x = g >= 8 ? -1 : g;
+                    for (var u = 0; u < h.length; u++) {
+                        j < 0 ? (x = g >= 8 ? x + 1 : x, x = x >= 8 ? 1 : x) : x = V.color[Math.floor(u * V.color.length / h.length)];
+                        var X = [],
+                            N = [];
+                        Object.assign(X, h[u]), Object.assign(N, h[u]), X[0] = X[0] * b + p, X[1] = -X[1] * b + d, 0 != X[2] && (X[2] = j < 0 ? x : 0 == j ? X[2] : x);
+                        var H = null;
+                        u < h.length - 1 && (H = [], Object.assign(H, h[u + 1]), 0 != H[2] && (H[2] = j < 0 ? x + 1 : 0 == j ? H[2] : V.color[Math.floor((u + 1) * V.color.length / h.length)])), null != H && X[2] != H[2] ? null != P && P[0] == N[0] && P[1] == N[1] && (l.setStrokeStyle(colors[X[2]]), l.setFillStyle(colors[X[2]]), l.moveTo(X[0], X[1]), l.arc(X[0], X[1], 1, 0, 2 * Math.PI), l.stroke(), l.fill(), l.beginPath()) : null != P && P[0] == N[0] && P[1] == N[1] && (l.setStrokeStyle(colors[X[2]]), l.setFillStyle(colors[X[2]]), l.moveTo(X[0], X[1]), l.arc(X[0], X[1], 1, 0, 2 * Math.PI), l.stroke()), P = N
+                    }
+                    return l.fill(), a
+                }
+
+                function V(e, t) {
+                    var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+                        n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        h = p(t),
+                        a = [],
+                        c = t.lineColor,
+                        o = colors,
+                        s = "red",
+                        l = -1,
+                        d = t.x0,
+                        b = t.y0,
+                        g = t.z,
+                        j = 800 / e.w,
+                        x = e.w / 2,
+                        V = e.ctx;
+                    n ? V.setLineDash(e.draw_line_type) : V.setLineDash([]);
+                    var f = t.lineColor - 9,
+                        F = null;
+                    f >= 0 && (F = e.colorSeg[f]);
+                    for (var k = -1, m = 0, P = 0; P < h.length; P++) k != h[P][0] && (m++, k = h[P][0]);
+                    var u = 1;
+                    k = -1, l = -1;
+                    for (var X = 0; X < h.length; X++) {
+                        var N = h[X][1];
+                        if (k != h[X][0]) {
+                            if (V.beginPath(), k = h[X][0], N.length > 1 && l++, f < 0) u = c <= 7 ? c : l % 7 + 1;
+                            else if (0 == f) u = l % 7 + 1;
+                            else {
+                                var H = Math.floor(l * F.color.length / m);
+                                u = F.color[H]
+                            }
+                            s = o[u], V.setStrokeStyle(s), V.setFillStyle(s)
+                        }
+                        for (var z = 0; z < N.length; z++) {
+                            var Q = N[z],
+                                R = Q.x * g + d,
+                                v = b - Q.y * g;
+                            r && a.push([Q.x * j * g + (d - x) * j, Q.y * g * j + (-b + x) * j, 0 == z ? 0 : u, Q.z]), 0 == z ? V.moveTo(R, v) : Math.abs(Q.x - N[z - 1].x) < 1 && Math.abs(Q.y - N[z - 1].y) < 1 ? (V.arc(R, v, 1, 0, 2 * Math.PI), V.moveTo(R, v)) : V.lineTo(R, v)
+                        }
+                        V.stroke()
+                    }
+                    return a
+                }
+
+                function f(e, t, r, n, h) {
+                    for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
+                        for (var l = a[s], p = [], d = 0; d < l.length; d++) {
+                            var b = l[d];
+                            p.push([b[0] * c, b[1] * o, b[2], b[3]])
+                        }
+                        i.push(p)
+                    }
+                    var g = e.x0 * c,
+                        j = e.y0 * o,
+                        x = {
+                            ps: i,
+                            x0: g,
+                            y0: j,
+                            z: e.z,
+                            drawMode: e.drawMode,
+                            ang: e.ang,
+                            lineColor: e.lineColor
+                        };
+                    return x
+                }
+
+                function F(e, t, r, n, h) {
+                    for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
+                        for (var l = a[s][1], p = [], d = 0; d < l.length; d++) {
+                            var b = l[d];
+                            p.push({
+                                x: b.x * c,
+                                y: b.y * o,
+                                z: b.z
+                            })
+                        }
+                        i.push([a[s][0], p, a[s][2] * c, a[s][3] * o])
+                    }
+                    var g = e.x0 * c,
+                        j = e.y0 * o,
+                        x = {
+                            ps: i,
+                            x0: g,
+                            y0: j,
+                            z: e.z,
+                            drawMode: e.drawMode,
+                            ang: e.ang,
+                            lineColor: e.lineColor
+                        };
+                    return x
+                }
+
+                function k(e, t, r, n, h) {
+                    for (var a = e.ps, i = [], c = n / t, o = h / r, s = 0; s < a.length; s++) {
+                        var l = a[s];
+                        i.push([l[0] * c, l[1] * o, l[2], l[3]])
+                    }
+                    var p = e.x0 * c,
+                        d = e.y0 * o,
+                        b = {
+                            ps: i,
+                            x0: p,
+                            y0: d,
+                            z: e.z,
+                            drawMode: e.drawMode,
+                            ang: e.ang,
+                            lineColor: e.lineColor
+                        };
+                    return b
+                }
+                e.exports = {
+                    defaultWith: 300,
+                    defaultHeight: 300,
+                    colorSeg: [{
+                        color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
+                        name: "\u5f69\u8679(8\u6bb5)"
+                    }, {
+                        color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 5, 5, 5, 5, 5, 3, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7],
+                        name: "\u5f69\u8679(8\u6bb5)"
+                    }, {
+                        color: [3, 3, 3, 3, 3, 3, 3, 3, 7, 7, 7, 7, 7, 7, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7],
+                        name: "PICK_3 4\u6bb5"
+                    }, {
+                        color: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6],
+                        name: "PICK_4 4\u6bb5"
+                    }, {
+                        color: [7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2, 7, 7, 7, 7, 2, 2, 2, 2],
+                        name: "\u767d\u7eff\u76f8\u95f4(8\u6bb5)"
+                    }, {
+                        color: [3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7, 3, 3, 3, 3, 7, 7, 7, 7],
+                        name: "\u767d\u84dd\u76f8\u95f4(8\u6bb5)"
+                    }, {
+                        color: [7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1],
+                        name: "\u767d\u7ea2\u76f8\u95f4(8\u6bb5)"
+                    }, {
+                        color: [4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 5, 5, 5, 5],
+                        name: "\u9752\u9ec4\u76f8\u95f4(8\u6bb5)"
+                    }, {
+                        color: [7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1, 7, 7, 1, 1],
+                        name: "\u767d\u7ea2\u76f8\u95f4(16\u6bb5)"
+                    }, {
+                        color: [6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5],
+                        name: "\u9752\u7d2b\u76f8\u95f4(16\u6bb5)"
+                    }, {
+                        color: [6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4],
+                        name: "\u9ec4\u7d2b\u76f8\u95f4(16\u6bb5)"
+                    }, {
+                        color: [4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 3, 3],
+                        name: "\u84dd\u9ec4\u76f8\u95f4(16\u6bb5)"
+                    }],
+                    getPointCount: d,
+                    getTextRect: function(e, t) {
+                        txXy = p(e);
+                        for (var r = 0; r < txXy.length; r++)
+                            for (var n = txXy[r][1], h = 0; h < n.length; h++) {
+                                var a = [n[h].x * e.z + e.x0, e.y0 - n[h].y * e.z];
+                                t.left = Math.min(t.left, a[0]), t.top = Math.min(t.top, a[1]), t.right = Math.max(t.right, a[0]), t.bottom = Math.max(t.bottom, a[1])
+                            }
+                        return t
+                    },
+                    getLineRect: function(e, t) {
+                        for (var r = s(e.ps, e.ang), n = 0; n < r.length; n++)
+                            for (var h = r[n], a = 0; a < h.length; a++) {
+                                var i = [h[a][0] * e.z + e.x0, e.y0 + h[a][1] * e.z];
+                                t.left = Math.min(t.left, i[0]), t.top = Math.min(t.top, i[1]), t.right = Math.max(t.right, i[0]), t.bottom = Math.max(t.bottom, i[1])
+                            }
+                        return t
+                    },
+                    getObjRect: function(e, t) {
+                        ps = o(e.ps, e.ang);
+                        for (var r = 0; r < ps.length; r++) {
+                            var n = [ps[r][0] * e.z + e.x0, e.y0 - ps[r][1] * e.z];
+                            t.left = Math.min(t.left, n[0]), t.top = Math.min(t.top, n[1]), t.right = Math.max(t.right, n[0]), t.bottom = Math.max(t.bottom, n[1])
+                        }
+                        return t
+                    },
+                    checkObj: function(e, t, r, n, a) {
+                        for (var i = 1; i < e.length; i++) {
+                            var c = [e[i - 1][0] * n + t, r - e[i - 1][1] * n],
+                                o = [e[i][0] * n + t, r - e[i][1] * n],
+                                s = [c, o];
+                            if (handDrawFileManager.lineCross(s, a)) return !0
+                        }
+                    },
+                    checkText: function(e, t, r, n, a) {
+                        for (var i = 0; i < e.length; i++)
+                            for (var c = e[i][1], o = 1; o < c.length; o++) {
+                                var s = [c[o - 1].x * n + t, r - c[o - 1].y * n],
+                                    l = [c[o].x * n + t, r - c[o].y * n],
+                                    p = [s, l];
+                                if (handDrawFileManager.lineCross(p, a)) return !0
+                            }
+                    },
+                    checkLine: function(e, t, r, n, a) {
+                        for (var i = e, c = 0; c < i.length; c++)
+                            for (var o = i[c], s = 1; s < o.length; s++) {
+                                var l = [o[s - 1][0] * n + t, o[s - 1][1] * n + r],
+                                    p = [o[s][0] * n + t, o[s][1] * n + r],
+                                    d = [l, p];
+                                if (handDrawFileManager.lineCross(d, a)) return !0
+                            }
+                        return !1
+                    },
+                    covertPoints: function(e, t, r) {
+                        for (var n = fontGeometryUtils.parseLines(e, r), h = {
+                                left: 99999,
+                                top: 99999,
+                                right: 0,
+                                bottom: 0
+                            }, i = 0; i < n.length; i++)
+                            for (var c = n[i], o = 0; o < c.length; o++) {
+                                var s = c[o];
+                                h.left = Math.min(h.left, s[0]), h.top = Math.min(h.top, s[1]), h.right = Math.max(h.right, s[0]), h.bottom = Math.max(h.bottom, s[1])
+                            }
+                        for (var l = (h.right - h.left) / 2 + h.left, p = (h.bottom - h.top) / 2 + h.top, d = 0; d < n.length; d++)
+                            for (var b = 0; b < n[d].length; b++) n[d][b][0] = n[d][b][0] - l, n[d][b][1] = n[d][b][1] - p;
+                        return {
+                            drawMode: -1,
+                            ps: n,
+                            x0: l,
+                            y0: p,
+                            z: 1,
+                            lineColor: t
+                        }
+                    },
+                    lineTheta: function(e, t, r) {
+                        var n = {
+                                x: e[0] - t[0],
+                                y: e[1] - t[1]
+                            },
+                            h = {
+                                x: r[0] - t[0],
+                                y: r[1] - t[1]
+                            },
+                            a = n.x * h.x + n.y * h.y,
+                            i = Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)),
+                            c = Math.sqrt(Math.pow(h.x, 2) + Math.pow(h.y, 2)),
+                            o = Math.acos(a / (i * c));
+                        return o
+                    },
+                    getTextLineSize: function(e, t) {
+                        for (var r = 0, n = 0, h = -1, a = 0; a < e.length; a++) {
+                            var i = e[a];
+                            h != i[0] && (t ? (r += i[2], n = i[3]) : (r = i[3], n += i[3]), h = i[0])
+                        }
+                        return {
+                            w: r,
+                            h: n
+                        }
+                    },
+                    calcAngle: function(e, t, r, n) {
+                        var h = Math.atan2(t - n, e - r);
+                        return h
+                    },
+                    calcAngXY: c,
+                    calcObjAngXY: o,
+                    calcLinesAngXY: s,
+                    pointInRectangle: function(e, t, r, h, a, i) {
+                        var c = r.x,
+                            o = h.x,
+                            s = a.x,
+                            l = i.x,
+                            p = r.y,
+                            d = h.y,
+                            b = a.y,
+                            g = i.y;
+                        if (e >= c && e <= o && t >= p && t <= b) return !0;
+                        if (e === c && t === p || e === o && t === d || e === s && t === b || e === l && t === g) return !0;
+                        for (var j = 0, x = [
+                                [c, p, o, d],
+                                [o, d, s, b],
+                                [s, b, l, g],
+                                [l, g, c, p]
+                            ], V = 0; V < x.length; V++) {
+                            var f = spreadToArrayHelper(x[V], 4),
+                                F = f[0],
+                                k = f[1],
+                                m = f[2],
+                                P = f[3];
+                            if (t > Math.min(k, P) && t <= Math.max(k, P) && e <= Math.max(F, m) && k !== P) {
+                                var u = (t - k) * (m - F) / (P - k) + F;
+                                (F === m || e <= u) && j++
+                            }
+                        }
+                        return j % 2 === 1
+                    },
+                    getSelectRectInfo: function(e) {
+                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2,
+                            r = b(e, t),
+                            n = r.left,
+                            h = r.top,
+                            a = r.width,
+                            i = r.height,
+                            o = n + a / 2,
+                            s = h + i / 2,
+                            l = e.lastAng - e.startAng + e.ang,
+                            p = c(l, o, s, n, h),
+                            d = c(l, o, s, n + a, h),
+                            g = c(l, o, s, n + a, h + i),
+                            j = c(l, o, s, n, h + i),
+                            x = {
+                                x0: o,
+                                y0: s,
+                                p1: p,
+                                p2: d,
+                                p3: g,
+                                p4: j
+                            };
+                        return x
+                    },
+                    getUiRectSize: function(e) {
+                        for (var t = [
+                                [e.p1.x, e.p1.y],
+                                [e.p2.x, e.p2.y],
+                                [e.p3.x, e.p3.y],
+                                [e.p4.x, e.p4.y]
+                            ], r = {
+                                left: 99999,
+                                top: 99999,
+                                right: -99999,
+                                bottom: -99999,
+                                width: 0,
+                                height: 0
+                            }, n = 0; n < t.length; n++) {
+                            var h = [t[n][0], t[n][1]];
+                            r.left = Math.min(r.left, h[0]), r.top = Math.min(r.top, h[1]), r.right = Math.max(r.right, h[0]), r.bottom = Math.max(r.bottom, h[1])
+                        }
+                        return r.width = r.right - r.left, r.height = r.bottom - r.top, r
+                    },
+                    getCenterCorss: function(e, t, r) {
+                        var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 20,
+                            h = n / 2,
+                            a = n / 5,
+                            i = c(e, t, r, t - h, r),
+                            o = c(e, t, r, t + h, r),
+                            s = c(e, t, r, t - h + a, r - a),
+                            l = c(e, t, r, t - h + a, r + a),
+                            p = c(e, t, r, t + h - a, r - a),
+                            d = c(e, t, r, t + h - a, r + a),
+                            b = c(e, t, r, t, r - h),
+                            g = c(e, t, r, t, r + h),
+                            j = c(e, t, r, t - a, r - h + a),
+                            x = c(e, t, r, t + a, r - h + a),
+                            V = c(e, t, r, t - a, r + h - a),
+                            f = c(e, t, r, t + a, r + h - a),
+                            F = {
+                                p1: i,
+                                p2: o,
+                                p3: b,
+                                p4: g,
+                                p11: s,
+                                p12: l,
+                                p21: p,
+                                p22: d,
+                                p31: j,
+                                p32: x,
+                                p41: V,
+                                p42: f
+                            };
+                        return F
+                    },
+                    calcTextAngXY: p,
+                    drawText: V,
+                    drawObj: x,
+                    drawLine: j,
+                    drawPs: function(e, t, r) {
+                        var n = [],
+                            h = t.ctx;
+                        h.clearRect(0, 0, t.w, t.h);
+                        for (var a = [], i = 0; i < e.length; i++) {
+                            var o = e[i],
+                                s = !1;
+                            if (r && (s = r.selectLines.length > i && r.selectLines[i].sel & r.selectMode, s && null != r.selectRect)) {
+                                var l = r.selectRect.lastAng - r.selectRect.startAng;
+                                1 != r.selectRect.z ? (r.selectLines[i].mx0 = r.selectLines[i].mx0 * r.selectRect.z, r.selectLines[i].my0 = r.selectLines[i].my0 * r.selectRect.z, o.x0 = r.selectLines[i].mx0 + r.selectRect.x0, o.y0 = r.selectLines[i].my0 + r.selectRect.y0, l = r.selectRect.lastAng - r.selectRect.startAng + r.selectRect.ang, o.z = o.z * r.selectRect.z) : (o.x0 = o.x0 + r.selectRect.mx + r.selectRect.width * (r.selectRect.z - 1) * .5, o.y0 = o.y0 + r.selectRect.my + r.selectRect.height * (r.selectRect.z - 1) * .5), null != r.selectLines[i].color && (o.lineColor = r.selectLines[i].color);
+                                var p = c(l, r.selectRect.x0, r.selectRect.y0, o.x0, o.y0);
+                                o.x0 = p.x, o.y0 = p.y, o.ang = r.selectRect.lastAng - r.selectRect.startAng + o.ang
+                            }
+                            a = -1 == o.drawMode ? j(t, o, !0, s) : 9999 == o.drawMode ? V(t, o, !0, s) : x(t, o, !0, s), n = n.concat(a)
+                        }
+                        return r && null != r.selectRect && (r.selectRect.left = r.selectRect.left + r.selectRect.mx, r.selectRect.top = r.selectRect.top + r.selectRect.my, r.selectRect.width = r.selectRect.width * r.selectRect.z, r.selectRect.height = r.selectRect.height * r.selectRect.z, r.selectRect.z = 1, r.selectRect.mx = 0, r.selectRect.my = 0), n
+                    },
+                    getdrawPointsCnt: function(e) {
+                        for (var t = 0, r = 0; r < e.length; r++) t += d(e[r].drawMode, e[r].ps);
+                        return t
+                    },
+                    reSizeDrawPoints: function(e, r, n) {
+                        var h = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 300,
+                            a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 300,
+                            i = [];
+                        t("log", "orgWidth, orgHeight, destWidth, destHeight", r, n, h, a, " at sub/pages/utils/drawFunc.js:865");
+                        for (var c = 0; c < e.length; c++) {
+                            var o = e[c],
+                                s = [];
+                            s = -1 == o.drawMode ? f(o, r, n, h, a) : 9999 == o.drawMode ? F(o, r, n, h, a) : k(o, r, n, h, a), i.push(s)
+                        }
+                        return i
+                    }
+                }
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+ 
+
+
+        "arrayToArrayLikeHelper": function(e, t, r) {
             var n = r("arrayLikeToArrayHelper");
             e.exports = function(e) {
                 if (Array.isArray(e)) return n(e)

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::collections::HashMap;
+use crate::model::{DisplayColor, ProjectItem};
 
 use tokio::sync::{Mutex, mpsc};
 
@@ -23,17 +24,22 @@ pub struct Console {
     pub y_sign: Sign,
     pub on: bool,
     pub mode: PlaybackMode,
+    pub color: DisplayColor,
+    pub playback_speed: u8,
+    pub sound_sensitivity: u8,
+    pub audio_mode: u8,
     pub device_connected: bool,
     pub device_name: Option<String>,
     pub device_state: Option<DeviceResponse>,
     incomming_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
-    /// Maps playback mode/item to a vector of 0/1 bits (length 50)
-    pub playback_selections: HashMap<u8, Vec<u8>>, // key: playback mode/item, value: 50 bits (0/1)
+    /// Maps playback mode/item to ProjectItem (py_mode, prj_selected)
+    pub playback_selections: HashMap<u8, ProjectItem>, // key: playback mode/item, value: ProjectItem
 }
 
 
 impl Console {
+
         pub fn new(device_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,device_command: mpsc::UnboundedSender<DeviceCommand>) -> Self {
             let mut playback_selections = HashMap::new();
             // Initialize with required playback modes, all bits 0
@@ -44,19 +50,21 @@ impl Console {
                 PlaybackMode::ChristmasBroadcast as u8,
                 PlaybackMode::OutdoorPlayback as u8,
             ] {
-                playback_selections.insert(key, vec![0u8; 50]);
+                playback_selections.insert(key, ProjectItem { py_mode: 128, prj_selected: vec![0u16; 4] });
             }
             Self {
                 channel: 1,
                 display_range: 50,
-               // sound_sensitivity: 128,
-               // playback_speed: 50,
+                sound_sensitivity: 128,
+                playback_speed: 50,
                 light: Light::Mono,
                 x_y_interchange: false,
                 x_sign: Sign::Plus,
                 y_sign: Sign::Plus,
                 on: false,
                 mode: PlaybackMode::RandomPlayback,
+                color: DisplayColor::RGB,
+                audio_mode: 0,
                 device_connected: false,
                 device_name: None,
                 device_state: None,
@@ -67,7 +75,7 @@ impl Console {
         }
     }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum Sign {
     Plus,
     Minus,
@@ -150,6 +158,16 @@ impl eframe::App for Console {
                 } else {
                     Light::RGB
                 };
+
+                // Update playback_selections from prj_data
+                if let Some(prj_data) = device_state_ref.prj_data.as_ref() {
+                    for (&mode, item) in prj_data.prj_item.iter() {
+                        self.playback_selections.insert(
+                            mode as u8,
+                            item.clone(),
+                        );
+                    }
+                }
             }
         }
 
@@ -187,10 +205,12 @@ impl eframe::App for Console {
 
 
 impl Console {
+   
     pub fn set_playback(&mut self, mode: PlaybackMode, selected_shows: Option<Vec<u8>>) {
         self.mode = mode;
         let _ = self.command_sender.send(DeviceCommand::SetMode { mode, selected_shows });
     }
+    
     pub fn parse_xy_map(&mut self, xy_map: &u8)  {
         // Map: 0-3 normal, 4-7 interchange
         self.x_y_interchange = *xy_map >= 4;
@@ -198,5 +218,29 @@ impl Console {
         // Order: 0: X+Y+, 1: X+Y-, 2: X-Y-, 3: X-Y+
         self.x_sign = if idx == 0 || idx == 1 { Sign::Plus } else { Sign::Minus };
         self.y_sign = if idx == 0 || idx == 3 { Sign::Plus } else { Sign::Minus };
+    }
+
+        /// Calculates xy value from UI widget states (inverse of parse_xy_map)
+    pub fn calc_xy_value(&self) -> u8 {
+        // Map: 0-3 normal, 4-7 interchange
+        let base = if self.x_y_interchange { 4 } else { 0 };
+        // Order: 0: X+Y+, 1: X+Y-, 2: X-Y-, 3: X-Y+
+        let idx = match (self.x_sign, self.y_sign) {
+            (Sign::Plus, Sign::Plus) => 0,
+            (Sign::Plus, Sign::Minus) => 1,
+            (Sign::Minus, Sign::Minus) => 2,
+            (Sign::Minus, Sign::Plus) => 3,
+        };
+        base + idx
+    }
+
+
+    // Helper function to send SetSettings with updated xy value
+    pub fn send_xy_settings(&mut self) {
+        if let Some(device_state) = &self.device_state {
+            let mut new_settings = device_state.settings.clone();
+            new_settings.xy = self.calc_xy_value();
+            let _ = self.command_sender.send(crate::ui::console::DeviceCommand::SetSettings(new_settings));
+        }
     }
 }

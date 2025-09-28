@@ -8,6 +8,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
             egui::Grid::new("settings_row")
                 .num_columns(9)
                 .show(ui, |ui| {
+
                     ui.allocate_ui_with_layout(
                         egui::Vec2::new(60.0, 0.0),
                         egui::Layout::centered_and_justified(egui::Direction::TopDown),
@@ -25,11 +26,13 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
                             }
                         },
                     );
+
                     ui.add_sized([80.0, 0.0], egui::Label::new("Display Range:"));
                     let slider_response = ui.add_sized(
                         [200.0, 0.0],
                         egui::Slider::new(&mut console.display_range, 10..=100),
                     );
+
                     if slider_response.changed() {
                         if let Some(ref state) = console.device_state {
                             let mut new_settings = state.settings.clone();
@@ -39,40 +42,65 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
                             }
                         }
                     }
+  
                     ui.allocate_ui_with_layout(
                         egui::Vec2::new(60.0, 0.0),
                         egui::Layout::centered_and_justified(egui::Direction::TopDown),
                         |ui| {
-                            egui::ComboBox::from_label("X")
+                            let combo_resp = egui::ComboBox::from_label("X")
                                 .selected_text(match console.x_sign {
                                     Sign::Plus => "+",
                                     Sign::Minus => "-",
                                 })
                                 .show_ui(ui, |ui| {
-                                    ui.selectable_value(&mut console.x_sign, Sign::Plus, "+");
-                                    ui.selectable_value(&mut console.x_sign, Sign::Minus, "-");
+                                    let plus_resp = ui.selectable_value(&mut console.x_sign, Sign::Plus, "+");
+                                    let minus_resp = ui.selectable_value(&mut console.x_sign, Sign::Minus, "-");
+                                    plus_resp | minus_resp
                                 });
-                        },
+
+                            if let Some(resp) = combo_resp.inner {
+                                if resp.changed() {
+                                    console.send_xy_settings();
+                                }
+                            }
+                        }
                     );
+
                     ui.allocate_ui_with_layout(
                         egui::Vec2::new(60.0, 0.0),
                         egui::Layout::centered_and_justified(egui::Direction::TopDown),
                         |ui| {
-                            egui::ComboBox::from_label("Y")
+                            let combo_resp = egui::ComboBox::from_label("Y")
                                 .selected_text(match console.y_sign {
                                     Sign::Plus => "+",
                                     Sign::Minus => "-",
                                 })
                                 .show_ui(ui, |ui| {
-                                    ui.selectable_value(&mut console.y_sign, Sign::Plus, "+");
-                                    ui.selectable_value(&mut console.y_sign, Sign::Minus, "-");
+                                    let plus_resp = ui.selectable_value(&mut console.y_sign, Sign::Plus, "+");
+                                    let minus_resp = ui.selectable_value(&mut console.y_sign, Sign::Minus, "-");
+                                    plus_resp | minus_resp
                                 });
-                        },
+
+
+                                if let Some(resp) = combo_resp.inner {
+                                   if resp.changed() {
+                                        console.send_xy_settings();
+                                    }
+                                }
+                        }
                     );
-                    ui.add_sized(
+
+                    let interchange_resp = ui.add_sized(
                         [50.0, 0.0],
                         egui::Checkbox::new(&mut console.x_y_interchange, "Intechange"),
                     );
+
+
+                    let interchange_changed = interchange_resp.changed();
+                    if interchange_changed {
+                        console.send_xy_settings();
+                    }
+
                     ui.allocate_ui_with_layout(
                         egui::Vec2::new(60.0, 0.0),
                         egui::Layout::centered_and_justified(egui::Direction::TopDown),
@@ -80,6 +108,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
                             ui.radio_value(&mut console.light, Light::Mono, "Mono");
                         },
                     );
+
                     ui.allocate_ui_with_layout(
                         egui::Vec2::new(50.0, 0.0),
                         egui::Layout::centered_and_justified(egui::Direction::TopDown),
@@ -95,6 +124,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
                             }
                         },
                     );
+                    
                     ui.add_sized([50.0, 0.0], egui::Label::new("Channel:"));
                     ui.add_sized(
                         [30.0, 0.0],
