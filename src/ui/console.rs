@@ -4,6 +4,7 @@ use tokio::sync::{Mutex, mpsc};
 
 use crate::model::{DeviceResponse, PlaybackMode};
 
+use crate::ui::show_selector::show_selector_grid;
 use crate::ui::{buttons, playback_settings, settings, statusbar}; 
 
 pub enum DeviceMessage {
@@ -135,26 +136,32 @@ impl eframe::App for Console {
 
         buttons::show_mode_buttons(self, ctx);
         statusbar::show_status_bar(self, ctx);
-
-        use crate::model::PlaybackMode;
-        let show_playback_settings = matches!(
+        settings::show_settings_panel(self, ctx);
+        
+        if matches!(
             self.mode,
             PlaybackMode::TimelinePlayback
                 | PlaybackMode::AnimationPlayback
                 | PlaybackMode::TextPlayback
                 | PlaybackMode::ChristmasBroadcast
                 | PlaybackMode::OutdoorPlayback
-        );
-        if show_playback_settings {
+        ){
             playback_settings::show_playback_settings_ui(ctx);
+
+
+            // Central panel (fills the remaining space)
+            egui::CentralPanel::default().show(ctx, |ui| {
+                show_selector_grid(ui);
+            });
+
+        }else{
+            // Central panel (fills the remaining space)
+            egui::CentralPanel::default().show(ctx, |ui| {
+                ui.label("Hello, dark elf!");
+            });
         }
+        
 
-        settings::show_settings_panel(self, ctx);
-
-        // Central panel (fills the remaining space)
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.label("Hello, dark elf!");
-        });
     }
 }
 

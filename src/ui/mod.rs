@@ -3,3 +3,4 @@ pub mod settings;
 pub mod buttons;
 pub mod statusbar;
 pub mod playback_settings;
+pub mod show_selector;
