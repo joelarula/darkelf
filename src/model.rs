@@ -96,9 +96,11 @@ impl Default for SettingsData {
 #[derive(Debug, Clone)]
 pub struct PlaybackCommand {
     pub mode: PlaybackMode,
+    pub color: Option<u8>,
     pub audio_mode: Option<bool>,
     pub audio_sensitivity: Option<u8>,
     pub playback_speed: Option<u8>,
+    pub tick_playback: Option<bool>,
     pub selected_shows: Option<Vec<u8>>,
 }
 
@@ -106,9 +108,11 @@ impl PlaybackCommand {
     pub fn default(mode: PlaybackMode) -> Self {
         PlaybackCommand {
             mode,
+            color: Some(DisplayColor::RGB as u8 ),
             audio_mode: None,
             audio_sensitivity: None,
             playback_speed: None,
+            tick_playback: None,
             selected_shows: None,
         }
     }

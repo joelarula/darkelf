@@ -206,17 +206,17 @@ fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandC
     if let Some(resp) = self.get_device_response() {
         let main = resp.main_data.clone();
         let text_data = TextData {
-            tx_color: main.text_color,
+            tx_color: command.color.unwrap_or(main.text_color), 
             tx_size: main.text_size,
-            run_speed: main.run_speed,
+            run_speed: command.playback_speed.unwrap_or(main.run_speed),
             tx_dist: main.text_distance,
             tx_point_time: main.text_point_time,
             run_dir: main.run_direction,
         };
         let mut prj_data = resp.prj_data.clone().unwrap_or_else(|| ProjectData {
             public: PublicData {
-                rd_mode: main.audio_mode,
-                sound_val: main.sound_value,
+                rd_mode: if command.audio_mode.unwrap_or(main.audio_mode != 0) { 1 } else { 0 },
+                sound_val: command.audio_sensitivity.unwrap_or(main.sound_value),
             },
             prj_item: self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect(),
         });
@@ -226,7 +226,7 @@ fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandC
             prj_data.prj_item.insert(
                 command.mode as i32,
                 ProjectItem {
-                    py_mode: 128,
+                    py_mode: if command.tick_playback.unwrap_or(false) { 128 } else { 0 },
                     prj_selected: CommandGenerator::pack_bits_to_prj_selected(&selected),
                 },
             );
