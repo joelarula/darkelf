@@ -1,3 +1,4 @@
+
 use std::collections::HashMap;
 
 pub const MAX_DRAW_POINT_COUNT: usize = 800;
@@ -7,7 +8,7 @@ pub const MAX_DRAW_POINT_COUNT: usize = 800;
 pub enum PlaybackMode {
     Dmx = 0,
     RandomPlayback = 1,
-    TimelinePlayback = 2,
+    LineGeometryPlayback = 2,
     AnimationPlayback = 3,
     TextPlayback = 4,
     ChristmasBroadcast = 5,
@@ -92,7 +93,26 @@ impl Default for SettingsData {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct PlaybackCommand {
+    pub mode: PlaybackMode,
+    pub audio_mode: Option<bool>,
+    pub audio_sensitivity: Option<u8>,
+    pub playback_speed: Option<u8>,
+    pub selected_shows: Option<Vec<u8>>,
+}
 
+impl PlaybackCommand {
+    pub fn default(mode: PlaybackMode) -> Self {
+        PlaybackCommand {
+            mode,
+            audio_mode: None,
+            audio_sensitivity: None,
+            playback_speed: None,
+            selected_shows: None,
+        }
+    }
+}
 
 // Data structures needed by the trait methods
 #[derive(Debug, Clone)]

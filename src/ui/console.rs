@@ -45,7 +45,7 @@ impl Console {
             // Initialize with required playback modes, all bits 0
             use crate::model::PlaybackMode;
             for key in [
-                PlaybackMode::TimelinePlayback as u8,
+                PlaybackMode::LineGeometryPlayback as u8,
                 PlaybackMode::AnimationPlayback as u8,
                 PlaybackMode::ChristmasBroadcast as u8,
                 PlaybackMode::OutdoorPlayback as u8,
@@ -178,7 +178,7 @@ impl eframe::App for Console {
         
         if matches!(
             self.mode,
-            PlaybackMode::TimelinePlayback
+            PlaybackMode::LineGeometryPlayback
                 | PlaybackMode::AnimationPlayback
                 | PlaybackMode::TextPlayback
                 | PlaybackMode::ChristmasBroadcast

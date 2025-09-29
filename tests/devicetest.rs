@@ -4,7 +4,7 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use darkelf::blue::BlueController as _;
-use darkelf::model::{CommandConfig, MainCommandData, ProjectData, ProjectItem, PublicData, TextData};
+use darkelf::model::{CommandConfig, MainCommandData, PlaybackCommand, PlaybackMode, ProjectData, ProjectItem, PublicData, TextData};
 use darkelf::ui::console::DeviceCommand;
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::mock::MockController;
@@ -65,36 +65,46 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     device.setup().await;
     device.on().await;
 
+    sleep(Duration::from_millis(500));
 
-    //test_on_off(device).await;
+    test_on_off(device).await;
+    sleep(Duration::from_millis(500));
     test_settings(device).await;
-    //test_playback_command(device).await;
+    sleep(Duration::from_millis(500));
+    test_playback_command(device).await;
+    sleep(Duration::from_millis(500));
+    test_show_playback(device).await;
 
 
     Ok(())
 }
 
-async fn test_playback_command(device: &mut LaserDevice) {
-    use std::thread::sleep;
-    use std::time::Duration;
+async fn test_show_playback(device: &mut LaserDevice) {
 
-    use std::time::Instant;
-    let start = Instant::now();
-    let mut cmd_opt = None;
-    while start.elapsed() < Duration::from_secs(5) {
-        cmd_opt = device.get_command_data();
-        if cmd_opt.is_some() {
-            break;
-        }
-        sleep(Duration::from_millis(100));
+    
+    for ix in 0..=49 {
+        let mut selected_shows = vec![0u8; 50];
+        selected_shows[ix] = 1; // Select show at index ix
+        // TODO: Add playback test logic for each ix value
+        let cmd:PlaybackCommand  = PlaybackCommand {
+            mode: PlaybackMode::LineGeometryPlayback,
+            selected_shows: Some(selected_shows),
+            audio_mode: Some(false),
+            audio_sensitivity: Some(100),
+            playback_speed: Some(100),
+        };
+        device.set_playback_mode(cmd).await;
+        sleep(Duration::from_secs(3));
     }
-    let mut cmd: MainCommandData = cmd_opt.expect("Device should return command data after waiting");
-    use darkelf::model::PlaybackMode;
-    use std::collections::HashMap;
+   
+}
+
+async fn test_playback_command(device: &mut LaserDevice) {
+ 
     let playback_modes = [
         PlaybackMode::Dmx,
         PlaybackMode::RandomPlayback,
-        PlaybackMode::TimelinePlayback,
+        PlaybackMode::LineGeometryPlayback,
         PlaybackMode::AnimationPlayback,
         PlaybackMode::TextPlayback,
         PlaybackMode::ChristmasBroadcast,
@@ -104,38 +114,13 @@ async fn test_playback_command(device: &mut LaserDevice) {
         PlaybackMode::Playlist,
     ];
     for mode in playback_modes.iter() {
-        cmd.current_mode = *mode as u8;
-        // Manual conversion from MainCommandData to CommandConfig
-        let config = CommandConfig {
-            cur_mode: cmd.current_mode,
-            text_data: TextData {
-                tx_color: cmd.text_color,
-                tx_size: cmd.text_size,
-                run_speed: cmd.run_speed,
-                tx_dist: cmd.text_distance,
-                run_dir: cmd.run_direction,
-                tx_point_time: cmd.text_point_time,
-            },
-            prj_data: ProjectData {
-                public: PublicData {
-                    rd_mode: cmd.audio_mode,
-                    sound_val: cmd.sound_value,
-                },
-                    prj_item: {
-            let mut map = std::collections::HashMap::new();
-            map.insert(0, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(1, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] });
-            map
-        },
-            },
-        };
-        //let cmd_str = CommandGenerator::get_cmd_str(&config, None);
-        println!("Set playback mode: {:?} | Command: {:?}", mode, config);
-        device.set_command_data(config).await;
+
+        println!("Set playback mode: {:?}", mode);
+        device.set_playback_mode( PlaybackCommand::default(*mode)).await;
         sleep(Duration::from_secs(3));
     }
+
+    device.set_playback_mode(PlaybackCommand::default(PlaybackMode::RandomPlayback)).await;
 }
 
 async fn test_on_off(device: &mut LaserDevice) {
@@ -163,16 +148,16 @@ async fn test_settings(device: &mut LaserDevice) {
 
          settings.xy = 0; // Reset to default
          device.set_settings(settings.clone()).await;
-         sleep(Duration::from_millis(20));
 
+         sleep(Duration::from_millis(500));
         // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
         settings.light = 1; // mono
         device.set_settings(settings.clone()).await;
-        sleep(Duration::from_secs(2));
+        sleep(Duration::from_secs(3));
 
         settings.light = 3; // back to RGB
         device.set_settings(settings.clone()).await;
-        sleep(Duration::from_millis(20))
+        sleep(Duration::from_millis(500));
 
         // Loop values[1] from 10 to 100
         for v in 10..=55 {
@@ -189,7 +174,7 @@ async fn test_settings(device: &mut LaserDevice) {
         }
 
 
-    }
+    
     }
 }
 

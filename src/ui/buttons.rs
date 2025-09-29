@@ -8,7 +8,7 @@ pub fn show_mode_buttons(console: &mut Console, ctx: &egui::Context) {
             mode_toggle(ui, console, PlaybackMode::Dmx, "DMX");
             mode_toggle(ui, console, PlaybackMode::RandomPlayback, "Random");
             mode_toggle(ui, console, PlaybackMode::AnimationPlayback, "Animation");
-            mode_toggle(ui, console, PlaybackMode::TimelinePlayback, "Line");
+            mode_toggle(ui, console, PlaybackMode::LineGeometryPlayback, "Line");
             mode_toggle(ui, console, PlaybackMode::ChristmasBroadcast, "Christmas");
             mode_toggle(ui, console, PlaybackMode::OutdoorPlayback, "Outdoor");
             mode_toggle(ui, console, PlaybackMode::TextPlayback, "Text");

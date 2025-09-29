@@ -1,4 +1,4 @@
-use crate::model::{MainCommandData, CommandConfig, TextData, ProjectData, PublicData, ProjectItem};
+use crate::model::{CommandConfig, MainCommandData, PlaybackCommand, ProjectData, ProjectItem, PublicData, TextData};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -133,15 +133,16 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
 
     /// Set the playback mode on the device
-    pub async fn set_playback_mode(&self, playback_mode: PlaybackMode, selected_shows: Option<Vec<u8>>) {
-        if let Some(command_config) = self.command_config_from_main(playback_mode, selected_shows) {
+    pub async fn set_playback_mode(&self, command: PlaybackCommand) {
+        let command_clone = command.clone();
+        if let Some(command_config) = self.command_config_from_main(&command) {
             let cmd = CommandGenerator::get_cmd_str(&command_config, None);
             let mut controller = self.device_controller.lock().unwrap();
             if let Ok(_) = controller.send(&cmd).await {
                 // Update main_data in device_info
                 let mut info_lock = self.device_info.lock().unwrap();
                 if let Some(ref mut resp) = *info_lock {
-                    resp.main_data.current_mode = playback_mode as u8;
+                    resp.main_data.current_mode = command_clone.mode as u8;
                 }
             } else {
                 error!("Failed to send playback mode command");
@@ -201,7 +202,7 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
 
     /// Converts a MainCommandData to a CommandConfig with default prj_item
-fn command_config_from_main(&self, playback_mode: PlaybackMode, selected_shows: Option<Vec<u8>>) -> Option<CommandConfig> {
+fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandConfig> {
     if let Some(resp) = self.get_device_response() {
         let main = resp.main_data.clone();
         let text_data = TextData {
@@ -220,39 +221,26 @@ fn command_config_from_main(&self, playback_mode: PlaybackMode, selected_shows: 
             prj_item: self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect(),
         });
 
-        // If selected_shows is present, update prj_item for playback_mode
-        if let Some(selected) = selected_shows {
-            // pack_bits_to_prj_selected: pack Vec<u8> (0/1) into Vec<u16> (length 4)
-            fn pack_bits_to_prj_selected(bits: &[u8]) -> Vec<u16> {
-                let mut packed = vec![0u16; 4];
-                for (i, chunk) in bits.chunks(16).enumerate().take(4) {
-                    let mut val = 0u16;
-                    for (j, &b) in chunk.iter().enumerate() {
-                        if b != 0 {
-                            val |= 1 << j;
-                        }
-                    }
-                    packed[i] = val;
-                }
-                packed
-            }
+        if let Some(selected) = &command.selected_shows {
+      
             prj_data.prj_item.insert(
-                playback_mode as i32,
+                command.mode as i32,
                 ProjectItem {
                     py_mode: 128,
-                    prj_selected: pack_bits_to_prj_selected(&selected),
+                    prj_selected: CommandGenerator::pack_bits_to_prj_selected(&selected),
                 },
             );
         }
         Some(CommandConfig {
-            cur_mode: playback_mode as u8,
+            cur_mode: command.mode as u8,
             text_data,
             prj_data,
         })
     } else {
         None
     }
-}
+    }
+
 }
 
 
