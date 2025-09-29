@@ -1046,100 +1046,127 @@ globalThis["webpackJsonp"].push([
                     return r
                 }
 
-                function splitIntoSegmentsBySumLimit(e, t) {
-                    for (var r = 0, n = [], h = 0, a = 0, i = 0; i < e.length; i++)
-                        if (r + e[i] <= t) a += 1, n.push([h, a]), r += e[i];
+                function splitIntoSegmentsBySumLimit(numbers, limit) {
+                    for (var r = 0, n = [], h = 0, a = 0, i = 0; i < numbers.length; i++)
+                        if (r + numbers[i] <= limit) a += 1, n.push([h, a]), r += numbers[i];
                         else {
                             tempWidth = r;
                             while (1) {
-                                if (tempWidth <= t) {
-                                    a += 1, n.push([h, a]), r = tempWidth + e[i];
+                                if (tempWidth <= limit) {
+                                    a += 1, n.push([h, a]), r = tempWidth + numbers[i];
                                     break
                                 }
-                                if (tempWidth > t && tempWidth - e[h] < t) {
-                                    a += 1, n.push([h, a]), r += e[i];
+                                if (tempWidth > limit && tempWidth - numbers[h] < limit) {
+                                    a += 1, n.push([h, a]), r += numbers[i];
                                     break
                                 }
-                                tempWidth -= e[h], r -= e[h], h += 1, a -= 1
+                                tempWidth -= numbers[h], r -= numbers[h], h += 1, a -= 1
                             }
                         } return n
                 }
 
-                function generateSegmentedLayoutData(e, t) {
-                    for (var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0, n = -1, h = [], a = [], c = 200, s = 0, l = 0, p = 0; p < e.length; p++) n != e[p][0] && (n = e[p][0], h.push(e[p][2] * t), s += e[p][2], a.push(e[p][3] * t), l += e[p][3]);
-                    if (127 == r || 127 == r) {
-                        for (var d = 0, b = [], g = 0; g < 9; g++) {
+                function generateSegmentedLayoutData(segements, scalingFactor) {
+                    for (var mode = arguments.length > 2 && void 0 !== arguments[2] 
+                        ? arguments[2] 
+                        : 0, n = -1, segmentWidths = [], segmentHeights = [], 
+                            segmentDefaultSize  = 200, totalSegmentWidth  = 0, totalSegmentHeight  = 0, ix = 0; ix < segements.length; ix++) 
+                            n != segements[ix][0] 
+                            && (n = segements[ix][0], 
+                                segmentWidths.push(segements[ix][2] * scalingFactor), 
+                                totalSegmentWidth  += segements[ix][2], 
+                                segmentHeights.push(segements[ix][3] * scalingFactor), totalSegmentHeight  += segements[ix][3]);
+                    if (127 == mode || 127 == mode) {
+                        for (var d = 0, b = [], i = 0; i < 9; i++) {
                             n++;
                             var j = [{
                                 x: 0,
-                                y: l / 2 + c / 2 + d,
+                                y: totalSegmentHeight  / 2 + segmentDefaultSize  / 2 + d,
                                 z: 0
                             }];
-                            b.push([n, j, c, c]), d += c, a.push(c * t)
+                            b.push([n, j, segmentDefaultSize , segmentDefaultSize ]), d += segmentDefaultSize , segmentHeights.push(segmentDefaultSize  * scalingFactor)
                         }
-                        for (var x = splitIntoSegmentsBySumLimit(a, 800), V = "", f = "", F = 0; F < x.length; F++) V += toFixedWidthHex(x[F][0], 2), f += toFixedWidthHex(x[F][1], 2);
-                        return [e.concat(b), V, f, -d * t / 2]
+                        for (var splitedSegements = splitIntoSegmentsBySumLimit(segmentHeights, 800), V = "", f = "", index = 0; index < splitedSegements.length; index++) 
+                            V += toFixedWidthHex(splitedSegements[index][0], 2), f += toFixedWidthHex(splitedSegements[index][1], 2);
+                        return [segements.concat(b), V, f, -d * scalingFactor / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {
                         n++;
                         var u = [{
-                            x: s / 2 + c / 2 + k,
+                            x: totalSegmentWidth  / 2 + segmentDefaultSize  / 2 + k,
                             y: 0,
                             z: 0
                         }];
-                        m.push([n, u, c, c]), k += c, h.push(c * t)
+                        m.push([n, u, segmentDefaultSize , segmentDefaultSize ]), 
+                        k += segmentDefaultSize , 
+                        segmentWidths.push(segmentDefaultSize  * scalingFactor)
                     }
-                    for (var X = splitIntoSegmentsBySumLimit(h, 800), N = "", H = "", z = 0; z < X.length; z++) N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
-                    return [e.concat(m), N, H, -k * t / 2]
+                    for (var X = splitIntoSegmentsBySumLimit(segmentWidths, 800), N = "", H = "", z = 0; z < X.length; z++) 
+                        N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
+                    return [segements.concat(m), N, H, -k * scalingFactor / 2]
                 }
 
                 function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {
                     var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
                     if (0 == polylineSegments .length) return null;
-                    var o = 0,
-                        l = 0,
-                        p = -1,
-                        d = "",
+                    var counter = 0,
+                        counter2 = 0,
+                        prevIndex = -1,
+                        command = "",
                         b = "",
-                        g = toFixedWidthHex(a, 2),
-                        j = "",
-                        x = "",
+                        ver = toFixedWidthHex(a, 2),
+                        charPointCmd = "",
+                        charWidthCmd = "",
                         V = 8,
-                        f = .5,
+                        scalingFactor = .5,
                         F = V,
                         k = 0,
-                        m = "00";
-                    m = commandOptions .textDecimalTime ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) : toFixedWidthHex(Math.floor(segmentTime ), 2), t("log", "time = ", m, " at utils/funcTools.js:337"), V >= 8 && (F = 0);
-                    var P = !1;
-                    if (P) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), xyss = polylineSegments , se1 = 0, se2 = 0, xOffset = 0;
+                        time = "00";
+                    time = commandOptions .textDecimalTime 
+                        ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) 
+                        : toFixedWidthHex(Math.floor(segmentTime ), 2), 
+                        t("log", "time = ", time, " at utils/funcTools.js:337"), 
+                        V >= 8 && (F = 0);
+                    var test = !1;
+                    if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), 
+                        xyss = polylineSegments , se1 = 0, se2 = 0, xOffset = 0;
                     else {
-                        var u = generateSegmentedLayoutData(polylineSegments , f, mirrorMode );
+                        var u = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
                     }
-                    for (var X = 0; X < xyss.length; X++) {
-                        p != xyss[X][0] && (p = xyss[X][0], l > 0 && (j += toFixedWidthHex(k, 2), k = 0), l++, x += toFixedWidthHex(Math.round(Number(xyss[X][2] * f)), 2), V >= 8 && xyss[X][1].length > 1 && F++), F >= 8 && (F = 1);
-                        var N = xyss[X][1];
-                        k += N.length;
-                        for (var H = 0; H < N.length; H++) {
-                            o++;
-                            var z = N[H],
-                                Q = Math.round(Number(z.x * f) + xOffset),
-                                R = Math.round(Number(z.y * f)),
-                                v = Number(z.z),
-                                I = F;
-                            0 == H && (I = 0, v = 1), H == N.length - 1 && (v = 1), 1 == N.length && (v = Number(z.z)), commandOptions .textStopTime && N.length > 1 && (0 == I ? v = 2 : (H < N.length - 1 && 0 == N[H + 1].s || H == N.length - 1) && (v = 3)), d = d + toFixedWidthHex(Q) + toFixedWidthHex(R) + toFixedWidthHex(combineNibbles(I, v), 2), P && (b = b + "\n{" + Q + "," + R + "," + I + "," + v + "},")
+                    
+                    for (var ix = 0; ix < xyss.length; ix++) {
+                        prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
+                        var segmentPoints = xyss[ix][1];
+                        k += segmentPoints.length;
+                        for (var index = 0; index < segmentPoints.length; index++) {
+                            counter++;
+                            var point = segmentPoints[index],
+                                xScreen = Math.round(Number(point.x * scalingFactor) + xOffset),
+                                yScreen = Math.round(Number(point.y * scalingFactor)),
+                                pointType = Number(point.z),
+                                segmentIndex = F;
+                            0 == index && (segmentIndex = 0, pointType = 1), index == segmentPoints.length - 1 
+                                && (pointType = 1), 1 == segmentPoints.length && (pointType = Number(point.z)), 
+                            commandOptions.textStopTime && segmentPoints.length > 1 
+                                && (0 == segmentIndex ? pointType = 2 : (index < segmentPoints.length - 1 
+                                    && 0 == segmentPoints[index + 1].s || index == segmentPoints.length - 1) 
+                                && (pointType = 3)), 
+                                command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2), 
+                                test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
-                    return P && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), j += toFixedWidthHex(k, 2), 0 == o ? null : {
-                        cnt: o,
-                        charCount: l,
-                        cmd: d,
-                        charWidthCmd: x,
-                        charPointCmd: j,
+
+                    return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), charPointCmd += toFixedWidthHex(k, 2), 0 == counter 
+                        ? null : {
+                        cnt: counter,
+                        charCount: counter2,
+                        cmd: command,
+                        charWidthCmd: charWidthCmd,
+                        charPointCmd: charPointCmd,
                         se1: se1,
                         se2: se2,
-                        ver: g,
-                        time: m
+                        ver: ver,
+                        time: time
                     }
                 }
 
@@ -1237,7 +1264,7 @@ globalThis["webpackJsonp"].push([
                             : "f0f1f2f3" + pointString + "f4f5f6f7" 
                         : "f0f1f2" + toFixedWidthHex(headerSuffix , 2) + pointString + "f4f5f6f7", commandStr .toUpperCase()
                 }
-                
+
                 e.exports = {
                     test: function(e) {
                         return "hello---" + e
@@ -1296,7 +1323,7 @@ globalThis["webpackJsonp"].push([
                             j = b,
                             x = 0;
                         b >= 8 && (j = 0);
-                        var V = generateSegmentedLayoutData(e, g);
+                        var V = generateSegmentedLayoutData(xyss, j);
                         xyss = V[0], se = V[1] + V[2], xOffset = V[3];
                         for (var f = 0; f < xyss.length; f++) {
                             h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += toFixedWidthHex(x, 2), x = 0), n++, p += toFixedWidthHex(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
@@ -1327,8 +1354,8 @@ globalThis["webpackJsonp"].push([
                                     : 128 == mirrored && null != polylinePoints[c].XysDown 
                                         ? o = polylinePoints[c].XysDown 
                                         : s = 0;
-                            var p = encodeLayoutToCommandData(o, polylinePoints[c].time, commandType, s, h);
-                            null != p && a.push(p)
+                            var encodedCOmmandData = encodeLayoutToCommandData(o, polylinePoints[c].time, commandType, s, h);
+                            null != encodedCOmmandData && a.push(encodedCOmmandData)
                         }
                         if (0 == a.length) return "";
                         for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) 
@@ -1359,7 +1386,8 @@ globalThis["webpackJsonp"].push([
 
                         if (null != featureParams) {
                             if (x = "", featureParams.hasOwnProperty("groupList"))
-                                for (var V = 0; V < featureParams.groupList.length; V++) x += toFixedWidthHex(featureParams.groupList[V].color, 2);
+                                for (var ix = 0; ix < featureParams.groupList.length; ix++) 
+                                    x += toFixedWidthHex(featureParams.groupList[ix].color, 2);
                             x += "ffffffff", x = x.substring(0, 8), getFeatureValue(featureParams, "textStopTime") 
                                 && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
                         }
@@ -1468,12 +1496,12 @@ globalThis["webpackJsonp"].push([
                         var queryCommand  = "E0E1E2E3" + encodedRandomBytes  + "E4E5E6E7";
                         return queryCommand .toUpperCase()
                     },
-                    getDrawLineStr: function(e, t) {
-                        for (var r = "", n = 0; n < e.length; n++) {
-                            var h = e[n];
+                    getDrawLineStr: function(points, config) {
+                        for (var r = "", index = 0; index < points.length; index++) {
+                            var h = points[index];
                             r = r + toFixedWidthHex(h.pt.x) + toFixedWidthHex(h.pt.y) + toFixedWidthHex(combineNibbles(h.color, h.z), 2)
                         }
-                        return r = "10111213" + toFixedWidthHex(t) + toFixedWidthHex(e.length, 2) + r + "14151617", r.toUpperCase()
+                        return r = "10111213" + toFixedWidthHex(config) + toFixedWidthHex(points.length, 2) + r + "14151617", r.toUpperCase()
                     },
                     getFeaturesValue: getFeatureValue
                 }
@@ -2047,6 +2075,20 @@ globalThis["webpackJsonp"].push([
                                     txDist: 50, // text distance
                                     runSpeed: 50, // run speed
                                     groupIdex: 0,
+                                    // { the groupList: textObject structure
+  //text: "",         // The actual text string for this group
+  //update: 0,        // A flag indicating if the group needs to be updated/redrawn
+  //color: 9,         // Color index for the text
+  //fontIdex: <int>,  // Index of the font to use for rendering
+ // time: 5,          // Duration or timing value for playback
+  //xys: [],          // Array of coordinate points for the text's shape
+
+
+  //XysRight: [],     // Optional: coordinates for rightward animation
+ // XysUp: [],        // Optional: coordinates for upward animation
+  //XysDown: []       // Optional: coordinates for downward animation
+//}
+                                    //
                                     groupList: textObject
                                 },
                                 position: {
@@ -2081,6 +2123,7 @@ globalThis["webpackJsonp"].push([
                             }
                         },
                         methods: {
+                             // send text command
                             sendTxtCmd: function() {
                                 var e = this;
                                 app.globalData.setCmdData("textData", this.textData);
@@ -2090,7 +2133,7 @@ globalThis["webpackJsonp"].push([
                                 bleManager.gosend(!0, command);
          
                             },
-                            // send text command
+                           
                             sendCmd: function() {
                                 app.globalData.setCmdData("textData", this.textData);
                                 var command = deviceCommandUtils.getCmdStr(app.globalData.cmd, {
@@ -5016,6 +5059,694 @@ globalThis["webpackJsonp"].push([
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
+        "scenePatternEditorPageComponent ": function(e, t, r) {
+            "use strict";
+            (function(e) {
+                var n = r("esModuleInteropHelper");
+                Object.defineProperty(t, "__esModule", {
+                    value: !0
+                }), t.default = void 0;
+                var h = n(r("uniPopupComponentExportWrapper")),
+                    a = getApp(),
+                    i = r("deviceCommandUtils "),
+                    c = r("bleDeviceControlUtils "),
+                    o = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
+                    s = {
+                        data: function() {
+                            var e = a.globalData.getDeviceFeatures(),
+                                t = e.xyCnf ? 18 : 12;
+                            return {
+                                screen_width: a.globalData.screen_width_str,
+                                scUnit: a.globalData.screen_width_float,
+                                rtl: a.globalData.rtl,
+                                ntitle: this.$t("\u573a\u666f\u7f16\u8f91"),
+                                loadObjTitel: this.$t("\u52a0\u8f7d\u4e2d") + "...",
+                                imageDrawOffset: 0,
+                                imageShowCount: 0,
+                                features: e,
+                                popupShow: !1,
+                                imageListViewHeight: 0,
+                                imgArrays: [],
+                                lastRefresh: 0,
+                                lastCmdTime: 0,
+                                lastSendtime: 0,
+                                chPer: 1,
+                                chBeginPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                chEndPoint: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                pisObjNote: {
+                                    0: [
+                                        [256, this.$t("\u56fe\u6848\u9009\u62e9")]
+                                    ],
+                                    1: [
+                                        [25, this.$t("\u76f4\u7ebf\u7c7b\u56fe\u6848")],
+                                        [25, this.$t("\u5706\u5f27\u7c7b\u56fe\u6848")],
+                                        [25, this.$t("\u4eae\u70b9\u56fe\u6848")],
+                                        [25, this.$t("\u6253\u70b9\u56fe\u6848")],
+                                        [25, this.$t("\u5723\u8bde\u56fe\u6848")],
+                                        [25, this.$t("\u52a8\u753b\u7ec4\u522b1")],
+                                        [25, this.$t("\u52a8\u753b\u7ec4\u522b2")],
+                                        [25, this.$t("\u52a8\u753b\u7ec4\u522b3")],
+                                        [25, this.$t("\u52a8\u753b\u7ec4\u522b4")],
+                                        [31, this.$t("\u52a8\u753b\u7ec4\u522b5")]
+                                    ],
+                                    2: [
+                                        [10, this.$t("\u767d\u8272")],
+                                        [10, this.$t("\u7ea2\u8272")],
+                                        [10, this.$t("\u84dd\u8272")],
+                                        [10, this.$t("\u7c89\u8272")],
+                                        [10, this.$t("\u9752\u8272")],
+                                        [10, this.$t("\u9ec4\u8272")],
+                                        [10, this.$t("\u7eff\u8272")],
+                                        [10, this.$t("\u6574\u4f53\u989c\u8272\u6362\u8272")],
+                                        [13, this.$t("\u4e03\u5f69\u8679\u989c\u8272")],
+                                        [18, this.$t("2\u5206\u6bb5\u989c\u8272")],
+                                        [21, this.$t("3\u5206\u6bb5\u989c\u8272")],
+                                        [18, this.$t("4\u5206\u6bb5\u989c\u8272")],
+                                        [33, this.$t("8\u5206\u6bb5\u989c\u8272")],
+                                        [36, this.$t("16\u5206\u6bb5\u989c\u8272")],
+                                        [35, this.$t("32\u5206\u6bb5\u989c\u8272")],
+                                        [2, this.$t("\u989c\u8272\u6e10\u7ed8")]
+                                    ],
+                                    3: [
+                                        [10, this.$t("\u4e0d\u6d41\u6c34")],
+                                        [118, this.$t("\u6b63\u5411\u6d41\u6c34")],
+                                        [128, this.$t("\u53cd\u5411\u6d41\u6c34")]
+                                    ],
+                                    4: [
+                                        [256, this.$t("\u56fe\u6848\u5927\u5c0f")]
+                                    ],
+                                    5: [
+                                        [16, this.$t("\u7f29\u653eManual\u9009\u62e9")],
+                                        [40, this.$t("\u7531\u5c0f\u5230\u5927\u7f29\u653e")],
+                                        [40, this.$t("\u7531\u5927\u5230\u5c0f\u7f29\u653e")],
+                                        [40, this.$t("\u5927\u5c0f\u5faa\u73af\u7f29\u653e")],
+                                        [40, this.$t("\u4e0d\u89c4\u5219\u7f29\u653e\u4e00")],
+                                        [40, this.$t("\u4e0d\u89c4\u5219\u7f29\u653e\u4e8c")],
+                                        [40, this.$t("\u4e0d\u89c4\u5219\u7f29\u653e\u4e09")]
+                                    ],
+                                    6: [
+                                        [128, this.$t("\u65cb\u8f6c\u89d2\u5ea6")],
+                                        [64, this.$t("\u6b63\u65cb\u8f6c\u901f\u5ea6")],
+                                        [64, this.$t("\u53cd\u65cb\u8f6c\u901f\u5ea6")]
+                                    ],
+                                    7: [
+                                        [128, this.$t("\u6c34\u5e73\u7ffb\u8f6c\u4f4d\u7f6e")],
+                                        [128, this.$t("\u6c34\u5e73\u7ffb\u8f6c\u901f\u5ea6")]
+                                    ],
+                                    8: [
+                                        [128, this.$t("\u5782\u76f4\u7ffb\u8f6c\u4f4d\u7f6e")],
+                                        [128, this.$t("\u5782\u76f4\u7ffb\u8f6c\u901f\u5ea6")]
+                                    ],
+                                    9: [
+                                        [128, this.$t("\u6c34\u5e73\u4f4d\u7f6e\u65cb\u8f6c")],
+                                        [128, this.$t("\u6c34\u5e73\u79fb\u52a8")]
+                                    ],
+                                    10: [
+                                        [128, this.$t("\u5782\u76f4\u4f4d\u7f6e\u65cb\u8f6c")],
+                                        [128, this.$t("\u5782\u76f4\u79fb\u52a8")]
+                                    ],
+                                    11: [
+                                        [2, this.$t("\u65e0\u6ce2\u6d6a")],
+                                        [31, this.$t("\u6ce2\u6d6a\u5e45\u5ea61")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea62")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea63")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea64")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea65")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea66")],
+                                        [32, this.$t("\u6ce2\u6d6a\u5e45\u5ea67")],
+                                        [31, this.$t("\u6ce2\u6d6a\u5e45\u5ea68")]
+                                    ],
+                                    12: [
+                                        [2, this.$t("\u65e0\u6e10\u7ed8")],
+                                        [62, this.$t("Manual\u6e10\u7ed81")],
+                                        [64, this.$t("Manual\u6e10\u7ed82")],
+                                        [26, this.$t("Automatic\u6e10\u7ed81")],
+                                        [26, this.$t("Automatic\u6e10\u7ed82")],
+                                        [26, this.$t("Automatic\u6e10\u7ed83")],
+                                        [50, this.$t("Automatic\u6e10\u7ed84")]
+                                    ],
+                                    13: [
+                                        [256, this.$t("\u6c34\u5e73\u7535\u673a")]
+                                    ],
+                                    14: [
+                                        [256, this.$t("\u6c34\u5e73\u5fae\u8c03")]
+                                    ],
+                                    15: [
+                                        [256, this.$t("\u5782\u76f4\u7535\u673a")]
+                                    ],
+                                    16: [
+                                        [256, this.$t("\u5782\u76f4\u5fae\u8c03")]
+                                    ],
+                                    17: [
+                                        [256, this.$t("\u7535\u673a\u901f\u5ea6")]
+                                    ]
+                                },
+                                showPisCanvas: !0,
+                                fontWidth: 100,
+                                pisIdx: 0,
+                                cnfIdx: 1,
+                                cnfGroup: 0,
+                                defaultPis: null,
+                                pisObj: {
+                                    playTime: 10,
+                                    cnfValus: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                },
+                                pisSelectedIdx: -1,
+                                pisSelectedGroup: 0,
+                                loading: 0,
+                                pisObjArray: [],
+                                myCanvasSize: {
+                                    w: 0,
+                                    h: 0
+                                },
+                                chDraw: {
+                                    w: 0,
+                                    h: 0,
+                                    max: 255
+                                },
+                                chCanvas: {
+                                    w: 0,
+                                    h: 0
+                                },
+                                cnfList: [{
+                                    name: this.$t("\u56fe\u5f62\u5206\u7ec4"),
+                                    value: 255,
+                                    idx: 1
+                                }, {
+                                    name: this.$t("\u56fe\u5f62"),
+                                    value: 255,
+                                    idx: 0
+                                }, {
+                                    name: this.$t("\u989c\u8272"),
+                                    value: 255,
+                                    idx: 2
+                                }, {
+                                    name: this.$t("\u989c\u8272\u6d41\u6c34"),
+                                    value: 255,
+                                    idx: 3
+                                }, {
+                                    name: this.$t("\u56fe\u5f62\u5927\u5c0f"),
+                                    value: 255,
+                                    idx: 4
+                                }, {
+                                    name: this.$t("\u56fe\u5f62\u7f29\u653e"),
+                                    value: 255,
+                                    idx: 5
+                                }, {
+                                    name: this.$t("\u56fe\u5f62\u65cb\u8f6c"),
+                                    value: 255,
+                                    idx: 6
+                                }, {
+                                    name: this.$t("\u6c34\u5e73\u7ffb\u8f6c"),
+                                    value: 255,
+                                    idx: 7
+                                }, {
+                                    name: this.$t("\u5782\u76f4\u7ffb\u8f6c"),
+                                    value: 255,
+                                    idx: 8
+                                }, {
+                                    name: this.$t("\u6c34\u5e73\u79fb\u52a8"),
+                                    value: 255,
+                                    idx: 9
+                                }, {
+                                    name: this.$t("\u5782\u76f4\u79fb\u52a8"),
+                                    value: 255,
+                                    idx: 10
+                                }, {
+                                    name: this.$t("\u6ce2\u6d6a"),
+                                    value: 255,
+                                    idx: 11
+                                }, {
+                                    name: this.$t("\u6e10\u7ed8"),
+                                    value: 255,
+                                    idx: 12
+                                }, {
+                                    name: this.$t("\u65f6\u95f4"),
+                                    value: 255,
+                                    idx: 13
+                                }, {
+                                    name: this.$t("\u6c34\u5e73\u7535\u673a"),
+                                    value: 255,
+                                    idx: 14
+                                }, {
+                                    name: this.$t("\u6c34\u5e73\u5fae\u8c03"),
+                                    value: 255,
+                                    idx: 15
+                                }, {
+                                    name: this.$t("\u5782\u76f4\u7535\u673a"),
+                                    value: 255,
+                                    idx: 16
+                                }, {
+                                    name: this.$t("\u5782\u76f4\u5fae\u8c03"),
+                                    value: 255,
+                                    idx: 17
+                                }, {
+                                    name: this.$t("\u7535\u673a\u901f\u5ea6"),
+                                    value: 255,
+                                    idx: 18
+                                }],
+                                showCnfEndIdx: t,
+                                slCnfSended: !1,
+                                slCnfChangingTimer: null
+                            }
+                        },
+                        computed: {
+                            playTime: {
+                                get: function() {
+                                    return this.pisObj.playTime
+                                },
+                                set: function(e) {
+                                    var t = parseInt(e),
+                                        r = this.pisObj.playTime;
+                                    if (!(r > 25.5))
+                                        if (this.$set(this.pisObj, "playTime", t), t > 25.5) {
+                                            var n = this;
+                                            setTimeout((function() {
+                                                n.$set(n.pisObj, "playTime", r)
+                                            }), 100)
+                                        } else this.sendCmd()
+                                }
+                            }
+                        },
+                        components: {
+                            uniPopup: h.default
+                        },
+                        onLoad: function(t) {
+                            e("log", "onload", " at sub2/pages/pis/pis.js:133");
+                            var r = this.getPicArray();
+                            this.pisObjArray = r.getPicArrayInfo(), e("log", "pisObjArray", this.pisObjArray, " at sub2/pages/pis/pis.js:136"), this.initData();
+                            var n = this,
+                                h = this.getOpenerEventChannel();
+                            h.on("acceptDataFromOpenerPage", (function(e) {
+                                n.pisObj = e.pis, n.pisIdx = e.idx, n.imgArrays = e.imgArrays, n.defaultPis = e.defaultPis, n.$nextTick((function() {
+                                    n.sendCmd(), setTimeout((function() {
+                                        var e = uni.createSelectorQuery().in(n);
+                                        e.select("#myCanvas").boundingClientRect((function(e) {
+                                            n.myCanvasSize.w = e.width, n.myCanvasSize.h = e.height, n.myCanvasDraw()
+                                        })).exec(), n.initChCanvas(), n.startImageCount()
+                                    }), 100)
+                                }))
+                            }))
+                        },
+                        onUnload: function() {
+                            var e = this.getOpenerEventChannel();
+                            e.emit("acceptDataFromOpenedPage", {
+                                pis: this.pisObj,
+                                imgArrays: this.imgArrays
+                            })
+                        },
+                        onReady: function() {},
+                        onShow: function() {},
+                        onHide: function() {},
+                        methods: {
+                            getPicArray: function() {
+                                if (this.features.ilda) {
+                                    var e = r("lineShapes");
+                                    return e
+                                }
+                                var t = r("shapePatternTemplates");
+                                return t
+                            },
+                            sendCmd: function() {
+                                var e = (new Date).getTime(),
+                                    t = i.getPisCmdStr(this.pisIdx, this.pisObj, {
+                                        features: this.features
+                                    }),
+                                    r = c.gosend(!1, t);
+                                return r && (this.lastSendtime = e), r
+                            },
+                            initData: function() {
+                                this.features.ilda && (this.pisObjNote[1] = [
+                                    [25, this.$t("\u76f4\u7ebf\u7c7b\u56fe\u6848")],
+                                    [25, this.$t("\u5706\u5f27\u7c7b\u56fe\u6848")],
+                                    [25, this.$t("\u4eae\u70b9\u56fe\u6848")],
+                                    [25, this.$t("\u6253\u70b9\u56fe\u6848")],
+                                    [25, this.$t("\u4fdd\u7559")],
+                                    [25, this.$t("\u52a8\u753b\u7ec4\u522b1")],
+                                    [25, this.$t("\u52a8\u753b\u7ec4\u522b2")],
+                                    [25, this.$t("\u52a8\u753b\u7ec4\u522b3")],
+                                    [25, this.$t("\u52a8\u753b\u7ec4\u522b4")],
+                                    [31, this.$t("\u52a8\u753b\u7ec4\u522b5")]
+                                ], this.pisObjNote[2] = [
+                                    [5, this.$t("\u767d\u8272")],
+                                    [5, this.$t("\u7ea2\u8272")],
+                                    [5, this.$t("\u84dd\u8272")],
+                                    [5, this.$t("\u7c89\u8272")],
+                                    [5, this.$t("\u9752\u8272")],
+                                    [5, this.$t("\u9ec4\u8272")],
+                                    [5, this.$t("\u7eff\u8272")],
+                                    [5, this.$t("\u6574\u4f53\u989c\u8272\u6362\u8272")],
+                                    [5, this.$t("\u56fe\u6848\u521d\u59cb\u989c\u8272")],
+                                    [2, this.$t("\u4e03\u5f69\u8679\u989c\u8272")],
+                                    [20, this.$t("2\u5206\u6bb5\u989c\u8272")],
+                                    [30, this.$t("3\u5206\u6bb5\u989c\u8272")],
+                                    [30, this.$t("4\u5206\u6bb5\u989c\u8272")],
+                                    [24, this.$t("8\u5206\u6bb5\u989c\u8272")],
+                                    [24, this.$t("16\u5206\u6bb5\u989c\u8272")],
+                                    [40, this.$t("32\u5206\u6bb5\u989c\u8272")],
+                                    [33, this.$t("\u6df7\u8272")],
+                                    [8, this.$t("\u989c\u8272\u6e10\u7ed8")]
+                                ])
+                            },
+                            initChCanvas: function() {
+                                var e = this,
+                                    t = uni.createSelectorQuery().in(e);
+                                t.select("#chCanvas").boundingClientRect((function(t) {
+                                    if (e.chCanvas.w != t.width || e.chCanvas.h != t.height) {
+                                        e.chCanvas.w = t.width, e.chCanvas.h = t.height;
+                                        var r = .9 * e.chCanvas.h;
+                                        e.chPer = r / 255, e.chDraw.w = e.chCanvas.w / 3, e.chDraw.h = r, e.refreshChDraw(), setTimeout((function() {
+                                            e.initChCanvas()
+                                        }), 100)
+                                    }
+                                })).exec()
+                            },
+                            startImageCount: function() {
+                                var e = this;
+                                setInterval((function() {
+                                    e.popupShow && 4 == e.pisSelectedGroup && (e.imageShowCount = e.imageShowCount + 1, e.imageShowCount >= 1e3 && (e.imageShowCount = 0))
+                                }), 400)
+                            },
+                            refreshChDraw: function() {
+                                var e = this.pisObj.cnfValus[this.cnfIdx];
+                                this.drawChCanvas(this.chDraw.w, this.chDraw.h, this.chDraw.max, e, this.callBackCh)
+                            },
+                            lineTheta: function(e, t, r) {
+                                var n = {
+                                        x: e[0] - t[0],
+                                        y: e[1] - t[1]
+                                    },
+                                    h = {
+                                        x: r[0] - t[0],
+                                        y: r[1] - t[1]
+                                    },
+                                    a = n.x * h.x + n.y * h.y,
+                                    i = Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)),
+                                    c = Math.sqrt(Math.pow(h.x, 2) + Math.pow(h.y, 2)),
+                                    o = Math.acos(a / (i * c));
+                                return o
+                            },
+                            myCanvasDraw: function() {
+                                if (this.popupShow) this.myCanvasClear();
+                                else {
+                                    var e = this,
+                                        t = uni.createCanvasContext("myCanvas", e),
+                                        r = this.convertPic255ToIdx(this.pisObj.cnfValus[1], this.pisObj.cnfValus[0]),
+                                        n = r.iidx,
+                                        h = r.igroup;
+                                    4 == h ? (this.imageDrawOffset++, this.imageDrawOffset = this.imageDrawOffset >= 1e3 ? 0 : this.imageDrawOffset, this.imageDrawOffset = 20 == n || 22 == n ? this.imageDrawOffset % 2 : 24 == n ? this.imageDrawOffset % 6 : 30 == n ? this.imageDrawOffset % 40 : -1) : this.imageDrawOffset = -1;
+                                    var a = this.getPicArray(),
+                                        i = a.picArray,
+                                        c = e.myCanvasSize.w > e.myCanvasSize.h ? e.myCanvasSize.h : e.myCanvasSize.w,
+                                        o = e.myCanvasSize.w / 2,
+                                        s = e.myCanvasSize.h / 2;
+                                    if (5 == h || 6 == h) {
+                                        var l = this.$t(i[h].label) + n,
+                                            p = c / 4;
+                                        return this.drawABtag(t, l, o, s, p), void t.draw()
+                                    }
+                                    if (5 <= h || -1 == n || n >= i[h].arr.length) t.draw();
+                                    else {
+                                        var d = i[h].arr[n];
+                                        this.imageDrawOffset >= 0 && (d = i[h].arr[n + this.imageDrawOffset]);
+                                        var b = c / 800 * .8;
+                                        this.drawObj(t, d, o, s, b), t.draw(), this.imageDrawOffset >= 0 && setTimeout((function() {
+                                            e.myCanvasDraw()
+                                        }), 400)
+                                    }
+                                }
+                            },
+                            drawABtag: function(e, t, r, n, h) {
+                                e.beginPath(), e.setFillStyle("red"), e.setStrokeStyle("red"), e.setFontSize(h), e.strokeText(t, r - e.measureText(t).width / 2, n + h / 3), e.stroke(), e.fill()
+                            },
+                            sendLastCmd: function() {
+                                var e = this;
+                                e.lastCmdTime <= e.lastSendtime || setTimeout((function() {
+                                    e.lastCmdTime <= e.lastSendtime || (e.sendCmd(), e.lastCmdTime > e.lastSendtime && e.sendLastCmd())
+                                }), 10)
+                            },
+                            addCnfValusAndSend: function(e) {
+                                var t = this.pisObj.cnfValus[this.cnfIdx] + Math.floor(e);
+                                t = t < 0 ? 0 : t, t = t > this.chDraw.max ? this.chDraw.max : t, this.pisObj.cnfValus[this.cnfIdx] != t && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd(), 0 != this.cnfIdx && 1 != this.cnfIdx || this.myCanvasDraw())
+                            },
+                            chTouchstart: function(e) {
+                                var t = e.touches[0];
+                                this.chBeginPoint = {
+                                    x: t.x,
+                                    y: t.y
+                                }, this.chEndPoint = null, this.lastRefresh = 0
+                            },
+                            chTouchmove: function(e) {
+                                var t = e.touches[0];
+                                this.chEndPoint = {
+                                    x: t.x,
+                                    y: t.y
+                                };
+                                var r = (new Date).getTime();
+                                if (r - this.lastRefresh > 100) {
+                                    var n = Math.floor((this.chBeginPoint.y - this.chEndPoint.y) / this.chPer);
+                                    Math.abs(n) >= 1 && (this.chBeginPoint = {
+                                        x: this.chEndPoint.x,
+                                        y: this.chEndPoint.y
+                                    }, this.addCnfValusAndSend(n)), this.lastRefresh = r
+                                }
+                            },
+                            chTouchend: function(e) {
+                                if (null == this.chEndPoint) {
+                                    var t = this.chBeginPoint.y > this.chCanvas.h / 2 ? -1 : 1;
+                                    this.addCnfValusAndSend(t)
+                                }
+                                this.chEndPoint = null
+                            },
+                            callBackCh: function(e, t, r, n, h, a, i, c) {
+                                if (this.cnfIdx in this.pisObjNote) {
+                                    var o = 2 * this.scUnit,
+                                        s = 10 * o,
+                                        l = .65 * s;
+                                    e.beginPath(), e.setLineWidth(1), e.setShadow(0, 0, 0, "rgba(0, 0, 0, 0)"), e.setStrokeStyle("#414339"), e.setFillStyle("#928F9F"), e.setFontSize(s);
+                                    var p = this.pisObjNote[this.cnfIdx],
+                                        d = .8 * t;
+                                    t -= 1, e.moveTo(d, r), e.lineTo(t + a - 2, r), e.stroke();
+                                    for (var b = 0, g = 0, j = !1, x = 0; x < p.length; x++) {
+                                        p[x][0];
+                                        var V = p[x][0] * this.chPer,
+                                            f = p[x][1],
+                                            F = Math.round(r - V - b);
+                                        F < r - h && (F = r - h);
+                                        var k = 0;
+                                        V + b < a ? k = Math.round(a - Math.sqrt(Math.pow(a, 2) - Math.pow(a - V - b, 2))) : V + b > h - a && V + b < h ? k = Math.round(a - Math.sqrt(Math.pow(a, 2) - Math.pow(a - h + V + b, 2))) : V + b >= h && (k = a - 2), e.moveTo(d, F), e.lineTo(t + k, F), e.stroke(), g <= c && c < g + p[x][0] && (e.beginPath(), e.setFillStyle("#FFFFFF"), j = !0), g += p[x][0];
+                                        var m = s;
+                                        V < s && (m = l), e.setFontSize(m), V < m ? e.fillText(f, d - e.measureText(f).width, r - b - V / 2) : e.fillText(f, d - e.measureText(f).width, r - b - (V - m / 2) / 2), b = V + b, j && (e.beginPath(), e.setFillStyle("#928F9F"))
+                                    }
+                                    e.stroke()
+                                }
+                            },
+                            drawChCanvas: function(e, t, r, n) {
+                                var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : null,
+                                    a = uni.createCanvasContext("chCanvas", this),
+                                    i = e / 3;
+                                a.setFontSize(i);
+                                var c = e / 2,
+                                    o = .95 * (this.chCanvas.w - e),
+                                    s = (this.chCanvas.h - t) / 2 + c,
+                                    l = o + e,
+                                    p = s + t - e,
+                                    d = o + c,
+                                    b = s,
+                                    g = l - c,
+                                    j = p,
+                                    x = 2 * this.scUnit,
+                                    V = a.createLinearGradient(g, j + c, d, b - c);
+                                V.addColorStop(0, "#112233"), V.addColorStop(1, "#1E374C"), a.setFillStyle(V), a.beginPath(), a.moveTo(l, p), a.arc(g, j, c, 0, 1 * Math.PI);
+                                var f = t - 2 * c;
+                                a.rect(l - e, p - f, e, f), a.moveTo(o, s), a.arc(d, b, c, Math.PI, 2 * Math.PI), a.fill();
+                                var F = a.createLinearGradient(g, j + c, d, b - c);
+                                F.addColorStop(0, "#008BD1"), F.addColorStop(1, "white"), a.setFillStyle(F), a.beginPath(), a.moveTo(o, s), a.arc(d, b, c, Math.PI, 2 * Math.PI), a.moveTo(l, p), a.arc(g, j, c, 0, 1 * Math.PI), a.beginPath();
+                                var k = t / r,
+                                    m = k * n;
+                                if (m < c) {
+                                    var P = c - m,
+                                        u = c - Math.sqrt(Math.pow(c, 2) - Math.pow(P, 2)),
+                                        X = this.lineTheta([l, p], [g, j], [l - u, p + P]);
+                                    a.moveTo(l - u, p + P), a.arc(g, j, c, X, Math.PI - X), a.fill()
+                                } else if (m <= t - c) {
+                                    a.moveTo(l, p), a.arc(g, j, c, 0, 1 * Math.PI);
+                                    var N = m - c;
+                                    a.rect(l - e, p - N, e, N), a.fill()
+                                } else {
+                                    a.moveTo(l, p), a.arc(g, j, c, 0, 1 * Math.PI);
+                                    var H = t - 2 * c;
+                                    if (a.rect(l - e, p - H, e, H), n == r) a.moveTo(o, s), a.arc(d, b, c, Math.PI, 2 * Math.PI);
+                                    else {
+                                        var z = m - (t - c),
+                                            Q = c - Math.sqrt(Math.pow(c, 2) - Math.pow(z, 2)),
+                                            R = this.lineTheta([o, s], [d, b], [o + Q, s - z]);
+                                        a.moveTo(o + Q, s - z), a.arc(d, b, c, 2 * Math.PI - R, Math.PI + R)
+                                    }
+                                    a.fill()
+                                }
+                                if (a.beginPath(), a.setFontSize(26 * x), a.setFillStyle("white"), a.setShadow(5 * x, 5 * x, 5 * x, "rgba(0, 0, 0, 0.5)"), a.fillText(n + "", g - a.measureText(n + "").width / 2, b - c + t / 2 + i / 2), a.beginPath(), a.setFontSize(40 * x), a.fillText("+", d - a.measureText("+").width / 2, b + i / 2), a.fillText("-", g - a.measureText("-").width / 2, j + i), null != h) {
+                                    var v = o,
+                                        I = j + c;
+                                    h(a, v, I, e, t, c, r, n)
+                                }
+                                a.draw()
+                            },
+                            chClick: function(e) {
+                                this.cnfIdx = e, this.refreshChDraw()
+                            },
+                            drawObj: function(e, t, r, n, h) {
+                                e.beginPath();
+                                for (var a = 0; a < t.length; a++) {
+                                    var i = [];
+                                    Object.assign(i, t[a]), i[0] = i[0] * h + r, i[1] = -i[1] * h + n;
+                                    var c = null;
+                                    a < t.length - 1 && (c = t[a + 1]), null != c && i[2] != c[2] ? (e.setStrokeStyle(o[i[2]]), 0 != i[2] && e.lineTo(i[0], i[1]), e.stroke(), e.beginPath(), e.moveTo(i[0], i[1])) : (e.lineTo(i[0], i[1]), null == c && e.setStrokeStyle(o[i[2]]))
+                                }
+                                e.stroke();
+                                var s = null;
+                                e.beginPath();
+                                for (var l = 0; l < t.length; l++) {
+                                    var p = [];
+                                    Object.assign(p, t[l]), p[0] = p[0] * h + r, p[1] = -p[1] * h + n;
+                                    var d = null;
+                                    l < t.length - 1 && (d = t[l + 1]), null != d && p[2] != d[2] ? null != s && s[0] == p[0] && s[1] == p[1] && (e.setStrokeStyle(o[p[2]]), e.setFillStyle(o[p[2]]), e.moveTo(p[0], p[1]), e.arc(p[0], p[1], 1, 0, 2 * Math.PI), e.stroke(), e.fill(), e.beginPath()) : null != s && s[0] == p[0] && s[1] == p[1] && (e.setStrokeStyle(o[p[2]]), e.setFillStyle(o[p[2]]), e.moveTo(p[0], p[1]), e.arc(p[0], p[1], 1, 0, 2 * Math.PI), e.stroke()), s = p
+                                }
+                                e.fill()
+                            },
+                            pisCanvasClear: function() {
+                                var e = uni.createCanvasContext("pisCanvas", this);
+                                e.draw()
+                            },
+                            myCanvasClear: function() {
+                                var e = uni.createCanvasContext("myCanvas", this);
+                                e.draw()
+                            },
+                            createImg: function(t, r, n) {
+                                if (this.pisSelectedGroup == t) {
+                                    var h = this;
+                                    if (0 == h.imgArrays.length)
+                                        for (var a = 0; a < n.length; a++) {
+                                            var i = new Array(n[a].arr.length).fill("");
+                                            h.imgArrays.push(i)
+                                        }
+                                    if (this.popupShow)
+                                        if (e("log", "group, idx, pisObjArray[group]", t, r, n[t], " at sub2/pages/pis/pis.js:643"), r >= n[t].arr.length || "" != this.imgArrays[t][this.imgArrays[t].length - 1]) h.showPisCanvas = !1;
+                                        else if ("" == this.imgArrays[t][r]) {
+                                        this.loading = r;
+                                        var c = uni.createCanvasContext("pisCanvas", h);
+                                        c.rect(0, 0, 100, 100), c.setFillStyle("#1F2B38"), c.fill();
+                                        var o = n[t].arr[r];
+                                        this.drawObj(c, o, 50, 50, .1), c.draw(), this.$nextTick((function() {
+                                            uni.canvasToTempFilePath({
+                                                canvasId: "pisCanvas",
+                                                success: function(e) {
+                                                    var a = e.tempFilePath;
+                                                    h.generatedImage = a, h.$set(h.imgArrays[t], r, a), h.createImg(t, ++r, n)
+                                                },
+                                                fail: function(e) {}
+                                            })
+                                        }))
+                                    } else h.createImg(t, ++r, n)
+                                }
+                            },
+                            pisCanvasDraw: function(e) {
+                                this.showPisCanvas && this.createImg(this.pisSelectedGroup, 0, e)
+                            },
+                            doPisCanvasDraw: function(e) {
+                                var t = this;
+                                setTimeout((function() {
+                                    var r = uni.createSelectorQuery().in(t);
+                                    r.select("#imageListView").boundingClientRect((function(r) {
+                                        null != r ? (t.imageListViewHeight = r.height - 30, setTimeout((function() {
+                                            t.pisCanvasDraw(e)
+                                        }), 10)) : t.doPisCanvasDraw(e)
+                                    })).exec()
+                                }), 10)
+                            },
+                            groupBtnClick: function(e) {
+                                if (this.pisSelectedGroup != e) {
+                                    this.pisSelectedGroup = e, this.pisSelectedIdx = -1, this.pisSelectedGroup == this.pisObj.cnfValus[1] && (this.pisSelectedIdx = this.pisObj.cnfValus[0]), this.showPisCanvas = this.checkIfShowPis(e);
+                                    var t = this.getPicArray(),
+                                        r = t.picArray;
+                                    this.doPisCanvasDraw(r)
+                                }
+                            },
+                            checkIfShowPis: function(e) {
+                                if (5 == e || 6 == e) return !1;
+                                if (0 == this.imgArrays.length) return !0;
+                                if (0 == this.imgArrays[e].length) return !0;
+                                for (var t = 0; t < this.imgArrays[e].length; t++)
+                                    if ("" == this.imgArrays[e][t]) return !0;
+                                return !1
+                            },
+                            cancelBtnClick: function(e) {
+                                this.popupShow = !1, this.pisCanvasClear(), this.$refs.popup.close(), this.myCanvasDraw(), this.sendCmd()
+                            },
+                            okBtnClick: function(e) {
+                                this.popupShow = !1, this.pisCanvasClear(), this.$refs.popup.close();
+                                var t = this.convertPicIdxTo255(this.pisSelectedGroup, this.pisSelectedIdx);
+                                this.$set(this.pisObj.cnfValus, 0, t.idx), this.$set(this.pisObj.cnfValus, 1, t.group), this.refreshChDraw(), this.myCanvasDraw(), this.sendCmd()
+                            },
+                            convertPic255ToIdx: function(e, t) {
+                                var r = 0,
+                                    n = 0;
+                                return this.features.ilda ? (r = Math.floor(e / 25), r > 9 && (r = 9), n = 0, 0 != r && 1 != r || (n = Math.floor(t / 4)), 2 != r && 3 != r || (n = Math.floor(t / 6)), 5 != r && 6 != r || (n = Math.floor(t / 5))) : (r = Math.floor(e / 25), n = 0, 0 != r && 1 != r && 5 != r && 6 != r || (n = Math.floor(t / 5)), 2 != r && 3 != r || (n = Math.floor(t / 10)), 4 == r && (n = t <= 99 ? Math.floor(t / 5) : t >= 120 && t <= 159 ? Math.floor((t - 120) / 5) + 70 : t >= 100 && t <= 104 ? 20 : t >= 105 && t <= 109 ? 22 : t >= 110 && t <= 114 ? 24 : t >= 115 && t <= 119 ? 30 : 77), 6 == r && n > 14 && (n = 14)), {
+                                    igroup: r,
+                                    iidx: n
+                                }
+                            },
+                            convertPicIdxTo255: function(e, t) {
+                                var r = 0,
+                                    n = 0;
+                                return this.features.ilda ? (r = 25 * e, n = 0, 0 != e && 1 != e || (n = 4 * t), 2 != e && 3 != e || (n = 6 * t), 5 != e && 6 != e || (n = 5 * t)) : (r = 25 * e, n = 0, 0 != e && 1 != e && 5 != e && 6 != e || (n = 5 * t), 2 != e && 3 != e || (n = 10 * t), 4 == e && (n = t <= 19 ? 5 * t : t >= 70 && t <= 77 ? 5 * (t - 70) + 120 : 20 == t ? 100 : 22 == t ? 105 : 24 == t ? 110 : 30 == t ? 115 : 160)), {
+                                    group: r,
+                                    idx: n
+                                }
+                            },
+                            chResetClick: function(e) {
+                                if (null != this.defaultPis) {
+                                    for (var t = 0; t < this.defaultPis.cnfValus.length; t++) this.$set(this.pisObj.cnfValus, t, this.defaultPis.cnfValus[t]);
+                                    this.refreshChDraw(), this.myCanvasDraw(), this.sendCmd()
+                                }
+                            },
+                            myCanvasClick: function(e) {
+                                this.popupShow = !0;
+                                var t = this.convertPic255ToIdx(this.pisObj.cnfValus[1], this.pisObj.cnfValus[0]);
+                                this.pisSelectedIdx = t.iidx, this.pisSelectedGroup = t.igroup, this.pisSelectedGroup >= this.pisObjArray.length && (this.pisSelectedGroup = 0, this.pisSelectedIdx = -1), this.showPisCanvas = this.checkIfShowPis(this.pisSelectedGroup), this.$refs.popup.open("bottom"), this.myCanvasClear();
+                                var r = this.getPicArray(),
+                                    n = r.picArray;
+                                this.doPisCanvasDraw(n)
+                            },
+                            sendTmpCmd: function(e, t) {
+                                var r = [];
+                                Object.assign(r, this.pisObj.cnfValus);
+                                var n = this.convertPicIdxTo255(e, t);
+                                r[0] = n.idx, r[1] = n.group;
+                                var h = {
+                                        playTime: this.pisObj.playTime,
+                                        cnfValus: r
+                                    },
+                                    a = i.getPisCmdStr(this.pisIdx, h, {
+                                        features: this.features
+                                    });
+                                c.gosend(!0, a)
+                            },
+                            imgClick: function(e) {
+                                this.pisSelectedIdx = e, this.sendTmpCmd(this.pisSelectedGroup, this.pisSelectedIdx)
+                            }
+                        }
+                    };
+                t.default = s
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+ 
 
         "handDrawGeometryUtils" : function(e, t, r) {
             (function(t) {

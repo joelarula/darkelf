@@ -66,10 +66,10 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     device.on().await;
 
 
-    test_playback_command(device).await;
-
     //test_on_off(device).await;
-    //test_settings(device).await;
+    test_settings(device).await;
+    //test_playback_command(device).await;
+
 
     Ok(())
 }
@@ -153,18 +153,43 @@ async fn test_settings(device: &mut LaserDevice) {
 
     let mut settings = device.get_setting();
     if let Some(ref mut settings) = settings {
+        
+        // Loop through possible xy values (example: 0..=10)
+        for xy in 0..=10 {
+            settings.xy = xy;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(20));
+        }
+
+         settings.xy = 0; // Reset to default
+         device.set_settings(settings.clone()).await;
+         sleep(Duration::from_millis(20));
+
+        // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
+        settings.light = 1; // mono
+        device.set_settings(settings.clone()).await;
+        sleep(Duration::from_secs(2));
+
+        settings.light = 3; // back to RGB
+        device.set_settings(settings.clone()).await;
+        sleep(Duration::from_millis(20))
+
         // Loop values[1] from 10 to 100
-        for v in 10..=100 {
+        for v in 10..=55 {
             settings.values[1] = v;
             device.set_settings(settings.clone()).await;
-            sleep(Duration::from_millis(50));
+            sleep(Duration::from_millis(20));
         }
+
         // Loop values[1] from 99 down to 50
-        for v in (50..100).rev() {
+        for v in (55..100).rev() {
             settings.values[1] = v;
             device.set_settings(settings.clone()).await;
-            sleep(Duration::from_millis(50));
+            sleep(Duration::from_millis(20));
         }
+
+
+    }
     }
 }
 
