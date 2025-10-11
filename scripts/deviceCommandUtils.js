@@ -76,6 +76,197 @@ function testGetQueryCmd(exportsObj) {
     console.error('getQueryCmd function not found in module exports.');
   }
 }
+
+function testFDrawCommand(exportsObj, handDrawGeometryUtils) {
+  console.log('\n=== Testing Drawing Command Functions ===');
+  
+  // Sample drawing points data (enhanced structure matching expected format)
+  const drawPoints = [
+    {
+      ps: [
+        [-170.45, 170.45, 0, 1],
+        [-102.27, 170.45, 7, 0],
+        [170.45, 170.45, 7, 1],
+        [170.45, -170.45, 4, 1],
+        [-170.45, -170.45, 5, 1],
+        [-170.45, 170.45, 6, 1]
+      ],
+      x0: 169.17,
+      y0: 156.62,
+      z: 0.474,
+      drawMode: 2,
+      ang: 0,
+      lineColor: 9,
+      // Add potentially missing properties
+      scale: 1.0,
+      opacity: 1.0,
+      width: 340.91,
+      height: 340.91
+    }
+  ];
+
+  const drawConfig = {
+    txPointTime: 55,
+    playTime: 0, // Add missing playTime property
+    cnfValus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+  };
+
+  const features = {
+    textStopTime: true,
+    textDecimalTime: true,
+    displayType: "00",
+    showOutDoorTips: false,
+    xyCnf: false,
+    arbPlay: false,
+    ilda: false,
+    ttlAn: false,
+    picsPlay: false,
+    textUpDown: false,
+    animationFix: false
+  };
+
+  // Test getDrawCmdStr function
+  if (typeof exportsObj.getDrawCmdStr === 'function') {
+    try {
+      const pointTime = "00"; // Fourth parameter for point timing
+      
+      // Use handDrawGeometryUtils.drawPs to properly flatten points like the real application
+      let flatPoints;
+      
+      if (handDrawGeometryUtils && typeof handDrawGeometryUtils.drawPs === 'function') {
+        console.log('✓ Using handDrawGeometryUtils.drawPs to flatten points');
+        
+        // Create a mock canvas context
+        const mockCanvasContext = {
+          clearRect: function() {},
+          setLineWidth: function() {},
+          setStrokeStyle: function() {},
+          setLineDash: function() {},
+          beginPath: function() {},
+          moveTo: function() {},
+          lineTo: function() {},
+          closePath: function() {},
+          stroke: function() {},
+          fill: function() {},
+          draw: function() {},
+          rect: function() {},
+          fillRect: function() {},
+          setFillStyle: function() {},
+          arc: function() {}
+        };
+        
+        // Create canvas draw config matching the real application structure
+        const canvasDrawConfig = {
+          ctx: mockCanvasContext, // Mock canvas context
+          w: 340.91,
+          h: 340.91,
+          draw_line_type: [20, 20], // Default line type from app
+          colorSeg: [
+            { 
+              color: [1, 2, 3, 4, 5, 6, 7], 
+              name: "Default Color Sequence" 
+            },
+            { 
+              color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4], 
+              name: "Test Pattern" 
+            }
+          ]
+        };
+        
+        // Create global colors array that the drawing functions expect
+        global.colors = ['black', 'red', 'green', 'blue', 'yellow', '#00FFFF', 'purple', 'white'];
+        
+        // Create selectLines entries for each drawing object
+        const selectLines = drawPoints.map((drawObj, index) => ({
+          sel: false,      // Selection flag
+          mx0: 0,          // Movement offset X
+          my0: 0,          // Movement offset Y  
+          color: null      // Override color
+        }));
+        
+        const selectionState = {
+          selectRect: { 
+            x0: 0, y0: 0, z: 1, ang: 0,
+            mx: 0, my: 0,
+            width: 0, height: 0, 
+            left: 0, top: 0,
+            lastAng: 0, startAng: 0
+          },
+          selectLines: selectLines,
+          selectMode: false
+        };
+        
+        // Call drawPs to get flattened points like the real app does
+        try {
+          flatPoints = handDrawGeometryUtils.drawPs(drawPoints, canvasDrawConfig, selectionState);
+          
+          if (Array.isArray(flatPoints) && flatPoints.length > 0) {
+            console.log('✓ drawPs processed successfully, returned', flatPoints.length, 'flattened points');
+            console.log('✓ First processed point:', JSON.stringify(flatPoints[0]));
+          } else {
+            console.log('✗ drawPs did not return a valid array, using fallback');
+            flatPoints = drawPoints[0].ps; // Fallback
+          }
+        } catch (drawPsError) {
+          console.error('Error calling drawPs:', drawPsError.message);
+          flatPoints = drawPoints[0].ps; // Fallback to manual extraction
+        }
+      } else {
+        console.log('! handDrawGeometryUtils.drawPs not available, using manual extraction');
+        flatPoints = drawPoints[0].ps; // Fallback to manual extraction
+        console.log('Debug - using flat points from ps array:', JSON.stringify(flatPoints.slice(0, 2), null, 2));
+      }
+      
+      if (flatPoints && flatPoints.length > 0) {
+        const drawCommand = exportsObj.getDrawCmdStr(flatPoints, drawConfig, features, pointTime);
+        console.log('✓ getDrawCmdStr result:', drawCommand);
+        console.log('  Command length:', drawCommand ? drawCommand.length : 'null');
+      } else {
+        console.log('✗ No valid flatPoints generated');
+      }
+    } catch (error) {
+      console.error('✗ Error in getDrawCmdStr:', error.message);
+    }
+  } else {
+    console.log('✗ getDrawCmdStr function not found');
+  }
+
+  // Test getDrawPointStr function
+  if (typeof exportsObj.getDrawPointStr === 'function') {
+    try {
+      const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
+      console.log('✓ getDrawPointStr result:', pointString);
+      console.log('  Point string length:', pointString ? pointString.length : 'null');
+    } catch (error) {
+      console.error('✗ Error in getDrawPointStr:', error.message);
+    }
+  } else {
+    console.log('✗ getDrawPointStr function not found');
+  }
+
+  // Test drawPointStrToCmd function
+  if (typeof exportsObj.drawPointStrToCmd === 'function') {
+    try {
+      // First get a point string to convert
+      if (typeof exportsObj.getDrawPointStr === 'function') {
+        const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
+        if (pointString) {
+          const cmdResult = exportsObj.drawPointStrToCmd(pointString, features);
+          console.log('✓ drawPointStrToCmd result:', cmdResult);
+          console.log('  Command result length:', cmdResult ? cmdResult.length : 'null');
+        }
+      } else {
+        console.log('! Cannot test drawPointStrToCmd without getDrawPointStr');
+      }
+    } catch (error) {
+      console.error('✗ Error in drawPointStrToCmd:', error.message);
+    }
+  } else {
+    console.log('✗ drawPointStrToCmd function not found');
+  }
+
+  console.log('=== Drawing Command Test Complete ===\n');
+}
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
@@ -106,10 +297,15 @@ if (!webpackJsonp || !Array.isArray(webpackJsonp) || webpackJsonp.length === 0) 
 }
 const modulesObj = webpackJsonp[webpackJsonp.length - 1][1];
 
-// Example: Call a function from a module
+// Debug: Check available modules
+console.log('Available modules:', Object.keys(modulesObj).filter(k => k.includes('handDraw') || k.includes('deviceCommand')));
 
 const moduleName = "deviceCommandUtils "; // Note the space if present in the bundle
 const targetModule = modulesObj[moduleName];
+
+// Also load handDrawGeometryUtils for drawPs function
+const handDrawGeometryUtilsName = "handDrawGeometryUtils"; // No trailing space
+const handDrawGeometryUtilsModule = modulesObj[handDrawGeometryUtilsName];
 
 // Dependency resolver for webpack modules
 function dependencyResolver(name) {
@@ -123,13 +319,56 @@ function dependencyResolver(name) {
   if (name === "enhancedConsoleLogger") {
     return { default: console };
   }
-  throw new Error("Unknown dependency: " + name);
+  if (name === "spreadToArrayHelper") {
+    // Fallback implementation for spreadToArrayHelper
+    return function(arr, count) {
+      if (Array.isArray(arr)) {
+        return count ? arr.slice(0, count) : arr;
+      }
+      return [];
+    };
+  }
+  
+  // Try to load from webpack modules
+  if (modulesObj && modulesObj[name]) {
+    const targetModule = modulesObj[name];
+    if (typeof targetModule === 'function') {
+      const fakeExports = {};
+      const fakeModule = { exports: fakeExports };
+      try {
+        targetModule(fakeExports, fakeModule, dependencyResolver, dependencyResolver);
+        return fakeModule.exports.exports || fakeModule.exports;
+      } catch (e) {
+        console.warn('Failed to load webpack module:', name, e.message);
+        return {};
+      }
+    }
+  }
+  
+  // Return stub for unknown dependencies
+  console.warn('Unknown dependency, returning stub:', name);
+  return {};
 }
 
 // For direct execution/testing:
 if (targetModule && typeof targetModule === 'function') {
   const fakeExports = {};
   const fakeModule = { exports: fakeExports };
+  
+  // Setup handDrawGeometryUtils
+  let handDrawGeometryUtils = null;
+  if (handDrawGeometryUtilsModule && typeof handDrawGeometryUtilsModule === 'function') {
+    const handDrawFakeExports = {};
+    const handDrawFakeModule = { exports: handDrawFakeExports };
+    try {
+      handDrawGeometryUtilsModule(handDrawFakeExports, handDrawFakeModule, dependencyResolver, dependencyResolver);
+      handDrawGeometryUtils = handDrawFakeModule.exports.exports || handDrawFakeModule.exports;
+      console.log('HandDrawGeometryUtils loaded, keys:', Object.keys(handDrawGeometryUtils));
+    } catch (err) {
+      console.error('Error loading handDrawGeometryUtils:', err);
+    }
+  }
+  
   try {
     // Pass arguments in correct order: exports, module, dependencyResolver, dependencyResolver
     targetModule(fakeExports, fakeModule, dependencyResolver, dependencyResolver);
@@ -139,6 +378,7 @@ if (targetModule && typeof targetModule === 'function') {
 
     testGetQueryCmd(exported);
     testShowCmd(exported);
+    testFDrawCommand(exported, handDrawGeometryUtils);
 
   } catch (err) {
     console.error('Error calling module function:', err);

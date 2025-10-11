@@ -4,21 +4,36 @@ Here is a breakdown of what the format tells us, and why it's not a standard for
 
 Key Deductions and Format Type
 Property	Interpretation	Similarity to Standard Formats
+
 drawPoints Array	This is the main Drawing Database or Scene Graph.	Common in all vector formats (SVG <g> groups, DXF sections).
-drawMode Number	This is a Primitive Type Identifier. It defines what is being drawn (e.g., polyline, text, object).	This is the core difference from generic SVG, which uses tag names (<path>, <text>). It's more like a low-level API or a CAD/GIS format (like DXF's Entity types).
+
+drawMode Number	This is a Primitive Type Identifier. It defines what is being drawn (e.g., polyline, text, object).	
+This is the core difference from generic SVG, which uses tag names (<path>, <text>). It's more like a low-level API or a CAD/GIS format (like DXF's Entity types).
+
 ps (Points Data)	This is the Geometry Data itself. The fact that its structure is context-dependent (drawMode determines ps format) is typical of efficient, application-specific rendering engines.	Equivalent to the d attribute in an SVG <path> or the coordinate list in a DXF LINE or POLYLINE.
+
 x0, y0 (Origin)	This defines a Local Transformation Origin or position.	Equivalent to an object's translate(x, y) transform in SVG, or the insertion point in a CAD block.
+
 z (Scale)	This is a Scale Factor.	Equivalent to the scale() transform in SVG.
 ang (Rotation)	This is a Rotation Angle.	Equivalent to the rotate() transform in SVG.
+
 lineColor	This is a Styling/Attribute Property.	Equivalent to an SVG stroke or a DXF COLOR index.
 
 The drawPoints format is designed to be compatible with canvas drawing because each object contains all the necessary geometric and style information required for rendering on a canvas. Here’s how the compatibility works:
 
+
 Geometry: The ps property holds the point data (coordinates or grouped points) that define the shape, polyline, or text outline. These can be directly used with canvas drawing commands like moveTo, lineTo, and arc.
+
 Positioning: The x0 and y0 properties specify the origin or reference point, allowing the drawing to be placed accurately on the canvas.
+
 Scaling and Rotation: The z (scale) and ang (angle) properties enable transformations such as resizing and rotating, which are supported by canvas context methods (scale, rotate, or manual coordinate transformation).
+
 Styling: The lineColor property provides the color index, which is mapped to actual color values for stroke and fill styles on the canvas.
-The module uses these properties to construct drawing instructions for the canvas context, applying transformations and styles as needed. Functions like drawObj, drawText, and drawLine extract the relevant data from each drawPoints object and issue the appropriate canvas API calls, ensuring seamless rendering of complex shapes, polylines, and text.
+
+The module uses these properties to construct drawing instructions for the canvas context, applying transformations and styles as needed. 
+
+Functions like drawObj, drawText, and drawLine extract the relevant data from each drawPoints object and issue the appropriate canvas API 
+calls, ensuring seamless rendering of complex shapes, polylines, and text.
 
 
                                 //  drawMode: Number,
@@ -30,7 +45,7 @@ The module uses these properties to construct drawing instructions for the canva
                                 //  lineColor: Number // Color index
 
 
-
+--
 Yes, there is a strong conceptual resemblance between your custom drawPoints format and the structure of the ILDA Image Data Transfer Format (IDTF), though they are designed for completely different output devices (HTML5 Canvas vs. Laser Projectors).
 
 The key resemblance lies in their shared philosophy of being a direct instruction set for a rendering machine.
@@ -88,3 +103,26 @@ xys = [
 ]
 
 This structure allows the application to store and process the geometric outline of each text group for rendering, animation, and device command generation.
+
+
+The dealObjLines function processes an array of polyline points, transforming and filtering them to produce a new set of points suitable for further drawing or analysis. It first calculates the bounding box of all points by iterating through the array and updating the minimum and maximum x and y values. This bounding box is used to compute a center offset (s for x, l for y), which is then applied to each point to center the shape.
+
+The function supports an optional filtering mode, controlled by the second argument (t). If filtering is enabled, it checks the angle between consecutive segments using the calculateAngleBetweenPoints_B function. Points are skipped if the angle is too sharp (greater than or equal to 166 degrees or exactly 0), or if the segment is too short and not marked as a corner. This helps remove redundant or insignificant points, smoothing the polyline.
+
+For each valid point, the function adds the center offset to its coordinates and copies its attributes, then appends it to the result array. The previous point is tracked for angle calculations. The final output is a new array of transformed and filtered polyline points, centered and cleaned up for rendering or further processing.
+
+A subtle aspect is the use of bounding box centering and angle-based filtering, which can help improve the appearance and usability of drawn shapes, especially in applications like handwriting or vector graphics.
+
+
+The property obj is assigned in two main ways:
+
+Default Value: In the component's data object, obj is initialized with a default array of four points.
+Shape Selection: When the user selects a shape (for example, by clicking a button), the btnDrawChange method assigns obj to the result of textLineVectorizer.dealObjLines(picArray[tag], !1), where picArray[tag] is a shape definition from the global picArrayShapes object.
+Conversion to drawPoints:
+
+In the dealTouchEnd method, when a drawing action is completed, the code checks the current drawMode.
+If the mode is not text (9999), it sets up drawing parameters, assigns obj to objParm.ps, and calls handDrawGeometryUtils.drawObj.
+Then, it pushes objParm (which now contains the processed obj data) into the drawPoints array.
+Summary:
+obj is assigned either as a default shape or from a selected shape processed by dealObjLines. It is converted to a drawPoints entry when a drawing action is finalized, by packaging it into objParm and pushing it into the drawPoints array for rendering and further manipulation.
+

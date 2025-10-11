@@ -3637,7 +3637,7 @@ globalThis["webpackJsonp"].push([
                         }
                     },
                     dealObjLines: function(polylinePoints) {
-                        for (var t = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], r = 20, n = [], h = [], a = {
+                        for (var filtering = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], r = 20, n = [], h = [], a = {
                                 left: 99999,
                                 top: -99999,
                                 right: -99999,
@@ -3649,7 +3649,7 @@ globalThis["webpackJsonp"].push([
                         for (var s = (a.right - a.left) / 2 + a.left, l = (a.top - a.bottom) / 2 - a.top, p = 0; p < polylinePoints.length; p++) {
                             var d = polylinePoints[p],
                                 b = d[3];
-                            if (t && 0 != h.length && 0 != d[2] && p < polylinePoints.length - 1) {
+                            if (filtering && 0 != h.length && 0 != d[2] && p < polylinePoints.length - 1) {
                                 var g = polylinePoints[p + 1];
                                 if (0 != g[2]) {
                                     var x = calculateAngleBetweenPoints_B(h, d, g);
@@ -4256,17 +4256,28 @@ globalThis["webpackJsonp"].push([
                             },
                             btnDrawChange: function(e) {
                                 this.resetSelectMode();
-                                var t = e.currentTarget.dataset.tag;
-                                if (9999 == t && this.textToLeft && (this.textToLeft = !1, this.refreshTextPoints(0)), 9998 == t && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), t = 9999), t >= 0 && t < 9999) {
-                                    var n = r("picArrayShapes"),
-                                        h = n.picArray;
-                                    this.obj = textLineVectorizer.dealObjLines(h[t], !1)
+                                var tag = e.currentTarget.dataset.tag;
+                                if (9999 == tag 
+                                        && this.textToLeft 
+                                            && (this.textToLeft = !1, this.refreshTextPoints(0)), 
+                                                9998 == tag 
+                                                    && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), tag = 9999), 
+                                                        tag >= 0 && tag < 9999) {
+                                    var picArrayShapes = r("picArrayShapes"),
+                                        picArray = picArrayShapes.picArray;
+                                    this.obj = textLineVectorizer.dealObjLines(picArray[tag], !1)
                                 }
-                                this.drawMode = t
+                                this.drawMode = tag
                             },
                             getCurrentPointCount: function() {
                                 return -1 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.points, !0) : 9999 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.xxyy) : handDrawGeometryUtils.getPointCount(this.drawMode, this.obj)
                             },
+//                          1: Freehand drawing mode (user draws lines or shapes manually)
+//9999: Text drawing mode (drawing vectorized text or handwriting)
+//9998: Text drawing mode, right-to-left (used for RTL text, toggled in btnDrawChange)
+//8888, 8887: Special selection or editing modes (used for selection rectangles or editing, seen in dealTouchEnd)
+//0 and positive integers less than 9999: Predefined geometric shapes or patterns (selected from picArrayShapes, e.g., rectangles, circles, custom shapes)
+//2: Likely a specific shape or object drawing mode (used in drawObj)
                             dealTouchEnd: function() {
                                 if (-1 == this.drawMode) this.points = fontGeometryUtils.dealLine(this.points, !1);
                                 else if (Math.abs(this.subCanvasStartPoint.x - this.subCanvasEndPoint.x) < 20 && 8888 != this.drawMode && Math.abs(this.subCanvasStartPoint.y - this.subCanvasEndPoint.y) < 20) return !1;
@@ -4275,9 +4286,9 @@ globalThis["webpackJsonp"].push([
                                 if (this.drawPointCount + e > 800) return app.globalData.showModalTips(this.$t("\u8d85\u51fa\u6700\u5927\u70b9\u6570") + 800 + "\uff0c" + this.$t("\u8d85\u51fa\u90e8\u5206\u5c06\u4e22\u5931"), !1), !1;
                                 if (this.drawPointCount = this.drawPointCount + e, -1 == this.drawMode) return this.touchEnd(null), !0;
                                 this.addToHis();
-                                var t = uni.createCanvasContext("drawCanvas", this),
-                                    r = (this.objParm.x0, this.objParm.y0, this.objParm.z, this.objParm.ang, this.lineColor, {
-                                        ctx: t,
+                                var canvasContext = uni.createCanvasContext("drawCanvas", this),
+                                    drawConfig  = (this.objParm.x0, this.objParm.y0, this.objParm.z, this.objParm.ang, this.lineColor, {
+                                        ctx: canvasContext,
                                         w: this.drawCanvas.w,
                                         h: this.drawCanvas.h,
                                         draw_line_type: j,
@@ -4286,26 +4297,27 @@ globalThis["webpackJsonp"].push([
                                 return this.objParm.lineColor = this.lineColor, 
                                  9999 == this.drawMode 
                                     ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy, 
-                                        handDrawGeometryUtils.drawText(r, this.objParm),
+                                        handDrawGeometryUtils.drawText(drawConfig , this.objParm),
                                         this.drawPoints.push(this.objParm)) 
-                                        : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, handDrawGeometryUtils.drawObj(r, this.objParm), 
-                                            this.drawPoints.push(this.objParm)), t.draw(!0), !0
+                                        : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, 
+                                            handDrawGeometryUtils.drawObj(drawConfig , this.objParm), 
+                                            this.drawPoints.push(this.objParm)), canvasContext.draw(!0), !0
                             },
                             addToHis: function() {
                                 if (!(this.drawPoints.length <= 0)) {
-                                    for (var e = [], t = 0; t < this.drawPoints.length; t++) {
-                                        var r = this.drawPoints[t];
-                                        e.push({
-                                            drawMode: r.drawMode,
-                                            ps: r.ps,
-                                            x0: r.x0,
-                                            y0: r.y0,
-                                            z: r.z,
-                                            ang: r.ang,
-                                            lineColor: r.lineColor
+                                    for (var drawPointsHistory = [], index = 0; index < this.drawPoints.length; index++) {
+                                        var drawPoint = this.drawPoints[index];
+                                        drawPointsHistory.push({
+                                            drawMode: drawPoint.drawMode,
+                                            ps: drawPoint.ps,
+                                            x0: drawPoint.x0,
+                                            y0: drawPoint.y0,
+                                            z: drawPoint.z,
+                                            ang: drawPoint.ang,
+                                            lineColor: drawPoint.lineColor
                                         })
                                     }
-                                    handDrawFileManager.pushDrawPointsHis(e)
+                                    handDrawFileManager.pushDrawPointsHis(drawPointsHistory)
                                 }
                             },
                             setCanvasSub: function() {
@@ -4587,20 +4599,20 @@ globalThis["webpackJsonp"].push([
                             reDraw: function(points) {
                                 var canvasContext = uni.createCanvasContext("drawCanvas", this);
                                 canvasContext.setLineWidth(1);
-                                var r = {
+                                var drawConfig = {
                                         ctx: canvasContext,
                                         w: this.drawCanvas.w,
                                         h: this.drawCanvas.h,
                                         draw_line_type: j,
                                         colorSeg: this.colorSeg
                                     },
-                                    n = {
+                                    selectionState = {
                                         selectRect: this.selectRect,
                                         selectLines: this.selectLines,
                                         selectMode: this.selectMode
                                     },
-                                    h = handDrawGeometryUtils.drawPs(points, r, n);
-                                return canvasContext.draw(!0), this.selectMode || this.setCanvasSub(), h
+                                    drawResults = handDrawGeometryUtils.drawPs(points, drawConfig, selectionState);
+                                return canvasContext.draw(!0), this.selectMode || this.setCanvasSub(), drawResults
                             },
                             btnColorChange: function(e) {
                                 var t = parseInt(e.currentTarget.dataset.tag);
@@ -6324,22 +6336,22 @@ globalThis["webpackJsonp"].push([
                     drawText: drawTransformedText,
                     drawObj: drawTransformedObject,
                     drawLine: drawAllTransformedPolylines,
-                    drawPs: function(e, t, r) {
+                    drawPs: function(objectsToDraw , drawConfig , selectionState ) {
                         var n = [],
-                            h = t.ctx;
-                        h.clearRect(0, 0, t.w, t.h);
-                        for (var a = [], i = 0; i < e.length; i++) {
-                            var o = e[i],
+                            drawContext = drawConfig .ctx;
+                        drawContext.clearRect(0, 0, drawConfig .w, drawConfig .h);
+                        for (var a = [], i = 0; i < objectsToDraw .length; i++) {
+                            var o = objectsToDraw [i],
                                 s = !1;
-                            if (r && (s = r.selectLines.length > i && r.selectLines[i].sel & r.selectMode, s && null != r.selectRect)) {
-                                var l = r.selectRect.lastAng - r.selectRect.startAng;
-                                1 != r.selectRect.z ? (r.selectLines[i].mx0 = r.selectLines[i].mx0 * r.selectRect.z, r.selectLines[i].my0 = r.selectLines[i].my0 * r.selectRect.z, o.x0 = r.selectLines[i].mx0 + r.selectRect.x0, o.y0 = r.selectLines[i].my0 + r.selectRect.y0, l = r.selectRect.lastAng - r.selectRect.startAng + r.selectRect.ang, o.z = o.z * r.selectRect.z) : (o.x0 = o.x0 + r.selectRect.mx + r.selectRect.width * (r.selectRect.z - 1) * .5, o.y0 = o.y0 + r.selectRect.my + r.selectRect.height * (r.selectRect.z - 1) * .5), null != r.selectLines[i].color && (o.lineColor = r.selectLines[i].color);
-                                var p = rotatePointAroundCenter(l, r.selectRect.x0, r.selectRect.y0, o.x0, o.y0);
-                                o.x0 = p.x, o.y0 = p.y, o.ang = r.selectRect.lastAng - r.selectRect.startAng + o.ang
+                            if (selectionState  && (s = selectionState .selectLines.length > i && selectionState .selectLines[i].sel & selectionState .selectMode, s && null != selectionState .selectRect)) {
+                                var l = selectionState .selectRect.lastAng - selectionState .selectRect.startAng;
+                                1 != selectionState .selectRect.z ? (selectionState .selectLines[i].mx0 = selectionState .selectLines[i].mx0 * selectionState .selectRect.z, selectionState .selectLines[i].my0 = selectionState .selectLines[i].my0 * selectionState .selectRect.z, o.x0 = selectionState .selectLines[i].mx0 + selectionState .selectRect.x0, o.y0 = selectionState .selectLines[i].my0 + selectionState .selectRect.y0, l = selectionState .selectRect.lastAng - selectionState .selectRect.startAng + selectionState .selectRect.ang, o.z = o.z * selectionState .selectRect.z) : (o.x0 = o.x0 + selectionState .selectRect.mx + selectionState .selectRect.width * (selectionState .selectRect.z - 1) * .5, o.y0 = o.y0 + selectionState .selectRect.my + selectionState .selectRect.height * (selectionState .selectRect.z - 1) * .5), null != selectionState .selectLines[i].color && (o.lineColor = selectionState .selectLines[i].color);
+                                var p = rotatePointAroundCenter(l, selectionState .selectRect.x0, selectionState .selectRect.y0, o.x0, o.y0);
+                                o.x0 = p.x, o.y0 = p.y, o.ang = selectionState .selectRect.lastAng - selectionState .selectRect.startAng + o.ang
                             }
-                            a = -1 == o.drawMode ? drawAllTransformedPolylines(t, o, !0, s) : 9999 == o.drawMode ? drawTransformedText(t, o, !0, s) : drawTransformedObject(t, o, !0, s), n = n.concat(a)
+                            a = -1 == o.drawMode ? drawAllTransformedPolylines(drawConfig , o, !0, s) : 9999 == o.drawMode ? drawTransformedText(drawConfig , o, !0, s) : drawTransformedObject(drawConfig , o, !0, s), n = n.concat(a)
                         }
-                        return r && null != r.selectRect && (r.selectRect.left = r.selectRect.left + r.selectRect.mx, r.selectRect.top = r.selectRect.top + r.selectRect.my, r.selectRect.width = r.selectRect.width * r.selectRect.z, r.selectRect.height = r.selectRect.height * r.selectRect.z, r.selectRect.z = 1, r.selectRect.mx = 0, r.selectRect.my = 0), n
+                        return selectionState  && null != selectionState .selectRect && (selectionState .selectRect.left = selectionState .selectRect.left + selectionState .selectRect.mx, selectionState .selectRect.top = selectionState .selectRect.top + selectionState .selectRect.my, selectionState .selectRect.width = selectionState .selectRect.width * selectionState .selectRect.z, selectionState .selectRect.height = selectionState .selectRect.height * selectionState .selectRect.z, selectionState .selectRect.z = 1, selectionState .selectRect.mx = 0, selectionState .selectRect.my = 0), n
                     },
                     getdrawPointsCnt: function(e) {
                         for (var t = 0, r = 0; r < e.length; r++) t += getPointCount(e[r].drawMode, e[r].ps);
@@ -6360,7 +6372,477 @@ globalThis["webpackJsonp"].push([
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
- 
+
+        
+        "handDrawFileManager": function(t, r, n) {
+            (function(r) {
+                var spreadToArrayHelper = n("spreadToArrayHelper");
+
+                function createIterator(e, t) {
+                    var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
+                    if (!r) {
+                        if (Array.isArray(e) || (r = function(e, t) {
+                                if (!e) return;
+                                if ("string" === typeof e) return i(e, t);
+                                var r = Object.prototype.toString.call(e).slice(8, -1);
+                                "Object" === r && e.constructor && (r = e.constructor.name);
+                                if ("Map" === r || "Set" === r) return Array.from(e);
+                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return i(e, t)
+                            }(e)) || t && e && "number" === typeof e.length) {
+                            r && (e = r);
+                            var n = 0,
+                                h = function() {};
+                            return {
+                                s: h,
+                                n: function() {
+                                    return n >= e.length ? {
+                                        done: !0
+                                    } : {
+                                        done: !1,
+                                        value: e[n++]
+                                    }
+                                },
+                                e: function(e) {
+                                    throw e
+                                },
+                                f: h
+                            }
+                        }
+                        throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
+                    }
+                    var a, c = !0,
+                        o = !1;
+                    return {
+                        s: function() {
+                            r = r.call(e)
+                        },
+                        n: function() {
+                            var e = r.next();
+                            return c = e.done, e
+                        },
+                        e: function(e) {
+                            o = !0, a = e
+                        },
+                        f: function() {
+                            try {
+                                c || null == r.return || r.return()
+                            } finally {
+                                if (o) throw a
+                            }
+                        }
+                    }
+                }
+
+                function i(e, t) {
+                    (null == t || t > e.length) && (t = e.length);
+                    for (var r = 0, n = new Array(t); r < t; r++) n[r] = e[r];
+                    return n
+                }
+                var c = "handdrawtag_",
+                    o = ["ALL", "Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6", "Group 7", "Group 8", "Group 9", "Group 10"],
+                    s = 0;
+
+                function l(e) {
+                    for (var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2, r = e + "", n = 0; n < t; n++) {
+                        if (r.length >= t) break;
+                        r = "0" + r
+                    }
+                    return r
+                }
+
+                function p(e) {
+                    var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                    return d(c, e, t)
+                }
+
+                function d(t, n) {
+                    var h = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+                    try {
+                        h || (n = t + n), n = n.toLowerCase();
+                        var a = uni.getStorageSync(n);
+                        return a
+                    } catch (e) {
+                        r("log", "getFromFile fail:", JSON.stringify(e), " at utils/funCtrl.js:187")
+                    }
+                    return null
+                }
+
+                function b(t, n, h) {
+                    var a = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        i = V(t);
+                    a || (n = t + n), n = n.toLowerCase();
+                    var c = i.indexOf(n); - 1 == c && i.unshift(n);
+                    try {
+                        var o = x(t, i);
+                        return !!o && (uni.setStorageSync(n, h), !0)
+                    } catch (e) {
+                        r("log", "saveToFile fail:", JSON.stringify(e), " at utils/funCtrl.js:204")
+                    }
+                    return !1
+                }
+
+                function g(t, n, h) {
+                    var a = arguments.length > 3 && void 0 !== arguments[3] && arguments[3];
+                    try {
+                        var i = d(t, n, a);
+                        return null == i || !j(t, n, a) || b(t, h, i, a)
+                    } catch (e) {
+                        r("log", "reNameFile fail:", JSON.stringify(e), " at utils/funCtrl.js:216")
+                    }
+                    return !1
+                }
+
+                function j(t, n) {
+                    var h = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+                    try {
+                        var a = !0;
+                        r("log", "fileTag, fileName", t, n, " at utils/funCtrl.js:224"), h || (n = t + n), n = n.toLowerCase(), uni.removeStorageSync(n);
+                        var i = V(t),
+                            c = i.indexOf(n);
+                        return -1 != c && (i.splice(c, 1), a = x(t, i)), a
+                    } catch (e) {
+                        r("log", "deleteFile fail:", JSON.stringify(e), " at utils/funCtrl.js:236")
+                    }
+                    return !1
+                }
+
+                function x(t, n) {
+                    try {
+                        var h = "fileTag_" + t;
+                        return uni.setStorageSync(h, n), !0
+                    } catch (e) {
+                        r("log", "setSaveFilenames fail:", JSON.stringify(e), " at utils/funCtrl.js:247")
+                    }
+                    return !1
+                }
+
+                function V(t) {
+                    var n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                    try {
+                        var h = "fileTag_" + t,
+                            i = uni.getStorageSync(h);
+                        if (r("log", "getSaveFileNames", h, i, " at utils/funCtrl.js:256"), i) {
+                            if (n) {
+                                var c, o = [],
+                                    s = createIterator(i);
+                                try {
+                                    for (s.s(); !(c = s.n()).done;) {
+                                        var l = c.value;
+                                        0 == l.indexOf(t) && o.push(l.replace(t, ""))
+                                    }
+                                } catch (p) {
+                                    s.e(p)
+                                } finally {
+                                    s.f()
+                                }
+                                return o
+                            }
+                            return i
+                        }
+                    } catch (e) {
+                        r("log", "getSaveFileNames fail:", JSON.stringify(e), " at utils/funCtrl.js:270")
+                    }
+                    return []
+                }
+
+                function f(e) {
+                    var t = e.split("_split_tag_"),
+                        r = {
+                            name: "",
+                            class: ""
+                        };
+                    return 2 == t.length ? (r["name"] = t[0], r["class"] = t[1]) : r["name"] = t[0], r
+                }
+
+                function F(e) {
+                    var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                    return d("playlistfiletag_", e, t)
+                }
+
+                function k() {
+                    var e = V("playlistfiletag_", !0),
+                        t = {
+                            fileNames: e,
+                            noSpace: !1,
+                            count: e.length
+                        };
+                    return t
+                }
+                t.exports = {
+                    handDrawClassFix: ["__ALL__", "__1__", "__2__", "__3__", "__4__", "__5__", "__6__", "__7__", "__8__", "__9__", "__10__"],
+                    savePlayListFileData: function(e, t) {
+                        var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+                            n = {
+                                data: t
+                            };
+                        return b("playlistfiletag_", e, n, r)
+                    },
+                    getPlayListFileData: F,
+                    getPlayListFileNames: k,
+                    getNewPlayListName: function() {
+                        var e = new Date,
+                            t = e.getFullYear(),
+                            r = e.getMonth() + 1,
+                            n = e.getDate(),
+                            h = "list_" + l(t) + l(r) + l(n) + "_",
+                            a = 0;
+                        while (1) {
+                            a++;
+                            var i = h + ("00" + a).slice(-2);
+                            if (value = uni.getStorageSync("playlistfiletag_" + i), !value) return i
+                        }
+                        return h
+                    },
+                    deletePlayList: function(e) {
+                        return j("playlistfiletag_", e)
+                    },
+                    getIncludePlayList: function(e) {
+                        var t = k();
+                        r("log", "rs", JSON.stringify(t), " at utils/funCtrl.js:397");
+                        var n, h = t.fileNames,
+                            i = [],
+                            c = createIterator(h);
+                        try {
+                            for (c.s(); !(n = c.n()).done;) {
+                                var o = n.value,
+                                    s = F(o);
+                                if (s) {
+                                    var l, p = createIterator(s.data);
+                                    try {
+                                        for (p.s(); !(l = p.n()).done;) {
+                                            var d = l.value;
+                                            if (d.fileName == e) {
+                                                i.push(o);
+                                                break
+                                            }
+                                        }
+                                    } catch (b) {
+                                        p.e(b)
+                                    } finally {
+                                        p.f()
+                                    }
+                                }
+                            }
+                        } catch (b) {
+                            c.e(b)
+                        } finally {
+                            c.f()
+                        }
+                        return i
+                    },
+                    drawPointsHisCount: s,
+                    getFileClass: function(e) {
+                        var t, r = [],
+                            n = createIterator(e);
+                        try {
+                            for (n.s(); !(t = n.n()).done;) {
+                                var h = t.value,
+                                    i = f(h),
+                                    c = i.class;
+                                "" != c && -1 == r.indexOf(c) && r.push(c)
+                            }
+                        } catch (o) {
+                            n.e(o)
+                        } finally {
+                            n.f()
+                        }
+                        return r.sort((function(e, t) {
+                            return t.localeCompare(e)
+                        })), r.unshift("__ALL__"), r
+                    },
+                    splitFileClass: f,
+                    combiFileName: function(e, t) {
+                        return "__ALL__" == e ? t : t + "_split_tag_" + e
+                    },
+                    getDrawPointsHisCount: function() {
+                        return s
+                    },
+                    updateHandDrawImgPlayTime: function(e, t) {
+                        var r = p(e);
+                        r.pisObj.cnfValus[12] = t, b(c, e, r, !1)
+                    },
+                    fileClassSplitTag: "_split_tag_",
+                    handDrawTag: c,
+                    getTextFileNames: function() {
+                        var e = V("textfiletag_", !0),
+                            t = {
+                                fileNames: e,
+                                noSpace: !1,
+                                count: e.length
+                            };
+                        return t
+                    },
+                    getTextFileData: function(e) {
+                        var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                        return d("textfiletag_", e, t)
+                    },
+                    separateValueAndUnit: function(e) {
+                        var t = {
+                                value: null,
+                                unit: null
+                            },
+                            r = e.match(/^(\d+)([a-zA-Z]+)?/);
+                        return r && (t.value = parseInt(r[1]), t.unit = r[2] || ""), t
+                    },
+                    reNameHandDrawImg: function(e, t) {
+                        return g(c, e, t)
+                    },
+                    pushDrawPointsHis: function(e) {
+                        r("log", "pushDrawPointsHis", e, " at utils/funCtrl.js:276");
+                        var t = "drawpointshistag_" + s,
+                            n = {
+                                data: e,
+                                idx: s
+                            };
+                        r("log", "fileKey", t, " at utils/funCtrl.js:280"), uni.setStorageSync(t.toLowerCase(), n), s += 1
+                    },
+                    lineCross: function(e, t) {
+                        function r(e, t, r, n) {
+                            var h = (r[1] - e[1]) * (e[0] - t[0]) - (r[0] - e[0]) * (e[1] - t[1]),
+                                a = (n[1] - e[1]) * (e[0] - t[0]) - (n[0] - e[0]) * (e[1] - t[1]);
+                            return !(h * a > 0)
+                        }
+                        var n = spreadToArrayHelper(e, 2),
+                            a = n[0],
+                            i = n[1],
+                            c = spreadToArrayHelper(t, 2),
+                            o = c[0],
+                            s = c[1];
+                        return !!r(a, i, o, s) && !!r(o, s, a, i)
+                    },
+                    deleteHandDrawImg: function(e) {
+                        return j(c, e)
+                    },
+                    saveTextFileData: function(e, t, r) {
+                        var n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                            h = {
+                                data: t,
+                                dataSize: r
+                            };
+                        return b("textfiletag_", e, h, n)
+                    },
+                    getDistance: function(e) {
+                        var t = e[1].x - e[0].x,
+                            r = e[1].y - e[0].y;
+                        return Math.sqrt(t * t + r * r)
+                    },
+                    getHandDrawImg: p,
+                    deleteTextFileData: function(e) {
+                        return j("textfiletag_", e)
+                    },
+                    getNewFileName: function() {
+                        var e = !(arguments.length > 0 && void 0 !== arguments[0]) || arguments[0],
+                            t = new Date,
+                            r = t.getFullYear(),
+                            n = t.getMonth() + 1,
+                            h = t.getDate(),
+                            a = "file_" + l(r) + l(n) + l(h) + "_",
+                            i = "textfiletag_";
+                        e && (i = c);
+                        var o = 0;
+                        while (1) {
+                            o++;
+                            var s = a + ("00" + o).slice(-2);
+                            if (value = uni.getStorageSync(i + s), !value) return s
+                        }
+                        return a
+                    },
+                    isImgFileExist: function(e, t) {
+                        if (!e) return r("log", "isImgFileExist picPath=", e, " at utils/funCtrl.js:88"), void t(!1);
+                        uni.getImageInfo({
+                            src: e,
+                            success: function(e) {
+                                t(!0)
+                            },
+                            fail: function(e) {
+                                t(!1)
+                            }
+                        })
+                    },
+                    reNameTextFile: function(e, t) {
+                        return g("textfiletag_", e, t)
+                    },
+                    popDrawPointsHis: function() {
+                        s--;
+                        var t = "drawpointshistag_" + s;
+                        r("log", "popDrawPointsHis", t, " at utils/funCtrl.js:288");
+                        var n = uni.getStorageSync(t);
+                        try {
+                            uni.removeStorageSync(t)
+                        } catch (e) {}
+                        return n
+                    },
+                    saveHandDrawImg: function(e, t, r, n, h, a) {
+                        var i = arguments.length > 6 && void 0 !== arguments[6] && arguments[6],
+                            o = {
+                                picPath: t,
+                                drawPoints: r,
+                                pointCnt: n,
+                                pisObj: h,
+                                features: a
+                            };
+                        return b(c, e, o, i)
+                    },
+                    getHandDrawNames: function() {
+                        var e = V(c, !0),
+                            t = {
+                                fileNames: e,
+                                noSpace: !1,
+                                count: e.length
+                            };
+                        return t
+                    },
+                    clearDrawPointsHis: function() {
+                        try {
+                            s = 0;
+                            var t = V("drawpointshistag_");
+                            if (t) {
+                                var n, h = createIterator(t);
+                                try {
+                                    for (h.s(); !(n = h.n()).done;) {
+                                        var i = n.value;
+                                        try {
+                                            uni.removeStorageSync(i)
+                                        } catch (e) {
+                                            r("log", "delete fail:", JSON.stringify(e), " at utils/funCtrl.js:166")
+                                        }
+                                    }
+                                } catch (c) {
+                                    h.e(c)
+                                } finally {
+                                    h.f()
+                                }
+                                return uni.removeStorageSync("fileTag_drawpointshistag_"), !0
+                            }
+                            return !1
+                        } catch (e) {
+                            r("log", "clearDrawPointsHis fail:", JSON.stringify(e), " at utils/funCtrl.js:175")
+                        }
+                        return !1
+                    },
+                    saveHandDrawClassName: function(t) {
+                        try {
+                            return uni.setStorageSync("handDrawFileClassTag_", t), !0
+                        } catch (e) {
+                            r("log", "saveHandDrawClassName fail:", JSON.stringify(e), " at utils/funCtrl.js:339")
+                        }
+                        return !1
+                    },
+                    getHandDrawClassName: function() {
+                        var t = [];
+                        try {
+                            t = uni.getStorageSync("handDrawFileClassTag_")
+                        } catch (e) {
+                            r("log", "getHandDrawClassName fail:", JSON.stringify(e), " at utils/funCtrl.js:349")
+                        }
+                        t || (t = []);
+                        for (var n = t.length; n < o.length; n++) t.push(o[n]);
+                        return t
+                    }
+                }
+            }).call(this, n("enhancedConsoleLogger")["default"])
+        },
+  
 
 
         "arrayToArrayLikeHelper": function(e, t, r) {
