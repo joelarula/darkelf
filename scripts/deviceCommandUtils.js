@@ -1,13 +1,13 @@
 // deviceCommandUtils.js - refactored to match webpack module pattern
 
-module.exports = function(exports, require, module, dependencyResolver) {
+module.exports = function (exports, require, module, dependencyResolver) {
   // Dependency resolution
   var arrayConversionHelper = dependencyResolver('arrayConversionHelper');
   var enhancedConsoleLogger = dependencyResolver('enhancedConsoleLogger').default;
 
   // All original logic goes here, using arrayConversionHelper and enhancedConsoleLogger as needed
   // Example export:
-  exports.test = function(e) {
+  exports.test = function (e) {
     return "hello---" + e;
   };
   // ...add all other exports here, following the structure from your example...
@@ -17,44 +17,44 @@ module.exports = function(exports, require, module, dependencyResolver) {
 // Utility function to test getCmdStr export
 function testShowCmd(exportsObj) {
 
- const commandConfig = {
-  curMode: 6, // Change mode (e.g., 2)
-  textData: {
-    txColor: 5,      // Change color (e.g., 5)
-    txSize: 50,     // Font size (default 100)
-    runSpeed: 50,    // Run speed (default 80)
-    txDist: 50,      // Text distance (default 50)
-    runDir: 1,       // Run direction (default 1)
-    txPointTime: 10, // Point time (default 10)
-  },
-  prjData: {
-    public: {
-      rdMode: 1,     // Audio trigger mode (e.g., 1)
-      soundVal: 77, // Sound sensitivity (e.g., 120)
+  const commandConfig = {
+    curMode: 6, // Change mode (e.g., 2)
+    textData: {
+      txColor: 5,      // Change color (e.g., 5)
+      txSize: 50,     // Font size (default 100)
+      runSpeed: 50,    // Run speed (default 80)
+      txDist: 50,      // Text distance (default 50)
+      runDir: 1,       // Run direction (default 1)
+      txPointTime: 10, // Point time (default 10)
     },
-    prjItem: {
-       2:{
-        pyMode: 128,         // Change pyMode (e.g., 128)
-        prjSelected: [21845,21845,21845,1], // Selection bits (default)
+    prjData: {
+      public: {
+        rdMode: 1,     // Audio trigger mode (e.g., 1)
+        soundVal: 77, // Sound sensitivity (e.g., 120)
       },
-      3: {
-        pyMode: 128,
-        prjSelected: [1,0,0,2],
-      },
-      5: {
-        pyMode: 128,
-        prjSelected: [0,0,0,0],
-      },
-      6: {
-        pyMode: 128,
-        prjSelected: [65535, 65535, 65535, 3],
+      prjItem: {
+        2: {
+          pyMode: 128,         // Change pyMode (e.g., 128)
+          prjSelected: [21845, 21845, 21845, 1], // Selection bits (default)
+        },
+        3: {
+          pyMode: 128,
+          prjSelected: [1, 0, 0, 2],
+        },
+        5: {
+          pyMode: 128,
+          prjSelected: [0, 0, 0, 0],
+        },
+        6: {
+          pyMode: 128,
+          prjSelected: [65535, 65535, 65535, 3],
+        }
       }
     }
-  }
-};
+  };
 
   if (typeof exportsObj.getCmdStr === 'function') {
-    const result = exportsObj.getCmdStr(commandConfig,{});
+    const result = exportsObj.getCmdStr(commandConfig, {});
     console.log('Result of getCmdStr:', result);
   } else {
     console.error('getCmdStr function not found in module exports.');
@@ -77,9 +77,8 @@ function testGetQueryCmd(exportsObj) {
   }
 }
 
-function testFDrawCommand(exportsObj, handDrawGeometryUtils) {
-  console.log('\n=== Testing Drawing Command Functions ===');
-  
+function testDrawCommand(exportsObj, handDrawGeometryUtils) {
+
   // Sample drawing points data (enhanced structure matching expected format)
   const drawPoints = [
     {
@@ -125,154 +124,92 @@ function testFDrawCommand(exportsObj, handDrawGeometryUtils) {
     animationFix: false
   };
 
-  // Test getDrawCmdStr function
-  if (typeof exportsObj.getDrawCmdStr === 'function') {
-    try {
-      const pointTime = "00"; // Fourth parameter for point timing
-      
-      // Use handDrawGeometryUtils.drawPs to properly flatten points like the real application
-      let flatPoints;
-      
-      if (handDrawGeometryUtils && typeof handDrawGeometryUtils.drawPs === 'function') {
-        console.log('✓ Using handDrawGeometryUtils.drawPs to flatten points');
-        
-        // Create a mock canvas context
-        const mockCanvasContext = {
-          clearRect: function() {},
-          setLineWidth: function() {},
-          setStrokeStyle: function() {},
-          setLineDash: function() {},
-          beginPath: function() {},
-          moveTo: function() {},
-          lineTo: function() {},
-          closePath: function() {},
-          stroke: function() {},
-          fill: function() {},
-          draw: function() {},
-          rect: function() {},
-          fillRect: function() {},
-          setFillStyle: function() {},
-          arc: function() {}
-        };
-        
-        // Create canvas draw config matching the real application structure
-        const canvasDrawConfig = {
-          ctx: mockCanvasContext, // Mock canvas context
-          w: 340.91,
-          h: 340.91,
-          draw_line_type: [20, 20], // Default line type from app
-          colorSeg: [
-            { 
-              color: [1, 2, 3, 4, 5, 6, 7], 
-              name: "Default Color Sequence" 
-            },
-            { 
-              color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4], 
-              name: "Test Pattern" 
-            }
-          ]
-        };
-        
-        // Create global colors array that the drawing functions expect
-        global.colors = ['black', 'red', 'green', 'blue', 'yellow', '#00FFFF', 'purple', 'white'];
-        
-        // Create selectLines entries for each drawing object
-        const selectLines = drawPoints.map((drawObj, index) => ({
-          sel: false,      // Selection flag
-          mx0: 0,          // Movement offset X
-          my0: 0,          // Movement offset Y  
-          color: null      // Override color
-        }));
-        
-        const selectionState = {
-          selectRect: { 
-            x0: 0, y0: 0, z: 1, ang: 0,
-            mx: 0, my: 0,
-            width: 0, height: 0, 
-            left: 0, top: 0,
-            lastAng: 0, startAng: 0
-          },
-          selectLines: selectLines,
-          selectMode: false
-        };
-        
-        // Call drawPs to get flattened points like the real app does
-        try {
-          flatPoints = handDrawGeometryUtils.drawPs(drawPoints, canvasDrawConfig, selectionState);
-          
-          if (Array.isArray(flatPoints) && flatPoints.length > 0) {
-            console.log('✓ drawPs processed successfully, returned', flatPoints.length, 'flattened points');
-            console.log('✓ First processed point:', JSON.stringify(flatPoints[0]));
-          } else {
-            console.log('✗ drawPs did not return a valid array, using fallback');
-            flatPoints = drawPoints[0].ps; // Fallback
-          }
-        } catch (drawPsError) {
-          console.error('Error calling drawPs:', drawPsError.message);
-          flatPoints = drawPoints[0].ps; // Fallback to manual extraction
-        }
-      } else {
-        console.log('! handDrawGeometryUtils.drawPs not available, using manual extraction');
-        flatPoints = drawPoints[0].ps; // Fallback to manual extraction
-        console.log('Debug - using flat points from ps array:', JSON.stringify(flatPoints.slice(0, 2), null, 2));
-      }
-      
-      if (flatPoints && flatPoints.length > 0) {
-        const drawCommand = exportsObj.getDrawCmdStr(flatPoints, drawConfig, features, pointTime);
-        console.log('✓ getDrawCmdStr result:', drawCommand);
-        console.log('  Command length:', drawCommand ? drawCommand.length : 'null');
-      } else {
-        console.log('✗ No valid flatPoints generated');
-      }
-    } catch (error) {
-      console.error('✗ Error in getDrawCmdStr:', error.message);
-    }
-  } else {
-    console.log('✗ getDrawCmdStr function not found');
-  }
 
-  // Test getDrawPointStr function
-  if (typeof exportsObj.getDrawPointStr === 'function') {
-    try {
-      const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
-      console.log('✓ getDrawPointStr result:', pointString);
-      console.log('  Point string length:', pointString ? pointString.length : 'null');
-    } catch (error) {
-      console.error('✗ Error in getDrawPointStr:', error.message);
-    }
-  } else {
-    console.log('✗ getDrawPointStr function not found');
-  }
 
-  // Test drawPointStrToCmd function
-  if (typeof exportsObj.drawPointStrToCmd === 'function') {
-    try {
-      // First get a point string to convert
-      if (typeof exportsObj.getDrawPointStr === 'function') {
-        const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
-        if (pointString) {
-          const cmdResult = exportsObj.drawPointStrToCmd(pointString, features);
-          console.log('✓ drawPointStrToCmd result:', cmdResult);
-          console.log('  Command result length:', cmdResult ? cmdResult.length : 'null');
-        }
-      } else {
-        console.log('! Cannot test drawPointStrToCmd without getDrawPointStr');
+  const pointTime = "00"; // Fourth parameter for point timing
+
+  // Use handDrawGeometryUtils.drawPs to properly flatten points like the real application
+  let flatPoints;
+
+
+ 
+  // Create a mock canvas context
+  const mockCanvasContext = {
+    clearRect: function () { },
+    setLineWidth: function () { },
+    setStrokeStyle: function () { },
+    setLineDash: function () { },
+    beginPath: function () { },
+    moveTo: function () { },
+    lineTo: function () { },
+    closePath: function () { },
+    stroke: function () { },
+    fill: function () { },
+    draw: function () { },
+    rect: function () { },
+    fillRect: function () { },
+    setFillStyle: function () { },
+    arc: function () { }
+  };
+
+  // Create canvas draw config matching the real application structure
+  const canvasDrawConfig = {
+    ctx: mockCanvasContext, // Mock canvas context
+    w: 340.91,
+    h: 340.91,
+    draw_line_type: [20, 20], // Default line type from app
+    colorSeg: [
+      {
+        color: [1, 2, 3, 4, 5, 6, 7],
+        name: "Default Color Sequence"
+      },
+      {
+        color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4],
+        name: "Test Pattern"
       }
-    } catch (error) {
-      console.error('✗ Error in drawPointStrToCmd:', error.message);
-    }
-  } else {
-    console.log('✗ drawPointStrToCmd function not found');
-  }
+    ]
+  };
 
-  console.log('=== Drawing Command Test Complete ===\n');
+  
+  // Create global colors array that the drawing functions expect
+  global.colors = ['black', 'red', 'green', 'blue', 'yellow', '#00FFFF', 'purple', 'white'];
+
+  // Create selectLines entries for each drawing object
+  const selectLines = drawPoints.map((drawObj, index) => ({
+    sel: false,      // Selection flag
+    mx0: 0,          // Movement offset X
+    my0: 0,          // Movement offset Y  
+    color: null      // Override color
+  }));
+
+  const selectionState = {
+    selectRect: {
+      x0: 0, y0: 0, z: 1, ang: 0,
+      mx: 0, my: 0,
+      width: 0, height: 0,
+      left: 0, top: 0,
+      lastAng: 0, startAng: 0
+    },
+    selectLines: selectLines,
+    selectMode: false
+  };
+
+
+  flatPoints = handDrawGeometryUtils.drawPs(drawPoints, canvasDrawConfig, selectionState);
+  const drawCommand = exportsObj.getDrawCmdStr(flatPoints, drawConfig, features, pointTime);
+  console.log('Result of getDrawCmdStr:', drawCommand);
+  const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
+  const cmdResult = exportsObj.drawPointStrToCmd(pointString, features);
+  console.log('Result of drawPointStrToCmd:', cmdResult);
+  console.log('  drawCommand length:', drawCommand ? drawCommand.length : 'null');
+
 }
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
 
 // Load the webpack bundle
-const bundlePath = path.join(__dirname, '../','refactor target', 'app-service-minimal.js');
+const bundlePath = path.join(__dirname, '../', 'refactor target', 'app-service-minimal.js');
 const code = fs.readFileSync(bundlePath, 'utf8');
 
 
@@ -313,7 +250,7 @@ function dependencyResolver(name) {
     try {
       return require('./arrayConversionHelper'); // Adjust path if needed
     } catch (e) {
-      return function(arr) { return arr; }; // Fallback stub
+      return function (arr) { return arr; }; // Fallback stub
     }
   }
   if (name === "enhancedConsoleLogger") {
@@ -321,14 +258,14 @@ function dependencyResolver(name) {
   }
   if (name === "spreadToArrayHelper") {
     // Fallback implementation for spreadToArrayHelper
-    return function(arr, count) {
+    return function (arr, count) {
       if (Array.isArray(arr)) {
         return count ? arr.slice(0, count) : arr;
       }
       return [];
     };
   }
-  
+
   // Try to load from webpack modules
   if (modulesObj && modulesObj[name]) {
     const targetModule = modulesObj[name];
@@ -344,7 +281,7 @@ function dependencyResolver(name) {
       }
     }
   }
-  
+
   // Return stub for unknown dependencies
   console.warn('Unknown dependency, returning stub:', name);
   return {};
@@ -354,7 +291,7 @@ function dependencyResolver(name) {
 if (targetModule && typeof targetModule === 'function') {
   const fakeExports = {};
   const fakeModule = { exports: fakeExports };
-  
+
   // Setup handDrawGeometryUtils
   let handDrawGeometryUtils = null;
   if (handDrawGeometryUtilsModule && typeof handDrawGeometryUtilsModule === 'function') {
@@ -368,7 +305,7 @@ if (targetModule && typeof targetModule === 'function') {
       console.error('Error loading handDrawGeometryUtils:', err);
     }
   }
-  
+
   try {
     // Pass arguments in correct order: exports, module, dependencyResolver, dependencyResolver
     targetModule(fakeExports, fakeModule, dependencyResolver, dependencyResolver);
@@ -378,7 +315,7 @@ if (targetModule && typeof targetModule === 'function') {
 
     testGetQueryCmd(exported);
     testShowCmd(exported);
-    testFDrawCommand(exported, handDrawGeometryUtils);
+    testDrawCommand(exported, handDrawGeometryUtils);
 
   } catch (err) {
     console.error('Error calling module function:', err);
