@@ -77,19 +77,33 @@ function testGetQueryCmd(exportsObj) {
   }
 }
 
+function testPolylineCommand(exportsObj, handDrawGeometryUtils) {
+  
+
+  const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'lill.json'), 'utf8'));
+  testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils);
+
+}
 function testDrawCommand(exportsObj, handDrawGeometryUtils) {
+
+  const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'ruut.json'), 'utf8'));
+  testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils);
+}
+
+
+function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
 
   // Load ruut.json data (UTF-8 version)
   const ruutData = JSON.parse(fs.readFileSync(path.join(__dirname, 'ruut.json'), 'utf8'));
 
   // Load drawing points data from ruut.json
-  const drawPoints = ruutData.data.drawPoints;
+  const drawPoints = data.data.drawPoints;
 
   // Use drawConfig from ruut.json
-  const drawConfig = ruutData.data.pisObj;
+  const drawConfig = data.data.pisObj;
 
   // Use features from ruut.json
-  const features = ruutData.data.features ;
+  const features = data.data.features ;
 
   const pointTime = "00"; // Fourth parameter for point timing
 
@@ -103,6 +117,8 @@ function testDrawCommand(exportsObj, handDrawGeometryUtils) {
 
 
 }
+
+
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
@@ -209,7 +225,7 @@ if (targetModule && typeof targetModule === 'function') {
   testGetQueryCmd(exported);
   testShowCmd(exported);
   testDrawCommand(exported, handDrawGeometryUtils);
-
+  testPolylineCommand(exported, handDrawGeometryUtils);
 
 } else {
   console.error('Module not found or not a function:', moduleName);
