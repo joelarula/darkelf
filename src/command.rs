@@ -1,21 +1,14 @@
-// Rust translation of deviceCommandUtils module
-// This module provides utilities for device command generation and manipulation
-
-// use std::collections::HashMap;
 use crate::model::{DrawData, Point, ProjectItem, DrawItem, DrawPoint, DrawMode};
 use log::{debug, info};
 
 use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisObject, SettingsData, ShakeConfig};
 
-// Response headers and footers
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
 
-// Power command patterns
 pub const POWER_ON_CMD: &str = "B0B1B2B3FFB4B5B6B7";
 pub const POWER_OFF_CMD: &str = "B0B1B2B300B4B5B6B7";
 
-// Command section markers
 const MAIN_CMD_HEADER: &str = "C0C1C2C3";
 const MAIN_CMD_FOOTER: &str = "C4C5C6C7";
 const SETTINGS_CMD_HEADER: &str = "00010203";
@@ -25,27 +18,13 @@ const FEATURES_CMD_FOOTER: &str = "D4D5D6D7";
 const DRAW_CMD_HEADER: &str = "F0F1F2F3";
 const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 
+const REFERENCE_COORDINATE_SIZE: f64 = 800.0;
+
 
 pub struct CommandGenerator;
 
 impl CommandGenerator {
 
-
-    /// Applies bitmask updates to the selection_bits vector at the given indices.
-    /// For each index in indices, toggles the bit (XOR with 1) at that position in selection_bits.
-    /// This matches the JavaScript logic of applyBitmaskUpdates([indices], N).
-    /// Applies bitmask updates to the selection_bits vector at the given indices.
-    /// For each index in indices, toggles the bit at (index / 16) in selection_bits,
-    /// using (1 << (index % 16)), matching the JavaScript algorithm.
-    fn apply_bitmask_updates(indices: &[usize], selection_bits: &mut [u16]) {
-        for &idx in indices {
-            let arr_idx = idx / 16;
-            let bit = idx % 16;
-            if arr_idx < selection_bits.len() {
-                selection_bits[arr_idx] ^= 1 << bit;
-            }
-        }
-    }
     // Core conversion utilities
     pub fn ab2hex(bytes: &[u8]) -> String {
         debug!("ab2hex called with bytes: {:?}", bytes);
@@ -69,7 +48,9 @@ impl CommandGenerator {
 
     pub fn combine_nibbles(high: u8, low: u8) -> u8 {
         debug!("combine_nibbles called with high: {}, low: {}", high, low);
-        0
+        // Combine two 4-bit values into one 8-bit value
+        // High nibble (upper 4 bits) and low nibble (lower 4 bits)
+        (high & 0x0F) << 4 | (low & 0x0F)
     }
 
     pub fn pad_hex_string_to_byte_length(hex: &str, byte_len: usize, pad: &str) -> String {
@@ -552,13 +533,108 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String {
         debug!("get_draw_cmd_str called with points len: {}", points.len());
         info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        String::new()
+        
+        let point_time = "00";  // Default point time
+        let encoded_draw_cmd = Self::encode_draw_point_command(points, config, features, -1, point_time);
+        Self::draw_point_str_to_cmd(&encoded_draw_cmd, features, None)
     }
 
-    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, time: i32, version: &str) -> String {
-        debug!("encode_draw_point_command called with points len: {}, time: {}, version: {}", points.len(), time, version);
+    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, point_time_value: i32, version: &str) -> String {
+        debug!("encode_draw_point_command called with points len: {}, point_time_value: {}, version: {}", points.len(), point_time_value, version);
         info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        String::new()
+        
+        let mut config_str = String::new();
+        let mut points_str = String::new();
+        
+        // Build config values (15 iterations as in JS)
+        for index in 0..15 {
+            if index <= 11 {
+                // Use config values for indices 0-11
+                let value = if index < config.config_values.len() {
+                    config.config_values[index]
+                } else {
+                    0
+                };
+                config_str.push_str(&Self::to_fixed_width_hex(value, 2));
+            } else if index == 13 {
+                // Handle picsPlay feature
+                if Self::get_feature_value(features, "picsPlay").unwrap_or(false) {
+                    let time_value = if point_time_value == -1 {
+                        // Use config.cnfValus[12] * 10 (equivalent to config.config_values[12] * 10)
+                        let cnf_value = if config.config_values.len() > 12 {
+                            config.config_values[12] as u32 * 10
+                        } else {
+                            0
+                        };
+                        cnf_value
+                    } else {
+                        (point_time_value * 10) as u32
+                    };
+                    config_str.push_str(&Self::to_fixed_width_hex(time_value, 2));
+                } else {
+                    config_str.push_str("00");
+                }
+            } else if index == 14 && Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
+                // Use tx_point_time for textStopTime feature
+                config_str.push_str(&Self::to_fixed_width_hex(config.text_point_time, 2));
+            } else {
+                config_str.push_str("00");
+            }
+        }
+        
+        // Process points if version is "00"
+        if version == "00" {
+            config_str.push_str(version);
+            
+            for (ix, point) in points.iter().enumerate() {
+                let mut pen_state = point.pen_state;
+                
+                // Handle textStopTime feature logic
+                if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
+                    if point.color == 0 {
+                        pen_state = 2;
+                    } else if (ix < points.len() - 1 && points[ix + 1].color == 0) || ix == points.len() - 1 {
+                        pen_state = 3;
+                    }
+                }
+                
+                // Note: coordinates are handled by to_fixed_width_hex_float
+                
+                // Combine color and pen_state using combine_nibbles logic
+                let combined = Self::combine_nibbles(point.color, pen_state);
+                
+                points_str.push_str(&Self::to_fixed_width_hex_float(point.x, 4));
+                points_str.push_str(&Self::to_fixed_width_hex_float(point.y, 4));
+                points_str.push_str(&Self::to_fixed_width_hex(combined, 2));
+            }
+            
+            // Prepend point count and combine with config
+            format!("{}{}{}", config_str, Self::to_fixed_width_hex(points.len(), 4), points_str)
+        } else {
+            config_str.push_str(version);
+            config_str
+        }
+    }
+
+    /// Convert draw point string to command format with headers and footers
+    pub fn draw_point_str_to_cmd(point_string: &str, features: &Features, header_suffix: Option<u8>) -> String {
+        let command_str = match header_suffix {
+            Some(suffix) => {
+                format!("F0F1F2{}{}{}", 
+                    Self::to_fixed_width_hex(suffix, 2), 
+                    point_string, 
+                    DRAW_CMD_FOOTER)
+            }
+            None => {
+                if Self::get_feature_value(features, "picsPlay").unwrap_or(false) {
+                    format!("F0F1F200{}{}", point_string, DRAW_CMD_FOOTER)
+                } else {
+                    format!("{}{}{}", DRAW_CMD_HEADER, point_string, DRAW_CMD_FOOTER)
+                }
+            }
+        };
+        
+        command_str.to_uppercase()
     }
 
 
@@ -578,9 +654,9 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
     
     // Feature handling
-    pub fn get_feature_value(_obj: &Features, feature_name: &str) -> Option<bool> {
+    pub fn get_feature_value(features: &Features, feature_name: &str) -> Option<bool> {
         debug!("get_feature_value called with feature_name: {}", feature_name);
-        None
+        features.features.get(feature_name).copied()
     }
 
     /// Verifies the received data against the random verification bytes sent in the query.
@@ -739,7 +815,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         let rotated_points = Self::rotate_points_around_bounding_box_center(&draw_object.get_all_points(), draw_object.ang);
         
         let mut result_points = Vec::new();
-        let scaling_factor = 800.0 / width;  // scalingFactor = 800 / width
+        let scaling_factor = REFERENCE_COORDINATE_SIZE / width;  // scalingFactor = REFERENCE_COORDINATE_SIZE / width
         let center_offset_x = width / 2.0;   // centerOffsetX = width / 2
         let position_x = draw_object.x0;     // positionX = drawObject.x0
         let position_y = draw_object.y0;     // positionY = drawObject.y0
@@ -816,7 +892,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
                 let position_y = draw_object.y0;
                 let scale_z = draw_object.z;
                 
-                let scaling_factor = 800.0 / width;
+                let scaling_factor = REFERENCE_COORDINATE_SIZE / width;
                 let center_offset = width / 2.0;
                 let mut result_points = Vec::new();
                 
