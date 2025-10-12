@@ -1,5 +1,6 @@
 
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
 pub const MAX_DRAW_POINT_COUNT: usize = 800;
 
@@ -12,7 +13,6 @@ pub enum PlaybackMode {
     AnimationPlayback = 3,
     TextPlayback = 4,
     ChristmasBroadcast = 5,
-    //Ilda = 5,
     OutdoorPlayback = 6,
     PersonalizedProgramming = 7,
     HandDrawnDoodle = 8,
@@ -118,15 +118,48 @@ impl PlaybackCommand {
     }
 }
 
+
 // Data structures needed by the trait methods
 #[derive(Debug, Clone)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
-    pub z: i32,
     pub color: u8,
+    pub pen_state: u8,  // 0=pen up/move, 1=pen down/draw
 }
 
+impl Point {
+    pub fn new(x: f64, y: f64, color: u8, pen_state: u8) -> Self {
+        Self { x, y, color, pen_state }
+    }
+    
+    /// Create from drawPs2 output format: [x, y, color, pen_state]
+    pub fn from_draw_ps2(arr: [f64; 4]) -> Self {
+        Self {
+            x: arr[0],
+            y: arr[1], 
+            color: arr[2] as u8,
+            pen_state: arr[3] as u8,
+        }
+    }
+    
+    /// Create from JavaScript array format: [x, y, color, pen_state]
+    pub fn from_js_array(x: f64, y: f64, color: f64, pen_state: f64) -> Self {
+        Self {
+            x,
+            y,
+            color: color as u8,
+            pen_state: pen_state as u8,
+        }
+    }
+    
+    /// Convert to array format: [x, y, color, pen_state]
+    pub fn to_array(&self) -> [f64; 4] {
+        [self.x, self.y, self.color as f64, self.pen_state as f64]
+    }
+    
+
+}
 #[derive(Debug)]
 pub struct LayoutItem {
     pub xys: Vec<Vec<f64>>,
@@ -144,9 +177,21 @@ pub struct Features {
     pub xy_cnf_save: Option<bool>,
 }
 
-#[derive(Debug)]
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColorGroup {
     pub color: u8,
+}
+
+impl Default for Features {
+    fn default() -> Self {
+        Self {
+            features: HashMap::new(),
+            group_list: None,
+            prj_parm: None,
+            xy_cnf_save: None,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -154,6 +199,8 @@ pub struct ProjectParams {
     pub prj_index: i32,
     pub sel_index: i32,
 }
+
+
 
 #[derive(Debug)]
 pub struct CommandConfig {
@@ -216,10 +263,21 @@ pub struct XYValue {
 }
 
 // cnf_valus[12] playback time configuration.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PisObject {
+    #[serde(rename = "txPointTime")]
     pub tx_point_time: u32,
+    #[serde(rename = "cnfValus")]
     pub cnf_valus: [u32; 13],
+}
+
+impl Default for PisObject {
+    fn default() -> Self {
+        Self {
+            tx_point_time: 50,
+            cnf_valus: [0; 13],
+        }
+    }
 }
 
 
@@ -407,5 +465,310 @@ impl PisObjNote {
             ])),
             _ => None,
         }
+    }
+}
+
+
+
+/// Represents a single point in a drawing path with [x, y, color, pen_state] format
+/// Serializes as a 4-element array to match JSON format: [x, y, color, pen_state]
+#[derive(Debug, Clone, PartialEq)]
+pub struct DrawPoint {
+    pub x: f64,
+    pub y: f64,
+    pub color: u8,      // Color value (0-15)
+    pub pen_state: u8,  // Pen state: 0=pen up/move, 1=pen down/draw
+}
+
+impl Serialize for DrawPoint {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        (self.x, self.y, self.color, self.pen_state).serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for DrawPoint {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let (x, y, color, pen_state) = <(f64, f64, u8, u8)>::deserialize(deserializer)?;
+        Ok(DrawPoint { x, y, color, pen_state })
+    }
+}
+
+impl DrawPoint {
+    pub fn new(x: f64, y: f64, color: u8, pen_state: u8) -> Self {
+        Self { x, y, color, pen_state }
+    }
+    
+    /// Create from a 4-element array [x, y, color, pen_state]
+    pub fn from_array(arr: [f64; 4]) -> Self {
+        Self {
+            x: arr[0],
+            y: arr[1], 
+            color: arr[2] as u8,
+            pen_state: arr[3] as u8,
+        }
+    }
+    
+    /// Convert to a 4-element array [x, y, color, pen_state]
+    pub fn to_array(&self) -> [f64; 4] {
+        [self.x, self.y, self.color as f64, self.pen_state as f64]
+    }
+}
+
+/// Drawing modes that determine how the object is rendered
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DrawMode {
+    Polylines = -1,     // Multiple polyline paths
+    Shape = 2,          // Generic shape (your example uses this)
+    Text = 9999,        // Text rendering
+}
+
+impl From<i32> for DrawMode {
+    fn from(value: i32) -> Self {
+        match value {
+            -1 => DrawMode::Polylines,
+            9999 => DrawMode::Text,
+            _ => DrawMode::Shape, // Default for other values like 2
+        }
+    }
+}
+
+impl From<DrawMode> for i32 {
+    fn from(mode: DrawMode) -> Self {
+        mode as i32
+    }
+}
+
+impl Serialize for DrawMode {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_i32(*self as i32)
+    }
+}
+
+impl<'de> Deserialize<'de> for DrawMode {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = i32::deserialize(deserializer)?;
+        Ok(DrawMode::from(value))
+    }
+}
+
+/// Flexible point structure that can handle both simple points and nested polylines
+#[derive(Debug, Clone)]
+pub enum DrawPoints {
+    /// Simple array of points for regular shapes/text
+    Simple(Vec<DrawPoint>),
+    /// Nested arrays for polylines mode
+    Polylines(Vec<Vec<DrawPoint>>),
+}
+
+impl DrawPoints {
+    /// Get all points as a flattened vector for processing
+    pub fn flatten(&self) -> Vec<DrawPoint> {
+        match self {
+            DrawPoints::Simple(points) => points.clone(),
+            DrawPoints::Polylines(polylines) => {
+                polylines.iter().flat_map(|polyline| polyline.iter()).cloned().collect()
+            }
+        }
+    }
+    
+    /// Get the total number of points
+    pub fn len(&self) -> usize {
+        match self {
+            DrawPoints::Simple(points) => points.len(),
+            DrawPoints::Polylines(polylines) => polylines.iter().map(|p| p.len()).sum(),
+        }
+    }
+    
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+/// Custom serialization/deserialization for DrawPoints
+mod flexible_points {
+    use super::{DrawPoints, DrawPoint};
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde_json::Value;
+
+    pub fn serialize<S>(points: &DrawPoints, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match points {
+            DrawPoints::Simple(points) => points.serialize(serializer),
+            DrawPoints::Polylines(polylines) => polylines.serialize(serializer),
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<DrawPoints, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = Value::deserialize(deserializer)?;
+        
+        if let Value::Array(arr) = value {
+            if arr.is_empty() {
+                return Ok(DrawPoints::Simple(vec![]));
+            }
+            
+            // Check the first element to determine structure
+            match &arr[0] {
+                // If first element is an array, this is polylines format
+                Value::Array(inner_arr) => {
+                    // This is polylines - nested arrays
+                    let mut polylines = Vec::new();
+                    for polyline_value in arr {
+                        if let Value::Array(polyline_arr) = polyline_value {
+                            let mut polyline_points = Vec::new();
+                            for point_value in polyline_arr {
+                                if let Value::Array(point_arr) = point_value {
+                                    if point_arr.len() == 4 {
+                                        let x = point_arr[0].as_f64().unwrap_or(0.0);
+                                        let y = point_arr[1].as_f64().unwrap_or(0.0);
+                                        let color = point_arr[2].as_u64().unwrap_or(0) as u8;
+                                        let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
+                                        polyline_points.push(DrawPoint { x, y, color, pen_state });
+                                    }
+                                }
+                            }
+                            polylines.push(polyline_points);
+                        }
+                    }
+                    Ok(DrawPoints::Polylines(polylines))
+                }
+                // If first element is a number, this is simple points format
+                Value::Number(_) => {
+                    // This is simple points - flat array of [x, y, color, pen_state] arrays
+                    let mut points = Vec::new();
+                    for point_value in arr {
+                        if let Value::Array(point_arr) = point_value {
+                            if point_arr.len() == 4 {
+                                let x = point_arr[0].as_f64().unwrap_or(0.0);
+                                let y = point_arr[1].as_f64().unwrap_or(0.0);
+                                let color = point_arr[2].as_u64().unwrap_or(0) as u8;
+                                let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
+                                points.push(DrawPoint { x, y, color, pen_state });
+                            }
+                        }
+                    }
+                    Ok(DrawPoints::Simple(points))
+                }
+                _ => {
+                    // Fallback to empty simple points
+                    Ok(DrawPoints::Simple(vec![]))
+                }
+            }
+        } else {
+            Ok(DrawPoints::Simple(vec![]))
+        }
+    }
+}
+
+/// Represents a single drawable object with geometry and transformation parameters
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DrawItem {
+    /// Drawing points - can be either simple points or nested polylines depending on draw_mode
+    #[serde(with = "flexible_points")]
+    pub ps: DrawPoints,
+    
+    /// X-axis translation offset
+    pub x0: f64,
+    
+    /// Y-axis translation offset  
+    pub y0: f64,
+    
+    /// Scale factor (z-axis or zoom)
+    pub z: f64,
+    
+    /// Drawing mode that determines rendering method
+    #[serde(rename = "drawMode")]
+    pub draw_mode: DrawMode,
+    
+    /// Rotation angle in degrees
+    pub ang: f64,
+    
+    /// Line color value (0-15 for direct colors, >=8 for special color modes)
+    #[serde(rename = "lineColor")]
+    pub line_color: u8,
+}
+
+impl DrawItem {
+    pub fn new() -> Self {
+        Self {
+            ps: DrawPoints::Simple(Vec::new()),
+            x0: 0.0,
+            y0: 0.0,
+            z: 1.0,
+            draw_mode: DrawMode::Shape,
+            ang: 0.0,
+            line_color: 1,
+        }
+    }
+    
+    /// Add a point to the drawing path
+    pub fn add_point(&mut self, point: DrawPoint) {
+        match &mut self.ps {
+            DrawPoints::Simple(points) => points.push(point),
+            DrawPoints::Polylines(_) => {
+                // Convert to simple and add point
+                let mut flattened = self.ps.flatten();
+                flattened.push(point);
+                self.ps = DrawPoints::Simple(flattened);
+            }
+        }
+    }
+    
+    /// Get all points as a flattened vector
+    pub fn get_all_points(&self) -> Vec<DrawPoint> {
+        self.ps.flatten()
+    }
+}
+
+impl Default for DrawItem {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DrawData {
+
+    #[serde(rename = "drawPoints")]
+    pub draw_points: Vec<DrawItem>,
+    
+    #[serde(rename = "pisObj")]
+    pub pis_obj: PisObject,
+    
+}
+
+impl DrawData {
+    pub fn new() -> Self {
+        Self {
+            draw_points: Vec::new(),
+            pis_obj: PisObject::default(),
+        }
+    }
+    
+    pub fn add_draw_object(&mut self, obj: DrawItem) {
+        self.draw_points.push(obj);
+    }
+}
+
+impl Default for DrawData {
+    fn default() -> Self {
+        Self::new()
     }
 }

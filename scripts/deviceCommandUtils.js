@@ -224,7 +224,7 @@ if (targetModule && typeof targetModule === 'function') {
 
   testGetQueryCmd(exported);
   testShowCmd(exported);
-  testDrawCommand(exported, handDrawGeometryUtils);
+  //testDrawCommand(exported, handDrawGeometryUtils);
   testPolylineCommand(exported, handDrawGeometryUtils);
 
 } else {

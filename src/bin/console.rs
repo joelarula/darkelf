@@ -83,7 +83,7 @@ fn main() -> eframe::Result<()> {
                                     }
                                 }
                                 DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
-                                    device.set_playback_mode(playback_mode, selected_shows).await;
+                                  //  device.set_playback_mode(playback_mode, selected_shows).await;
                                 }
                             }
                         }
