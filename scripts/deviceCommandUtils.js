@@ -79,134 +79,34 @@ function testGetQueryCmd(exportsObj) {
 
 function testDrawCommand(exportsObj, handDrawGeometryUtils) {
 
-  // Sample drawing points data (enhanced structure matching expected format)
-  const drawPoints = [
-    {
-      ps: [
-        [-170.45, 170.45, 0, 1],
-        [-102.27, 170.45, 7, 0],
-        [170.45, 170.45, 7, 1],
-        [170.45, -170.45, 4, 1],
-        [-170.45, -170.45, 5, 1],
-        [-170.45, 170.45, 6, 1]
-      ],
-      x0: 169.17,
-      y0: 156.62,
-      z: 0.474,
-      drawMode: 2,
-      ang: 0,
-      lineColor: 9,
-      // Add potentially missing properties
-      scale: 1.0,
-      opacity: 1.0,
-      width: 340.91,
-      height: 340.91
-    }
-  ];
+  // Load ruut.json data (UTF-8 version)
+  const ruutData = JSON.parse(fs.readFileSync(path.join(__dirname, 'ruut.json'), 'utf8'));
 
-  const drawConfig = {
-    txPointTime: 55,
-    playTime: 0, // Add missing playTime property
-    cnfValus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]
-  };
+  // Load drawing points data from ruut.json
+  const drawPoints = ruutData.data.drawPoints;
 
-  const features = {
-    textStopTime: true,
-    textDecimalTime: true,
-    displayType: "00",
-    showOutDoorTips: false,
-    xyCnf: false,
-    arbPlay: false,
-    ilda: false,
-    ttlAn: false,
-    picsPlay: false,
-    textUpDown: false,
-    animationFix: false
-  };
+  // Use drawConfig from ruut.json
+  const drawConfig = ruutData.data.pisObj;
 
-
+  // Use features from ruut.json
+  const features = ruutData.data.features ;
 
   const pointTime = "00"; // Fourth parameter for point timing
 
-  // Use handDrawGeometryUtils.drawPs to properly flatten points like the real application
-  let flatPoints;
+  let flatPoints2 = handDrawGeometryUtils.drawPs2(drawPoints, 300);
+  console.log('flatPoints2:', flatPoints2);
 
-
- 
-  // Create a mock canvas context
-  const mockCanvasContext = {
-    clearRect: function () { },
-    setLineWidth: function () { },
-    setStrokeStyle: function () { },
-    setLineDash: function () { },
-    beginPath: function () { },
-    moveTo: function () { },
-    lineTo: function () { },
-    closePath: function () { },
-    stroke: function () { },
-    fill: function () { },
-    draw: function () { },
-    rect: function () { },
-    fillRect: function () { },
-    setFillStyle: function () { },
-    arc: function () { }
-  };
-
-  // Create canvas draw config matching the real application structure
-  const canvasDrawConfig = {
-    ctx: mockCanvasContext, // Mock canvas context
-    w: 340.91,
-    h: 340.91,
-    draw_line_type: [20, 20], // Default line type from app
-    colorSeg: [
-      {
-        color: [1, 2, 3, 4, 5, 6, 7],
-        name: "Default Color Sequence"
-      },
-      {
-        color: [1, 1, 1, 1, 1, 4, 4, 4, 4, 4],
-        name: "Test Pattern"
-      }
-    ]
-  };
-
-  
-  // Create global colors array that the drawing functions expect
-  global.colors = ['black', 'red', 'green', 'blue', 'yellow', '#00FFFF', 'purple', 'white'];
-
-  // Create selectLines entries for each drawing object
-  const selectLines = drawPoints.map((drawObj, index) => ({
-    sel: false,      // Selection flag
-    mx0: 0,          // Movement offset X
-    my0: 0,          // Movement offset Y  
-    color: null      // Override color
-  }));
-
-  const selectionState = {
-    selectRect: {
-      x0: 0, y0: 0, z: 1, ang: 0,
-      mx: 0, my: 0,
-      width: 0, height: 0,
-      left: 0, top: 0,
-      lastAng: 0, startAng: 0
-    },
-    selectLines: selectLines,
-    selectMode: false
-  };
-
-
-  flatPoints = handDrawGeometryUtils.drawPs(drawPoints, canvasDrawConfig, selectionState);
-  const drawCommand = exportsObj.getDrawCmdStr(flatPoints, drawConfig, features, pointTime);
+  const drawCommand = exportsObj.getDrawCmdStr(flatPoints2, drawConfig, features, pointTime);
   console.log('Result of getDrawCmdStr:', drawCommand);
-  const pointString = exportsObj.getDrawPointStr(drawPoints, drawConfig, features, -1, drawConfig.txPointTime);
-  const cmdResult = exportsObj.drawPointStrToCmd(pointString, features);
-  console.log('Result of drawPointStrToCmd:', cmdResult);
   console.log('  drawCommand length:', drawCommand ? drawCommand.length : 'null');
+
+
 
 }
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
+
 
 // Load the webpack bundle
 const bundlePath = path.join(__dirname, '../', 'refactor target', 'app-service-minimal.js');
@@ -294,32 +194,23 @@ if (targetModule && typeof targetModule === 'function') {
 
   // Setup handDrawGeometryUtils
   let handDrawGeometryUtils = null;
-  if (handDrawGeometryUtilsModule && typeof handDrawGeometryUtilsModule === 'function') {
-    const handDrawFakeExports = {};
-    const handDrawFakeModule = { exports: handDrawFakeExports };
-    try {
-      handDrawGeometryUtilsModule(handDrawFakeExports, handDrawFakeModule, dependencyResolver, dependencyResolver);
-      handDrawGeometryUtils = handDrawFakeModule.exports.exports || handDrawFakeModule.exports;
-      console.log('HandDrawGeometryUtils loaded, keys:', Object.keys(handDrawGeometryUtils));
-    } catch (err) {
-      console.error('Error loading handDrawGeometryUtils:', err);
-    }
-  }
+  const handDrawFakeExports = {};
+  const handDrawFakeModule = { exports: handDrawFakeExports };
+  
+  handDrawGeometryUtilsModule(handDrawFakeExports, handDrawFakeModule, dependencyResolver, dependencyResolver);
+  handDrawGeometryUtils = handDrawFakeModule.exports.exports || handDrawFakeModule.exports;
+ 
 
-  try {
-    // Pass arguments in correct order: exports, module, dependencyResolver, dependencyResolver
-    targetModule(fakeExports, fakeModule, dependencyResolver, dependencyResolver);
-    // Exported functions may be on fakeModule.exports.exports or fakeModule.exports
-    const exported = fakeModule.exports.exports || fakeModule.exports;
-    console.log('Module keys:', Object.keys(exported));
+  // Pass arguments in correct order: exports, module, dependencyResolver, dependencyResolver
+  targetModule(fakeExports, fakeModule, dependencyResolver, dependencyResolver);
+  // Exported functions may be on fakeModule.exports.exports or fakeModule.exports
+  const exported = fakeModule.exports.exports || fakeModule.exports;
 
-    testGetQueryCmd(exported);
-    testShowCmd(exported);
-    testDrawCommand(exported, handDrawGeometryUtils);
+  testGetQueryCmd(exported);
+  testShowCmd(exported);
+  testDrawCommand(exported, handDrawGeometryUtils);
 
-  } catch (err) {
-    console.error('Error calling module function:', err);
-  }
+
 } else {
   console.error('Module not found or not a function:', moduleName);
 }

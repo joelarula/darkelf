@@ -5888,21 +5888,21 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function drawTransformedPolyline(e, t, r) {
-                    var n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
-                        h = arguments.length > 4 && void 0 !== arguments[4] && arguments[4],
-                        a = rotatePointsAroundBoundingBoxCenter(t.ps[r], t.ang, !0),
-                        c = e.ctx,
-                        s = t.lineColor,
+                function drawTransformedPolyline(drawContext, drawObject, index) {
+                    var accumulateResult = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        dashedLine = arguments.length > 4 && void 0 !== arguments[4] && arguments[4],
+                        a = rotatePointsAroundBoundingBoxCenter(drawObject.ps[index], drawObject.ang, !0),
+                        c = drawContext.ctx,
+                        s = drawObject.lineColor,
                         l = s >= 8 ? 1 : s,
                         p = s - 9,
                         d = null;
-                    p >= 0 && (d = e.colorSeg[p]);
-                    var b = t.x0,
-                        g = t.y0,
-                        j = t.z;
-                    c.beginPath(), h ? c.setLineDash(e.draw_line_type) : c.setLineDash([]), c.setStrokeStyle(colors[l]), c.setFillStyle(colors[l]);
-                    for (var x = a, V = 800 / e.w, f = e.w / 2, F = [], k = 0; k < x.length; k++) {
+                    p >= 0 && (d = drawContext.colorSeg[p]);
+                    var b = drawObject.x0,
+                        g = drawObject.y0,
+                        j = drawObject.z;
+                    c.beginPath(), dashedLine ? c.setLineDash(drawContext.draw_line_type) : c.setLineDash([]), c.setStrokeStyle(colors[l]), c.setFillStyle(colors[l]);
+                    for (var x = a, V = 800 / drawContext.w, f = drawContext.w / 2, F = [], k = 0; k < x.length; k++) {
                         var m = [x[k][0] * j + b, x[k][1] * j + g, x[k][2], x[k][3]];
                         if (0 == k) c.moveTo(m[0], m[1]);
                         else {
@@ -5917,102 +5917,188 @@ globalThis["webpackJsonp"].push([
                             }
                             c.setStrokeStyle(colors[l]), c.setFillStyle(colors[l]), c.stroke(), c.beginPath(), c.moveTo(m[0], m[1])
                         }
-                        n && F.push([(m[0] - f) * V, (f - m[1]) * V, 0 == k ? 0 : l, m[3]])
+                        accumulateResult && F.push([(m[0] - f) * V, (f - m[1]) * V, 0 == k ? 0 : l, m[3]])
                     }
                     return c.stroke(), F
                 }
 
-                function drawAllTransformedPolylines(e, t) {
-                    for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3], h = t.ps, a = [], i = 0; i < h.length; i++) {
-                        var c = drawTransformedPolyline(e, t, i, r, n);
-                        r && (a = a.concat(c))
-                    }
-                    return a
-                }
+                function drawTransformedPolyline2(drawObject, index, width) {
 
-                function drawTransformedObject(e, t) {
-                    var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
-                        n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
-                        h = rotatePointsAroundBoundingBoxCenter(t.ps, t.ang),
-                        a = [],
-                        c = 800 / e.w,
-                        s = e.w / 2,
-                        l = e.ctx,
-                        p = t.x0,
-                        d = t.y0,
-                        b = t.z;
-                    l.beginPath(), n ? l.setLineDash(e.draw_line_type) : l.setLineDash([]);
-                    var g = t.lineColor,
-                        j = g - 9,
-                        x = g >= 8 ? -1 : g,
-                        V = null;
-                    j >= 0 && (V = e.colorSeg[j]);
-                    for (var f = 0; f < h.length; f++) {
-                        j < 0 ? (x = g >= 8 ? x + 1 : x, x = x >= 8 ? 1 : x) : x = V.color[Math.floor(f * V.color.length / h.length)];
-                        var F = [];
-                        Object.assign(F, h[f]), F[0] = F[0] * b + p, F[1] = -F[1] * b + d, 0 != F[2] && (F[2] = j < 0 ? x : 0 == j ? F[2] : x);
-                        var k = null;
-                        if (f < h.length - 1 && (k = [], Object.assign(k, h[f + 1]), k[2] = j < 0 ? x + 1 : 0 == j ? k[2] : V.color[Math.floor((f + 1) * V.color.length / h.length)]), r && a.push([h[f][0] * c * b + (p - s) * c, h[f][1] * b * c + (-d + s) * c, 0 == f ? 0 : F[2], F[3]]), null != k && F[2] != k[2]) {
-                            var m = 0 == F[2] ? k[2] : F[2];
-                            l.setStrokeStyle(colors[m]), 0 != F[2] && l.lineTo(F[0], F[1]), l.stroke(), l.beginPath(), l.moveTo(F[0], F[1])
-                        } else 0 == F[2] ? l.moveTo(F[0], F[1]) : l.lineTo(F[0], F[1]), null == k && l.setStrokeStyle(colors[F[2]])
-                    }
-                    l.stroke(), l.beginPath();
-                    var P = null;
-                    x = g >= 8 ? -1 : g;
-                    for (var u = 0; u < h.length; u++) {
-                        j < 0 ? (x = g >= 8 ? x + 1 : x, x = x >= 8 ? 1 : x) : x = V.color[Math.floor(u * V.color.length / h.length)];
-                        var X = [],
-                            N = [];
-                        Object.assign(X, h[u]), Object.assign(N, h[u]), X[0] = X[0] * b + p, X[1] = -X[1] * b + d, 0 != X[2] && (X[2] = j < 0 ? x : 0 == j ? X[2] : x);
-                        var H = null;
-                        u < h.length - 1 && (H = [], Object.assign(H, h[u + 1]), 0 != H[2] && (H[2] = j < 0 ? x + 1 : 0 == j ? H[2] : V.color[Math.floor((u + 1) * V.color.length / h.length)])), null != H && X[2] != H[2] ? null != P && P[0] == N[0] && P[1] == N[1] && (l.setStrokeStyle(colors[X[2]]), l.setFillStyle(colors[X[2]]), l.moveTo(X[0], X[1]), l.arc(X[0], X[1], 1, 0, 2 * Math.PI), l.stroke(), l.fill(), l.beginPath()) : null != P && P[0] == N[0] && P[1] == N[1] && (l.setStrokeStyle(colors[X[2]]), l.setFillStyle(colors[X[2]]), l.moveTo(X[0], X[1]), l.arc(X[0], X[1], 1, 0, 2 * Math.PI), l.stroke()), P = N
-                    }
-                    return l.fill(), a
-                }
-
-                function drawTransformedText(e, t) {
-                    var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
-                        n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
-                        h = rotateAndOffsetGroupedPoints(t),
-                        a = [],
-                        c = t.lineColor,
-                        o = colors,
-                        s = "red",
-                        l = -1,
-                        d = t.x0,
-                        b = t.y0,
-                        g = t.z,
-                        j = 800 / e.w,
-                        x = e.w / 2,
-                        V = e.ctx;
-                    n ? V.setLineDash(e.draw_line_type) : V.setLineDash([]);
-                    var f = t.lineColor - 9,
-                        F = null;
-                    f >= 0 && (F = e.colorSeg[f]);
-                    for (var k = -1, m = 0, P = 0; P < h.length; P++) k != h[P][0] && (m++, k = h[P][0]);
-                    var u = 1;
-                    k = -1, l = -1;
-                    for (var X = 0; X < h.length; X++) {
-                        var N = h[X][1];
-                        if (k != h[X][0]) {
-                            if (V.beginPath(), k = h[X][0], N.length > 1 && l++, f < 0) u = c <= 7 ? c : l % 7 + 1;
-                            else if (0 == f) u = l % 7 + 1;
-                            else {
-                                var H = Math.floor(l * F.color.length / m);
-                                u = F.color[H]
+                        var a = rotatePointsAroundBoundingBoxCenter(drawObject.ps[index], drawObject.ang, !0),
+                        s = drawObject.lineColor,
+                        l = s >= 8 ? 1 : s,
+                        p = s - 9,
+                        d = null;
+                    var b = drawObject.x0,
+                        g = drawObject.y0,
+                        j = drawObject.z;
+                    for (var x = a, V = 800 / width, f = width / 2, F = [], k = 0; k < x.length; k++) {
+                        var m = [x[k][0] * j + b, x[k][1] * j + g, x[k][2], x[k][3]];
+                        if (s >= 8) {
+                            if (p < 0) l += 1, l = l >= 8 ? 1 : l;
+                            else if (d && d.color) {
+                                var u = Math.floor(k * d.color.length / x.length);
+                                l = d.color[u]
                             }
-                            s = o[u], V.setStrokeStyle(s), V.setFillStyle(s)
                         }
-                        for (var z = 0; z < N.length; z++) {
-                            var Q = N[z],
-                                R = Q.x * g + d,
-                                v = b - Q.y * g;
-                            r && a.push([Q.x * j * g + (d - x) * j, Q.y * g * j + (-b + x) * j, 0 == z ? 0 : u, Q.z]), 0 == z ? V.moveTo(R, v) : Math.abs(Q.x - N[z - 1].x) < 1 && Math.abs(Q.y - N[z - 1].y) < 1 ? (V.arc(R, v, 1, 0, 2 * Math.PI), V.moveTo(R, v)) : V.lineTo(R, v)
-                        }
-                        V.stroke()
+                        F.push([(m[0] - f) * V, (f - m[1]) * V, 0 == k ? 0 : l, m[3]])
                     }
-                    return a
+                    return F
+                }
+
+                function drawAllTransformedPolylines(drawConfig, drawObject) {
+                    for (var shouldCollectResults = arguments.length > 2 && void 0 !== arguments[2] 
+                            && arguments[2], 
+                            useDashedLine = arguments.length > 3 && void 0 !== arguments[3] 
+                                && arguments[3], points = drawObject.ps, 
+                                accumulatedResults = [], i = 0; i < points.length; i++) {
+                        var currentPolylineResult = drawTransformedPolyline(drawConfig, drawObject, i, shouldCollectResults, useDashedLine);
+                        shouldCollectResults && (accumulatedResults = accumulatedResults.concat(currentPolylineResult))
+                    }
+                    return accumulatedResults
+                }
+
+                function drawAllTransformedPolylines2(drawObject, width ) {
+                    for (var  points = drawObject.ps, 
+                                accumulatedResults = [], i = 0; i < points.length; i++) {
+                        var currentPolylineResult = drawTransformedPolyline2(drawObject, i, width);
+                         (accumulatedResults = accumulatedResults.concat(currentPolylineResult))
+                    }
+                    return accumulatedResults
+
+                }
+
+                function drawTransformedObject(drawContext, drawObject) {
+                    var accumulateResult = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+                        useDashedLine = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        rotatedPoints = rotatePointsAroundBoundingBoxCenter(drawObject.ps, drawObject.ang),
+                        resultPoints = [],
+                        scalingFactor = 800 / drawContext.w,
+                        centerOffsetX = drawContext.w / 2,
+                        ctx = drawContext.ctx,
+                        positionX = drawObject.x0,
+                        positionY = drawObject.y0,
+                        scaleZ = drawObject.z;
+                    ctx.beginPath(), useDashedLine ? ctx.setLineDash(drawContext.draw_line_type) : ctx.setLineDash([]);
+                    var baseLineColor = drawObject.lineColor,
+                        colorSegmentIndex = baseLineColor - 9,
+                        currentColorIndex = baseLineColor >= 8 ? -1 : baseLineColor,
+                        colorSegment = null;
+                    colorSegmentIndex >= 0 && (colorSegment = drawContext.colorSeg[colorSegmentIndex]);
+                    for (var pointIndex = 0; pointIndex < rotatedPoints.length; pointIndex++) {
+                        colorSegmentIndex < 0 ? (currentColorIndex = baseLineColor >= 8 ? currentColorIndex + 1 : currentColorIndex, currentColorIndex = currentColorIndex >= 8 ? 1 : currentColorIndex) : currentColorIndex = colorSegment.color[Math.floor(pointIndex * colorSegment.color.length / rotatedPoints.length)];
+                        var transformedPoint = [];
+                        Object.assign(transformedPoint, rotatedPoints[pointIndex]), transformedPoint[0] = transformedPoint[0] * scaleZ + positionX, transformedPoint[1] = -transformedPoint[1] * scaleZ + positionY, 0 != transformedPoint[2] && (transformedPoint[2] = colorSegmentIndex < 0 ? currentColorIndex : 0 == colorSegmentIndex ? transformedPoint[2] : currentColorIndex);
+                        var nextPoint = null;
+                        if (pointIndex < rotatedPoints.length - 1 && (nextPoint = [], Object.assign(nextPoint, rotatedPoints[pointIndex + 1]), nextPoint[2] = colorSegmentIndex < 0 ? currentColorIndex + 1 : 0 == colorSegmentIndex ? nextPoint[2] : colorSegment.color[Math.floor((pointIndex + 1) * colorSegment.color.length / rotatedPoints.length)]), accumulateResult && resultPoints.push([rotatedPoints[pointIndex][0] * scalingFactor * scaleZ + (positionX - centerOffsetX) * scalingFactor, rotatedPoints[pointIndex][1] * scaleZ * scalingFactor + (-positionY + centerOffsetX) * scalingFactor, 0 == pointIndex ? 0 : transformedPoint[2], transformedPoint[3]]), null != nextPoint && transformedPoint[2] != nextPoint[2]) {
+                            var activeColor = 0 == transformedPoint[2] ? nextPoint[2] : transformedPoint[2];
+                            ctx.setStrokeStyle(colors[activeColor]), 0 != transformedPoint[2] && ctx.lineTo(transformedPoint[0], transformedPoint[1]), ctx.stroke(), ctx.beginPath(), ctx.moveTo(transformedPoint[0], transformedPoint[1])
+                        } else 0 == transformedPoint[2] ? ctx.moveTo(transformedPoint[0], transformedPoint[1]) : ctx.lineTo(transformedPoint[0], transformedPoint[1]), null == nextPoint && ctx.setStrokeStyle(colors[transformedPoint[2]])
+                    }
+                    ctx.stroke(), ctx.beginPath();
+                    var previousPoint = null;
+                    currentColorIndex = baseLineColor >= 8 ? -1 : baseLineColor;
+                    for (var secondLoopIndex = 0; secondLoopIndex < rotatedPoints.length; secondLoopIndex++) {
+                        colorSegmentIndex < 0 ? (currentColorIndex = baseLineColor >= 8 ? currentColorIndex + 1 : currentColorIndex, currentColorIndex = currentColorIndex >= 8 ? 1 : currentColorIndex) : currentColorIndex = colorSegment.color[Math.floor(secondLoopIndex * colorSegment.color.length / rotatedPoints.length)];
+                        var currentTransformedPoint = [],
+                            originalPoint = [];
+                        Object.assign(currentTransformedPoint, rotatedPoints[secondLoopIndex]), Object.assign(originalPoint, rotatedPoints[secondLoopIndex]), currentTransformedPoint[0] = currentTransformedPoint[0] * scaleZ + positionX, currentTransformedPoint[1] = -currentTransformedPoint[1] * scaleZ + positionY, 0 != currentTransformedPoint[2] && (currentTransformedPoint[2] = colorSegmentIndex < 0 ? currentColorIndex : 0 == colorSegmentIndex ? currentTransformedPoint[2] : currentColorIndex);
+                        var nextTransformedPoint = null;
+                        secondLoopIndex < rotatedPoints.length - 1 && (nextTransformedPoint = [], Object.assign(nextTransformedPoint, rotatedPoints[secondLoopIndex + 1]), 0 != nextTransformedPoint[2] && (nextTransformedPoint[2] = colorSegmentIndex < 0 ? currentColorIndex + 1 : 0 == colorSegmentIndex ? nextTransformedPoint[2] : colorSegment.color[Math.floor((secondLoopIndex + 1) * colorSegment.color.length / rotatedPoints.length)])), null != nextTransformedPoint && currentTransformedPoint[2] != nextTransformedPoint[2] ? null != previousPoint && previousPoint[0] == originalPoint[0] && previousPoint[1] == originalPoint[1] && (ctx.setStrokeStyle(colors[currentTransformedPoint[2]]), ctx.setFillStyle(colors[currentTransformedPoint[2]]), ctx.moveTo(currentTransformedPoint[0], currentTransformedPoint[1]), ctx.arc(currentTransformedPoint[0], currentTransformedPoint[1], 1, 0, 2 * Math.PI), ctx.stroke(), ctx.fill(), ctx.beginPath()) : null != previousPoint && previousPoint[0] == originalPoint[0] && previousPoint[1] == originalPoint[1] && (ctx.setStrokeStyle(colors[currentTransformedPoint[2]]), ctx.setFillStyle(colors[currentTransformedPoint[2]]), ctx.moveTo(currentTransformedPoint[0], currentTransformedPoint[1]), ctx.arc(currentTransformedPoint[0], currentTransformedPoint[1], 1, 0, 2 * Math.PI), ctx.stroke()), previousPoint = originalPoint
+                    }
+                    return ctx.fill(), resultPoints
+                }
+
+                function drawTransformedObject2(drawObject, width) {
+                    var rotatedPoints = rotatePointsAroundBoundingBoxCenter(drawObject.ps, drawObject.ang),
+                        resultPoints = [],
+                        scalingFactor = 800 / width,
+                        centerOffsetX = width / 2,
+                        positionX = drawObject.x0,
+                        positionY = drawObject.y0,
+                        scaleZ = drawObject.z;
+                    var baseLineColor = drawObject.lineColor,
+                        colorSegmentIndex = baseLineColor - 9,
+                        currentColorIndex = baseLineColor >= 8 ? -1 : baseLineColor;
+                    for (var pointIndex = 0; pointIndex < rotatedPoints.length; pointIndex++) {
+                        colorSegmentIndex < 0 ? (currentColorIndex = baseLineColor >= 8 ? currentColorIndex + 1 : currentColorIndex, currentColorIndex = currentColorIndex >= 8 ? 1 : currentColorIndex) : currentColorIndex = 1;
+                        var transformedPoint = [];
+                        Object.assign(transformedPoint, rotatedPoints[pointIndex]), transformedPoint[0] = transformedPoint[0] * scaleZ + positionX, transformedPoint[1] = -transformedPoint[1] * scaleZ + positionY, 0 != transformedPoint[2] && (transformedPoint[2] = colorSegmentIndex < 0 ? currentColorIndex : 0 == colorSegmentIndex ? transformedPoint[2] : currentColorIndex);
+                        resultPoints.push([rotatedPoints[pointIndex][0] * scalingFactor * scaleZ + (positionX - centerOffsetX) * scalingFactor, rotatedPoints[pointIndex][1] * scaleZ * scalingFactor + (-positionY + centerOffsetX) * scalingFactor, 0 == pointIndex ? 0 : transformedPoint[2], transformedPoint[3]])
+                    }
+                    return resultPoints
+                }
+
+
+                function drawTransformedText(drawContext, drawObject) {
+                    var accumulateResult = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+                        useDashedLine = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
+                        transformedTextGroups = rotateAndOffsetGroupedPoints(drawObject),
+                        result = [],
+                        baseLineColor = drawObject.lineColor,
+                        colorArray = colors,
+                        currentStrokeColor = "red",
+                        lineIndex = -1,
+                        positionX = drawObject.x0,
+                        positionY = drawObject.y0,
+                        scaleZ = drawObject.z,
+                        scalingFactor = 800 / drawContext.w,
+                        centerOffsetX = drawContext.w / 2,
+                        ctx = drawContext.ctx;
+                    useDashedLine ? ctx.setLineDash(drawContext.draw_line_type) : ctx.setLineDash([]);
+                    var colorSegmentIndex = drawObject.lineColor - 9,
+                        colorSegment = null;
+                    colorSegmentIndex >= 0 && (colorSegment = drawContext.colorSeg[colorSegmentIndex]);
+                    for (var lastGroupId = -1, totalGroups = 0, groupIndex = 0; groupIndex < transformedTextGroups.length; groupIndex++) lastGroupId != transformedTextGroups[groupIndex][0] && (totalGroups++, lastGroupId = transformedTextGroups[groupIndex][0]);
+                    var currentColorIndex = 1;
+                    lastGroupId = -1, lineIndex = -1;
+                    for (var textGroupIndex = 0; textGroupIndex < transformedTextGroups.length; textGroupIndex++) {
+                        var pointsInGroup = transformedTextGroups[textGroupIndex][1];
+                        if (lastGroupId != transformedTextGroups[textGroupIndex][0]) {
+                            if (ctx.beginPath(), lastGroupId = transformedTextGroups[textGroupIndex][0], pointsInGroup.length > 1 && lineIndex++, colorSegmentIndex < 0) currentColorIndex = baseLineColor <= 7 ? baseLineColor : lineIndex % 7 + 1;
+                            else if (0 == colorSegmentIndex) currentColorIndex = lineIndex % 7 + 1;
+                            else {
+                                var segmentColorIndex = Math.floor(lineIndex * colorSegment.color.length / totalGroups);
+                                currentColorIndex = colorSegment.color[segmentColorIndex]
+                            }
+                            currentStrokeColor = colorArray[currentColorIndex], ctx.setStrokeStyle(currentStrokeColor), ctx.setFillStyle(currentStrokeColor)
+                        }
+                        for (var pointIndex = 0; pointIndex < pointsInGroup.length; pointIndex++) {
+                            var currentPoint = pointsInGroup[pointIndex],
+                                canvasX = currentPoint.x * scaleZ + positionX,
+                                canvasY = positionY - currentPoint.y * scaleZ;
+                            accumulateResult && result.push([currentPoint.x * scalingFactor * scaleZ + (positionX - centerOffsetX) * scalingFactor, currentPoint.y * scaleZ * scalingFactor + (-positionY + centerOffsetX) * scalingFactor, 0 == pointIndex ? 0 : currentColorIndex, currentPoint.z]), 0 == pointIndex ? ctx.moveTo(canvasX, canvasY) : Math.abs(currentPoint.x - pointsInGroup[pointIndex - 1].x) < 1 && Math.abs(currentPoint.y - pointsInGroup[pointIndex - 1].y) < 1 ? (ctx.arc(canvasX, canvasY, 1, 0, 2 * Math.PI), ctx.moveTo(canvasX, canvasY)) : ctx.lineTo(canvasX, canvasY)
+                        }
+                        ctx.stroke()
+                    }
+                    return result
+                }
+
+                function drawTransformedText2(drawObject, width) {
+                    var transformedTextGroups = rotateAndOffsetGroupedPoints(drawObject),
+                        result = [],
+                        baseLineColor = drawObject.lineColor,
+                        lineIndex = -1,
+                        positionX = drawObject.x0,
+                        positionY = drawObject.y0,
+                        scaleZ = drawObject.z,
+                        scalingFactor = 800 / width,
+                        centerOffsetX = width / 2;
+                    var colorSegmentIndex = drawObject.lineColor - 9;
+                    for (var lastGroupId = -1, totalGroups = 0, groupIndex = 0; groupIndex < transformedTextGroups.length; groupIndex++) lastGroupId != transformedTextGroups[groupIndex][0] && (totalGroups++, lastGroupId = transformedTextGroups[groupIndex][0]);
+                    var currentColorIndex = 1;
+                    lastGroupId = -1, lineIndex = -1;
+                    for (var textGroupIndex = 0; textGroupIndex < transformedTextGroups.length; textGroupIndex++) {
+                        var pointsInGroup = transformedTextGroups[textGroupIndex][1];
+                        if (lastGroupId != transformedTextGroups[textGroupIndex][0]) {
+                            lastGroupId = transformedTextGroups[textGroupIndex][0], pointsInGroup.length > 1 && lineIndex++, colorSegmentIndex < 0 ? currentColorIndex = baseLineColor <= 7 ? baseLineColor : lineIndex % 7 + 1 : 0 == colorSegmentIndex ? currentColorIndex = lineIndex % 7 + 1 : currentColorIndex = 1
+                        }
+                        for (var pointIndex = 0; pointIndex < pointsInGroup.length; pointIndex++) {
+                            var currentPoint = pointsInGroup[pointIndex];
+                            result.push([currentPoint.x * scalingFactor * scaleZ + (positionX - centerOffsetX) * scalingFactor, currentPoint.y * scaleZ * scalingFactor + (-positionY + centerOffsetX) * scalingFactor, 0 == pointIndex ? 0 : currentColorIndex, currentPoint.z])
+                        }
+                    }
+                    return result
                 }
 
                 function resizeGroupedPoints(e, t, r, n, h) {
@@ -6352,6 +6438,19 @@ globalThis["webpackJsonp"].push([
                             a = -1 == o.drawMode ? drawAllTransformedPolylines(drawConfig , o, !0, s) : 9999 == o.drawMode ? drawTransformedText(drawConfig , o, !0, s) : drawTransformedObject(drawConfig , o, !0, s), n = n.concat(a)
                         }
                         return selectionState  && null != selectionState .selectRect && (selectionState .selectRect.left = selectionState .selectRect.left + selectionState .selectRect.mx, selectionState .selectRect.top = selectionState .selectRect.top + selectionState .selectRect.my, selectionState .selectRect.width = selectionState .selectRect.width * selectionState .selectRect.z, selectionState .selectRect.height = selectionState .selectRect.height * selectionState .selectRect.z, selectionState .selectRect.z = 1, selectionState .selectRect.mx = 0, selectionState .selectRect.my = 0), n
+                    },
+                    drawPs2: function(objectsToDraw ,width) {
+                        var points = [];
+                        for (var currentDrawResult = [], i = 0; i < objectsToDraw .length; i++) {
+                            var drawObject = objectsToDraw [i];
+                            currentDrawResult = -1 == drawObject.drawMode 
+                                ? drawAllTransformedPolylines2(drawObject,width) 
+                                : 9999 == drawObject.drawMode 
+                                    ? drawTransformedText2(drawObject, width) 
+                                    : drawTransformedObject2(drawObject,width), 
+                                        points = points.concat(currentDrawResult)
+                        }
+                        return points
                     },
                     getdrawPointsCnt: function(e) {
                         for (var t = 0, r = 0; r < e.length; r++) t += getPointCount(e[r].drawMode, e[r].ps);
