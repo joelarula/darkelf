@@ -1,7 +1,7 @@
 use crate::model::{DrawData, Point, ProjectItem, DrawItem, DrawPoint, DrawMode};
 use log::{debug, info};
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, LayoutItem, MainCommandData, PisObject, SettingsData};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, MainCommandData, PisObject, SettingsData};
 use std::collections::HashMap;
 
 pub const HEADER: &str = "E0E1E2E3";
@@ -148,54 +148,16 @@ impl CommandGenerator {
         }
     }
 
-
-/// Helper function to extract and clamp numeric values
-//fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
-//    if value < min || value > max {
-//        default
-//    } else {
-//        value
-//    }
-//}
-
-/// Extract hex value from a position in command data, matching JavaScript behavior
-fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
-    let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
-    let end = start + 2 * len;
-    if end <= data.len() {
-        u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
-    } else {
-        0
-    }
-}
-
     /// Extract hex value from a position in command data, matching JavaScript behavior
-   // fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
-  //      debug!("Extracting hex value at pos {} with len {} from data: {}", pos, len, data);
-   //     
-    //    // JavaScript: var n = 2 * (startByte - 1)
-   //     let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
-   //     // JavaScript: var h = n + 2 * byteLength
-   //     let end = start + 2 * len;
-   //     
-   //     if end <= data.len() && start < data.len() {  // Ensure valid range
-   //         let hex_str = &data[start..end];
-   //         debug!("Extracted hex string: {}", hex_str);
-   //         match u16::from_str_radix(hex_str, 16) {
-   //             Ok(val) => {
-   //                 debug!("Parsed value: {}", val);
-   //                 val
-   //             },
-   //             Err(e) => {
-   //                 debug!("Failed to parse hex value: {}", e);
-   //                 0
-   //             }
-   //         }
-   //     } else {
-   //         debug!("Position out of bounds");
-   //         0
-   //     }
-   // }
+    fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
+        let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
+        let end = start + 2 * len;
+        if end <= data.len() {
+            u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
+        } else {
+            0
+        }
+    }
 
     /// Parse the main command section
     fn parse_main_command(cmd: &str) -> Option<MainCommandData> {
@@ -227,8 +189,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
     /// Parse the settings command section
     fn parse_settings_command(cmd: &str) -> SettingsData {
-        info!("Parsing settings command: {}", cmd);
-
+        
         // Extract and clamp values as per JavaScript logic
         let channel_val = Self::clamp_value(Self::extract_hex_value(1, 2, cmd), 1, 512, 1) as u16;
         let channel = Self::extract_hex_value(3, 1, cmd) as u8;
@@ -290,16 +251,19 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         let prj_data = crate::model::ProjectData { public, prj_item };
 
         // PisObject extraction from main_cmd
-        // PisObject extraction from main_cmd
         let tx_point_time = Self::clamp_value(Self::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
         let mut cnf_valus_vec = Vec::new();
+       
         for i in 0..13 {
             cnf_valus_vec.push(Self::clamp_value(Self::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
         }
+       
         let mut cnf_valus_arr = [0u32; 13];
-        for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
+       
+       for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
             cnf_valus_arr[i] = *val;
         }
+
         let mut pis_obj = PisObject {
             tx_point_time: tx_point_time as u32,
             cnf_valus: cnf_valus_arr,
@@ -464,7 +428,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         }
 
         // z: run direction if arbPlay
-        let mut run_direction = String::new();
+        let run_direction = String::new();
         //if let Some(features) = features {
         //    if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
         //        run_direction += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
@@ -502,28 +466,6 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         command.to_uppercase()
     }
 
-
-    pub fn get_xts_cmd(coord_data: &str) -> String {
-        debug!("get_xts_cmd called with coord_data: {}", coord_data);
-        String::new()
-    }
-
-    pub fn get_xys_cmd(coords: &[Vec<f64>], version: i32) -> String {
-        debug!("get_xys_cmd called with coords: {:?}, version: {}", coords, version);
-        String::new()
-    }
-
-    pub fn get_xys_cmd_arr(items: &[LayoutItem], config: &CommandConfig, direction: i32, version: i32) -> String {
-        debug!("get_xys_cmd_arr called with items len: {}, direction: {}, version: {}", items.len(), direction, version);
-        info!("CommandConfig: {:?}", config);
-        String::new()
-    }
-    
-    // Drawing commands
-    pub fn get_draw_line_str(points: &[Point], count: i32) -> String {
-        debug!("get_draw_line_str called with points: {:?}, count: {}", points, count);
-        String::new()
-    }
 
     pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
@@ -583,7 +525,7 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     /// Convert draw point string to command format with headers and footers
     pub fn draw_point_str_to_cmd(point_string: &str) -> String {
         let command_str = format!("{}{}{}", DRAW_CMD_HEADER, point_string, DRAW_CMD_FOOTER);
-        
+       
         command_str.to_uppercase()
     }
 
@@ -925,7 +867,6 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
             let x = point.x;
             let y = -point.y;  // JavaScript uses -point.y
             
-            // rotatePointAroundCenter(t, s, l, d[0], h * d[1])
             let rotated = Self::rotate_point_around_center(angle, center_x, center_y, x, y);
             
             rotated_points.push(DrawPoint::new(

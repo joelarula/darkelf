@@ -99,18 +99,64 @@ function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
   // Load drawing points data from ruut.json
   const drawPoints = data.data.drawPoints;
 
-  // Use drawConfig from ruut.json
-  const drawConfig = data.data.pisObj;
+  // Use pisObj from ruut.json
+  const pisObj = data.data.pisObj;
 
   // Use features from ruut.json
   const features = data.data.features ;
 
   const pointTime = "00"; // Fourth parameter for point timing
 
-  let flatPoints2 = handDrawGeometryUtils.drawPs2(drawPoints, 300);
-  console.log('flatPoints2:', flatPoints2);
+  // Create mock canvas context for drawPs function
+  const mockContext = {
+    clearRect: function() {},
+    setLineWidth: function() {},
+    beginPath: function() {},
+    moveTo: function() {},
+    lineTo: function() {},
+    stroke: function() {},
+    arc: function() {},
+    fill: function() {},
+    setStrokeStyle: function() {},
+    setFillStyle: function() {},
+    setLineDash: function() {},
+    closePath: function() {},
+    rect: function() {},
+    save: function() {},
+    restore: function() {},
+    translate: function() {},
+    rotate: function() {},
+    scale: function() {},
+    clip: function() {},
+    createLinearGradient: function() { return { addColorStop: function() {} }; },
+    createRadialGradient: function() { return { addColorStop: function() {} }; }
+  };
 
-  const drawCommand = exportsObj.getDrawCmdStr(flatPoints2, drawConfig, features, pointTime);
+  // Create drawConfig for drawPs function
+  const drawConfig = {
+    ctx: mockContext,
+    w: 300,
+    h: 300,
+    draw_line_type: 0,
+    colorSeg: [
+      { color: [1, 2, 3, 4, 5, 6, 7] } // Mock color segment
+    ]
+  };
+
+  // Create selectionState for drawPs function  
+  const selectionState = {
+    selectRect: null,
+    selectLines: [],
+    selectMode: false
+  };
+
+  let flatPoints1 = handDrawGeometryUtils.drawPs(drawPoints, drawConfig, selectionState);
+  let flatPoints2 = handDrawGeometryUtils.drawPs2(drawPoints, 300);
+  console.log('flatPoints1:', flatPoints1);
+  console.log('flatPoints2:', flatPoints2);
+ 
+
+  const drawCommand = exportsObj.getDrawCmdStr(flatPoints2, pisObj, features, pointTime);
   console.log('Result of getDrawCmdStr:', drawCommand);
   console.log('  drawCommand length:', drawCommand ? drawCommand.length : 'null');
 

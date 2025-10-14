@@ -71,29 +71,74 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
 
     sleep(Duration::from_millis(500));
 
-    test_on_off(device).await;
-    sleep(Duration::from_millis(500));
-    test_settings(device).await;
-    sleep(Duration::from_millis(500));
-    test_playback_command(device).await;
+    //test_on_off(device).await;
+    //sleep(Duration::from_millis(500));
+    //test_settings(device).await;
+    //sleep(Duration::from_millis(500));
+    //test_playback_command(device).await;
     
     sleep(Duration::from_millis(500));
     test_show_drawings(device).await;
-
-    sleep(Duration::from_millis(500));
-    test_show_playback(device).await;
+    test_shapes(device).await;
+    //sleep(Duration::from_millis(500));
+    //test_show_playback(device).await;
 
 
     Ok(())
 }
 
+async fn test_shapes(device: &mut LaserDevice) {
+
+     // Load the point arrays from picArrayShapes.json
+    let json_content = fs::read_to_string("scripts/picArrayShapes.json")
+        .expect("Failed to read picArrayShapes.json");
+    
+    let point_arrays: Vec<Vec<Vec<f64>>> = serde_json::from_str(&json_content)
+        .expect("Failed to parse JSON");
+    
+    info!("Loaded {} shape arrays from JSON", point_arrays.len());
+    
+    // Create default DrawConfig and Features for command generation
+    let draw_config = DrawConfig {
+        config_values: vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        text_point_time: 55,
+    };
+    
+    // Process each point array and generate commands
+    for (shape_index, point_array) in point_arrays.iter().take(10).enumerate() {  // Limit to first 10 shapes
+        info!("Processing Shape #{} with {} points:", shape_index + 1, point_array.len());
+        
+        // Convert point array to Points
+        let draw_points: Vec<Point> = point_array
+            .iter()
+            .map(|point_data| {
+                if point_data.len() >= 4 {
+                    Point::new(
+                        point_data[0],           // x
+                        point_data[1],           // y
+                        point_data[2] as u8,     // color
+                        point_data[3] as u8,     // pen_state
+                    )
+                } else {
+                    Point::new(0.0, 0.0, 1, 0)  // Default fallback
+                }
+            })
+            .collect();
+        
+        
+         device.draw(draw_points, draw_config.clone()).await;
+        sleep(Duration::from_millis(2500));
+    }
+
+}
+
 async fn test_show_drawings(device: &mut LaserDevice) {
 
-        let cmd: PlaybackCommand = PlaybackCommand::default(PlaybackMode::HandDrawnDoodle);
-        device.set_playback_mode(cmd).await;
+       // let cmd: PlaybackCommand = PlaybackCommand::default(PlaybackMode::HandDrawnDoodle);
+       // device.set_playback_mode(cmd).await;
 
         // Load the ruut.json file using utility function
-        let draw_data = load_draw_data("scripts/ruut.json")
+        let draw_data = load_draw_data("./scripts/ruut.json")
             .expect("Should be able to load ruut.json DrawData");
     
       
@@ -106,10 +151,20 @@ async fn test_show_drawings(device: &mut LaserDevice) {
         let points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
         device.draw(points, draw_config).await;
 
-    
-    //let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&points, &draw_config, &features);
+       //  Load the lill.json file using utility function
+        let draw_data2 = load_draw_data("./scripts/lill.json")
+            .expect("Should be able to load lill.json DrawData");
 
-}
+        // Read DrawConfig from the PisObject in the loaded data
+        let draw_config2 = DrawConfig {
+            config_values: draw_data2.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
+            text_point_time: draw_data2.pis_obj.tx_point_time as u8,
+        };
+        
+        let points2 = CommandGenerator::prepare_draw_data(&draw_data2, 300.0);
+        device.draw(points2, draw_config2).await;
+
+    }
 
 async fn test_show_playback(device: &mut LaserDevice) {
 
@@ -123,7 +178,7 @@ async fn test_show_playback(device: &mut LaserDevice) {
             selected_shows: Some(selected_shows),
             audio_mode: Some(false),
             audio_sensitivity: Some(100),
-            playback_speed: Some(100),
+            playback_speed: Some(10),
             color: None, // Add appropriate value if needed, e.g. Some(0)
             tick_playback: None, // Add appropriate value if needed, e.g. Some(false)
         };

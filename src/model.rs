@@ -35,11 +35,6 @@ pub struct FeatureConfig {
 }
 
 
-#[derive(Debug, Clone, Default)]
-pub struct DrawConfig {
-    pub config_values: Vec<u8>,
-    pub text_point_time: u8,
-}
 
 
 #[derive(Debug, Clone, Default)]
@@ -161,24 +156,6 @@ impl Point {
     
 
 }
-#[derive(Debug)]
-pub struct LayoutItem {
-    pub xys: Vec<Vec<f64>>,
-    pub time: f64,
-    pub xys_right: Option<Vec<Vec<f64>>>,
-    pub xys_up: Option<Vec<Vec<f64>>>,
-    pub xys_down: Option<Vec<Vec<f64>>>,
-}
-
-//#[derive(Debug)]
-//pub struct Features {
-//    pub features: HashMap<String, bool>,
-//    pub group_list: Option<Vec<ColorGroup>>,
-//    pub prj_parm: Option<ProjectParams>,
-//    pub xy_cnf_save: Option<bool>,
-//}
-
-
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -186,16 +163,6 @@ pub struct ColorGroup {
     pub color: u8,
 }
 
-//impl Default for Features {
-//    fn default() -> Self {
-//        Self {
-//            features: HashMap::new(),
-//            group_list: None,
-//            prj_parm: None,
-//            xy_cnf_save: None,
- //       }
-//    }
-//}
 
 #[derive(Debug)]
 pub struct ProjectParams {
@@ -761,6 +728,12 @@ impl Default for DrawItem {
     fn default() -> Self {
         Self::new()
     }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct DrawConfig {
+    pub config_values: Vec<u8>,
+    pub text_point_time: u8,
 }
 
 
