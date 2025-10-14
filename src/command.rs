@@ -531,18 +531,14 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
     }
 
     pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String {
-        debug!("get_draw_cmd_str called with points len: {}", points.len());
-        info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        
+
         let point_time = "00";  // Default point time
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config, features, -1, point_time);
         Self::draw_point_str_to_cmd(&encoded_draw_cmd, features, None)
     }
 
     pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, point_time_value: i32, version: &str) -> String {
-        debug!("encode_draw_point_command called with points len: {}, point_time_value: {}, version: {}", points.len(), point_time_value, version);
-        info!("DrawConfig: {:?}, Features: {:?}", config, features);
-        
+     
         let mut config_str = String::new();
         let mut points_str = String::new();
         

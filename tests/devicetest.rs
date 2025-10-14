@@ -445,8 +445,8 @@ fn test_draw_data() {
         .expect("Should deserialize DrawData successfully");
     
     // Log the contents
-    info!("\n📋 DrawData Contents:");
-    info!("  🎨 Draw Objects: {} objects", draw_data.draw_points.len());
+    info!("\nDrawData Contents:");
+    info!("Draw Objects: {} objects", draw_data.draw_points.len());
     
     // Log each draw object
     for (i, obj) in draw_data.draw_points.iter().enumerate() {
@@ -476,9 +476,9 @@ fn test_draw_data() {
     info!("Config Values: {:?}", draw_data.pis_obj.cnf_valus);
 
     // Test prepare_draw_data function with width=300 (matching JavaScript test)
-    info!("\n🔧 Testing prepare_draw_data function:");
+    info!("\nTesting prepare_draw_data function:");
     let prepared_points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
-    info!("  📊 Total prepared points: {}", prepared_points.len());
+    info!("Total prepared points: {}", prepared_points.len());
     
     // Reference flatPoints2 data from JavaScript drawPs2 output (first 15 points for comparison)
     let reference_points = vec![
@@ -499,7 +499,7 @@ fn test_draw_data() {
         [-99.83542355624112, -233.33667408336294, 5.0, 0.0],
     ];
     
-    info!("  📋 Comparing first 15 points with reference flatPoints2:");
+    info!("Comparing first 15 points with reference flatPoints2:");
     for (i, point) in prepared_points.iter().take(15).enumerate() {
         if i < reference_points.len() {
             let ref_point = &reference_points[i];
@@ -521,7 +521,7 @@ fn test_draw_data() {
     }
     
     // Test Point struct compatibility with drawPs2 format
-    info!("\n🔄 Testing Point struct compatibility with drawPs2 format:");
+    info!("\nTesting Point struct compatibility with drawPs2 format:");
     let sample_draw_ps2_point = [-164.5376292142001, 198.01136363636368, 0.0, 1.0];
     let point_from_js = Point::from_js_array(
         sample_draw_ps2_point[0], 
@@ -530,16 +530,16 @@ fn test_draw_data() {
         sample_draw_ps2_point[3]
     );
     
-    info!("  📍 Sample Point from JS array: x={:.3}, y={:.3}, color={}, pen_state={}", 
+    info!("Sample Point from JS array: x={:.3}, y={:.3}, color={}, pen_state={}", 
         point_from_js.x, point_from_js.y, point_from_js.color, point_from_js.pen_state);
     
     // Convert back to array format
     let array_format = point_from_js.to_array();
-    info!("  🔁 Converted back to array: [{:.3}, {:.3}, {}, {}]", 
+    info!("Converted back to array: [{:.3}, {:.3}, {}, {}]", 
         array_format[0], array_format[1], array_format[2], array_format[3]);
     
 
-    info!("\n✅ prepare_draw_data and Point compatibility tests completed successfully!");
+    info!("\n prepare_draw_data and Point compatibility tests completed successfully!");
 }
 
 #[test]
@@ -571,9 +571,9 @@ fn test_draw_data_polylines() {
         .expect("Should deserialize DrawData successfully");
     
     // Log the contents
-    info!("\n📋 Polylines DrawData Contents:");
-    info!("  🎨 Draw Objects: {} objects", draw_data.draw_points.len());
-    info!("  📊 Draw Objects Count: {}", draw_data.draw_points.len());
+    info!("\nPolylines DrawData Contents:");
+    info!("Draw Objects: {} objects", draw_data.draw_points.len());
+    info!("Draw Objects Count: {}", draw_data.draw_points.len());
     
     // Log each draw object
     for (i, obj) in draw_data.draw_points.iter().enumerate() {
@@ -619,14 +619,14 @@ fn test_draw_data_polylines() {
         assert_eq!(obj.draw_mode, DrawMode::Polylines, "Draw mode should be Polylines (-1)");
     }
     
-    info!("\n🔧 PisObject Configuration:");
+    info!("\nPisObject Configuration:");
     info!("  TX Point Time: {}", draw_data.pis_obj.tx_point_time);
     info!("  Config Values: {:?}", draw_data.pis_obj.cnf_valus);
 
     // Test prepare_draw_data function with width=300 for polylines
-    info!("\n🔧 Testing prepare_draw_data function for polylines:");
+    info!("\nTesting prepare_draw_data function for polylines:");
     let prepared_points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
-    info!("  📊 Total prepared points from polylines: {}", prepared_points.len());
+    info!("Total prepared points from polylines: {}", prepared_points.len());
     
     // Reference flatPoints2 data from JavaScript drawAllTransformedPolylines2 output 
     let reference_points = vec![
@@ -652,7 +652,7 @@ fn test_draw_data_polylines() {
         [-92.79542402787638, 273.42109680175776, 1.0, 0.0],
     ];
     
-    info!("  📋 Comparing first 20 points with reference flatPoints2:");
+    info!("Comparing first 20 points with reference flatPoints2:");
     for (i, point) in prepared_points.iter().take(20).enumerate() {
         if i < reference_points.len() {
             let ref_point = &reference_points[i];
@@ -683,7 +683,7 @@ fn test_draw_data_polylines() {
     }
     
     // Test command string generation from prepared points
-    info!("\n🔧 Testing get_draw_cmd_str function:");
+    info!("\nTesting get_draw_cmd_str function:");
     
     // Read DrawConfig from the PisObject in the loaded data
     let draw_config = DrawConfig {
@@ -691,9 +691,9 @@ fn test_draw_data_polylines() {
         text_point_time: draw_data.pis_obj.tx_point_time as u8,
     };
     
-    info!("  📋 DrawConfig from PisObject:");
-    info!("    Config Values: {:?}", draw_config.config_values);
-    info!("    Text Point Time: {} (0x{:02X})", draw_config.text_point_time, draw_config.text_point_time);
+    info!("DrawConfig from PisObject:");
+    info!("Config Values: {:?}", draw_config.config_values);
+    info!("Text Point Time: {} (0x{:02X})", draw_config.text_point_time, draw_config.text_point_time);
     
     // Create Features with textStopTime enabled
     let mut feature_map = HashMap::new();
@@ -707,19 +707,19 @@ fn test_draw_data_polylines() {
     };
     
     // Use all prepared points for command generation
-    info!("  📊 Using all {} points for command generation", prepared_points.len());
+    info!("Using all {} points for command generation", prepared_points.len());
     
     // Generate the command string
     let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config, &features);
-    info!("  📤 Generated command string: {}", command_string);
+    info!("Generated command string: {}", command_string);
     
     // Expected command string for polylines test data
     let expected_command = "F0F1F2F30000000000000000000000000000370000CD80AA00190280B3001E1080BE00231080C400291080CB00311080D2003C1080D900451080EE006D1080F0007A1080EA00A81080E500B61080DC00C31080D100D01080BC00E91080AF00F51080A200FE1080950106108087010C108079011010805D011110804F0110108038010810802D010110802400FA10801C00F110801400E610800C00DB10800600D010000600B810000A00AA10000F009B100014007F100010005910000C004E1000060040100005003A100005003F1000050045100008004E10000F005F1000130067100017006F10001C0078100022008210002F0094100037009E10004000A710005200B510005C00BA10006700BF10007100C310008300C710008C00C710009500C410009D00C21000AB00B91000B300B31000BA00AD1000C200A51000C8009C1000D500891000DA007E1000DF00721000E6005B1000E7004E1000E600411000E100281000DC001C1000D400121000C500001000B680101000AE80171000A6801B10009F801F100096802410008E8027100082802B10007A802A100078802910007780241000798021100080801A100086801710008E8013100097800F1000A1800C1000B7800B1000C3800C1000CE80101000E3801A1000EC80211000F380291000FA8032100100803C10010A805210010C805E10010E806D10010E807B100109809810010580A71000FE80B71000F580C61000E080E41000D380F11000B781071000A881101000998117100089811C10006B812610005A812910004B812A10003C812910002E8126100016811E10000A8116100002810D10800C80F810801280EC10801780DF10801B80D210801E80BB10801E80B110801D80A810801B80A01080158095108012809110800F808E10800B808D108009808E10800380951080018099100000809F10000380A610000580AE10000780B710000880BF10000880D710000380F3108003810210800A81111080168120108030813E108040814B10805081571080718167108081816B108091816C10809E816A1080BF81581080C7814E1080CD81431080D281361080D8811A1080D7810B1080D480FC1080CD80DC1080C780CD1080BF80BD1080B780B01080AE80A31080A6809810809D8090108095808B1080878085108080808510807A808610806F808A10806B808F10806780931080668098108065809C10806780A210807180AE10807980B310808280B810808D80BB10809880BD1080B280BD1080BF80BC1080D880B61080E580B31080F080AD108107809D10810F8092108115808710811C806C10811C805D10811B804F108114803110810F80231081088016108100800A1080EC000D1080E200171080D8001F1080C400291080BC00291080B500291080AE00281080A800261080A1002510809C0023108096002110808D001B108085001413F4F5F6F7";
     
-    info!("  📋 Expected command string: {}", expected_command);
+    info!("Expected command string: {}", expected_command);
     
     // Verify command matches expected output
-    info!("  📊 Command string length - Generated: {}, Expected: {}", command_string.len(), expected_command.len());
+    info!(" Command string length - Generated: {}, Expected: {}", command_string.len(), expected_command.len());
     
     // Verify command starts with correct header
     assert!(command_string.starts_with("F0F1F2F3"), "Command should start with F0F1F2F3 header");
@@ -729,8 +729,69 @@ fn test_draw_data_polylines() {
     
     // Verify exact match with expected command
     assert_eq!(command_string, expected_command, "Generated command should match expected command exactly");
-    info!("  ✅ Command strings match exactly!");
+    info!(" Command strings match exactly!");
     
-    info!("\n✅ Polylines prepare_draw_data and command generation tests completed successfully!");
-    info!("📈 Processed {} polylines objects into {} points", draw_data.draw_points.len(), prepared_points.len());
+    info!("\nPolylines prepare_draw_data and command generation tests completed successfully!");
+    info!("Processed {} polylines objects into {} points", draw_data.draw_points.len(), prepared_points.len());
+}
+
+#[test]
+fn test_point_array_shapes_command_generation() {
+    let _ = pretty_env_logger::try_init();
+    
+    info!("\n🔧 Testing command generation for point array shapes");
+    
+    // Load the point arrays from picArrayShapes.json
+    let json_content = fs::read_to_string("scripts/picArrayShapes.json")
+        .expect("Failed to read picArrayShapes.json");
+    
+    let point_arrays: Vec<Vec<Vec<f64>>> = serde_json::from_str(&json_content)
+        .expect("Failed to parse JSON");
+    
+    info!("Loaded {} shape arrays from JSON", point_arrays.len());
+    
+    // Create default DrawConfig and Features for command generation
+    let draw_config = DrawConfig {
+        config_values: vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        text_point_time: 55,
+    };
+    
+    let mut feature_map = HashMap::new();
+    feature_map.insert("textStopTime".to_string(), true);
+    
+    let features = Features {
+        features: feature_map,
+        group_list: None,
+        prj_parm: None,
+        xy_cnf_save: None,
+    };
+    
+    // Process each point array and generate commands
+    for (shape_index, point_array) in point_arrays.iter().take(10).enumerate() {  // Limit to first 10 shapes
+        info!("Processing Shape #{} with {} points:", shape_index + 1, point_array.len());
+        
+        // Convert point array to Points
+        let draw_points: Vec<Point> = point_array
+            .iter()
+            .map(|point_data| {
+                if point_data.len() >= 4 {
+                    Point::new(
+                        point_data[0],           // x
+                        point_data[1],           // y
+                        point_data[2] as u8,     // color
+                        point_data[3] as u8,     // pen_state
+                    )
+                } else {
+                    Point::new(0.0, 0.0, 1, 0)  // Default fallback
+                }
+            })
+            .collect();
+        
+        
+        // Generate command string for this shape
+        let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&draw_points, &draw_config, &features);
+        info!("Generated command: {} ", command_string);
+        
+    }
+
 }
