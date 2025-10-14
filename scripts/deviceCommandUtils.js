@@ -224,8 +224,8 @@ if (targetModule && typeof targetModule === 'function') {
 
   testGetQueryCmd(exported);
   testShowCmd(exported);
-  //testDrawCommand(exported, handDrawGeometryUtils);
-  testPolylineCommand(exported, handDrawGeometryUtils);
+  testDrawCommand(exported, handDrawGeometryUtils);
+  //testPolylineCommand(exported, handDrawGeometryUtils);
 
 } else {
   console.error('Module not found or not a function:', moduleName);

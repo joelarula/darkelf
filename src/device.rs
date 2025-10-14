@@ -1,4 +1,4 @@
-use crate::model::{CommandConfig, MainCommandData, PlaybackCommand, ProjectData, ProjectItem, PublicData, TextData};
+use crate::model::{CommandConfig, DrawConfig, DrawData, MainCommandData, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -131,12 +131,18 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
     }
 }
 
+    pub async fn draw(&self, points: Vec<Point>, config: DrawConfig) {
+       let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
+       let mut controller = self.device_controller.lock().unwrap();
+       let _ = controller.send(&cmd).await;
+
+    }
 
     /// Set the playback mode on the device
     pub async fn set_playback_mode(&self, command: PlaybackCommand) {
         let command_clone = command.clone();
         if let Some(command_config) = self.command_config_from_main(&command) {
-            let cmd = CommandGenerator::get_cmd_str(&command_config, None);
+            let cmd = CommandGenerator::get_cmd_str(&command_config);
             let mut controller = self.device_controller.lock().unwrap();
             if let Ok(_) = controller.send(&cmd).await {
                 // Update main_data in device_info
@@ -168,7 +174,7 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
         if let Some(ref mut response) = *info_lock {
 
           //  response.main_data = command_data.main_data;
-            let cmd = CommandGenerator::get_cmd_str(&command_data, None);
+            let cmd = CommandGenerator::get_cmd_str(&command_data);
             // Send the command to the device
             let mut controller = self.device_controller.lock().unwrap();
             if let Err(e) = controller.send(&cmd).await {

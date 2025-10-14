@@ -1,7 +1,8 @@
 use crate::model::{DrawData, Point, ProjectItem, DrawItem, DrawPoint, DrawMode};
 use log::{debug, info};
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, Features, LayoutItem, MainCommandData, PisObject, SettingsData, ShakeConfig};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, LayoutItem, MainCommandData, PisObject, SettingsData};
+use std::collections::HashMap;
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -410,46 +411,40 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
     
     // Configuration commands
-    pub fn get_cmd_str(config: &CommandConfig, features: Option<&Features>) -> String {
-        debug!("get_cmd_str called");
-        info!("CommandConfig: {:?}, Features: {:?}", config, features);
-
-        // Main header and footer
-    // let mut cmd = String::new();
-
-        // Main section fields
-    let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
-    let reserved_hex = Self::to_fixed_width_hex(0, 2);
-    let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
-    let tx_size_scaled = ((config.text_data.tx_size as f64) / 100.0 * 255.0).round() as u8;
-    let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-    let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-    let run_speed_scaled = ((config.text_data.run_speed as f64) / 100.0 * 255.0).round() as u8;
-    let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
-    let l = "00".to_string();
-    let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
-    let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
-    let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
-    // let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
-    // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
+    pub fn get_cmd_str(config: &CommandConfig) -> String {
+    
+        let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
+        let reserved_hex = Self::to_fixed_width_hex(0, 2);
+        let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
+        let tx_size_scaled = ((config.text_data.tx_size as f64) / 100.0 * 255.0).round() as u8;
+        let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+        let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
+        let run_speed_scaled = ((config.text_data.run_speed as f64) / 100.0 * 255.0).round() as u8;
+        let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
+        let l = "00".to_string();
+        let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
+        let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
+        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
+        // let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
+        // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
 
         // x: group color segment
         let mut x = "ffffffff0000".to_string();
-        if let Some(features) = features {
-            x.clear();
-            if let Some(group_list) = &features.group_list {
-                for group in group_list {
-                    x += &Self::to_fixed_width_hex(group.color, 2);
-                }
-            }
-            x += "ffffffff";
-            x = x.chars().take(8).collect();
-            if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
-                x += &Self::to_fixed_width_hex(config.text_data.tx_point_time, 2);
-            }
-            x += "0000";
-            x = x.chars().take(12).collect();
-        }
+        //if let Some(features) = features {
+        //    x.clear();
+        //    if let Some(group_list) = &features.group_list {
+         //       for group in group_list {
+        //            x += &Self::to_fixed_width_hex(group.color, 2);
+        //        }
+        //    }
+        //    x += "ffffffff";
+        //    x = x.chars().take(8).collect();
+            //if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
+            //    x += &Self::to_fixed_width_hex(config.text_data.tx_point_time, 2);
+            //}
+        //    x += "0000";
+        //    x = x.chars().take(12).collect();
+        //}
 
         // f: project items (ordered by protocol: TimelinePlayback, AnimationPlayback, ChristmasBroadcast, OutdoorPlayback)
         let mut f = String::new();
@@ -470,11 +465,11 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
 
         // z: run direction if arbPlay
         let mut run_direction = String::new();
-        if let Some(features) = features {
-            if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
-                run_direction += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
-            }
-        }
+        //if let Some(features) = features {
+        //    if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
+        //        run_direction += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
+        //    }
+        //}
 
         // Q: padding (JS logic: run_direction + padding = 44 bytes)
         let mut padding = String::new();
@@ -530,15 +525,13 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
         String::new()
     }
 
-    pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig, features: &Features) -> String {
-
-        let point_time = "00";  // Default point time
-        let encoded_draw_cmd = Self::encode_draw_point_command(points, config, features, -1, point_time);
-        Self::draw_point_str_to_cmd(&encoded_draw_cmd, features, None)
+    pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig) -> String {
+        let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
+        Self::draw_point_str_to_cmd(&encoded_draw_cmd)
     }
 
-    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, features: &Features, point_time_value: i32, version: &str) -> String {
-     
+    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, ) -> String {
+        let point_time = "00";  // Default point time
         let mut config_str = String::new();
         let mut points_str = String::new();
         
@@ -554,106 +547,46 @@ fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
                 config_str.push_str(&Self::to_fixed_width_hex(value, 2));
             } else if index == 13 {
                 // Handle picsPlay feature
-                if Self::get_feature_value(features, "picsPlay").unwrap_or(false) {
-                    let time_value = if point_time_value == -1 {
-                        // Use config.cnfValus[12] * 10 (equivalent to config.config_values[12] * 10)
-                        let cnf_value = if config.config_values.len() > 12 {
-                            config.config_values[12] as u32 * 10
-                        } else {
-                            0
-                        };
-                        cnf_value
-                    } else {
-                        (point_time_value * 10) as u32
-                    };
-                    config_str.push_str(&Self::to_fixed_width_hex(time_value, 2));
-                } else {
-                    config_str.push_str("00");
-                }
-            } else if index == 14 && Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
+                config_str.push_str(point_time);
+            } else if index == 14 {
                 // Use tx_point_time for textStopTime feature
                 config_str.push_str(&Self::to_fixed_width_hex(config.text_point_time, 2));
             } else {
-                config_str.push_str("00");
+                config_str.push_str(point_time);
             }
         }
-        
-        // Process points if version is "00"
-        if version == "00" {
-            config_str.push_str(version);
-            
-            for (ix, point) in points.iter().enumerate() {
-                let mut pen_state = point.pen_state;
+
+        config_str.push_str(point_time);
+
+        for (ix, point) in points.iter().enumerate() {
+            let mut pen_state = point.pen_state;
                 
-                // Handle textStopTime feature logic
-                if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
-                    if point.color == 0 {
-                        pen_state = 2;
-                    } else if (ix < points.len() - 1 && points[ix + 1].color == 0) || ix == points.len() - 1 {
-                        pen_state = 3;
-                    }
-                }
-                
-                // Note: coordinates are handled by to_fixed_width_hex_float
-                
-                // Combine color and pen_state using combine_nibbles logic
-                let combined = Self::combine_nibbles(point.color, pen_state);
-                
-                points_str.push_str(&Self::to_fixed_width_hex_float(point.x, 4));
-                points_str.push_str(&Self::to_fixed_width_hex_float(point.y, 4));
-                points_str.push_str(&Self::to_fixed_width_hex(combined, 2));
+            // Handle textStopTime feature logic - always enabled for polylines mode
+            if point.color == 0 {
+                pen_state = 2;
+            } else if (ix < points.len() - 1 && points[ix + 1].color == 0) || ix == points.len() - 1 {
+                pen_state = 3;
             }
-            
-            // Prepend point count and combine with config
-            format!("{}{}{}", config_str, Self::to_fixed_width_hex(points.len(), 4), points_str)
-        } else {
-            config_str.push_str(version);
-            config_str
+                
+            let combined = Self::combine_nibbles(point.color, pen_state);
+                
+            points_str.push_str(&Self::to_fixed_width_hex_float(point.x, 4));
+            points_str.push_str(&Self::to_fixed_width_hex_float(point.y, 4));
+            points_str.push_str(&Self::to_fixed_width_hex(combined, 2));
         }
+            
+        format!("{}{}{}", config_str, Self::to_fixed_width_hex(points.len(), 4), points_str)
+
     }
 
+
     /// Convert draw point string to command format with headers and footers
-    pub fn draw_point_str_to_cmd(point_string: &str, features: &Features, header_suffix: Option<u8>) -> String {
-        let command_str = match header_suffix {
-            Some(suffix) => {
-                format!("F0F1F2{}{}{}", 
-                    Self::to_fixed_width_hex(suffix, 2), 
-                    point_string, 
-                    DRAW_CMD_FOOTER)
-            }
-            None => {
-                if Self::get_feature_value(features, "picsPlay").unwrap_or(false) {
-                    format!("F0F1F200{}{}", point_string, DRAW_CMD_FOOTER)
-                } else {
-                    format!("{}{}{}", DRAW_CMD_HEADER, point_string, DRAW_CMD_FOOTER)
-                }
-            }
-        };
+    pub fn draw_point_str_to_cmd(point_string: &str) -> String {
+        let command_str = format!("{}{}{}", DRAW_CMD_HEADER, point_string, DRAW_CMD_FOOTER);
         
         command_str.to_uppercase()
     }
 
-
-    pub fn get_shake_cmd_str(config: &ShakeConfig, features: Option<&Features>) -> String {
-        debug!("get_shake_cmd_str called");
-        info!("ShakeConfig: {:?}, Features: {:?}", config, features);
-        String::new()
-    }
-
-
-    pub fn get_pis_list_cmd_str(items: &[PisObject], features: Option<&Features>) -> String {
-        debug!("get_pis_list_cmd_str called with items len: {}", items.len());
-        info!("Features: {:?}", features);
-        String::new()
-    }
-
-
-    
-    // Feature handling
-    pub fn get_feature_value(features: &Features, feature_name: &str) -> Option<bool> {
-        debug!("get_feature_value called with feature_name: {}", feature_name);
-        features.features.get(feature_name).copied()
-    }
 
     /// Verifies the received data against the random verification bytes sent in the query.
     /// Returns a tuple of (bool, DeviceInfo) where bool indicates if verification passed.

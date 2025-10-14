@@ -13,12 +13,11 @@ use darkelf::command::CommandGenerator;
 use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
-use darkelf::model::{DrawData, DrawItem, DrawMode, DrawPoints, Point, DrawConfig, Features};
+use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, DrawConfig};
 use std::fs;
 use std::path::Path;
-use std::collections::HashMap;
 
-    
+
 
 #[tokio::main]
 #[test]
@@ -77,11 +76,39 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     test_settings(device).await;
     sleep(Duration::from_millis(500));
     test_playback_command(device).await;
+    
+    sleep(Duration::from_millis(500));
+    test_show_drawings(device).await;
+
     sleep(Duration::from_millis(500));
     test_show_playback(device).await;
 
 
     Ok(())
+}
+
+async fn test_show_drawings(device: &mut LaserDevice) {
+
+        let cmd: PlaybackCommand = PlaybackCommand::default(PlaybackMode::HandDrawnDoodle);
+        device.set_playback_mode(cmd).await;
+
+        // Load the ruut.json file using utility function
+        let draw_data = load_draw_data("scripts/ruut.json")
+            .expect("Should be able to load ruut.json DrawData");
+    
+      
+        // Read DrawConfig from the PisObject in the loaded data
+        let draw_config = DrawConfig {
+            config_values: draw_data.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
+            text_point_time: draw_data.pis_obj.tx_point_time as u8,
+        };
+        
+        let points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
+        device.draw(points, draw_config).await;
+
+    
+    //let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&points, &draw_config, &features);
+
 }
 
 async fn test_show_playback(device: &mut LaserDevice) {
@@ -101,7 +128,7 @@ async fn test_show_playback(device: &mut LaserDevice) {
             tick_playback: None, // Add appropriate value if needed, e.g. Some(false)
         };
         device.set_playback_mode(cmd).await;
-        sleep(Duration::from_secs(3));
+        sleep(Duration::from_secs(5));
     }
    
 }
@@ -240,7 +267,7 @@ fn test_parse_device_response() {
     unsafe {
         env::set_var("RUST_LOG", "debug");
     }
-    info!("\nTesting parse_device_response");
+    info!("Testing parse_device_response");
 
     let received_data = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
     
@@ -312,7 +339,7 @@ let command_config = CommandConfig {
     },
 };
 
-    let cmd_str = CommandGenerator::get_cmd_str(&command_config, None);
+    let cmd_str = CommandGenerator::get_cmd_str(&command_config);
     info!("Composed command string: {}", cmd_str);
 
 
@@ -424,28 +451,12 @@ fn test_draw_data() {
         env::set_var("RUST_LOG", "debug");
     }
     
-    // Load the ruut.json file
-    let json_path = Path::new("scripts/ruut.json");
-    assert!(json_path.exists(), "ruut.json file should exist at {:?}", json_path);
-    
-    let json_content = fs::read_to_string(json_path)
-        .expect("Should be able to read ruut.json file");
-    
-    // Parse the outer wrapper first
-    let json_value: serde_json::Value = serde_json::from_str(&json_content)
-        .expect("Should parse JSON successfully");
-    
-    // Extract the data field which contains our DrawData
-    let draw_data_json = json_value.get("data")
-        .expect("JSON should have 'data' field")
-        .clone();
-    
-    // Parse into our DrawData struct
-    let draw_data: DrawData = serde_json::from_value(draw_data_json)
-        .expect("Should deserialize DrawData successfully");
+    // Load the ruut.json file using utility function
+    let draw_data = load_draw_data("./scripts/ruut.json")
+        .expect("Should be able to load ruut.json DrawData");
     
     // Log the contents
-    info!("\nDrawData Contents:");
+    info!("DrawData Contents:");
     info!("Draw Objects: {} objects", draw_data.draw_points.len());
     
     // Log each draw object
@@ -457,6 +468,10 @@ fn test_draw_data() {
         info!("Line Color: {}", obj.line_color);
         info!("Draw Mode: {:?}", obj.draw_mode);
         info!("Points: {} points", obj.ps.len());
+        info!("Points type: {:?}", match &obj.ps {
+            darkelf::model::DrawPoints::Simple(_) => "Simple",
+            darkelf::model::DrawPoints::Polylines(_) => "Polylines",
+        });
         
         // Log first few points as examples
         let all_points = obj.get_all_points();
@@ -539,7 +554,23 @@ fn test_draw_data() {
         array_format[0], array_format[1], array_format[2], array_format[3]);
     
 
-    info!("\n prepare_draw_data and Point compatibility tests completed successfully!");
+    // Read DrawConfig from the PisObject in the loaded data
+    let draw_config = DrawConfig {
+        config_values: draw_data.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
+        text_point_time: draw_data.pis_obj.tx_point_time as u8,
+    };
+
+     // Expected command string for polylines test data
+    let expected_command = "F0F1F2F300000000000000000000000000003700002A80A500C602804E00C670000800C670005E00C67000CA00C670010B00C671010B007040010B001940010B803D40010B809340010B80E94100B580E950005E80E950000880E950806480E95080A580E95180A580936080A5803D6080A500196080A500706080A500C663004A80E702005180E770005880E770005F80E770006780E770006C80E771006C80EE40006C80F440006C80FB40006C810240006C8109410066810950005F8109500058810950004F810950004A810951004A810260004A80FB60004A80F460004A80EE60004A80E763F4F5F6F7";
+    
+    // Generate the command string
+    let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config);
+    info!("Generated command string: {}", command_string);
+
+    // Verify exact match with expected command
+    assert_eq!(command_string, expected_command, "Generated command should match expected command exactly");
+    info!(" Command strings match exactly!");
+
 }
 
 #[test]
@@ -550,25 +581,9 @@ fn test_draw_data_polylines() {
         env::set_var("RUST_LOG", "debug");
     }
     
-    // Load the lill.json file (contains polylines data)
-    let json_path = Path::new("scripts/lill.json");
-    assert!(json_path.exists(), "lill.json file should exist at {:?}", json_path);
-    
-    let json_content = fs::read_to_string(json_path)
-        .expect("Should be able to read lill.json file");
-    
-    // Parse the outer wrapper first
-    let json_value: serde_json::Value = serde_json::from_str(&json_content)
-        .expect("Should parse JSON successfully");
-    
-    // Extract the data field which contains our DrawData
-    let draw_data_json = json_value.get("data")
-        .expect("JSON should have 'data' field")
-        .clone();
-    
-    // Parse into our DrawData struct
-    let draw_data: DrawData = serde_json::from_value(draw_data_json)
-        .expect("Should deserialize DrawData successfully");
+    // Load the lill.json file (contains polylines data) using utility function
+    let draw_data = load_draw_data("./scripts/lill.json")
+        .expect("Should be able to load lill.json DrawData");
     
     // Log the contents
     info!("\nPolylines DrawData Contents:");
@@ -695,22 +710,11 @@ fn test_draw_data_polylines() {
     info!("Config Values: {:?}", draw_config.config_values);
     info!("Text Point Time: {} (0x{:02X})", draw_config.text_point_time, draw_config.text_point_time);
     
-    // Create Features with textStopTime enabled
-    let mut feature_map = HashMap::new();
-    feature_map.insert("textStopTime".to_string(), true);
-    
-    let features = Features {
-        features: feature_map,
-        group_list: None,
-        prj_parm: None,
-        xy_cnf_save: None,
-    };
-    
     // Use all prepared points for command generation
     info!("Using all {} points for command generation", prepared_points.len());
     
     // Generate the command string
-    let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config, &features);
+    let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config);
     info!("Generated command string: {}", command_string);
     
     // Expected command string for polylines test data
@@ -756,16 +760,6 @@ fn test_point_array_shapes_command_generation() {
         text_point_time: 55,
     };
     
-    let mut feature_map = HashMap::new();
-    feature_map.insert("textStopTime".to_string(), true);
-    
-    let features = Features {
-        features: feature_map,
-        group_list: None,
-        prj_parm: None,
-        xy_cnf_save: None,
-    };
-    
     // Process each point array and generate commands
     for (shape_index, point_array) in point_arrays.iter().take(10).enumerate() {  // Limit to first 10 shapes
         info!("Processing Shape #{} with {} points:", shape_index + 1, point_array.len());
@@ -789,9 +783,25 @@ fn test_point_array_shapes_command_generation() {
         
         
         // Generate command string for this shape
-        let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&draw_points, &draw_config, &features);
+        let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&draw_points, &draw_config);
         info!("Generated command: {} ", command_string);
         
     }
 
+}
+
+
+fn load_draw_data(filename: &str) -> Result<DrawData, anyhow::Error> {
+
+    let json_filename =  filename.to_string();
+    let json_path = Path::new(&json_filename);
+    let json_content = fs::read_to_string(&json_path)?;
+    let json_value: serde_json::Value = serde_json::from_str(&json_content)?;
+    let draw_data_json = json_value.get("data")
+        .ok_or_else(|| anyhow!("JSON should have 'data' field"))?
+        .clone();
+    
+    let draw_data: DrawData = serde_json::from_value(draw_data_json)?;
+
+    Ok(draw_data)
 }

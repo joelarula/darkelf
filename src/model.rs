@@ -34,6 +34,7 @@ pub struct FeatureConfig {
     pub config_values: Vec<u8>,
 }
 
+
 #[derive(Debug, Clone, Default)]
 pub struct DrawConfig {
     pub config_values: Vec<u8>,
@@ -169,13 +170,15 @@ pub struct LayoutItem {
     pub xys_down: Option<Vec<Vec<f64>>>,
 }
 
-#[derive(Debug)]
-pub struct Features {
-    pub features: HashMap<String, bool>,
-    pub group_list: Option<Vec<ColorGroup>>,
-    pub prj_parm: Option<ProjectParams>,
-    pub xy_cnf_save: Option<bool>,
-}
+//#[derive(Debug)]
+//pub struct Features {
+//    pub features: HashMap<String, bool>,
+//    pub group_list: Option<Vec<ColorGroup>>,
+//    pub prj_parm: Option<ProjectParams>,
+//    pub xy_cnf_save: Option<bool>,
+//}
+
+
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -183,16 +186,16 @@ pub struct ColorGroup {
     pub color: u8,
 }
 
-impl Default for Features {
-    fn default() -> Self {
-        Self {
-            features: HashMap::new(),
-            group_list: None,
-            prj_parm: None,
-            xy_cnf_save: None,
-        }
-    }
-}
+//impl Default for Features {
+//    fn default() -> Self {
+//        Self {
+//            features: HashMap::new(),
+//            group_list: None,
+//            prj_parm: None,
+//            xy_cnf_save: None,
+ //       }
+//    }
+//}
 
 #[derive(Debug)]
 pub struct ProjectParams {
@@ -625,28 +628,46 @@ mod flexible_points {
             
             // Check the first element to determine structure
             match &arr[0] {
-                // If first element is an array, this is polylines format
+                // If first element is an array, check if it's nested (polylines) or flat (simple points)
                 Value::Array(inner_arr) => {
-                    // This is polylines - nested arrays
-                    let mut polylines = Vec::new();
-                    for polyline_value in arr {
-                        if let Value::Array(polyline_arr) = polyline_value {
-                            let mut polyline_points = Vec::new();
-                            for point_value in polyline_arr {
-                                if let Value::Array(point_arr) = point_value {
-                                    if point_arr.len() == 4 {
-                                        let x = point_arr[0].as_f64().unwrap_or(0.0);
-                                        let y = point_arr[1].as_f64().unwrap_or(0.0);
-                                        let color = point_arr[2].as_u64().unwrap_or(0) as u8;
-                                        let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                        polyline_points.push(DrawPoint { x, y, color, pen_state });
+                    // Check if this is nested arrays (polylines) or flat point arrays (simple)
+                    if !inner_arr.is_empty() && matches!(inner_arr[0], Value::Array(_)) {
+                        // This is polylines - nested arrays like [[[x,y,c,p], [x,y,c,p]], [[x,y,c,p]]]
+                        let mut polylines = Vec::new();
+                        for polyline_value in arr {
+                            if let Value::Array(polyline_arr) = polyline_value {
+                                let mut polyline_points = Vec::new();
+                                for point_value in polyline_arr {
+                                    if let Value::Array(point_arr) = point_value {
+                                        if point_arr.len() == 4 {
+                                            let x = point_arr[0].as_f64().unwrap_or(0.0);
+                                            let y = point_arr[1].as_f64().unwrap_or(0.0);
+                                            let color = point_arr[2].as_u64().unwrap_or(0) as u8;
+                                            let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
+                                            polyline_points.push(DrawPoint { x, y, color, pen_state });
+                                        }
                                     }
                                 }
+                                polylines.push(polyline_points);
                             }
-                            polylines.push(polyline_points);
                         }
+                        Ok(DrawPoints::Polylines(polylines))
+                    } else {
+                        // This is simple points - flat array like [[x,y,c,p], [x,y,c,p]]
+                        let mut points = Vec::new();
+                        for point_value in arr {
+                            if let Value::Array(point_arr) = point_value {
+                                if point_arr.len() == 4 {
+                                    let x = point_arr[0].as_f64().unwrap_or(0.0);
+                                    let y = point_arr[1].as_f64().unwrap_or(0.0);
+                                    let color = point_arr[2].as_u64().unwrap_or(0) as u8;
+                                    let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
+                                    points.push(DrawPoint { x, y, color, pen_state });
+                                }
+                            }
+                        }
+                        Ok(DrawPoints::Simple(points))
                     }
-                    Ok(DrawPoints::Polylines(polylines))
                 }
                 // If first element is a number, this is simple points format
                 Value::Number(_) => {
