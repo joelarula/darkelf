@@ -152,13 +152,75 @@ function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
 
   let flatPoints1 = handDrawGeometryUtils.drawPs(drawPoints, drawConfig, selectionState);
   let flatPoints2 = handDrawGeometryUtils.drawPs2(drawPoints, 300);
-  console.log('flatPoints1:', flatPoints1);
-  console.log('flatPoints2:', flatPoints2);
- 
+  console.log('Number of points:', flatPoints2.length);
+  
+  // Show first few points for analysis
+  console.log('First 5 points:');
+  flatPoints2.slice(0, 5).forEach((point, idx) => {
+    console.log(`  Point ${idx}: [${point[0].toFixed(2)}, ${point[1].toFixed(2)}, ${point[2]}, ${point[3]}]`);
+  });
 
   const drawCommand = exportsObj.getDrawCmdStr(flatPoints2, pisObj, features, pointTime);
-  console.log('Result of getDrawCmdStr:', drawCommand);
-  console.log('  drawCommand length:', drawCommand ? drawCommand.length : 'null');
+  console.log('\nGenerated draw command:');
+  console.log('  Full command:', drawCommand);
+  console.log('  Command length:', drawCommand ? drawCommand.length : 'null');
+  
+  // Analyze command structure
+  if (drawCommand && drawCommand.length > 16) {
+    console.log('\nCommand structure analysis:');
+    console.log('  Header:', drawCommand.substring(0, 8));
+    console.log('  Config section (first 32 chars):', drawCommand.substring(8, 40));
+    console.log('  Point count (next 4 chars):', drawCommand.substring(40, 44));
+    console.log('  Point data starts at char:', 44);
+    console.log('  Footer:', drawCommand.substring(drawCommand.length - 8));
+    
+    // Calculate bytes per point
+    const headerFooterLength = 16; // F0F1F2F3...F4F5F6F7 = 8+8 chars
+    const configLength = 32; // Config section length
+    const pointCountLength = 4; // Point count length
+    const pointDataLength = drawCommand.length - headerFooterLength - configLength - pointCountLength;
+    const bytesPerPoint = pointDataLength / flatPoints2.length / 2; // /2 because 2 hex chars = 1 byte
+    
+    console.log(`\nPoint encoding analysis:`);
+    console.log(`  Total command length: ${drawCommand.length} hex characters`);
+    console.log(`  Header + Footer: ${headerFooterLength} chars`);
+    console.log(`  Config section: ${configLength} chars`);
+    console.log(`  Point count: ${pointCountLength} chars`);
+    console.log(`  Point data: ${pointDataLength} chars`);
+    console.log(`  Number of points: ${flatPoints2.length}`);
+    console.log(`  Bytes per point: ${bytesPerPoint.toFixed(1)}`);
+    console.log(`  Hex chars per point: ${(pointDataLength / flatPoints2.length).toFixed(1)}`);
+    
+    // Show first few point encodings
+    console.log('\nFirst 3 point encodings:');
+    const pointDataStart = 44;
+    for (let i = 0; i < Math.min(3, flatPoints2.length); i++) {
+      const pointHexStart = pointDataStart + (i * 10); // 10 hex chars per point
+      const pointHex = drawCommand.substring(pointHexStart, pointHexStart + 10);
+      const point = flatPoints2[i];
+      
+      console.log(`  Point ${i}:`);
+      console.log(`    Coordinates: [${point[0].toFixed(2)}, ${point[1].toFixed(2)}, ${point[2]}, ${point[3]}]`);
+      console.log(`    Hex encoding: ${pointHex}`);
+      
+      if (pointHex.length >= 10) {
+        const xHex = pointHex.substring(0, 4);
+        const yHex = pointHex.substring(4, 8);
+        const colorPenHex = pointHex.substring(8, 10);
+        
+        // Decode values
+        const xDecoded = parseInt(xHex, 16);
+        const yDecoded = parseInt(yHex, 16);
+        const colorPenDecoded = parseInt(colorPenHex, 16);
+        const colorDecoded = (colorPenDecoded >> 4) & 0xF;
+        const penDecoded = colorPenDecoded & 0xF;
+        
+        console.log(`    X: ${xHex} = ${xDecoded} (original: ${Math.round(point[0])})`);
+        console.log(`    Y: ${yHex} = ${yDecoded} (original: ${Math.round(point[1])})`);
+        console.log(`    Color/Pen: ${colorPenHex} = ${colorPenDecoded} (color: ${colorDecoded}, pen: ${penDecoded})`);
+      }
+    }
+  }
 
 
 
@@ -270,8 +332,8 @@ if (targetModule && typeof targetModule === 'function') {
 
   testGetQueryCmd(exported);
   testShowCmd(exported);
-  testDrawCommand(exported, handDrawGeometryUtils);
-  //testPolylineCommand(exported, handDrawGeometryUtils);
+  //testDrawCommand(exported, handDrawGeometryUtils);
+  testPolylineCommand(exported, handDrawGeometryUtils);
 
 } else {
   console.error('Module not found or not a function:', moduleName);

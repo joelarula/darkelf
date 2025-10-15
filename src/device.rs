@@ -1,4 +1,4 @@
-use crate::model::{CommandConfig, DrawConfig, DrawData, MainCommandData, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData};
+use crate::model::{CommandConfig, DrawData, MainCommandData, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData, PisObject};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -131,7 +131,7 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
     }
 }
 
-    pub async fn draw(&self, points: Vec<Point>, config: DrawConfig) {
+    pub async fn draw(&self, points: Vec<Point>, config: PisObject) {
        let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;

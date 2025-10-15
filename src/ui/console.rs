@@ -1,13 +1,13 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DisplayColor, ProjectItem};
+use crate::model::{DisplayColor, DrawData, Point, ProjectItem, PisObject};
 
 use tokio::sync::{Mutex, mpsc};
 
 use crate::model::{DeviceResponse, PlaybackMode};
 
 use crate::ui::show_selector::show_selector_grid;
-use crate::ui::{buttons, playback_settings, settings, statusbar}; 
+use crate::ui::{buttons, playback_settings, settings, statusbar,draw}; 
 
 pub enum DeviceMessage {
     DeviceResponse(DeviceResponse),
@@ -35,6 +35,13 @@ pub struct Console {
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
     /// Maps playback mode/item to ProjectItem (py_mode, prj_selected)
     pub playback_selections: HashMap<u8, ProjectItem>, // key: playback mode/item, value: ProjectItem
+    pub draw_data: String,
+    pub draw_config_data: String,
+    pub cached_draw_text: String,
+    pub cached_points_result: Option<Result<Vec<Point>, String>>,
+    pub cached_config_text: String,
+    pub cached_config_result: Option<Result<PisObject, String>>,
+    pub text_command: String,
 }
 
 
@@ -47,7 +54,7 @@ impl Console {
             for key in [
                 PlaybackMode::LineGeometryPlayback as u8,
                 PlaybackMode::AnimationPlayback as u8,
-                PlaybackMode::ChristmasBroadcast as u8,
+                PlaybackMode::ChristmasPlayback as u8,
                 PlaybackMode::OutdoorPlayback as u8,
             ] {
                 playback_selections.insert(key, ProjectItem { py_mode: 128, prj_selected: vec![0u16; 4] });
@@ -71,6 +78,30 @@ impl Console {
                 incomming_channel: device_channel,
                 command_sender: device_command,
                 playback_selections,
+                draw_data: String::new(),
+                draw_config_data: r#"{
+    "txPointTime": 55,
+    "cnfValus": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3
+    ]
+}"#.to_string(),
+                cached_draw_text: String::new(),
+                cached_points_result: None,
+                cached_config_text: String::new(),
+                cached_config_result: None,
+                text_command: String::new(),
             }
         }
     }
@@ -108,6 +139,8 @@ pub enum DeviceCommand {
         mode: PlaybackMode,
         selected_shows: Option<Vec<u8>>,
     },
+    Draw(Vec<Point>, PisObject),
+    SendText(String),
 }
 
 
@@ -180,8 +213,7 @@ impl eframe::App for Console {
             self.mode,
             PlaybackMode::LineGeometryPlayback
                 | PlaybackMode::AnimationPlayback
-                | PlaybackMode::TextPlayback
-                | PlaybackMode::ChristmasBroadcast
+                | PlaybackMode::ChristmasPlayback
                 | PlaybackMode::OutdoorPlayback
         ){
             playback_settings::show_playback_settings_ui(ctx);
@@ -192,13 +224,28 @@ impl eframe::App for Console {
                 show_selector_grid(ui, self);
             });
 
-        }else{
-            // Central panel (fills the remaining space)
-            egui::CentralPanel::default().show(ctx, |ui| {
-                ui.label("Hello, dark elf!");
-            });
         }
         
+        if matches!(self.mode,PlaybackMode::Draw){
+            draw::show_draw_ui(self,ctx);
+        }
+
+        if matches!(self.mode,PlaybackMode::TextPlayback){
+            crate::ui::text::show_text_ui(self,ctx);
+        }
+
+        if matches!(self.mode,PlaybackMode::Dmx){
+            egui::CentralPanel::default().show(ctx, |ui| {
+                ui.label("DMX!");
+            });
+        }
+
+        if matches!(self.mode,PlaybackMode::RandomPlayback){
+            egui::CentralPanel::default().show(ctx, |ui| {
+                ui.label("Random Playback!");
+            });
+        }
+
 
     }
 }

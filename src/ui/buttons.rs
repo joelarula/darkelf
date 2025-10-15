@@ -9,12 +9,11 @@ pub fn show_mode_buttons(console: &mut Console, ctx: &egui::Context) {
             mode_toggle(ui, console, PlaybackMode::RandomPlayback, "Random");
             mode_toggle(ui, console, PlaybackMode::AnimationPlayback, "Animation");
             mode_toggle(ui, console, PlaybackMode::LineGeometryPlayback, "Line");
-            mode_toggle(ui, console, PlaybackMode::ChristmasBroadcast, "Christmas");
+            mode_toggle(ui, console, PlaybackMode::ChristmasPlayback, "Christmas");
             mode_toggle(ui, console, PlaybackMode::OutdoorPlayback, "Outdoor");
             mode_toggle(ui, console, PlaybackMode::TextPlayback, "Text");
-            mode_toggle(ui, console, PlaybackMode::PersonalizedProgramming, "Personalized");
-            mode_toggle(ui, console, PlaybackMode::HandDrawnDoodle, "Doodle");
-            mode_toggle(ui, console, PlaybackMode::Playlist, "Playlist");
+            mode_toggle(ui, console, PlaybackMode::Program, "Program");
+            mode_toggle(ui, console, PlaybackMode::Draw, "Draw");
         });
     });
 }

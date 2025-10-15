@@ -85,6 +85,14 @@ fn main() -> eframe::Result<()> {
                                 DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
                                   //  device.set_playback_mode(playback_mode, selected_shows).await;
                                 }
+                                DeviceCommand::Draw(points, draw_config) => {
+                                    device.draw(points, draw_config).await;
+                                }
+                                DeviceCommand::SendText(text) => {
+                                    log::info!("Received text command: {}", text);
+                                    // You can add specific text command handling here
+                                    // For now, just log the command
+                                }
                             }
                         }
 
@@ -103,8 +111,8 @@ fn main() -> eframe::Result<()> {
 
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 720.0])
-            .with_min_inner_size([1200.0, 720.0]),
+            .with_inner_size([800.0, 500.0])
+            .with_min_inner_size([800.0, 500.0]),
         ..Default::default()
     };
 

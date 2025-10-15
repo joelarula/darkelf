@@ -125,11 +125,11 @@ pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
                         },
                     );
                     
-                    ui.add_sized([50.0, 0.0], egui::Label::new("Channel:"));
-                    ui.add_sized(
-                        [30.0, 0.0],
-                        egui::DragValue::new(&mut console.channel).clamp_range(1..=512),
-                    );
+                    //ui.add_sized([50.0, 0.0], egui::Label::new("Channel:"));
+                    //ui.add_sized(
+                    //    [30.0, 0.0],
+                    //    egui::DragValue::new(&mut console.channel).clamp_range(1..=512),
+                    //);
                 });
         });
 }

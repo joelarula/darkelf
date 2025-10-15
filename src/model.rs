@@ -12,10 +12,10 @@ pub enum PlaybackMode {
     LineGeometryPlayback = 2,
     AnimationPlayback = 3,
     TextPlayback = 4,
-    ChristmasBroadcast = 5,
+    ChristmasPlayback = 5,
     OutdoorPlayback = 6,
-    PersonalizedProgramming = 7,
-    HandDrawnDoodle = 8,
+    Program = 7,
+    Draw = 8,
     Playlist = 9,
 }
 
@@ -68,7 +68,6 @@ pub struct DeviceResponse {
     pub main_data: MainCommandData,
     pub settings: SettingsData,
     pub features: Vec<FeatureConfig>,
-    pub draw_config: DrawConfig,
     pub device_info: Option<DeviceInfo>,
     pub prj_data: Option<ProjectData>,
     pub pis_obj: Option<PisObject>,
@@ -116,7 +115,7 @@ impl PlaybackCommand {
 
 
 // Data structures needed by the trait methods
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
@@ -207,30 +206,7 @@ pub struct ProjectItem {
     pub prj_selected: Vec<u16>, // selected shows
 }
 
-// Struct moved to top-level definition
 
-#[derive(Debug)]
-pub struct ShakeConfig {
-    pub subset_data: SubsetData,
-}
-
-#[derive(Debug)]
-pub struct SubsetData {
-    pub xy_cnf: XYConfig,
-}
-
-#[derive(Debug)]
-pub struct XYConfig {
-    pub auto: bool,
-    pub auto_value: u8,
-    pub phase: u8,
-    pub xy: Vec<XYValue>,
-}
-
-#[derive(Debug)]
-pub struct XYValue {
-    pub value: u8,
-}
 
 // cnf_valus[12] playback time configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -730,11 +706,6 @@ impl Default for DrawItem {
     }
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct DrawConfig {
-    pub config_values: Vec<u8>,
-    pub text_point_time: u8,
-}
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,8 +1,7 @@
 use crate::model::{DrawData, Point, ProjectItem, DrawItem, DrawPoint, DrawMode};
 use log::{debug, info};
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DrawConfig, FeatureConfig, MainCommandData, PisObject, SettingsData};
-use std::collections::HashMap;
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, SettingsData};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -286,7 +285,7 @@ impl CommandGenerator {
             main_data: Self::parse_main_command(&main_cmd)?,
             settings: Self::parse_settings_command(&settings_cmd),
             features: Vec::new(),
-            draw_config: DrawConfig::default(),
+
             device_info: None,
             prj_data: Some(prj_data),
             pis_obj: Some(pis_obj),
@@ -324,10 +323,14 @@ impl CommandGenerator {
         if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
             for i in 0..15 {
                 let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd).try_into().unwrap(), 0, 255, 0);
-                if i < 14 {
-                    response.draw_config.config_values.push(value.try_into().unwrap());
-                } else {
-                    response.draw_config.text_point_time = value.try_into().unwrap();
+                if i < 13 {
+                    if let Some(ref mut pis_obj) = response.pis_obj {
+                        pis_obj.cnf_valus[i] = value;
+                    }
+                } else if i == 14 {
+                    if let Some(ref mut pis_obj) = response.pis_obj {
+                        pis_obj.tx_point_time = value;
+                    }
                 }
             }
         }
@@ -467,12 +470,12 @@ impl CommandGenerator {
     }
 
 
-    pub fn get_draw_cmd_str(points: &[Point], config: &DrawConfig) -> String {
+    pub fn get_draw_cmd_str(points: &[Point], config: &PisObject) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
         Self::draw_point_str_to_cmd(&encoded_draw_cmd)
     }
 
-    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, ) -> String {
+    pub fn encode_draw_point_command(points: &[Point], config: &PisObject, ) -> String {
         let point_time = "00";  // Default point time
         let mut config_str = String::new();
         let mut points_str = String::new();
@@ -480,9 +483,9 @@ impl CommandGenerator {
         // Build config values (15 iterations as in JS)
         for index in 0..15 {
             if index <= 11 {
-                // Use config values for indices 0-11
-                let value = if index < config.config_values.len() {
-                    config.config_values[index]
+                // Use cnf_valus for indices 0-11
+                let value = if index < config.cnf_valus.len() {
+                    config.cnf_valus[index] as u8
                 } else {
                     0
                 };
@@ -492,7 +495,7 @@ impl CommandGenerator {
                 config_str.push_str(point_time);
             } else if index == 14 {
                 // Use tx_point_time for textStopTime feature
-                config_str.push_str(&Self::to_fixed_width_hex(config.text_point_time, 2));
+                config_str.push_str(&Self::to_fixed_width_hex(config.tx_point_time as u8, 2));
             } else {
                 config_str.push_str(point_time);
             }

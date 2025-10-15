@@ -1,6 +1,5 @@
 /// Shows a grid of 10x5 on/off buttons labeled 1-50.
 use crate::ui::console::Console;
-use crate::model::ProjectItem;
 use crate::command::CommandGenerator;
 use egui::{Grid, Button};
 

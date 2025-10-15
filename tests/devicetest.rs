@@ -13,7 +13,7 @@ use darkelf::command::CommandGenerator;
 use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
-use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, DrawConfig};
+use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, PisObject};
 use std::fs;
 use std::path::Path;
 
@@ -76,15 +76,25 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     //test_settings(device).await;
     //sleep(Duration::from_millis(500));
     //test_playback_command(device).await;
-    
+
+    sleep(Duration::from_millis(500));
+    test_shapes(device).await;
+
     sleep(Duration::from_millis(500));
     test_show_drawings(device).await;
-    test_shapes(device).await;
+
+    sleep(Duration::from_millis(500));
+    test_boundaries(device).await;
+
     //sleep(Duration::from_millis(500));
     //test_show_playback(device).await;
 
 
     Ok(())
+}
+
+async fn test_boundaries(device: &mut LaserDevice) {
+
 }
 
 async fn test_shapes(device: &mut LaserDevice) {
@@ -98,10 +108,10 @@ async fn test_shapes(device: &mut LaserDevice) {
     
     info!("Loaded {} shape arrays from JSON", point_arrays.len());
     
-    // Create default DrawConfig and Features for command generation
-    let draw_config = DrawConfig {
-        config_values: vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        text_point_time: 55,
+    // Create default PisObject for command generation
+    let draw_config = PisObject {
+        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        tx_point_time: 55,
     };
     
     // Process each point array and generate commands
@@ -126,7 +136,7 @@ async fn test_shapes(device: &mut LaserDevice) {
             .collect();
         
         
-         device.draw(draw_points, draw_config.clone()).await;
+        device.draw(draw_points, draw_config.clone()).await;
         sleep(Duration::from_millis(2500));
     }
 
@@ -142,11 +152,8 @@ async fn test_show_drawings(device: &mut LaserDevice) {
             .expect("Should be able to load ruut.json DrawData");
     
       
-        // Read DrawConfig from the PisObject in the loaded data
-        let draw_config = DrawConfig {
-            config_values: draw_data.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
-            text_point_time: draw_data.pis_obj.tx_point_time as u8,
-        };
+        // Use PisObject directly from the loaded data
+        let draw_config = draw_data.pis_obj.clone();
         
         let points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
         device.draw(points, draw_config).await;
@@ -155,11 +162,8 @@ async fn test_show_drawings(device: &mut LaserDevice) {
         let draw_data2 = load_draw_data("./scripts/lill.json")
             .expect("Should be able to load lill.json DrawData");
 
-        // Read DrawConfig from the PisObject in the loaded data
-        let draw_config2 = DrawConfig {
-            config_values: draw_data2.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
-            text_point_time: draw_data2.pis_obj.tx_point_time as u8,
-        };
+        // Use PisObject directly from the loaded data
+        let draw_config2 = draw_data2.pis_obj.clone();
         
         let points2 = CommandGenerator::prepare_draw_data(&draw_data2, 300.0);
         device.draw(points2, draw_config2).await;
@@ -196,10 +200,10 @@ async fn test_playback_command(device: &mut LaserDevice) {
         PlaybackMode::LineGeometryPlayback,
         PlaybackMode::AnimationPlayback,
         PlaybackMode::TextPlayback,
-        PlaybackMode::ChristmasBroadcast,
+        PlaybackMode::ChristmasPlayback,
         PlaybackMode::OutdoorPlayback,
-        PlaybackMode::PersonalizedProgramming,
-        PlaybackMode::HandDrawnDoodle,
+        PlaybackMode::Program,
+        PlaybackMode::Draw,
         PlaybackMode::Playlist,
     ];
     for mode in playback_modes.iter() {
@@ -609,11 +613,8 @@ fn test_draw_data() {
         array_format[0], array_format[1], array_format[2], array_format[3]);
     
 
-    // Read DrawConfig from the PisObject in the loaded data
-    let draw_config = DrawConfig {
-        config_values: draw_data.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
-        text_point_time: draw_data.pis_obj.tx_point_time as u8,
-    };
+    // Use PisObject directly from the loaded data
+    let draw_config = draw_data.pis_obj.clone();
 
      // Expected command string for polylines test data
     let expected_command = "F0F1F2F300000000000000000000000000003700002A80A500C602804E00C670000800C670005E00C67000CA00C670010B00C671010B007040010B001940010B803D40010B809340010B80E94100B580E950005E80E950000880E950806480E95080A580E95180A580936080A5803D6080A500196080A500706080A500C663004A80E702005180E770005880E770005F80E770006780E770006C80E771006C80EE40006C80F440006C80FB40006C810240006C8109410066810950005F8109500058810950004F810950004A810951004A810260004A80FB60004A80F460004A80EE60004A80E763F4F5F6F7";
@@ -756,14 +757,11 @@ fn test_draw_data_polylines() {
     info!("\nTesting get_draw_cmd_str function:");
     
     // Read DrawConfig from the PisObject in the loaded data
-    let draw_config = DrawConfig {
-        config_values: draw_data.pis_obj.cnf_valus.iter().map(|&val| val as u8).collect(),
-        text_point_time: draw_data.pis_obj.tx_point_time as u8,
-    };
+    let draw_config = draw_data.pis_obj.clone();
     
-    info!("DrawConfig from PisObject:");
-    info!("Config Values: {:?}", draw_config.config_values);
-    info!("Text Point Time: {} (0x{:02X})", draw_config.text_point_time, draw_config.text_point_time);
+    info!("PisObject:");
+    info!("Config Values: {:?}", draw_config.cnf_valus);
+    info!("Text Point Time: {} (0x{:02X})", draw_config.tx_point_time, draw_config.tx_point_time);
     
     // Use all prepared points for command generation
     info!("Using all {} points for command generation", prepared_points.len());
@@ -809,10 +807,10 @@ fn test_point_array_shapes_command_generation() {
     
     info!("Loaded {} shape arrays from JSON", point_arrays.len());
     
-    // Create default DrawConfig and Features for command generation
-    let draw_config = DrawConfig {
-        config_values: vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        text_point_time: 55,
+    // Create default PisObject for command generation
+    let draw_config = PisObject {
+        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        tx_point_time: 55,
     };
     
     // Process each point array and generate commands

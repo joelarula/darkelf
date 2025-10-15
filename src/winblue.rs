@@ -24,6 +24,9 @@ use log::{info, error, debug};
 use crate::blue::{self, BlueController};
 use crate::command::{HEADER, FOOTER};
 
+// BLE timing and packet constants
+const BLE_SEND_INTERVAL_MS: u64 = 10;
+const BLE_PACKET_SIZE: usize = 20;
 
 pub type Characteristic = GattCharacteristic;
 
@@ -40,7 +43,6 @@ pub struct WinBlueController {
     connected: bool,
     buffer: Arc<TokioMutex<String>>,
     last_send_time: Option<Instant>,
-    sending: Arc<TokioMutex<()>>,
     notification_token: Option<NotificationToken>,
     cccd_state: Option<GattClientCharacteristicConfigurationDescriptorValue>,
     // New fields matching JS implementation - temporarily marked as unused while implementing
@@ -49,7 +51,6 @@ pub struct WinBlueController {
     can_send: bool,
     cmd_sending: bool,
     connection_state: i32, // -1=connecting, 0=disconnected, 1=connected, 2=ready
-    min_send_interval: Duration,
     ble_call_back: Arc<TokioMutex<Option<ReceiverCallback>>>,
 }
 
@@ -64,7 +65,6 @@ impl WinBlueController {
             connected: false,
             buffer: Arc::new(TokioMutex::new(String::new())),
             last_send_time: None,
-            sending: Arc::new(TokioMutex::new(())),
             notification_token: None,
             cccd_state: None,
             connect_count: 0,
@@ -72,7 +72,6 @@ impl WinBlueController {
             can_send: false,
             cmd_sending: false,
             connection_state: 0,
-            min_send_interval: Duration::from_millis(100), // Same as JS 100ms interval
             ble_call_back: Arc::new(TokioMutex::new(None)),
         })
     }
@@ -302,11 +301,11 @@ impl WinBlueController {
     async fn send_buffer_sequence(&mut self, buffers: Vec<Vec<u8>>, total_count: usize) -> Result<(), Box<dyn Error + Send + Sync>> {
         info!("Starting buffer sequence send - {} total buffers", total_count);
         
-        let platform_send_interval =  Duration::from_millis(20);
+        let platform_send_interval = Duration::from_millis(BLE_SEND_INTERVAL_MS);
      
         let mut last_send = Instant::now();
         let mut remaining_buffers = buffers;
-        let mut last_progress = 0;
+        let mut _last_progress = 0;
 
         while !remaining_buffers.is_empty() {
             let elapsed = last_send.elapsed();
@@ -393,7 +392,7 @@ impl WinBlueController {
         if !cmd.starts_with(HEADER) {
             if !self.can_send {
                 debug!("Simulating send for non-command data");
-                sleep(Duration::from_millis(20)).await;
+                sleep(Duration::from_millis(BLE_SEND_INTERVAL_MS)).await;
                 return Ok(());
             }
             return Err(format!("Invalid command: must start with {}", HEADER).into());
@@ -424,7 +423,7 @@ impl WinBlueController {
 
         // Split into chunks and add split markers
         let mut buffers = Vec::new();
-        for chunk in bytes.chunks(20) {
+        for chunk in bytes.chunks(BLE_PACKET_SIZE) {
             if !buffers.is_empty() {
                 buffers.push(vec![0xFF]); // Split marker
             }
@@ -579,7 +578,7 @@ impl BlueController for WinBlueController {
             
             // Split into chunks and add split markers
             let mut buffers = Vec::new();
-            for chunk in bytes.chunks(20) {
+            for chunk in bytes.chunks(BLE_PACKET_SIZE) {
                 if !buffers.is_empty() {
                     buffers.push(vec![0xFF]); // Split marker
                 }
