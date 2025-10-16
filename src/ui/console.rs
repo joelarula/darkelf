@@ -234,12 +234,6 @@ impl eframe::App for Console {
             crate::ui::text::show_text_ui(self,ctx);
         }
 
-        if matches!(self.mode,PlaybackMode::Dmx){
-            egui::CentralPanel::default().show(ctx, |ui| {
-                ui.label("DMX!");
-            });
-        }
-
         if matches!(self.mode,PlaybackMode::RandomPlayback){
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.label("Random Playback!");

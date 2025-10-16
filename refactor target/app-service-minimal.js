@@ -2075,7 +2075,7 @@ globalThis["webpackJsonp"].push([
                                     txDist: 50, // text distance
                                     runSpeed: 50, // run speed
                                     groupIdex: 0,
-                                    // { the groupList: textObject structure
+                                    // [the groupList: textObject array contains objects with the following structure]
   //text: "",         // The actual text string for this group
   //update: 0,        // A flag indicating if the group needs to be updated/redrawn
   //color: 9,         // Color index for the text
