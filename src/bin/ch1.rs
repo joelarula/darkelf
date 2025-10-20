@@ -1,6 +1,5 @@
 
 use darkelf::dmx;
-use darkelf::devices::ZQ03268::ZQ03268;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -41,20 +40,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\nUsing DMX port: {}", port_name);
     let mut controller = dmx::DmxController::new(port_name, 1)?;
     println!("Connected to DMX adapter. Testing CH1 (Shutter) features...");
-
-
-    controller.send(&[
-        ZQ03268::on()
-    ])?;
-    
-    std::thread::sleep(Duration::from_secs(3));
-
-    controller.send(&[
-        ZQ03268::off()
-    ])?;
-
-
-        //dmx_state.set_channel(4, 100);
 
 
 

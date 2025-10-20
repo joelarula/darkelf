@@ -1,4 +1,5 @@
 
+/// DMX-512 baud rate (250000 baud as per specification)
 pub const DMX_BAUD_RATE: u32 = 250_000;
 pub const DMX_FRAME_SIZE: usize = 512;
 pub const DMX_TEST_FRAME: [u8; DMX_FRAME_SIZE] = [0u8; DMX_FRAME_SIZE];
@@ -81,9 +82,13 @@ impl DmxController {
 
 
     pub fn send_frame(&mut self, state: &DmxFrame) -> Result<(), Box<dyn Error>> {
+        // DMX-512 Break: minimum 176μs (we use 200μs for safety)
         self.port.set_break()?;
-        thread::sleep(Duration::from_micros(100));
+        thread::sleep(Duration::from_micros(200));
+        
+        // Mark After Break (MAB): minimum 12μs (we use 20μs for safety)
         self.port.clear_break()?;
+        thread::sleep(Duration::from_micros(20));
 
         let mut frame: Vec<u8> = vec![0x00];  // Start code
         frame.resize(DMX_FRAME_SIZE + 1, 0);  // 1 + 512

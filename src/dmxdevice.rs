@@ -1,7 +1,9 @@
+
+use crate::device::LaserDevice;
 use crate::dmx::{DmxFrame, DmxController, DmxCommand};
+use crate::dmxchannel::{DIMMER_CHANNEL, OFF,ON};
 use crate::model::{
-    Point, PisObject, SettingsData, MainCommandData,
-    PlaybackMode, DeviceInfo, PlaybackCommand, DrawData, DrawItem
+    DeviceInfo, DmxLaserState, DrawData, DrawItem, MainCommandData, PisObject, PlaybackCommand, PlaybackMode, Point, SettingsData
 };
 
 use std::sync::{Arc, Mutex};
@@ -18,51 +20,9 @@ pub struct DmxLaserDevice {
     is_running: Arc<Mutex<bool>>,
 }
 
-#[derive(Debug, Clone)]
-pub struct DmxLaserState {
-    pub master_dimmer: u8,      // CH1: 0-9=OFF, 10-255=ON
-    pub color_control: u8,      // CH2: Color selection and modes
-    pub color_speed: u8,        // CH3: Color change speed and direction
-    pub pattern_group: u8,      // CH4: Pattern group selection
-    pub pattern_select: u8,     // CH5: Individual pattern within group
-    pub dynamic_effects: u8,    // CH6: Dynamic effects and random play
-    pub effect_speed: u8,       // CH7: Effect speed control
-    pub pattern_size: u8,       // CH8: Pattern size
-    pub size_control: u8,       // CH9: Advanced size control modes
-    pub rotation: u8,           // CH10: Rotation angle and speed
-    pub vertical_flip: u8,      // CH11: Vertical flip position/speed
-    pub horizontal_flip: u8,    // CH12: Horizontal flip position/speed
-    pub horizontal_pos: u8,     // CH13: Horizontal position/movement
-    pub vertical_pos: u8,       // CH14: Vertical position/movement
-    pub wave_effect: u8,        // CH15: Wave amplitude and speed
-    pub manual_drawing: u8,     // CH16: Manual drawing modes
-}
-
-impl Default for DmxLaserState {
-    fn default() -> Self {
-        Self {
-            master_dimmer: 0,      // Light OFF
-            color_control: 0,      // White
-            color_speed: 0,        // No color change
-            pattern_group: 12,     // Static group 1
-            pattern_select: 0,     // First pattern
-            dynamic_effects: 0,    // No function
-            effect_speed: 128,     // Medium speed
-            pattern_size: 128,     // Medium size
-            size_control: 7,       // Basic size selection
-            rotation: 64,          // Center rotation
-            vertical_flip: 64,     // Center vertical
-            horizontal_flip: 64,   // Center horizontal
-            horizontal_pos: 127,   // Center horizontal position
-            vertical_pos: 127,     // Center vertical position
-            wave_effect: 0,        // No wave
-            manual_drawing: 0,     // No manual drawing
-        }
-    }
-}
 
 impl DmxLaserDevice {
-    /// Create a new DMX laser device
+
     pub fn new(port_name: &str, dmx_start_channel: usize) -> Result<Self, Box<dyn std::error::Error>> {
         info!("Creating DMX laser device on port: {}, starting at channel: {}", port_name, dmx_start_channel);
         
@@ -84,7 +44,6 @@ impl DmxLaserDevice {
         })
     }
 
-    /// Start the DMX device (enables continuous DMX output)
     pub fn start(&self) -> Result<(), Box<dyn std::error::Error>> {
         info!("Starting DMX laser device");
         
@@ -103,18 +62,32 @@ impl DmxLaserDevice {
 
         thread::spawn(move || {
             info!("DMX output thread started");
+            let mut frame_count = 0;
             
             while *is_running_clone.lock().unwrap() {
                 let current_state = {
                     let state_guard = state.lock().unwrap();
                     state_guard.clone()
-                }; // Lock released automatically
+                };
                 
                 // Create DMX frame from current state
                 let mut dmx_frame = DmxFrame::new();
                 Self::state_to_dmx_frame(&current_state, &mut dmx_frame, start_channel);
                 
-                // Send DMX frame
+                // Log DMX values every 100 frames (about every 2-3 seconds)
+                frame_count += 1;
+                if frame_count % 100 == 0 {
+                    debug!("DMX Frame #{}: CH1={} CH2={} CH3={} CH4={} CH5={} CH6={}", 
+                        frame_count,
+                        current_state.master_dimmer,
+                        current_state.color_control, 
+                        current_state.color_speed,
+                        current_state.pattern_group,
+                        current_state.pattern_select,
+                        current_state.dynamic_effects
+                    );
+                }
+                
                 if let Ok(mut controller) = controller.lock() {
                     if let Err(e) = controller.send_frame(&dmx_frame) {
                         error!("Failed to send DMX frame: {}", e);
@@ -123,10 +96,10 @@ impl DmxLaserDevice {
                     error!("Failed to acquire DMX controller lock");
                 }
                 
-                // DMX refresh rate (typically 44Hz = ~22.7ms per frame)
-                // send_frame includes break timing (~100μs) + frame transmission (~20ms at 250kbaud)
+                // DMX refresh rate (standard 44Hz = ~22.7ms per frame)
+                // send_frame includes break timing (~200μs) + MAB (~20μs) + frame transmission (~20ms at 250kbaud)
                 // Sleep for remaining time to maintain consistent refresh rate
-                thread::sleep(Duration::from_millis(2));
+                thread::sleep(Duration::from_millis(22));
             }
             
             info!("DMX output thread stopped");
@@ -438,7 +411,7 @@ impl DmxLaserDevice {
     /// Map playback command to DMX state
     fn playback_command_to_dmx_state(&self, command: &PlaybackCommand, state: &mut DmxLaserState) {
         // Enable light
-        state.master_dimmer = 255;
+        //state.master_dimmer = 255;
         
         // Map playback mode to pattern group and dynamic effects
         match command.mode {
@@ -853,4 +826,42 @@ impl Drop for DmxLaserDevice {
             error!("Error stopping DMX laser device: {}", e);
         }
     }
+}
+
+impl LaserDevice for DmxLaserDevice {
+
+    async fn setup(&self) {
+        if let Err(e) = self.start() {
+            error!("Failed to start DMX laser device: {}", e);
+        }
+    }
+    
+    async fn on(&self) {
+        let _ = self.set_dmx_channel(DIMMER_CHANNEL, ON);
+    }
+    
+    async fn off(&self) {
+        let _ = self.set_dmx_channel(DIMMER_CHANNEL, OFF);
+    }
+    
+    fn get_settings(&self) -> Option<SettingsData> {
+        todo!()
+    }
+    
+    async fn set_settings(&self, new_settings: SettingsData) {
+        todo!()
+    }
+    
+    async fn set_playback_mode(&self, command: PlaybackCommand) {
+        todo!()
+    }
+    
+    fn is_on(&self) -> bool {
+        todo!()
+    }
+    
+    async fn draw(&self, points: Vec<Point>, config: PisObject) {
+        todo!()
+    }
+    
 }

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use darkelf::blue::BlueController as _;
-use darkelf::device::LaserDevice;
+use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::command::CommandGenerator;
 use darkelf::mock::MockController;
 use darkelf::winblue::{ self, WinBlueController};

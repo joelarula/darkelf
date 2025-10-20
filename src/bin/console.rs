@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use darkelf::device::LaserDevice;
+use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::ui::console::DeviceMessage;
 use darkelf::winblue::WinBlueController;
 use darkelf::{
@@ -64,7 +64,7 @@ fn main() -> eframe::Result<()> {
                     .send(DeviceMessage::DeviceStatus(controller.is_connected()));
 
                 if controller.is_connected() {
-                    let mut device: LaserDevice = LaserDevice::new(controller);
+                    let mut device: BlueLaserDevice = BlueLaserDevice::new(controller);
 
                     device.setup().await;
 

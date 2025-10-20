@@ -8,7 +8,7 @@ use darkelf::model::{CommandConfig, MainCommandData, PlaybackCommand, PlaybackMo
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::mock::MockController;
 use darkelf::util;
-use darkelf::device::LaserDevice;
+use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::command::CommandGenerator;
 use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
@@ -30,7 +30,7 @@ async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
     let mut controller = MockController::new();
     let _ = controller.connect();
     assert!(controller.is_connected());
-    let mut device: LaserDevice = LaserDevice::new(controller);
+    let mut device: BlueLaserDevice = BlueLaserDevice::new(controller);
     test_laser_device_functionality(&mut device).await?;
 
     Ok(())
@@ -58,13 +58,13 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
         .map_err(|e| anyhow!(e.to_string()))?;
 
     assert!(controller.is_connected());
-    let mut device: LaserDevice = LaserDevice::new(controller);
+    let mut device: BlueLaserDevice = BlueLaserDevice::new(controller);
     test_laser_device_functionality(&mut device).await?;
     
     Ok(())
 }
 
-async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(), anyhow::Error> {
+async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> {
     
     device.setup().await;
     device.on().await;
@@ -93,11 +93,11 @@ async fn test_laser_device_functionality(device: &mut LaserDevice) -> Result<(),
     Ok(())
 }
 
-async fn test_boundaries(device: &mut LaserDevice) {
+async fn test_boundaries(device: &mut BlueLaserDevice) {
 
 }
 
-async fn test_shapes(device: &mut LaserDevice) {
+async fn test_shapes(device: &mut BlueLaserDevice) {
 
      // Load the point arrays from picArrayShapes.json
     let json_content = fs::read_to_string("scripts/picArrayShapes.json")
@@ -142,7 +142,7 @@ async fn test_shapes(device: &mut LaserDevice) {
 
 }
 
-async fn test_show_drawings(device: &mut LaserDevice) {
+async fn test_show_drawings(device: &mut BlueLaserDevice) {
 
        // let cmd: PlaybackCommand = PlaybackCommand::default(PlaybackMode::HandDrawnDoodle);
        // device.set_playback_mode(cmd).await;
@@ -170,7 +170,7 @@ async fn test_show_drawings(device: &mut LaserDevice) {
 
     }
 
-async fn test_show_playback(device: &mut LaserDevice) {
+async fn test_show_playback(device: &mut BlueLaserDevice) {
 
     
     for ix in 0..=49 {
@@ -192,7 +192,7 @@ async fn test_show_playback(device: &mut LaserDevice) {
    
 }
 
-async fn test_playback_command(device: &mut LaserDevice) {
+async fn test_playback_command(device: &mut BlueLaserDevice) {
  
     let playback_modes = [
         PlaybackMode::Dmx,
@@ -216,7 +216,7 @@ async fn test_playback_command(device: &mut LaserDevice) {
     device.set_playback_mode(PlaybackCommand::default(PlaybackMode::RandomPlayback)).await;
 }
 
-async fn test_on_off(device: &mut LaserDevice) {
+async fn test_on_off(device: &mut BlueLaserDevice) {
     for _ in 0..3 {
         info!("Turning device off");
         device.off().await;
@@ -227,7 +227,7 @@ async fn test_on_off(device: &mut LaserDevice) {
     }
 }
 
-async fn test_settings(device: &mut LaserDevice) {
+async fn test_settings(device: &mut BlueLaserDevice) {
 
     let mut settings = device.get_setting();
     if let Some(ref mut settings) = settings {
