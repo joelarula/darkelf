@@ -3,6 +3,7 @@ use eframe::{egui};
 use std::sync::{Arc, Mutex};
 use darkelf::dmx::device::DmxLaserDevice;
 use darkelf::dmx::device::DmxLaserState;
+use darkelf::dmx::laser_light_8340::{DMX_CHANNELS, DmxChannel,DmxChannelInfo};
 
 
 pub struct DmxApp {
@@ -14,8 +15,8 @@ fn main() {
     let app = DmxApp::default();
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([300.0, 500.0])
-            .with_min_inner_size([300.0, 500.0]),
+            .with_inner_size([300.0, 600.0])
+            .with_min_inner_size([300.0, 600.0]),
         ..Default::default()
     };
     let _ = eframe::run_native(
@@ -69,30 +70,34 @@ impl eframe::App for DmxApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             let mut state = self.state.lock().unwrap();
             ui.heading("DMX Laser State");
-
-            self.dmx_field(ui, "Master Dimmer:", &mut state.master_dimmer, &self.device, "master_dimmer");
-            self.dmx_field(ui, "Color Control:", &mut state.color_control, &self.device, "color_control");
-            self.dmx_field(ui, "Color Speed:", &mut state.color_speed, &self.device, "color_speed");
-            self.dmx_field(ui, "Pattern Group:", &mut state.pattern_group, &self.device, "pattern_group");
-            self.dmx_field(ui, "Pattern Select:", &mut state.pattern_select, &self.device, "pattern_select");
-            self.dmx_field(ui, "Dynamic Effects:", &mut state.dynamic_effects, &self.device, "dynamic_effects");
-            self.dmx_field(ui, "Effect Speed:", &mut state.effect_speed, &self.device, "effect_speed");
-            self.dmx_field(ui, "Pattern Size:", &mut state.pattern_size, &self.device, "pattern_size");
-            self.dmx_field(ui, "Size Control:", &mut state.size_control, &self.device, "size_control");
-            self.dmx_field(ui, "Rotation:", &mut state.rotation, &self.device, "rotation");
-            self.dmx_field(ui, "Vertical Flip:", &mut state.vertical_flip, &self.device, "vertical_flip");
-            self.dmx_field(ui, "Horizontal Flip:", &mut state.horizontal_flip, &self.device, "horizontal_flip");
-            self.dmx_field(ui, "Horizontal Pos:", &mut state.horizontal_pos, &self.device, "horizontal_pos");
-            self.dmx_field(ui, "Vertical Pos:", &mut state.vertical_pos, &self.device, "vertical_pos");
-            self.dmx_field(ui, "Wave Effect:", &mut state.wave_effect, &self.device, "wave_effect");
-            self.dmx_field(ui, "Manual Drawing:", &mut state.manual_drawing, &self.device, "manual_drawing");
+            for channel_enum in DMX_CHANNELS {
+                let value = match channel_enum {
+                    DmxChannel::Dimmer { .. } => &mut state.master_dimmer,
+                    DmxChannel::ColorControl { .. } => &mut state.color_control,
+                    DmxChannel::ColorChangeSpeed { .. } => &mut state.color_speed,
+                    DmxChannel::PatternSelection { .. } => &mut state.pattern_select,
+                    DmxChannel::EffectSpeed { .. } => &mut state.effect_speed,
+                    DmxChannel::PatternSize { .. } => &mut state.pattern_size,
+                    DmxChannel::SizeControl { .. } => &mut state.size_control,
+                    DmxChannel::RotationControl { .. } => &mut state.rotation,
+                    DmxChannel::VerticalFlip { .. } => &mut state.vertical_flip,
+                    DmxChannel::HorizontalFlip { .. } => &mut state.horizontal_flip,
+                    DmxChannel::HorizontalPosition { .. } => &mut state.horizontal_pos,
+                    DmxChannel::VerticalPosition { .. } => &mut state.vertical_pos,
+                    DmxChannel::WaveEffect { .. } => &mut state.wave_effect,
+                    DmxChannel::ManualDrawing { .. } => &mut state.manual_drawing,
+                };
+                self.dmx_field(ui, channel_enum, value, &self.device);
+            }
         });
     }
 }
 
 impl DmxApp {
-    fn dmx_field(&self, ui: &mut egui::Ui, label: &str, value: &mut u8, device: &Option<Arc<DmxLaserDevice>>, field_name: &str) {
-    let mut value_str = value.to_string();
+    fn dmx_field(&self, ui: &mut egui::Ui, channel_enum: &DmxChannel, value: &mut u8, device: &Option<Arc<DmxLaserDevice>>) {
+        let label = channel_enum.label();
+        let channel_num = channel_enum.channel();
+        let mut value_str = value.to_string();
         ui.horizontal(|ui| {
             ui.label(label);
             let text_response = ui.add_sized(
@@ -110,46 +115,11 @@ impl DmxApp {
                 value_str = value.to_string();
                 if let Some(device) = device {
                     let mut dev_state = device.get_current_state();
-                    match field_name {
-                        "master_dimmer" => dev_state.master_dimmer = *value,
-                        "color_control" => dev_state.color_control = *value,
-                        "color_speed" => dev_state.color_speed = *value,
-                        "pattern_group" => dev_state.pattern_group = *value,
-                        "pattern_select" => dev_state.pattern_select = *value,
-                        "dynamic_effects" => dev_state.dynamic_effects = *value,
-                        "effect_speed" => dev_state.effect_speed = *value,
-                        "pattern_size" => dev_state.pattern_size = *value,
-                        "size_control" => dev_state.size_control = *value,
-                        "rotation" => dev_state.rotation = *value,
-                        "vertical_flip" => dev_state.vertical_flip = *value,
-                        "horizontal_flip" => dev_state.horizontal_flip = *value,
-                        "horizontal_pos" => dev_state.horizontal_pos = *value,
-                        "vertical_pos" => dev_state.vertical_pos = *value,
-                        "wave_effect" => dev_state.wave_effect = *value,
-                        "manual_drawing" => dev_state.manual_drawing = *value,
-                        _ => {},
+                    if let Some(field) = get_state_field_by_channel(&mut dev_state, channel_num) {
+                        *field = *value;
                     }
-                    let channel = match field_name {
-                        "master_dimmer" => 1,
-                        "color_control" => 2,
-                        "color_speed" => 3,
-                        "pattern_group" => 4,
-                        "pattern_select" => 5,
-                        "dynamic_effects" => 6,
-                        "effect_speed" => 7,
-                        "pattern_size" => 8,
-                        "size_control" => 9,
-                        "rotation" => 10,
-                        "vertical_flip" => 11,
-                        "horizontal_flip" => 12,
-                        "horizontal_pos" => 13,
-                        "vertical_pos" => 14,
-                        "wave_effect" => 15,
-                        "manual_drawing" => 16,
-                        _ => 0,
-                    };
-                    if channel > 0 {
-                        let _ = device.set_dmx_channel(channel, *value);
+                    if channel_num > 0 {
+                        let _ = device.set_dmx_channel(channel_num, *value);
                     }
                 }
             }
@@ -162,50 +132,38 @@ impl DmxApp {
                     value_str = value.to_string();
                     if let Some(device) = device {
                         let mut dev_state = device.get_current_state();
-                        match field_name {
-                            "master_dimmer" => dev_state.master_dimmer = *value,
-                            "color_control" => dev_state.color_control = *value,
-                            "color_speed" => dev_state.color_speed = *value,
-                            "pattern_group" => dev_state.pattern_group = *value,
-                            "pattern_select" => dev_state.pattern_select = *value,
-                            "dynamic_effects" => dev_state.dynamic_effects = *value,
-                            "effect_speed" => dev_state.effect_speed = *value,
-                            "pattern_size" => dev_state.pattern_size = *value,
-                            "size_control" => dev_state.size_control = *value,
-                            "rotation" => dev_state.rotation = *value,
-                            "vertical_flip" => dev_state.vertical_flip = *value,
-                            "horizontal_flip" => dev_state.horizontal_flip = *value,
-                            "horizontal_pos" => dev_state.horizontal_pos = *value,
-                            "vertical_pos" => dev_state.vertical_pos = *value,
-                            "wave_effect" => dev_state.wave_effect = *value,
-                            "manual_drawing" => dev_state.manual_drawing = *value,
-                            _ => {},
+                        if let Some(field) = get_state_field_by_channel(&mut dev_state, channel_num) {
+                            *field = *value;
                         }
-                        let channel = match field_name {
-                            "master_dimmer" => 1,
-                            "color_control" => 2,
-                            "color_speed" => 3,
-                            "pattern_group" => 4,
-                            "pattern_select" => 5,
-                            "dynamic_effects" => 6,
-                            "effect_speed" => 7,
-                            "pattern_size" => 8,
-                            "size_control" => 9,
-                            "rotation" => 10,
-                            "vertical_flip" => 11,
-                            "horizontal_flip" => 12,
-                            "horizontal_pos" => 13,
-                            "vertical_pos" => 14,
-                            "wave_effect" => 15,
-                            "manual_drawing" => 16,
-                            _ => 0,
-                        };
-                        if channel > 0 {
-                            let _ = device.set_dmx_channel(channel, *value);
+                        if channel_num > 0 {
+                            let _ = device.set_dmx_channel(channel_num, *value);
                         }
                     }
                 }
             }
         });
+    }
+}
+
+
+fn get_state_field_by_channel<'a>(state: &'a mut DmxLaserState, channel: u8) -> Option<&'a mut u8> {
+    match channel {
+        1 => Some(&mut state.master_dimmer),
+        2 => Some(&mut state.color_control),
+        3 => Some(&mut state.color_speed),
+        4 => Some(&mut state.pattern_group),
+        5 => Some(&mut state.pattern_select),
+        6 => Some(&mut state.dynamic_effects),
+        7 => Some(&mut state.effect_speed),
+        8 => Some(&mut state.pattern_size),
+        9 => Some(&mut state.size_control),
+        10 => Some(&mut state.rotation),
+        11 => Some(&mut state.vertical_flip),
+        12 => Some(&mut state.horizontal_flip),
+        13 => Some(&mut state.horizontal_pos),
+        14 => Some(&mut state.vertical_pos),
+        15 => Some(&mut state.wave_effect),
+        16 => Some(&mut state.manual_drawing),
+        _ => None,
     }
 }
