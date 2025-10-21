@@ -4,7 +4,7 @@ pub mod util;
 pub mod dmx;
 pub mod device;
 pub mod dmxdevice;
-pub mod dmxchannel;
+pub mod dmxliterals;
 pub mod command;
 pub mod mock;
 pub mod model;

@@ -1,7 +1,7 @@
 
 use crate::device::LaserDevice;
 use crate::dmx::{DmxFrame, DmxController, DmxCommand};
-use crate::dmxchannel::{DIMMER_CHANNEL, OFF,ON};
+use crate::dmxliterals::{ALL_EFFECTS_RANDOM, ANIMATION_EFFECTS, BASIC_GEOMETRY_GROUP_A, BASIC_GEOMETRY_GROUP_B, CHRISTMAS_EFFECTS, CHRISTMAS_GRAPHICS_GROUP, DIMMER_CHANNEL, ILDA_ANIMATION_GROUP_1, LINE_EFFECTS, OFF, ON, OUTDOOR_EFFECTS};
 use crate::model::{
     DeviceInfo, DmxLaserState, DrawData, DrawItem, MainCommandData, PisObject, PlaybackCommand, PlaybackMode, Point, SettingsData
 };
@@ -124,17 +124,6 @@ impl DmxLaserDevice {
         Ok(())
     }
 
-    /// Execute a playback command using DMX channels
-    pub fn execute_playback_command(&self, command: &PlaybackCommand) -> Result<(), Box<dyn std::error::Error>> {
-        info!("Executing DMX playback command: {:?}", command.mode);
-        
-        let mut state = self.current_state.lock().unwrap();
-        
-        // Map playback command to DMX channels
-        self.playback_command_to_dmx_state(command, &mut state);
-        
-        Ok(())
-    }
 
     /// Send draw points using DMX position channels
     pub fn send_draw_points(&self, points: &[Point]) -> Result<(), Box<dyn std::error::Error>> {
@@ -409,47 +398,45 @@ impl DmxLaserDevice {
     }
 
     /// Map playback command to DMX state
-    fn playback_command_to_dmx_state(&self, command: &PlaybackCommand, state: &mut DmxLaserState) {
-        // Enable light
-        //state.master_dimmer = 255;
+    fn playback_command_to_dmx_state(&self, command: &PlaybackCommand) {
+
+        let mut state = self.current_state.lock().unwrap();
+        state.master_dimmer = ON;
         
         // Map playback mode to pattern group and dynamic effects
         match command.mode {
             PlaybackMode::Dmx => {
-                state.dynamic_effects = 0; // No function - pure DMX control
+                state.dynamic_effects = OFF; // No function - pure DMX control
             },
             PlaybackMode::RandomPlayback => {
-                state.dynamic_effects = 251; // All effects random play
+                state.dynamic_effects = ALL_EFFECTS_RANDOM; 
             },
             PlaybackMode::LineGeometryPlayback => {
-                state.pattern_group = 12; // Static group 1 (geometric)
-                state.dynamic_effects = 211; // Line effect random play
+                state.pattern_group = BASIC_GEOMETRY_GROUP_A; // Static group 1 (geometric)
+                state.dynamic_effects = LINE_EFFECTS; 
             },
             PlaybackMode::AnimationPlayback => {
-                state.pattern_group = 137; // Animation group 1
-                state.dynamic_effects = 221; // Animation effect random play
+                state.pattern_group = ILDA_ANIMATION_GROUP_1; // Animation group 1
+                state.dynamic_effects = ANIMATION_EFFECTS; 
             },
             PlaybackMode::TextPlayback => {
                 state.pattern_group = 12; // Static group for text
                 state.manual_drawing = 32; // Manual drawing for text
             },
             PlaybackMode::ChristmasPlayback => {
-                state.pattern_group = 112; // Christmas patterns
-                state.dynamic_effects = 231; // Christmas effect random play
+                state.pattern_group = CHRISTMAS_GRAPHICS_GROUP; // Christmas patterns
+                state.dynamic_effects = CHRISTMAS_EFFECTS; 
             },
             PlaybackMode::OutdoorPlayback => {
-                state.pattern_group = 25; // Static group 2
-                state.dynamic_effects = 241; // Outdoor effect random play
+                state.pattern_group = BASIC_GEOMETRY_GROUP_B; // Static group 2B
+                state.dynamic_effects = OUTDOOR_EFFECTS; 
             },
             PlaybackMode::Program => {
                 state.dynamic_effects = 100; // Built-in dynamic effect
             },
             PlaybackMode::Draw => {
                 state.manual_drawing = 32; // Manual drawing mode
-            },
-            PlaybackMode::Playlist => {
-                state.dynamic_effects = 251; // All effects random play
-            },
+            }
         }
         
         // Apply command parameters
@@ -853,7 +840,8 @@ impl LaserDevice for DmxLaserDevice {
     }
     
     async fn set_playback_mode(&self, command: PlaybackCommand) {
-        todo!()
+        self.playback_command_to_dmx_state(&command);
+        Ok(())
     }
     
     fn is_on(&self) -> bool {

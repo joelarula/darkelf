@@ -18,7 +18,7 @@ pub enum PlaybackMode {
     OutdoorPlayback = 6,
     Program = 7,
     Draw = 8,
-    Playlist = 9,
+   // Playlist = 9,
 }
 
 

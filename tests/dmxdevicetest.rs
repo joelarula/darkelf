@@ -1,6 +1,6 @@
 use std::env;
 
-use darkelf::{device::LaserDevice, dmxchannel::{DIMMER_CHANNEL, OFF, ON}, dmxdevice::DmxLaserDevice, util};
+use darkelf::{device::LaserDevice, dmxliterals::{DIMMER_CHANNEL, OFF, ON}, dmxdevice::DmxLaserDevice, model::{PlaybackCommand, PlaybackMode}, util};
 use log::{info, warn};
 
 #[tokio::main]
@@ -50,14 +50,33 @@ async fn test_quick_laser_check() -> Result<(), anyhow::Error> {
                 std::thread::sleep(std::time::Duration::from_secs(1));
                 device.on().await;
      
+               let playback_modes = [
+                    PlaybackMode::RandomPlayback,
+                    PlaybackMode::LineGeometryPlayback,
+                    PlaybackMode::AnimationPlayback,
+                    PlaybackMode::TextPlayback,
+                    PlaybackMode::ChristmasPlayback,
+                    PlaybackMode::OutdoorPlayback,
+                    PlaybackMode::Program,
+                    PlaybackMode::Draw,
+                    PlaybackMode::Playlist,
+                ];
+                
+                for mode in playback_modes.iter() {
 
-            
-                for i in (10..255) {
-                    let dimmer_value = i as u8;
-                    info!("Setting master dimmer to {}", dimmer_value);
-                    let _ = device.set_dmx_channel(1, dimmer_value);
-                    std::thread::sleep(std::time::Duration::from_millis(100));
+                    info!("Set playback mode: {:?}", mode);
+                    let _ = device.execute_playback_command( &PlaybackCommand::default(*mode));
+                    std::thread::sleep(std::time::Duration::from_secs(3));
                 }
+
+          
+
+                //for i in (0..255) {
+                //    let dimmer_value = i as u8;
+                //    info!("Setting master dimmer to {}", dimmer_value);
+                //    let _ = device.set_dmx_channel(4, dimmer_value);
+                //    std::thread::sleep(std::time::Duration::from_millis(100));
+                //}
 
                 
                 std::thread::sleep(std::time::Duration::from_secs(10));

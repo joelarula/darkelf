@@ -1,4 +1,4 @@
-use crate::{dmxchannel::{OFF, ON}, model::{DrawData, DrawItem, DrawMode, DrawPoint, Point, ProjectItem}};
+use crate::{dmxliterals::{OFF, ON}, model::{DrawData, DrawItem, DrawMode, DrawPoint, Point, ProjectItem}};
 use log::{debug, info};
 
 use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, DmxLaserState, FeatureConfig, MainCommandData, PisObject, SettingsData};
