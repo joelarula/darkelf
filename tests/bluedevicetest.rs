@@ -6,7 +6,6 @@ use std::time::Duration;
 use darkelf::blue::BlueController as _;
 use darkelf::model::{CommandConfig, MainCommandData, PlaybackCommand, PlaybackMode, ProjectData, ProjectItem, PublicData, TextData};
 use darkelf::winblue::{ self, WinBlueController};
-use darkelf::mock::MockController;
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::command::CommandGenerator;
@@ -19,22 +18,6 @@ use std::path::Path;
 
 
 
-#[tokio::main]
-#[test]
-async fn test_laser_device_mock() -> Result<(), anyhow::Error> {
-
-    util::setup_logging();
-    unsafe {
-        env::set_var("RUST_LOG", "debug");
-    }
-    let mut controller = MockController::new();
-    let _ = controller.connect();
-    assert!(controller.is_connected());
-    let mut device: BlueLaserDevice = BlueLaserDevice::new(controller);
-    test_laser_device_functionality(&mut device).await?;
-
-    Ok(())
-}
 
 #[tokio::main]
 #[test]

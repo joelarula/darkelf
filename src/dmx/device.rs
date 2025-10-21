@@ -91,7 +91,6 @@ impl DmxLaserDevice {
 
         thread::spawn(move || {
             info!("DMX output thread started");
-            let mut frame_count = 0;
             
             while *is_running_clone.lock().unwrap() {
                 let current_state = {

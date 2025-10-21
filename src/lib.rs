@@ -1,10 +1,9 @@
 pub mod blue;
 pub mod winblue;
 pub mod util;
-pub mod dmx;
 pub mod device;
 pub mod command;
-pub mod mock;
 pub mod model;
 pub mod bluedevice;
 pub mod ui;
+pub mod dmx;

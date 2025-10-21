@@ -149,8 +149,65 @@ pub const SIZE_CONTROL_QUADRATIC_IRREGULAR_LOOP_SCALING_END: u8 = 255;
 
 
 
+// DMX Channel 10: Rotation Control
+pub const ROTATION_CONTROL_CHANNEL: u8 = 10;
+/// 0-127: Rotation angle selection
+pub const ROTATION_ANGLE_START: u8 = 0;
+pub const ROTATION_ANGLE_END: u8 = 127;
+/// 128-191: Forward rotation speed
+pub const ROTATION_FORWARD_SPEED_START: u8 = 128;
+pub const ROTATION_FORWARD_SPEED_END: u8 = 191;
+/// 192-255: Reverse rotation speed
+pub const ROTATION_REVERSE_SPEED_START: u8 = 192;
+pub const ROTATION_REVERSE_SPEED_END: u8 = 255;
 
 
+// DMX Channel 11: Vertical Flip
+pub const VERTICAL_FLIP_CHANNEL: u8 = 11;
+/// 0-127: Vertical flip position
+pub const VERTICAL_FLIP_POSITION_START: u8 = 0;
+pub const VERTICAL_FLIP_POSITION_END: u8 = 127;
+/// 128-255: Vertical flip speed
+pub const VERTICAL_FLIP_SPEED_START: u8 = 128;
+pub const VERTICAL_FLIP_SPEED_END: u8 = 255;
+
+// DMX Channel 12: Horizontal Flip
+pub const HORIZONTAL_FLIP_CHANNEL: u8 = 12;
+/// 0-127: Horizontal flip position
+pub const HORIZONTAL_FLIP_POSITION_START: u8 = 0;
+pub const HORIZONTAL_FLIP_POSITION_END: u8 = 127;
+/// 128-255: Horizontal flip speed
+pub const HORIZONTAL_FLIP_SPEED_START: u8 = 128;
+pub const HORIZONTAL_FLIP_SPEED_END: u8 = 255;
+
+// DMX Channel 13: Horizontal Position
+pub const HORIZONTAL_POSITION_CHANNEL: u8 = 13;
+/// 0-127: Horizontal position selection
+pub const HORIZONTAL_POSITION_SELECTION_START: u8 = 0;
+pub const HORIZONTAL_POSITION_SELECTION_END: u8 = 127;
+/// 128-255: Horizontal circular movement speed
+pub const HORIZONTAL_CIRCULAR_MOVEMENT_SPEED_START: u8 = 128;
+pub const HORIZONTAL_CIRCULAR_MOVEMENT_SPEED_END: u8 = 255;
+
+// DMX Channel 14: Vertical Position
+pub const VERTICAL_POSITION_CHANNEL: u8 = 14;
+/// 0-127: Vertical position selection
+pub const VERTICAL_POSITION_SELECTION_START: u8 = 0;
+pub const VERTICAL_POSITION_SELECTION_END: u8 = 127;
+/// 128-255: Vertical circular movement speed
+pub const VERTICAL_CIRCULAR_MOVEMENT_SPEED_START: u8 = 128;
+pub const VERTICAL_CIRCULAR_MOVEMENT_SPEED_END: u8 = 255;
+
+
+
+// DMX Channel 15: Wave Effect
+pub const WAVE_EFFECT_CHANNEL: u8 = 15;
+/// 0-1: No function
+pub const WAVE_EFFECT_NONE_START: u8 = 0;
+pub const WAVE_EFFECT_NONE_END: u8 = 1;
+/// 2-255: Wave amplitude and speed (8 gears, 32 values each)
+pub const WAVE_EFFECT_AMPLITUDE_SPEED_START: u8 = 2;
+pub const WAVE_EFFECT_AMPLITUDE_SPEED_END: u8 = 255;
 
 
 
