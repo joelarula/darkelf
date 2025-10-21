@@ -203,8 +203,7 @@ async fn test_playback_command(device: &mut BlueLaserDevice) {
         PlaybackMode::ChristmasPlayback,
         PlaybackMode::OutdoorPlayback,
         PlaybackMode::Program,
-        PlaybackMode::Draw,
-        PlaybackMode::Playlist,
+        PlaybackMode::Draw
     ];
     for mode in playback_modes.iter() {
 

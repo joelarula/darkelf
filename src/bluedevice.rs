@@ -1,9 +1,9 @@
 use crate::device::LaserDevice;
-use crate::model::{CommandConfig, DmxLaserState, DrawData, MainCommandData, PisObject, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData};
+use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
-use crate::model::{ DeviceResponse, PlaybackMode, SettingsData};
+use crate::model::{ DeviceResponse, SettingsData};
 use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
@@ -12,7 +12,6 @@ pub struct BlueLaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
 	device_info: Arc<Mutex<Option<DeviceResponse>>>,
-    dmx_state: Arc<Mutex<Option<DmxLaserState>>>,
     playback_items: std::collections::HashMap<u8, ProjectItem>,
 }
 
@@ -26,7 +25,6 @@ impl BlueLaserDevice {
             random_check: Self::gen_random_check(),
             device_controller: Arc::new(Mutex::new(device_controller)),
             device_info: Arc::new(Mutex::new(None)),
-            dmx_state: Arc::new(Mutex::new(None)),
             playback_items: {
             let mut map = std::collections::HashMap::new();
                 map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
@@ -43,7 +41,6 @@ impl BlueLaserDevice {
         {
             // Clone Arc fields for the callback
             let device_info = self.device_info.clone();
-            let dmx_state = self.dmx_state.clone();
             let random_check = self.random_check.clone();
 
             let mut controller = self.device_controller.lock().unwrap();
@@ -60,13 +57,6 @@ impl BlueLaserDevice {
                         }
                     }
                     
-                    // Also parse device response into DMX state
-                    if let Some(dmx_laser_state) = CommandGenerator::parse_device_response_to_dmx_state(&data) {
-                        info!("Parsed DMX state: {:#?}", dmx_laser_state);
-                        if let Ok(mut dmx_state_lock) = dmx_state.lock() {
-                            *dmx_state_lock = Some(dmx_laser_state);
-                        }
-                    }
                 } else {
                     info!("Invalid or unverified device response");
                 }
@@ -217,13 +207,6 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
         self.device_info.try_lock().unwrap()
             .as_ref()
             .map(|resp| resp.clone())
-    }
-
-    /// Get the current DMX laser state parsed from device responses
-    pub fn get_dmx_state(&self) -> Option<DmxLaserState> {
-        self.dmx_state.lock().unwrap()
-            .as_ref()
-            .map(|state| state.clone())
     }
 
 
