@@ -4,6 +4,7 @@ pub const DMX_BAUD_RATE: u32 = 250_000;
 pub const DMX_FRAME_SIZE: usize = 512;
 pub const DMX_TEST_FRAME: [u8; DMX_FRAME_SIZE] = [0u8; DMX_FRAME_SIZE];
 
+use log::info;
 use serialport::{DataBits, FlowControl, Parity, StopBits};
 use std::thread;
 use std::time::Duration;
@@ -11,6 +12,7 @@ use std::io::Write;
 use std::error::Error;
 
 
+#[derive(Clone)]
 pub struct DmxFrame {
     pub channels: Vec<u8>, // or [u8; 512] for a full DMX universe
 }
@@ -37,19 +39,6 @@ impl DmxFrame {
     }
 }
 
-pub trait DmxCommand {
-    fn configure( &self, state: &mut DmxFrame);
-}
-
-impl<F> DmxCommand for F
-where
-    F: Fn(&mut DmxFrame),
-{
-    fn configure(&self, state: &mut DmxFrame) {
-        self(state);
-    }
-}
-
 pub struct DmxController {
     port: Box<dyn serialport::SerialPort>,
     address: usize,  // Starting channel (1-based)
@@ -59,7 +48,7 @@ impl DmxController {
 
 
     pub fn new(port_name: &str, address: usize) -> Result<Self, Box<dyn Error>> {
-        println!("Opening DMX port: {}", port_name);
+        info!("Opening DMX port: {}", port_name);
 		let mut port = serialport::new(port_name, DMX_BAUD_RATE)
             .data_bits(DataBits::Eight)
             .flow_control(FlowControl::None)
@@ -69,15 +58,6 @@ impl DmxController {
             .open()?;
 
         Ok(DmxController { port, address: address - 1 })  // 0-based index
-    }
-
-
-	pub fn send(&mut self, commands: &[Box< dyn DmxCommand>]) -> Result<(), Box<dyn Error>> {
-        let mut frame = DmxFrame::new();
-        for cmd in commands {         
-			cmd.configure(&mut frame);
-        }
-        self.send_frame(&frame)
     }
 
 
@@ -111,7 +91,7 @@ pub fn scan_dmx_ports() -> Vec<String> {
 	match serialport::available_ports() {
 		Ok(ports) => {
 			for p in &ports {
-				println!("Testing port: {} (type: {:?}, info: {:?})", p.port_name, p.port_type, p); // Print port info
+				info    !("Testing port: {} (type: {:?}, info: {:?})", p.port_name, p.port_type, p); // Print port info
 				let result = serialport::new(&p.port_name, DMX_BAUD_RATE)
 					.timeout(Duration::from_millis(10))
 					.stop_bits(serialport::StopBits::Two)

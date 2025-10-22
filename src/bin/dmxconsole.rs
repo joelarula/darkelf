@@ -1,169 +1,131 @@
-
+use darkelf::util;
 use eframe::{egui};
 use std::sync::{Arc, Mutex};
-use darkelf::dmx::device::DmxLaserDevice;
-use darkelf::dmx::device::DmxLaserState;
-use darkelf::dmx::laser_light_8340::{DMX_CHANNELS, DmxChannel,DmxChannelInfo};
+use darkelf::dmx::device::DmxDevice;
+use darkelf::dmx::model::Fixture;
 
 
 pub struct DmxApp {
-    pub device: Option<Arc<DmxLaserDevice>>,
-    pub state: Arc<Mutex<DmxLaserState>>,
+    pub device: Option<Arc<DmxDevice>>,
+    pub status_message: Arc<Mutex<String>>,
+    pub fixture: Fixture,
 }
 
 fn main() {
-    let app = DmxApp::default();
+    util::setup_logging();
+    let fixture: Fixture = {
+        let file = std::fs::File::open("assets/fixtures/laser_light_8340.json").expect("Fixture file not found");
+        serde_json::from_reader(file).expect("Failed to parse fixture JSON")
+    };
+    let app = DmxApp::new(fixture.clone());
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([300.0, 600.0])
-            .with_min_inner_size([300.0, 600.0]),
+            .with_inner_size([400.0, 600.0])
+            .with_min_inner_size([400.0, 600.0]),
         ..Default::default()
     };
     let _ = eframe::run_native(
-        "DMX Laser Device Controller",
+        fixture.name.as_str(),
         native_options,
         Box::new(|_cc| Box::new(app)),
     );
 }
 
-impl Default for DmxApp {
-    fn default() -> Self {
-        darkelf::util::setup_logging();
-        unsafe {
-            std::env::set_var("RUST_LOG", "debug");
-        }
-  
-        log::info!("=== DMX Laser Device Setup ===");
+impl DmxApp {
+    pub fn new(fixture: Fixture) -> Self {
+        let status_message = Arc::new(Mutex::new(String::from("=== DMX Laser Device Setup ===")));
         let dmx_ports = darkelf::dmx::controller::scan_dmx_ports();
         let port = "COM4";
         let dmx_channel = 1;
         let device = if dmx_ports.contains(&port.to_string()) {
-            match DmxLaserDevice::new(port, dmx_channel) {
+            match DmxDevice::new(port, dmx_channel, fixture.clone()) {
                 Ok(dev) => {
                     if dev.start().is_ok() {
-                        log::info!("Created and started DMX laser device on {} channel {}", port, dmx_channel);
+                        let mut status = status_message.lock().unwrap();
+                        *status = format!("Created and started DMX device on {} channel {}", port, dmx_channel);
                         Some(Arc::new(dev))
                     } else {
-                        log::warn!("Failed to start DMX device");
+                        let mut status = status_message.lock().unwrap();
+                        *status = "Failed to start DMX device".to_string();
                         None
                     }
                 }
                 Err(e) => {
-                    log::warn!("Failed to create DMX device: {}", e);
+                    let mut status = status_message.lock().unwrap();
+                    *status = format!("Failed to create DMX device: {}", e);
                     None
                 }
             }
         } else {
-            log::warn!("{} not found in available DMX ports: {:?}", port, dmx_ports);
+            let mut status = status_message.lock().unwrap();
+            *status = format!("{} not found in available DMX ports: {:?}", port, dmx_ports);
             None
         };
-        let state = Arc::new(Mutex::new(DmxLaserState::default()));
+        let status_message = Arc::new(Mutex::new(String::from("Ready")));
         DmxApp {
             device,
-            state,
+            status_message,
+            fixture,
         }
     }
 }
 
 impl eframe::App for DmxApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::TopBottomPanel::bottom("status_bar").show(ctx, |ui| {
+            let status = self.status_message.lock().unwrap().clone();
+            ui.label(format!("Status: {}", status));
+        });
         egui::CentralPanel::default().show(ctx, |ui| {
-            let mut state = self.state.lock().unwrap();
-            ui.heading("DMX Laser State");
-            for channel_enum in DMX_CHANNELS {
-                let value = match channel_enum {
-                    DmxChannel::Dimmer { .. } => &mut state.master_dimmer,
-                    DmxChannel::ColorControl { .. } => &mut state.color_control,
-                    DmxChannel::ColorChangeSpeed { .. } => &mut state.color_speed,
-                    DmxChannel::PatternSelection { .. } => &mut state.pattern_select,
-                    DmxChannel::EffectSpeed { .. } => &mut state.effect_speed,
-                    DmxChannel::PatternSize { .. } => &mut state.pattern_size,
-                    DmxChannel::SizeControl { .. } => &mut state.size_control,
-                    DmxChannel::RotationControl { .. } => &mut state.rotation,
-                    DmxChannel::VerticalFlip { .. } => &mut state.vertical_flip,
-                    DmxChannel::HorizontalFlip { .. } => &mut state.horizontal_flip,
-                    DmxChannel::HorizontalPosition { .. } => &mut state.horizontal_pos,
-                    DmxChannel::VerticalPosition { .. } => &mut state.vertical_pos,
-                    DmxChannel::WaveEffect { .. } => &mut state.wave_effect,
-                    DmxChannel::ManualDrawing { .. } => &mut state.manual_drawing,
-                };
-                self.dmx_field(ui, channel_enum, value, &self.device);
+            if let Some(device) = &self.device {
+                for (i, channel) in self.fixture.channels.iter().enumerate() {
+                    self.dmx_field_fixture(ui, channel, i + 1, device);
+                }
             }
         });
     }
 }
 
 impl DmxApp {
-    fn dmx_field(&self, ui: &mut egui::Ui, channel_enum: &DmxChannel, value: &mut u8, device: &Option<Arc<DmxLaserDevice>>) {
-        let label = channel_enum.label();
-        let channel_num = channel_enum.channel();
-        let mut value_str = value.to_string();
-        ui.horizontal(|ui| {
-            ui.label(label);
-            let text_response = ui.add_sized(
-                [40.0, 0.0],
-                egui::TextEdit::singleline(&mut value_str)
-                    .char_limit(3)
-            );
-            let slider_response = ui.add_sized(
-                [120.0, 0.0],
-                egui::Slider::new(value, 0..=255).step_by(1.0),
-            );
+        fn dmx_field_fixture(&self, ui: &mut egui::Ui, channel: &darkelf::dmx::model::Channel, rel_channel: usize, device: &Arc<DmxDevice>) {
+            let label = &channel.name;
+            // Compose tooltip from channel capabilities
+            let tooltip = channel.capabilities.iter().map(|cap| {
+                let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
+                let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
+                let desc = cap.description.as_deref().unwrap_or("");
+                format!("{}: {}\n{}", range, name, desc)
+            }).collect::<Vec<_>>().join("\n\n");
 
-            // If slider changed, update text field string
-            if slider_response.changed() {
-                value_str = value.to_string();
-                if let Some(device) = device {
-                    let mut dev_state = device.get_current_state();
-                    if let Some(field) = get_state_field_by_channel(&mut dev_state, channel_num) {
-                        *field = *value;
+            // Use device getter for channel value
+            if let Some(value) = device.get_dmx_channel(rel_channel) {
+                let mut value_str = value.to_string();
+                ui.horizontal(|ui| {
+                    ui.add_sized([100.0, 0.0], egui::Label::new(label));
+                    let text_response = ui.add_sized(
+                        [50.0, 0.0],
+                        egui::TextEdit::singleline(&mut value_str)
+                            .char_limit(3)
+                    );
+                    let mut slider_value = value;
+                    let slider = egui::Slider::new(&mut slider_value, 0..=255).step_by(1.0);
+                    let slider_response = ui.add_sized([100.0, 0.0], slider);
+                    let slider_response = slider_response.on_hover_text(tooltip);
+                    if slider_response.changed() {
+                        value_str = slider_value.to_string();
+                        device.set_dmx_channel(rel_channel, slider_value).ok();
                     }
-                    if channel_num > 0 {
-                        let _ = device.set_dmx_channel(channel_num, *value);
-                    }
-                }
-            }
-
-            // If text field changed, update value and slider
-            if text_response.changed() {
-                if let Ok(mut val) = value_str.parse::<i32>() {
-                    val = val.clamp(0, 255);
-                    *value = val as u8;
-                    value_str = value.to_string();
-                    if let Some(device) = device {
-                        let mut dev_state = device.get_current_state();
-                        if let Some(field) = get_state_field_by_channel(&mut dev_state, channel_num) {
-                            *field = *value;
-                        }
-                        if channel_num > 0 {
-                            let _ = device.set_dmx_channel(channel_num, *value);
+                    if text_response.changed() {
+                        if let Ok(mut val) = value_str.parse::<i32>() {
+                            val = val.clamp(0, 255);
+                            device.set_dmx_channel(rel_channel, val as u8).ok();
                         }
                     }
-                }
+                });
             }
-        });
-    }
+        }
+
+
 }
 
 
-fn get_state_field_by_channel<'a>(state: &'a mut DmxLaserState, channel: u8) -> Option<&'a mut u8> {
-    match channel {
-        1 => Some(&mut state.master_dimmer),
-        2 => Some(&mut state.color_control),
-        3 => Some(&mut state.color_speed),
-        4 => Some(&mut state.pattern_group),
-        5 => Some(&mut state.pattern_select),
-        6 => Some(&mut state.dynamic_effects),
-        7 => Some(&mut state.effect_speed),
-        8 => Some(&mut state.pattern_size),
-        9 => Some(&mut state.size_control),
-        10 => Some(&mut state.rotation),
-        11 => Some(&mut state.vertical_flip),
-        12 => Some(&mut state.horizontal_flip),
-        13 => Some(&mut state.horizontal_pos),
-        14 => Some(&mut state.vertical_pos),
-        15 => Some(&mut state.wave_effect),
-        16 => Some(&mut state.manual_drawing),
-        _ => None,
-    }
-}

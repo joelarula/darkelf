@@ -1,0 +1,714 @@
+{
+  "name": "Laser_Light_8340",
+  "shortName": "L8340",
+  "categories": [
+    "Laser"
+  ],
+  "meta": {
+    "authors": [
+      "Darkelf"
+    ],
+    "createDate": "2025-10-22",
+    "lastModifyDate": "2025-10-22"
+  },
+  "links": {
+    "manual": null,
+    "productPage": null,
+    "video": null
+  },
+  "manufacturer": "LaserBrand",
+  "channels": [
+
+    {
+      "name": "Master Dimmer",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            9
+          ],
+          "type": "Generic",
+          "menuName": "Off",
+          "menuValue": null,
+          "description": "Laser shuttering"
+        },
+        {
+          "dmxRange": [
+            10,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "On",
+          "menuValue": null,
+          "description": "Dimming"
+        }
+      ]
+    },
+    {
+      "name": "Color Control",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            69
+          ],
+          "type": "Generic",
+          "menuName": "Fixed Colors",
+          "menuValue": null,
+          "description": "White-Red-Blue-Pink-Cyan-Yellow-Green"
+        },
+        {
+          "dmxRange": [
+            70,
+            79
+          ],
+          "type": "Generic",
+          "menuName": "Overall Color Change",
+          "menuValue": null,
+          "description": "Overall color change"
+        },
+        {
+          "dmxRange": [
+            80,
+            89
+          ],
+          "type": "Generic",
+          "menuName": "Pattern Initial Color",
+          "menuValue": null,
+          "description": "Pattern initial color"
+        },
+        {
+          "dmxRange": [
+            90,
+            92
+          ],
+          "type": "Generic",
+          "menuName": "Colorful Rainbow",
+          "menuValue": null,
+          "description": "Colorful rainbow"
+        },
+        {
+          "dmxRange": [
+            93,
+            110
+          ],
+          "type": "Generic",
+          "menuName": "2-segment Color",
+          "menuValue": null,
+          "description": "2-segment color"
+        },
+        {
+          "dmxRange": [
+            111,
+            131
+          ],
+          "type": "Generic",
+          "menuName": "3-segment Color",
+          "menuValue": null,
+          "description": "3-segment color"
+        },
+        {
+          "dmxRange": [
+            132,
+            149
+          ],
+          "type": "Generic",
+          "menuName": "4-segment Color",
+          "menuValue": null,
+          "description": "4-segment color"
+        },
+        {
+          "dmxRange": [
+            150,
+            182
+          ],
+          "type": "Generic",
+          "menuName": "8-segment Color",
+          "menuValue": null,
+          "description": "8-segment color"
+        },
+        {
+          "dmxRange": [
+            183,
+            218
+          ],
+          "type": "Generic",
+          "menuName": "16-segment Color",
+          "menuValue": null,
+          "description": "16-segment color"
+        },
+        {
+          "dmxRange": [
+            219,
+            253
+          ],
+          "type": "Generic",
+          "menuName": "32-segment Color",
+          "menuValue": null,
+          "description": "32-segment color"
+        },
+        {
+          "dmxRange": [
+            254,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Color Gradient",
+          "menuValue": null,
+          "description": "Color gradient"
+        }
+      ]
+    },
+    {
+      "name": "Color Change Speed",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            1
+          ],
+          "type": "Generic",
+          "menuName": "No Color Flow",
+          "menuValue": null,
+          "description": "No color flow"
+        },
+        {
+          "dmxRange": [
+            10,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Forward Speed",
+          "menuValue": null,
+          "description": "Forward speed (slow to fast)"
+        },
+        {
+          "dmxRange": [
+            128,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Reverse Speed",
+          "menuValue": null,
+          "description": "Reverse speed (slow to fast)"
+        }
+      ]
+    },
+    {
+      "name": "Graphics Group Selection",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [0, 24],
+          "type": "Static",
+          "menuName": "Basic Geometry Group 1",
+          "menuValue": null,
+          "description": "Static graphics group 1 (basic geometric patterns)"
+        },
+        {
+          "dmxRange": [25, 49],
+          "type": "Static",
+          "menuName": "Basic Geometry Group 2",
+          "menuValue": null,
+          "description": "Static graphics group 2 (basic geometric patterns)"
+        },
+        {
+          "dmxRange": [50, 74],
+          "type": "Static",
+          "menuName": "Edge Highlight Group",
+          "menuValue": null,
+          "description": "Static graphics group 3 (edge highlight patterns)"
+        },
+        {
+          "dmxRange": [75, 99],
+          "type": "Static",
+          "menuName": "Punched Graphics Group",
+          "menuValue": null,
+          "description": "Static graphics group 4 (punched graphics)"
+        },
+        {
+          "dmxRange": [100, 124],
+          "type": "Static",
+          "menuName": "Christmas Graphics Group",
+          "menuValue": null,
+          "description": "Static graphics group 5 (Christmas)"
+        },
+        {
+          "dmxRange": [125, 149],
+          "type": "Animation",
+          "menuName": "ILDA Animation Group 1",
+          "menuValue": null,
+          "description": "ILDA Animation group 1"
+        },
+        {
+          "dmxRange": [150, 174],
+          "type": "Animation",
+          "menuName": "ILDA Animation Group 2",
+          "menuValue": null,
+          "description": "Animation group 2"
+        },
+        {
+          "dmxRange": [175, 199],
+          "type": "Animation",
+          "menuName": "ILDA Animation Group 3",
+          "menuValue": null,
+          "description": "Animation group 3"
+        },
+        {
+          "dmxRange": [200, 224],
+          "type": "Animation",
+          "menuName": "ILDA Animation Group 4",
+          "menuValue": null,
+          "description": "Animation group 4"
+        },
+        {
+          "dmxRange": [225, 255],
+          "type": "Animation",
+          "menuName": "ILDA Animation Group 5",
+          "menuValue": null,
+          "description": "Animation group 5"
+        }
+      ]
+    },
+    {
+      "name": "Pattern Selection",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Pattern Selection",
+          "menuValue": null,
+          "description": "Individual pattern within group (CH4)"
+        }
+      ]
+    },
+    {
+      "name": "Dynamic Effects",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [2, 206],
+          "type": "Effect",
+          "menuName": "Built-in Effects",
+          "menuValue": null,
+          "description": "Built-in effects radio selection, one effect per 2 values (color by CH2, speed by CH7)"
+        },
+        {
+          "dmxRange": [207, 216],
+          "type": "Effect",
+          "menuName": "Line Effect Randomization",
+          "menuValue": null,
+          "description": "Line effect randomization (color by CH2, speed by CH7)"
+        },
+        {
+          "dmxRange": [217, 226],
+          "type": "Effect",
+          "menuName": "Animation Effect Randomization",
+          "menuValue": null,
+          "description": "Animation effect randomization (color by CH2, speed by CH7)"
+        },
+        {
+          "dmxRange": [227, 236],
+          "type": "Effect",
+          "menuName": "Christmas Effect Randomization",
+          "menuValue": null,
+          "description": "Christmas effect randomization (color by CH2, speed by CH7)"
+        },
+        {
+          "dmxRange": [237, 246],
+          "type": "Effect",
+          "menuName": "Outdoor Effect Randomization",
+          "menuValue": null,
+          "description": "Outdoor effect randomization (color by CH2, speed by CH7)"
+        },
+        {
+          "dmxRange": [225, 255],
+          "type": "Effect",
+          "menuName": "All Effects Randomized",
+          "menuValue": null,
+          "description": "All effects randomized (color by CH2, speed by CH7)"
+        }
+      ]
+    },
+    {
+      "name": "Effect Speed",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            1
+          ],
+          "type": "Generic",
+          "menuName": "System Default Speed",
+          "menuValue": null,
+          "description": "System default speed"
+        },
+        {
+          "dmxRange": [
+            2,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Manual Speed",
+          "menuValue": null,
+          "description": "Manual speed (slow to fast)"
+        }
+      ]
+    },
+    {
+      "name": "Pattern Size",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Manual Pattern Size",
+          "menuValue": null,
+          "description": "Manual pattern size selection"
+        }
+      ]
+    },
+    {
+      "name": "Size Control",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            15
+          ],
+          "type": "Generic",
+          "menuName": "Pattern Size Options",
+          "menuValue": null,
+          "description": "Pattern size options"
+        },
+        {
+          "dmxRange": [
+            16,
+            55
+          ],
+          "type": "Generic",
+          "menuName": "Speed Small to Large",
+          "menuValue": null,
+          "description": "Speed small to large"
+        },
+        {
+          "dmxRange": [
+            56,
+            95
+          ],
+          "type": "Generic",
+          "menuName": "Speed Large to Small",
+          "menuValue": null,
+          "description": "Speed large to small"
+        },
+        {
+          "dmxRange": [
+            96,
+            135
+          ],
+          "type": "Generic",
+          "menuName": "Size Scaling Speed",
+          "menuValue": null,
+          "description": "Size scaling speed"
+        },
+        {
+          "dmxRange": [
+            136,
+            175
+          ],
+          "type": "Generic",
+          "menuName": "Two Point Irregular Loop Scaling",
+          "menuValue": null,
+          "description": "Two point irregular loop scaling"
+        },
+        {
+          "dmxRange": [
+            176,
+            215
+          ],
+          "type": "Generic",
+          "menuName": "Three Point Irregular Loop Scaling",
+          "menuValue": null,
+          "description": "Three point irregular loop scaling"
+        },
+        {
+          "dmxRange": [
+            216,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Quadratic Irregular Loop Scaling",
+          "menuValue": null,
+          "description": "Quadratic irregular loop scaling"
+        }
+      ]
+    },
+    {
+      "name": "Rotation Control",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Rotation Angle Selection",
+          "menuValue": null,
+          "description": "Rotation angle selection"
+        },
+        {
+          "dmxRange": [
+            128,
+            191
+          ],
+          "type": "Generic",
+          "menuName": "Forward Rotation Speed",
+          "menuValue": null,
+          "description": "Forward rotation speed"
+        },
+        {
+          "dmxRange": [
+            192,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Reverse Rotation Speed",
+          "menuValue": null,
+          "description": "Reverse rotation speed"
+        }
+      ]
+    },
+    {
+      "name": "Vertical Flip",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Vertical Flip Position",
+          "menuValue": null,
+          "description": "Vertical flip position"
+        },
+        {
+          "dmxRange": [
+            128,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Vertical Flip Speed",
+          "menuValue": null,
+          "description": "Vertical flip speed"
+        }
+      ]
+    },
+    {
+      "name": "Horizontal Flip",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Horizontal Flip Position",
+          "menuValue": null,
+          "description": "Horizontal flip position"
+        },
+        {
+          "dmxRange": [
+            128,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Horizontal Flip Speed",
+          "menuValue": null,
+          "description": "Horizontal flip speed"
+        }
+      ]
+    },
+    {
+      "name": "Horizontal Position",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Horizontal Position Selection",
+          "menuValue": null,
+          "description": "Horizontal position selection"
+        },
+        {
+          "dmxRange": [
+            128,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Horizontal Circular Movement Speed",
+          "menuValue": null,
+          "description": "Horizontal circular movement speed"
+        }
+      ]
+    },
+    {
+      "name": "Vertical Position",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            127
+          ],
+          "type": "Generic",
+          "menuName": "Vertical Position Selection",
+          "menuValue": null,
+          "description": "Vertical position selection"
+        },
+        {
+          "dmxRange": [
+            128,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Vertical Circular Movement Speed",
+          "menuValue": null,
+          "description": "Vertical circular movement speed"
+        }
+      ]
+    },
+    {
+      "name": "Wave Effect",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [0, 1],
+          "type": "Generic",
+          "menuName": "No Function",
+          "menuValue": null,
+          "description": "No function"
+        },
+        {
+          "dmxRange": [2, 255],
+          "type": "Generic",
+          "menuName": "Wave Amplitude and Speed",
+          "menuValue": null,
+          "description": "Wave amplitude and speed (8 gears, 32 values each)"
+        }
+      ]
+    },
+    {
+      "name": "Manual Drawing",
+      "defaultValue": 0,
+      "capabilities": [
+        {
+          "dmxRange": [
+            0,
+            1
+          ],
+          "type": "Generic",
+          "menuName": "No Function",
+          "menuValue": null,
+          "description": "No function"
+        },
+        {
+          "dmxRange": [
+            2,
+            63
+          ],
+          "type": "Generic",
+          "menuName": "Manual Gradual Drawing 1",
+          "menuValue": null,
+          "description": "Manual gradual drawing 1"
+        },
+        {
+          "type": "Generic",
+          "menuName": "Manual Gradual Drawing 2",
+          "menuValue": null,
+          "description": "Manual gradual drawing 2"
+        },
+        {
+          "dmxRange": [
+            128,
+            153
+          ],
+          "type": "Generic",
+          "menuName": "Automated Gradient Painting Increase",
+          "menuValue": null,
+          "description": "Automated gradient painting increase"
+        },
+        {
+          "dmxRange": [
+            154,
+            179
+          ],
+          "type": "Generic",
+          "menuName": "Automated Gradient Painting Reduce",
+          "menuValue": null,
+          "description": "Automated gradient painting reduce"
+        },
+        {
+          "dmxRange": [
+            180,
+            205
+          ],
+          "type": "Generic",
+          "menuName": "Automatic Gradiation Reverse",
+          "menuValue": null,
+          "description": "Automatic gradiation (incremental and decremental reverse)"
+        },
+        {
+          "dmxRange": [
+            206,
+            255
+          ],
+          "type": "Generic",
+          "menuName": "Automatic Gradiation Isotropic",
+          "menuValue": null,
+          "description": "Automatic gradiation (isotropic)"
+        }
+      ]
+    }
+  ],
+  "modes": [
+    {
+      "name": "Default",
+      "channels": [
+        "Master Dimmer",
+        "Color Control",
+        "Color Change Speed",
+        "Graphics Group Selection",
+        "Pattern Selection",
+        "Dynamic Effects",
+        "Effect Speed",
+        "Pattern Size",
+        "Size Control",
+        "Rotation Control",
+        "Vertical Flip",
+        "Horizontal Flip",
+        "Horizontal Position",
+        "Vertical Position",
+        "Wave Effect",
+        "Manual Drawing"
+      ]
+    }
+  ]
+}
