@@ -247,12 +247,10 @@ var fontData = {
     sn: 1002
 };
 
-    var text = "ABC123";   
+    var text = "A1B2C31A2B3C";   
     console.log("Testing text:", text);
     var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
-    console.log("Result of textLineVectorizer.getXXYY:", textCoordinates);
-
-
+ console.log("Result of textLineVectorizer.getXXYY (JSON):", JSON.stringify(textCoordinates.xxyy, null, 2));
   var testTextData = {
     verTag: 0,
     runDir: 0,
@@ -265,7 +263,7 @@ var fontData = {
     groupIdex: 0,
     groupList: [
       {
-        text: "123ABC",
+        text: text,
         update: 0,
         color: 9,
         fontIdex: 0,
