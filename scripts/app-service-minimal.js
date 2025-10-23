@@ -1124,7 +1124,7 @@ globalThis["webpackJsonp"].push([
                     time = commandOptions .textDecimalTime 
                         ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) 
                         : toFixedWidthHex(Math.floor(segmentTime ), 2), 
-                        t("log", "time = ", time, " at utils/funcTools.js:337"), 
+                        console.log(time), 
                         V >= 8 && (F = 0);
                     var test = !1;
                     if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), 
@@ -1363,7 +1363,7 @@ globalThis["webpackJsonp"].push([
                             g += toFixedWidthHex(a[P].charCount, 2), 
                             j += a[P].cmd, x += a[P].charWidthCmd, 
                             V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
-                        t("log", d, b, " at utils/funcTools.js:308");
+                        console.log(d, b);
                         var u = toFixedWidthHex(a.length, 2),
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
@@ -3220,102 +3220,161 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function layoutAndSimplifyShapes (shapes, markCorners , isHorizontalLayout , simplify , flipHorizontal) {
-                    for (var a = 0, i = 0, index = 0; index < shapes.length; index++) {
-                        shapes[index] = normalizeAndCenterLines (shapes[index], isHorizontalLayout , flipHorizontal);
-                        var o = shapes[index];
-                        isHorizontalLayout  ? (a += o.w, i = o.h) : (a = o.w, i += o.h)
+                    var totalWidth = 0, totalHeight = 0;
+                    for (var shapeIndex = 0; shapeIndex < shapes.length; shapeIndex++) {
+                        shapes[shapeIndex] = normalizeAndCenterLines(shapes[shapeIndex], isHorizontalLayout, flipHorizontal);
+                        var normalizedShape = shapes[shapeIndex];
+                        if (isHorizontalLayout) {
+                            totalWidth += normalizedShape.w;
+                            totalHeight = normalizedShape.h;
+                        } else {
+                            totalWidth = normalizedShape.w;
+                            totalHeight += normalizedShape.h;
+                        }
                     }
-                    for (var p = [], b = -a / 2, g = i / 2, x = 0, V = 0, f = 0; f < shapes.length; f++) {
-                        var F = shapes[f],
-                            k = F.lines;
-                        isHorizontalLayout  || (x = -F.w / 2, b = 0);
-                        for (var m = 0; m < k.length; m++) {
-                            var P = k[m],
-                                u = [],
-                                X = {
-                                    x: b + P[0].x + x,
-                                    y: g - P[0].y + V,
+                    var result = [],
+                        offsetX = -totalWidth / 2,
+                        offsetY = totalHeight / 2,
+                        layoutX = 0,
+                        layoutY = 0;
+                    for (var shapeIter = 0; shapeIter < shapes.length; shapeIter++) {
+                        var shape = shapes[shapeIter],
+                            lines = shape.lines;
+                        if (!isHorizontalLayout) {
+                            layoutX = -shape.w / 2;
+                            offsetX = 0;
+                        }
+                        for (var lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+                            var line = lines[lineIndex],
+                                simplifiedLine = [],
+                                firstPoint = {
+                                    x: offsetX + line[0].x + layoutX,
+                                    y: offsetY - line[0].y + layoutY,
                                     z: 1
                                 };
-                            if (simplify )
-                                if (markCorners ) P = markCornerPoints (P, 135, !1);
-                                else {
-                                    var N = 1;
-                                    while (N < P.length) {
-                                        var H = {
-                                            x: b + P[N].x + x,
-                                            y: g - P[N].y + V,
-                                            z: P[N].z
+                            if (simplify) {
+                                if (markCorners) {
+                                    line = markCornerPoints(line, 135, false);
+                                } else {
+                                    var pointIdx = 1;
+                                    while (pointIdx < line.length) {
+                                        var currentPoint = {
+                                            x: offsetX + line[pointIdx].x + layoutX,
+                                            y: offsetY - line[pointIdx].y + layoutY,
+                                            z: line[pointIdx].z
                                         };
-                                        distanceBetweenPoints(X, H) < 2 ? P.splice(N, 1) : (N++, X = H)
+                                        if (distanceBetweenPoints(firstPoint, currentPoint) < 2) {
+                                            line.splice(pointIdx, 1);
+                                        } else {
+                                            pointIdx++;
+                                            firstPoint = currentPoint;
+                                        }
                                     }
-                                    P = markCornerPoints (P, 145, !0)
-                                } X = {
-                                x: b + P[0].x + x,
-                                y: g - P[0].y + V,
-                                z: 1
-                            }, u.push(X);
-                            var z = 1;
-                            while (z < P.length - 1) {
-                                var Q = {
-                                        x: b + P[z].x + x,
-                                        y: g - P[z].y + V,
-                                        z: P[z].z
-                                    },
-                                    R = {
-                                        x: b + P[z + 1].x + x,
-                                        y: g - P[z + 1].y + V,
-                                        z: P[z + 1].z
-                                    };
-                                if (simplify ) {
-                                    var v = calculateAngleBetweenPoints_B([X.x, X.y], [Q.x, Q.y], [R.x, R.y]);
-                                    if ((0 == v || v > 174) && 0 == Q.z) {
-                                        P.splice(z, 1), z > 1 && (z--, u.pop(), X = u[u.length - 1]);
-                                        continue
-                                    }
-                                    if (0 == Q.z && distanceBetweenPoints(u[u.length - 1], Q) < 20) {
-                                        P.splice(z, 1), z > 1 && (z--, u.pop(), X = u[u.length - 1]);
-                                        continue
-                                    }
+                                    line = markCornerPoints(line, 145, true);
                                 }
-                                u.push(Q), X = Q, z++
                             }
-                            var I = {
-                                x: b + P[P.length - 1].x + x,
-                                y: g - P[P.length - 1].y + V,
+                            firstPoint = {
+                                x: offsetX + line[0].x + layoutX,
+                                y: offsetY - line[0].y + layoutY,
                                 z: 1
                             };
-                            u.push(I), p.push([f, u, F.w, F.h])
+                            simplifiedLine.push(firstPoint);
+                            var midIdx = 1;
+                            while (midIdx < line.length - 1) {
+                                var midPoint = {
+                                        x: offsetX + line[midIdx].x + layoutX,
+                                        y: offsetY - line[midIdx].y + layoutY,
+                                        z: line[midIdx].z
+                                    },
+                                    nextPoint = {
+                                        x: offsetX + line[midIdx + 1].x + layoutX,
+                                        y: offsetY - line[midIdx + 1].y + layoutY,
+                                        z: line[midIdx + 1].z
+                                    };
+                                if (simplify) {
+                                    var angle = calculateAngleBetweenPoints_B([firstPoint.x, firstPoint.y], [midPoint.x, midPoint.y], [nextPoint.x, nextPoint.y]);
+                                    if ((angle === 0 || angle > 174) && midPoint.z === 0) {
+                                        line.splice(midIdx, 1);
+                                        if (midIdx > 1) {
+                                            midIdx--;
+                                            simplifiedLine.pop();
+                                            firstPoint = simplifiedLine[simplifiedLine.length - 1];
+                                        }
+                                        continue;
+                                    }
+                                    if (midPoint.z === 0 && distanceBetweenPoints(simplifiedLine[simplifiedLine.length - 1], midPoint) < 20) {
+                                        line.splice(midIdx, 1);
+                                        if (midIdx > 1) {
+                                            midIdx--;
+                                            simplifiedLine.pop();
+                                            firstPoint = simplifiedLine[simplifiedLine.length - 1];
+                                        }
+                                        continue;
+                                    }
+                                }
+                                simplifiedLine.push(midPoint);
+                                firstPoint = midPoint;
+                                midIdx++;
+                            }
+                            var lastPoint = {
+                                x: offsetX + line[line.length - 1].x + layoutX,
+                                y: offsetY - line[line.length - 1].y + layoutY,
+                                z: 1
+                            };
+                            simplifiedLine.push(lastPoint);
+                            result.push([shapeIter, simplifiedLine, shape.w, shape.h]);
                         }
-                        if (0 == k.length) {
-                            var w = [{
-                                x: b + F.w / 2 + x,
+                        if (lines.length === 0) {
+                            var placeholder = [{
+                                x: offsetX + shape.w / 2 + layoutX,
                                 y: 0,
                                 z: 0
                             }];
-                            p.push([f, w, F.w, F.h])
+                            result.push([shapeIter, placeholder, shape.w, shape.h]);
                         }
-                        isHorizontalLayout  ? x += F.w : V -= F.h
+                        if (isHorizontalLayout) {
+                            layoutX += shape.w;
+                        } else {
+                            layoutY -= shape.h;
+                        }
                     }
-                    return simplify  && !markCorners  && (p = function(e) {
-                        for (var t = 0; t < e.length; t++) {
-                            var r = e[t][1];
-                            if (!(r.length < 4)) {
-                                var n = calculateAngleBetweenPoints_B([r[r.length - 2].x, r[r.length - 2].y], [r[0].x, r[0].y], [r[1].x, r[1].y]);
-                                if (n > 145 || 0 == n)
-                                    for (var h = 1; h < r.length - 1; h++) {
-                                        var a = [];
-                                        if (1 == r[h].z) {
-                                            for (var i = h; i < r.length - 1; i++) a.push(r[i]);
-                                            for (var c = 0; c <= h; c++) 0 == c && (r[c].z = 0), a.push(r[c]);
-                                            0 != a.length && (e[t][1] = a);
-                                            break
+                    if (simplify && !markCorners) {
+                        result = (function(linesArr) {
+                            for (var arrIdx = 0; arrIdx < linesArr.length; arrIdx++) {
+                                var lineArr = linesArr[arrIdx][1];
+                                if (!(lineArr.length < 4)) {
+                                    var startAngle = calculateAngleBetweenPoints_B([
+                                        lineArr[lineArr.length - 2].x,
+                                        lineArr[lineArr.length - 2].y
+                                    ], [
+                                        lineArr[0].x,
+                                        lineArr[0].y
+                                    ], [
+                                        lineArr[1].x,
+                                        lineArr[1].y
+                                    ]);
+                                    if (startAngle > 145 || startAngle === 0) {
+                                        for (var cornerIdx = 1; cornerIdx < lineArr.length - 1; cornerIdx++) {
+                                            var newArr = [];
+                                            if (lineArr[cornerIdx].z === 1) {
+                                                for (var i = cornerIdx; i < lineArr.length - 1; i++) newArr.push(lineArr[i]);
+                                                for (var c = 0; c <= cornerIdx; c++) {
+                                                    if (c === 0) lineArr[c].z = 0;
+                                                    newArr.push(lineArr[c]);
+                                                }
+                                                if (newArr.length !== 0) {
+                                                    linesArr[arrIdx][1] = newArr;
+                                                }
+                                                break;
+                                            }
                                         }
                                     }
+                                }
                             }
-                        }
-                        return e
-                    }(p)), p
+                            return linesArr;
+                        })(result);
+                    }
+                    return result;
                 }
 
                 function distanceBetweenPoints(pointA, pointB) {
@@ -3427,86 +3486,74 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function getTextLines(fontLoader, fontDataBase64, text) {
-                    var numberOfSegements = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 5,
+                function getTextLines(fontLoader, loadedFontOpentype, text) {
+                    var numberOfSegments = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 5,
                         generateMirrorLines = arguments.length > 4 && void 0 !== arguments[4] && arguments[4];
                     try {
-                        var c = 400,
+                        var fontSize = 400,
                             inputText = text,
-                            l = searchArabic(inputText);
-                        l && (inputText = arabicHelper.convertArabic(inputText), inputText = reverseWithArabicSupport(inputText));
-                        var loadedFontOpentype  = fontDataBase64,
-                        
-                            d = [],
-                            b = [],
-                            g = [],
-                            j = "";
-
-                            //https://github.com/opentypejs/opentype.js/tree/master/test
-                      //  return fontLoader.load(
-                           // 'latin.woff' , 
-                           // (function(e, loadedFontOpentype) {
-                          // if (e) console.log(e);
-                           // else
-
-
-
-                                 //console.log(loadedFontOpentype);
-                                console.log(inputText);
-                                for (var index = 0; index < inputText.length; index++) {
-                                    var letter = inputText[index],
-                                        gylph = loadedFontOpentype.charToGlyph(letter),
-                                        p = c * loadedFontOpentype.ascender / (loadedFontOpentype.ascender - loadedFontOpentype.descender),
-                                        gylphPath = gylph.getPath(0, p, c),
-                                        V = gylphPath.getBoundingBox(),
-                                        f = Math.abs(V.y1) + Math.abs(V.y2),
-                                        k = Math.abs(V.x1) + Math.abs(V.x2);
-                                    k = 0 == k ? c / 2 : k, f = 0 == f ? c : 1.1 * f;
-                                    var m = [];
-                                    if (" " != letter && (0 != gylph.index || 0 != gylph.unicodes.length)) {
-                                        var gylphCommands = gylphPath.commands;
-                                        m = parsePathCommands (gylphCommands, numberOfSegements)
-                                    }
-                                    if (0 == m.length && (j += letter), generateMirrorLines) {
-                                        var u = transformPolylinesForVerticalMirroring(m, 0, k, c);
-                                        b.push({
-                                            lines: u.newLinesUp,
-                                            w: k,
-                                            h: f
-                                        }), g.push({
-                                            lines: u.newLinesDown,
-                                            w: k,
-                                            h: f
-                                        })
-                                    }
-                                    d.push({
-                                        lines: m,
-                                        w: k,
-                                        h: f
-                                    })
-                                    console.log( {
-                                        lines: m,
-                                        w: k,
-                                        h: f
-                                    });
-                                }
-                          //  }),
-
-                        // {
-                        //    isUrl: !1
-                        //}), 
-                        
-                        return {
-                            linesArr: d,
-                            linesArrUp: b,
-                            linesArrDown: g,
-                            notRec: j,
-                            hasArb: l
+                            hasArabic = searchArabic(inputText);
+                        if (hasArabic) {
+                            inputText = arabicHelper.convertArabic(inputText);
+                            inputText = reverseWithArabicSupport(inputText);
                         }
+                        var linesArr = [],
+                            linesArrUp = [],
+                            linesArrDown = [],
+                            notRecognized = "";
 
-
-                    } catch (x) {
-                       console.log(x);
+                        console.log(inputText);
+                        for (var charIndex = 0; charIndex < inputText.length; charIndex++) {
+                            var letter = inputText[charIndex],
+                                glyph = loadedFontOpentype.charToGlyph(letter),
+                                baseline = fontSize * loadedFontOpentype.ascender / (loadedFontOpentype.ascender - loadedFontOpentype.descender),
+                                glyphPath = glyph.getPath(0, baseline, fontSize),
+                                boundingBox = glyphPath.getBoundingBox(),
+                                glyphHeight = Math.abs(boundingBox.y1) + Math.abs(boundingBox.y2),
+                                glyphWidth = Math.abs(boundingBox.x1) + Math.abs(boundingBox.x2);
+                            glyphWidth = glyphWidth === 0 ? fontSize / 2 : glyphWidth;
+                            glyphHeight = glyphHeight === 0 ? fontSize : 1.1 * glyphHeight;
+                            var polyline = [];
+                            if (letter !== " " && (glyph.index !== 0 || glyph.unicodes.length !== 0)) {
+                                var glyphCommands = glyphPath.commands;
+                                polyline = parsePathCommands(glyphCommands, numberOfSegments);
+                            }
+                            if (polyline.length === 0) {
+                                notRecognized += letter;
+                            }
+                            if (generateMirrorLines) {
+                                var mirrored = transformPolylinesForVerticalMirroring(polyline, 0, glyphWidth, fontSize);
+                                linesArrUp.push({
+                                    lines: mirrored.newLinesUp,
+                                    w: glyphWidth,
+                                    h: glyphHeight
+                                });
+                                linesArrDown.push({
+                                    lines: mirrored.newLinesDown,
+                                    w: glyphWidth,
+                                    h: glyphHeight
+                                });
+                            }
+                            linesArr.push({
+                                lines: polyline,
+                                w: glyphWidth,
+                                h: glyphHeight
+                            });
+                            console.log({
+                                lines: polyline,
+                                w: glyphWidth,
+                                h: glyphHeight
+                            });
+                        }
+                        return {
+                            linesArr: linesArr,
+                            linesArrUp: linesArrUp,
+                            linesArrDown: linesArrDown,
+                            notRec: notRecognized,
+                            hasArb: hasArabic
+                        };
+                    } catch (error) {
+                        console.log(error);
                     }
                 }
 
@@ -3641,42 +3688,46 @@ globalThis["webpackJsonp"].push([
                 }
                 e.exports = {
                     getTextLines: getTextLines,
-                    getXXYY: function(opentype, font , inputText , mirrorVertical ) {
-
+                    getXXYY: function(opentype, font, inputText, mirrorVertical) {
                         console.log(font.mode);
-                        var h = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],
-                            a = arguments.length > 5 && void 0 !== arguments[5] ? arguments[5] : 5,
+                        var isHorizontalLayout = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],
+                            numSegments = arguments.length > 5 && void 0 !== arguments[5] ? arguments[5] : 5,
                             textLines = {},
-                            c = [],
-                            o = [],
-                            s = [],
-                            l = [],
-                            d = [];
-                        if (1 == font .mode) {
-                            textLines = getTextLines(opentype, font .data, inputText , a, mirrorVertical ), 
-                            c = layoutAndSimplifyShapes (textLines.linesArr, !1, h, !0, !1), 
-                            s = layoutAndSimplifyShapes (textLines.linesArrUp, !1, h, !0, !1), 
-                            l = layoutAndSimplifyShapes (textLines.linesArrDown, !1, h, !0, !1), 
-                            d = JSON.parse(JSON.stringify(textLines.linesArr)), 
-                            d.reverse(), 
-                            o = layoutAndSimplifyShapes (d, !1, h, !0, !0);
-       
-                        }else {
-                            if (2 != font .mode) return {
+                            mainResult = [],
+                            mirroredRightResult = [],
+                            mirroredUpResult = [],
+                            mirroredDownResult = [],
+                            reversedLinesArr = [];
+                        if (font.mode === 1) {
+                            textLines = getTextLines(opentype, font.data, inputText, numSegments, mirrorVertical);
+                            mainResult = layoutAndSimplifyShapes(textLines.linesArr, false, isHorizontalLayout, true, false);
+                            mirroredUpResult = layoutAndSimplifyShapes(textLines.linesArrUp, false, isHorizontalLayout, true, false);
+                            mirroredDownResult = layoutAndSimplifyShapes(textLines.linesArrDown, false, isHorizontalLayout, true, false);
+                            reversedLinesArr = JSON.parse(JSON.stringify(textLines.linesArr));
+                            reversedLinesArr.reverse();
+                            mirroredRightResult = layoutAndSimplifyShapes(reversedLinesArr, false, isHorizontalLayout, true, true);
+                        } else {
+                            if (font.mode !== 2) return {
                                 xxyy: [],
                                 notRec: "",
                                 XxyyRight: [],
                                 xxyyUp: [],
-                                xxyyDown: l
+                                xxyyDown: mirroredDownResult
                             };
-                            textLines = getCharacterPolylineData (font .data, inputText , !0, h, mirrorVertical ), c = layoutAndSimplifyShapes (textLines.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (textLines.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (textLines.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(textLines.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
+                            textLines = getCharacterPolylineData(font.data, inputText, true, isHorizontalLayout, mirrorVertical);
+                            mainResult = layoutAndSimplifyShapes(textLines.linesArr, true, isHorizontalLayout, true, false);
+                            mirroredUpResult = layoutAndSimplifyShapes(textLines.linesArrUp, true, isHorizontalLayout, true, false);
+                            mirroredDownResult = layoutAndSimplifyShapes(textLines.linesArrDown, true, isHorizontalLayout, true, false);
+                            reversedLinesArr = JSON.parse(JSON.stringify(textLines.linesArr));
+                            reversedLinesArr.reverse();
+                            mirroredRightResult = layoutAndSimplifyShapes(reversedLinesArr, true, isHorizontalLayout, true, true);
                         }
                         return {
-                            xxyy: c,
+                            xxyy: mainResult,
                             notRec: textLines.notRec,
-                            xxyyRight: o,
-                            xxyyUp: s,
-                            xxyyDown: l
+                            xxyyRight: mirroredRightResult,
+                            xxyyUp: mirroredUpResult,
+                            xxyyDown: mirroredDownResult
                         }
                     },
                     dealObjLines: function(polylinePoints) {

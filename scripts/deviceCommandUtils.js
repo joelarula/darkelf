@@ -241,17 +241,22 @@ const opentype = require('opentype.js');
       console.log(err);
     } else {
   
-var fontData = {
-    data: loadedFontOpentype, // or just fontBuffer if that's expected
-    mode: 1,
-    sn: 1002
-};
+    var fontData = {
+      data: loadedFontOpentype, // or just fontBuffer if that's expected
+      mode: 1,
+      sn: 1002
+    };
 
     var text = "A1B2C31A2B3C";   
     console.log("Testing text:", text);
     var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
- console.log("Result of textLineVectorizer.getXXYY (JSON):", JSON.stringify(textCoordinates.xxyy, null, 2));
-  var testTextData = {
+    console.log(textCoordinates.xxyy);
+
+    const outputPath = path.join(__dirname, 'textCoordinates.json');
+fs.writeFileSync(outputPath, JSON.stringify(textCoordinates, null, 2), 'utf8');
+console.log('textCoordinates written to', outputPath);
+  
+    var testTextData = {
     verTag: 0,
     runDir: 0,
     arrColor: ["red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
