@@ -3486,7 +3486,7 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function getTextLines(fontLoader, loadedFontOpentype, text) {
+                function getTextLines(loadedFontOpentype, text) {
                     var numberOfSegments = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 5,
                         generateMirrorLines = arguments.length > 4 && void 0 !== arguments[4] && arguments[4];
                     try {

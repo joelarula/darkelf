@@ -249,12 +249,20 @@ const opentype = require('opentype.js');
 
     var text = "A1B2C31A2B3C";   
     console.log("Testing text:", text);
+
+    var textLines = textLineVectorizer.getTextLines(opentype, loadedFontOpentype, text);
+    console.log(textLines);
+    const textLinesPath = path.join(__dirname, 'textLines.json');
+    fs.writeFileSync(textLinesPath, JSON.stringify(textLines, null, 2), 'utf8');
+    console.log('textLines written to', textLinesPath);
+
+
     var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
-    console.log(textCoordinates.xxyy);
+    //console.log(textCoordinates.xxyy);
 
     const outputPath = path.join(__dirname, 'textCoordinates.json');
-fs.writeFileSync(outputPath, JSON.stringify(textCoordinates, null, 2), 'utf8');
-console.log('textCoordinates written to', outputPath);
+    fs.writeFileSync(outputPath, JSON.stringify(textCoordinates, null, 2), 'utf8');
+    console.log('textCoordinates written to', outputPath);
   
     var testTextData = {
     verTag: 0,
@@ -289,6 +297,12 @@ console.log('textCoordinates written to', outputPath);
       testTextData.verTag
     );
     console.log('Result of getXysCmdArr:', result);
+
+      const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
+    fs.writeFileSync(getXysCmdArrPath, JSON.stringify(result, null, 2), 'utf8');
+    console.log('getXysCmdArr result written to', getXysCmdArrPath);
+
+
   } else {
     console.error('getXysCmdArr function not found in module exports.');
   }

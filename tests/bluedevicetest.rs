@@ -4,6 +4,7 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use darkelf::blue::BlueController as _;
+use darkelf::draw::DrawUtils;
 use darkelf::model::{CommandConfig, MainCommandData, PlaybackCommand, PlaybackMode, ProjectData, ProjectItem, PublicData, TextData};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
@@ -137,8 +138,8 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
       
         // Use PisObject directly from the loaded data
         let draw_config = draw_data.pis_obj.clone();
-        
-        let points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
+
+        let points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
         device.draw(points, draw_config).await;
 
        //  Load the lill.json file using utility function
@@ -148,7 +149,7 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
         // Use PisObject directly from the loaded data
         let draw_config2 = draw_data2.pis_obj.clone();
         
-        let points2 = CommandGenerator::prepare_draw_data(&draw_data2, 300.0);
+        let points2 = DrawUtils::prepare_draw_data(&draw_data2, 300.0);
         device.draw(points2, draw_config2).await;
 
     }
@@ -533,7 +534,7 @@ fn test_draw_data() {
 
     // Test prepare_draw_data function with width=300 (matching JavaScript test)
     info!("\nTesting prepare_draw_data function:");
-    let prepared_points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
+    let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
     info!("Total prepared points: {}", prepared_points.len());
     
     // Reference flatPoints2 data from JavaScript drawPs2 output (first 15 points for comparison)
@@ -678,7 +679,7 @@ fn test_draw_data_polylines() {
 
     // Test prepare_draw_data function with width=300 for polylines
     info!("\nTesting prepare_draw_data function for polylines:");
-    let prepared_points = CommandGenerator::prepare_draw_data(&draw_data, 300.0);
+    let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
     info!("Total prepared points from polylines: {}", prepared_points.len());
     
     // Reference flatPoints2 data from JavaScript drawAllTransformedPolylines2 output 

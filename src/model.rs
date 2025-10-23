@@ -125,6 +125,41 @@ pub struct Point {
     pub pen_state: u8,  // 0=pen up/move, 1=pen down/draw
 }
 
+#[derive(Debug, Clone)]
+pub struct PolyPoint {
+    pub x: f32,
+    pub y: f32,
+    pub z: u8,
+}
+
+pub struct PolylineData {
+    pub lines: Vec<Vec<PolyPoint>>, 
+    pub w: f32,
+    pub h: f32,
+}
+
+#[derive(Debug, Clone)]
+pub struct MirroredPolylines {
+    pub new_lines_up: Vec<Vec<PolyPoint>>,
+    pub new_lines_down: Vec<Vec<PolyPoint>>,
+}
+
+
+pub struct TextLinesResult {
+    pub lines_arr: Vec<PolylineData>,
+    pub lines_arr_up: Vec<PolylineData>,
+    pub lines_arr_down: Vec<PolylineData>,
+}
+#[derive(Debug, Clone)]
+pub struct PathCommand {
+    pub cmd_type: char, // 'M', 'L', 'Q', 'Z'
+    pub x: f32,
+    pub y: f32,
+    pub x1: Option<f32>, // for 'Q'
+    pub y1: Option<f32>, // for 'Q'
+}
+
+
 impl Point {
     pub fn new(x: f64, y: f64, color: u8, pen_state: u8) -> Self {
         Self { x, y, color, pen_state }

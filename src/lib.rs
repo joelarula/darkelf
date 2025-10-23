@@ -7,3 +7,4 @@ pub mod model;
 pub mod bluedevice;
 pub mod ui;
 pub mod dmx;
+pub mod draw;
