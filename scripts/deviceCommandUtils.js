@@ -4,6 +4,9 @@ module.exports = function (exports, require, module, dependencyResolver) {
   // Dependency resolution
   var arrayConversionHelper = dependencyResolver('arrayConversionHelper');
   var enhancedConsoleLogger = dependencyResolver('enhancedConsoleLogger').default;
+  var textLineVectorizer = dependencyResolver('textLineVectorizer ');
+  var fontGeometryUtils = dependencyResolver('fontGeometryUtils ');
+  var codePointAt = dependencyResolver('codePointAt');
 
   // All original logic goes here, using arrayConversionHelper and enhancedConsoleLogger as needed
   // Example export:
@@ -226,16 +229,84 @@ function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
 
 }
 
+function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointAt) {
+
+const fs = require('fs');
+const path = require('path');
+const opentype = require('opentype.js');
+
+  const latinWoffPath = path.join(__dirname, 'latin.woff');
+  opentype.load(latinWoffPath, function(err, loadedFontOpentype) {
+    if (err) {
+      console.log(err);
+    } else {
+  
+var fontData = {
+    data: loadedFontOpentype, // or just fontBuffer if that's expected
+    mode: 1,
+    sn: 1002
+};
+
+    var text = "ABC123";   
+    console.log("Testing text:", text);
+    var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
+    console.log("Result of textLineVectorizer.getXXYY:", textCoordinates);
+
+
+  var testTextData = {
+    verTag: 0,
+    runDir: 0,
+    arrColor: ["red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
+    txPointTime: 50,
+    txColor: 9,
+    txSize: 50,
+    txDist: 50,
+    runSpeed: 50,
+    groupIdex: 0,
+    groupList: [
+      {
+        text: "123ABC",
+        update: 0,
+        color: 9,
+        fontIdex: 0,
+        time: 5,
+        xys: textCoordinates.xxyy,
+        XysRight: textCoordinates.xxyyRight || [],
+        XysUp: textCoordinates.xxyyUp || [],
+        XysDown: textCoordinates.xxyyDown || []
+      }
+    ]
+  };
+
+  if (typeof exports.getXysCmdArr === 'function') {
+    const result = exports.getXysCmdArr(
+      testTextData.groupList,
+      {},
+      testTextData.runDir,
+      testTextData.verTag
+    );
+    console.log('Result of getXysCmdArr:', result);
+  } else {
+    console.error('getXysCmdArr function not found in module exports.');
+  }
+
+
+    }
+  });
+
+}
+  
+
 
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
 
 
-// Load the webpack bundle
-const bundlePath = path.join(__dirname, '../', 'refactor target', 'app-service-minimal.js');
-const code = fs.readFileSync(bundlePath, 'utf8');
 
+// Load the webpack bundle
+const bundlePath = path.join(__dirname,  'app-service-minimal.js');
+const code = fs.readFileSync(bundlePath, 'utf8');
 
 // Prepare a sandboxed environment
 const sandbox = {
@@ -258,8 +329,31 @@ if (!webpackJsonp || !Array.isArray(webpackJsonp) || webpackJsonp.length === 0) 
 }
 const modulesObj = webpackJsonp[webpackJsonp.length - 1][1];
 
+
+const fontGeometryUtilsModule = modulesObj['fontGeometryUtils'];
+const fontGeometryUtilsExports = {};
+if (typeof fontGeometryUtilsModule === 'function') {
+  fontGeometryUtilsModule(fontGeometryUtilsExports, {}, dependencyResolver);
+}
+const fontGeometryUtils = fontGeometryUtilsExports;
+console.log('fontGeometryUtils keys:', Object.keys(fontGeometryUtils.exports));
+
+// Import required modules from modulesObj
+const textLineVectorizerModule = modulesObj['textLineVectorizer'];
+const textLineVectorizerExports = {};
+if (typeof textLineVectorizerModule === 'function') {
+  textLineVectorizerModule(textLineVectorizerExports, {}, dependencyResolver);
+}
+const textLineVectorizer = textLineVectorizerExports;
+console.log('textLineVectorizer keys:', Object.keys(textLineVectorizer.exports));
+
+
+
+
+const codePointAt = modulesObj['codePointAt'];
+
 // Debug: Check available modules
-console.log('Available modules:', Object.keys(modulesObj).filter(k => k.includes('handDraw') || k.includes('deviceCommand')));
+console.log('Available modules:', Object.keys(modulesObj));
 
 const moduleName = "deviceCommandUtils "; // Note the space if present in the bundle
 const targetModule = modulesObj[moduleName];
@@ -289,6 +383,15 @@ function dependencyResolver(name) {
       return [];
     };
   }
+  if (name === "fontGeometryUtils") {
+    const fontGeometryUtilsModule = modulesObj['fontGeometryUtils'];
+    if (typeof fontGeometryUtilsModule === 'function') {
+      const fontGeometryUtilsExports = {};
+      fontGeometryUtilsModule(fontGeometryUtilsExports, {}, dependencyResolver);
+      return fontGeometryUtilsExports;
+    }
+    return fontGeometryUtilsModule;
+  }
 
   // Try to load from webpack modules
   if (modulesObj && modulesObj[name]) {
@@ -304,6 +407,7 @@ function dependencyResolver(name) {
         return {};
       }
     }
+    return targetModule;
   }
 
   // Return stub for unknown dependencies
@@ -330,10 +434,15 @@ if (targetModule && typeof targetModule === 'function') {
   // Exported functions may be on fakeModule.exports.exports or fakeModule.exports
   const exported = fakeModule.exports.exports || fakeModule.exports;
 
-  testGetQueryCmd(exported);
-  testShowCmd(exported);
-  testDrawCommand(exported, handDrawGeometryUtils);
-  testPolylineCommand(exported, handDrawGeometryUtils);
+  //testGetQueryCmd(exported);
+  //testShowCmd(exported);
+  //testDrawCommand(exported, handDrawGeometryUtils);
+  //testPolylineCommand(exported, handDrawGeometryUtils);
+
+
+
+
+  testTextCommand(exported,textLineVectorizer.exports,fontGeometryUtils.exports,codePointAt);
 
 } else {
   console.error('Module not found or not a function:', moduleName);

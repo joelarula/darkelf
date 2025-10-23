@@ -1961,13 +1961,13 @@ globalThis["webpackJsonp"].push([
                 }), t.default = void 0;
                 var h = n(r("uniPopupComponentExportWrapper")),
                     app = getApp(),
-                    deviceCommandUtils = r("deviceCommandUtils "),
-                    bleManager = r("bleDeviceControlUtils "),
+                    deviceCommandUtils = r("deviceCommandUtils"),
+                    bleManager = r("bleDeviceControlUtils"),
                     handwritingCanvasHelper = r("handwritingCanvasHelper"),
                     handDrawFileManager = r("handDrawFileManager"),
                     codePointAt = r("codePointAt"),
-                    textLineVectorizer = r("textLineVectorizer "),
-                    fontGeometryUtils = r("fontGeometryUtils "),
+                    textLineVectorizer = r("textLineVectorizer"),
+                    fontGeometryUtils = r("fontGeometryUtils"),
                     b = {
                         data: function() {
                             var fontIndex = 0 | app.globalData.readData("text_fontIdex"),
@@ -2128,7 +2128,10 @@ globalThis["webpackJsonp"].push([
                                 var e = this;
                                 app.globalData.setCmdData("textData", this.textData);
                                 var runDir = this.textData.runDir,
-                                    command = deviceCommandUtils.getXysCmdArr(this.textData.groupList, this.features, runDir, this.textData.verTag),
+                                    command = deviceCommandUtils.getXysCmdArr(
+                                        this.textData.groupList, 
+                                        this.features, runDir, 
+                                        this.textData.verTag),
                                     n = this;
                                 bleManager.gosend(!0, command);
          
@@ -2136,7 +2139,8 @@ globalThis["webpackJsonp"].push([
                            
                             sendCmd: function() {
                                 app.globalData.setCmdData("textData", this.textData);
-                                var command = deviceCommandUtils.getCmdStr(app.globalData.cmd, {
+                                var command = deviceCommandUtils.getCmdStr(
+                                    app.globalData.cmd, {
                                     features: this.features,
                                     groupList: this.textData.groupList
                                 });
@@ -2646,7 +2650,11 @@ globalThis["webpackJsonp"].push([
                                     mask: !0
                                 }), this.readFontBase64(this.fontIdex, (function() {
                                     var textCoordinates = textLineVectorizer.getXXYY(codePointAt, fontGeometryUtils.fontData, cleanedInput, textPlaybackPageComponent.textRv);
-                                    uni.hideLoading(), fallBackShapes = textCoordinates.xxyy, fontGeometryUtils.ifHasChinese(textCoordinates.notRec) && 1001 == fontGeometryUtils.fontData.sn && app.globalData.showModalTips(textPlaybackPageComponent.$t("Due to capacity limitations, some Chinese characters are not included in the font library. For the complete font library, please refer to the APP version"), !0);
+                                    uni.hideLoading(), 
+                                    fallBackShapes = textCoordinates.xxyy, 
+                                    fontGeometryUtils.ifHasChinese(textCoordinates.notRec) 
+                                        && 1001 == fontGeometryUtils.fontData.sn 
+                                        && app.globalData.showModalTips(textPlaybackPageComponent.$t("Due to capacity limitations, some Chinese characters are not included in the font library. For the complete font library, please refer to the APP version"), !0);
                                     var i = textPlaybackPageComponent.getSumSizeExclude(textPlaybackPageComponent.textData.groupIdex),
                                         c = handwritingCanvasHelper.getTxXySize(fallBackShapes);
                                     c.chCount + i.chCount > textPlaybackPageComponent.maxChar 
@@ -2693,14 +2701,19 @@ globalThis["webpackJsonp"].push([
                                     })).exec()
                                 }))
                             },
-                            createXyByIdex: function(e) {
+                            createXyByIdex: function(index) {
                                 var t = this,
                                     r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
-                                if (0 != this.textData.groupList[e].update) {
-                                    var n = this.textData.groupList[e].text;
-                                    this.createXys(n, (function(n, h, i, c) {
-                                        if (0 == n.length) return app.globalData.showModalTips(t.inputNote, !0), void(r && r());
-                                        t.textData.groupList[e].xys = n, t.textData.groupList[e].XysRight = h, t.textData.groupList[e].XysUp = i, t.textData.groupList[e].XysDown = c, t.textData.groupList[e].update = 0, r && r()
+                                if (0 != this.textData.groupList[index].update) {
+                                    var text = this.textData.groupList[index].text;
+                                    this.createXys(text, (function(mainCoords , rightCoords, upCoords, downCoords) {
+                                            if (0 == mainCoords .length) return app.globalData.showModalTips(t.inputNote, !0), void(r && r());
+                                            t.textData.groupList[index].xys = mainCoords , 
+                                            t.textData.groupList[index].XysRight = rightCoords, 
+                                            t.textData.groupList[index].XysUp = upCoords, 
+                                            t.textData.groupList[index].XysDown = downCoords, 
+                                            t.textData.groupList[index].update = 0, 
+                                            r && r()
                                     }))
                                 } else r && r()
                             },
@@ -2892,7 +2905,7 @@ globalThis["webpackJsonp"].push([
             }
         },
 
-        "fontRegistryModule ": function(e, t, r) {
+        "fontRegistryModule": function(e, t, r) {
             var mergedDrawFontsUtils = r("mergedDrawFontsUtils"),
                 h = [{
                     name: "Single Line Font",
@@ -2950,7 +2963,7 @@ globalThis["webpackJsonp"].push([
             }
         },
 
-        "fontGeometryUtils ": function(e, t) {
+        "fontGeometryUtils": function(e, t) {
             function calculateAngleBetweenPoints (pointA , vertex , pointB) {
                 var vectorA = {
                         x: pointA [0] - vertex [0],
@@ -3066,7 +3079,7 @@ globalThis["webpackJsonp"].push([
      
         },
 
-        "textLineVectorizer ": function(e, t, r) {
+        "textLineVectorizer": function(e, t, r) {
             (function(t) {
                 var spreadToArrayHelper = r("spreadToArrayHelper"),
                     arrayConversionHelper = r("arrayConversionHelper"),
@@ -3422,15 +3435,24 @@ globalThis["webpackJsonp"].push([
                             inputText = text,
                             l = searchArabic(inputText);
                         l && (inputText = arabicHelper.convertArabic(inputText), inputText = reverseWithArabicSupport(inputText));
-                        var fontBinaryData  = new Uint8Array(uni.base64ToArrayBuffer(fontDataBase64)),
+                        var loadedFontOpentype  = fontDataBase64,
+                        
                             d = [],
                             b = [],
                             g = [],
                             j = "";
+
                             //https://github.com/opentypejs/opentype.js/tree/master/test
-                        return fontLoader.load(fontBinaryData , (function(e, loadedFontOpentype) {
-                            if (e) t("log", "\u52a0\u8f7d\u5b57\u4f53\u5f02\u5e38: " + e, " at utils/TextLine.js:496");
-                            else
+                      //  return fontLoader.load(
+                           // 'latin.woff' , 
+                           // (function(e, loadedFontOpentype) {
+                          // if (e) console.log(e);
+                           // else
+
+
+
+                                 //console.log(loadedFontOpentype);
+                                console.log(inputText);
                                 for (var index = 0; index < inputText.length; index++) {
                                     var letter = inputText[index],
                                         gylph = loadedFontOpentype.charToGlyph(letter),
@@ -3462,18 +3484,29 @@ globalThis["webpackJsonp"].push([
                                         w: k,
                                         h: f
                                     })
+                                    console.log( {
+                                        lines: m,
+                                        w: k,
+                                        h: f
+                                    });
                                 }
-                        }), {
-                            isUrl: !1
-                        }), {
+                          //  }),
+
+                        // {
+                        //    isUrl: !1
+                        //}), 
+                        
+                        return {
                             linesArr: d,
                             linesArrUp: b,
                             linesArrDown: g,
                             notRec: j,
                             hasArb: l
                         }
+
+
                     } catch (x) {
-                        t("log", "\u5f02\u5e38:" + x.message, " at utils/TextLine.js:528")
+                       console.log(x);
                     }
                 }
 
@@ -3608,29 +3641,39 @@ globalThis["webpackJsonp"].push([
                 }
                 e.exports = {
                     getTextLines: getTextLines,
-                    getXXYY: function(fontData, inputMode , inputText , mirrorVertical ) {
+                    getXXYY: function(opentype, font , inputText , mirrorVertical ) {
+
+                        console.log(font.mode);
                         var h = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],
                             a = arguments.length > 5 && void 0 !== arguments[5] ? arguments[5] : 5,
-                            i = {},
+                            textLines = {},
                             c = [],
                             o = [],
                             s = [],
                             l = [],
                             d = [];
-                        if (1 == inputMode .mode) i = getTextLines(fontData, inputMode .data, inputText , a, mirrorVertical ), c = layoutAndSimplifyShapes (i.linesArr, !1, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !1, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !1, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !1, h, !0, !0);
-                        else {
-                            if (2 != inputMode .mode) return {
+                        if (1 == font .mode) {
+                            textLines = getTextLines(opentype, font .data, inputText , a, mirrorVertical ), 
+                            c = layoutAndSimplifyShapes (textLines.linesArr, !1, h, !0, !1), 
+                            s = layoutAndSimplifyShapes (textLines.linesArrUp, !1, h, !0, !1), 
+                            l = layoutAndSimplifyShapes (textLines.linesArrDown, !1, h, !0, !1), 
+                            d = JSON.parse(JSON.stringify(textLines.linesArr)), 
+                            d.reverse(), 
+                            o = layoutAndSimplifyShapes (d, !1, h, !0, !0);
+       
+                        }else {
+                            if (2 != font .mode) return {
                                 xxyy: [],
                                 notRec: "",
                                 XxyyRight: [],
                                 xxyyUp: [],
                                 xxyyDown: l
                             };
-                            i = getCharacterPolylineData (inputMode .data, inputText , !0, h, mirrorVertical ), c = layoutAndSimplifyShapes (i.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (i.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (i.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(i.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
+                            textLines = getCharacterPolylineData (font .data, inputText , !0, h, mirrorVertical ), c = layoutAndSimplifyShapes (textLines.linesArr, !0, h, !0, !1), s = layoutAndSimplifyShapes (textLines.linesArrUp, !0, h, !0, !1), l = layoutAndSimplifyShapes (textLines.linesArrDown, !0, h, !0, !1), d = JSON.parse(JSON.stringify(textLines.linesArr)), d.reverse(), o = layoutAndSimplifyShapes (d, !0, h, !0, !0)
                         }
                         return {
                             xxyy: c,
-                            notRec: i.notRec,
+                            notRec: textLines.notRec,
                             xxyyRight: o,
                             xxyyUp: s,
                             xxyyDown: l
@@ -3707,7 +3750,6 @@ globalThis["webpackJsonp"].push([
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-
         "handDrawPageComponent": function(e, t, r) {
             "use strict";
             (function(e) {
@@ -3723,7 +3765,7 @@ globalThis["webpackJsonp"].push([
                     handDrawFileManager = r("handDrawFileManager"),
                     bleDeviceControlUtils = r("bleDeviceControlUtils "),
                     colors = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
-                    fontGeometryUtils = r("fontGeometryUtils "),
+                    fontGeometryUtils = r("fontGeometryUtils"),
                     handDrawGeometryUtils = r("handDrawGeometryUtils "),
                     g = [15, 5],
                     j = [20, 20],
@@ -5759,7 +5801,6 @@ globalThis["webpackJsonp"].push([
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
  
-
         "handDrawGeometryUtils" : function(e, t, r) {
             (function(t) {
                 var spreadToArrayHelper = r("spreadToArrayHelper"),
@@ -6471,8 +6512,7 @@ globalThis["webpackJsonp"].push([
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-
-        
+  
         "handDrawFileManager": function(t, r, n) {
             (function(r) {
                 var spreadToArrayHelper = n("spreadToArrayHelper");
@@ -6942,7 +6982,6 @@ globalThis["webpackJsonp"].push([
             }).call(this, n("enhancedConsoleLogger")["default"])
         },
   
-
 
         "arrayToArrayLikeHelper": function(e, t, r) {
             var n = r("arrayLikeToArrayHelper");

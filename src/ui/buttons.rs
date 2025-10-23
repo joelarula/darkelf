@@ -5,6 +5,7 @@ use crate::model;
 pub fn show_mode_buttons(console: &mut Console, ctx: &egui::Context) {
     TopBottomPanel::top("top_panel").show(ctx, |ui| {
         ui.horizontal(|ui| {
+             mode_toggle(ui, console, PlaybackMode::Dmx, "DMX");
             mode_toggle(ui, console, PlaybackMode::RandomPlayback, "Random");
             mode_toggle(ui, console, PlaybackMode::AnimationPlayback, "Animation");
             mode_toggle(ui, console, PlaybackMode::LineGeometryPlayback, "Line");
