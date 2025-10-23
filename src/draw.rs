@@ -313,12 +313,6 @@ impl DrawUtils {
 
 
 
-    ///fn load_font_data(font_name: &str) -> Vec<u8> {
-    //    let ttf_bytes = std::fs::read(font_name).unwrap();
-    //    ttf_bytes
-    //}
-/
-    
 
 fn sample_quadratic_bezier(start: &PolyPoint, control: &PolyPoint, end: &PolyPoint, n: usize) -> Vec<PolyPoint> {
     let mut points = Vec::new();
@@ -366,11 +360,10 @@ fn append_to_array_or(arr: &mut Vec<PolyPoint>, pt: PolyPoint) -> bool {
             'Z' => {
                 if !current_poly.is_empty() {
                     let first = current_poly[0].clone();
-                    let last = current_poly.last().unwrap().clone();
+                    // Always repeat the start point at the end for closure, with z=0
                     let mut first_closed = first.clone();
                     first_closed.z = 0;
-                    if last.z == 999 { current_poly.pop(); }
-                    if current_poly.len() - h > 2 { current_poly.push(first_closed); }
+                    current_poly.push(first_closed);
                     result.push(current_poly.clone());
                     current_poly.clear();
                     h = 0;
@@ -378,6 +371,14 @@ fn append_to_array_or(arr: &mut Vec<PolyPoint>, pt: PolyPoint) -> bool {
             }
             _ => {}
         }
+    }
+    // If there is a polyline left open at the end, close it as well
+    if !current_poly.is_empty() {
+        let first = current_poly[0].clone();
+        let mut first_closed = first.clone();
+        first_closed.z = 0;
+        current_poly.push(first_closed);
+        result.push(current_poly.clone());
     }
     result
 }
@@ -432,6 +433,8 @@ pub fn get_text_lines(
     let mut lines_arr_up = Vec::new();
     let mut lines_arr_down = Vec::new();
 
+    // Reference height to normalize to (from JS output, e.g. 316.666...)
+    let reference_height = 316.66667_f32;
     for letter in input_text.chars() {
         // Get glyph id for the letter
         let glyph_id = match loaded_font.glyph_index(letter) {
@@ -439,40 +442,58 @@ pub fn get_text_lines(
             None => continue,
         };
 
-        // Use your own builder logic as in letter_to_path_commands
         // For bounding box, use Face::glyph_bounding_box
         let bounding_box = loaded_font.glyph_bounding_box(glyph_id).unwrap_or(ttf_parser::Rect { x_min: 0, y_min: 0, x_max: 0, y_max: 0 });
-        let mut glyph_height = (bounding_box.y_min.abs() + bounding_box.y_max.abs()) as f32;
-        let mut glyph_width = (bounding_box.x_min.abs() + bounding_box.x_max.abs()) as f32;
-        if glyph_width == 0.0 { glyph_width = font_size as f32 / 2.0; }
-        if glyph_height == 0.0 { glyph_height = font_size as f32; } else { glyph_height *= 1.1; }
+        let glyph_width = (bounding_box.x_max - bounding_box.x_min) as f32;
+        let glyph_height = (bounding_box.y_max - bounding_box.y_min) as f32;
+        let y_min = bounding_box.y_min as f32;
+        let y_max = bounding_box.y_max as f32;
+        let x_min = bounding_box.x_min as f32;
+        let x_max = bounding_box.x_max as f32;
+        // Avoid division by zero
+        let scale = if glyph_height != 0.0 { reference_height / glyph_height } else { 1.0 };
 
         // Convert outline to PathCommand vector
         let path_commands = DrawUtils::letter_to_path_commands(loaded_font, letter);
         let mut polyline = Vec::new();
         if letter != ' ' && !path_commands.is_empty() {
-            polyline = DrawUtils::parse_path_commands(&path_commands, num_segments);
+            let mut raw_polylines = DrawUtils::parse_path_commands(&path_commands, num_segments);
+            // Normalize/scaling and flip Y for each point in each polyline
+            for poly in &mut raw_polylines {
+                let n = poly.len();
+                for (i, pt) in poly.iter_mut().enumerate() {
+                    // Normalize X and Y to reference height, flip Y, and align baseline to y_min = 0
+                    pt.x = (pt.x - x_min) * scale;
+                    pt.y = (y_max - pt.y) * scale; // flip Y, baseline at bottom
+                    // Set pen state: z=0 for first and last, z=1 for others
+                    if i == 0 || i == n - 1 {
+                        pt.z = 0;
+                    } else {
+                        pt.z = 1;
+                    }
+                }
+            }
+            polyline = raw_polylines;
         }
 
         if mirror_lines {
-            let mirrored = DrawUtils::transform_polylines_for_vertical_mirroring(&polyline, 0.0, glyph_width, font_size as f32);
+            let mirrored = DrawUtils::transform_polylines_for_vertical_mirroring(&polyline, 0.0, glyph_width, reference_height);
             lines_arr_up.push(PolylineData {
                 lines: mirrored.new_lines_up,
                 w: glyph_width,
-                h: glyph_height,
+                h: reference_height,
             });
             lines_arr_down.push(PolylineData {
                 lines: mirrored.new_lines_down,
                 w: glyph_width,
-                h: glyph_height,
+                h: reference_height,
             });
         }
         lines_arr.push(PolylineData {
             lines: polyline,
             w: glyph_width,
-            h: glyph_height,
+            h: reference_height,
         });
-
     }
 
     TextLinesResult {

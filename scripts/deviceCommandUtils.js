@@ -235,7 +235,7 @@ const fs = require('fs');
 const path = require('path');
 const opentype = require('opentype.js');
 
-  const latinWoffPath = path.join(__dirname, 'latin.woff');
+  const latinWoffPath = path.join(__dirname, 'Roboto-Bold.ttf');
   opentype.load(latinWoffPath, function(err, loadedFontOpentype) {
     if (err) {
       console.log(err);
@@ -247,10 +247,10 @@ const opentype = require('opentype.js');
       sn: 1002
     };
 
-    var text = "A1B2C31A2B3C";   
+    var text = "ABC123";   
     console.log("Testing text:", text);
 
-    var textLines = textLineVectorizer.getTextLines(opentype, loadedFontOpentype, text);
+    var textLines = textLineVectorizer.getTextLines(loadedFontOpentype, text);
     console.log(textLines);
     const textLinesPath = path.join(__dirname, 'textLines.json');
     fs.writeFileSync(textLinesPath, JSON.stringify(textLines, null, 2), 'utf8');
@@ -258,7 +258,7 @@ const opentype = require('opentype.js');
 
 
     var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
-    //console.log(textCoordinates.xxyy);
+    console.log(textCoordinates.xxyy);
 
     const outputPath = path.join(__dirname, 'textCoordinates.json');
     fs.writeFileSync(outputPath, JSON.stringify(textCoordinates, null, 2), 'utf8');

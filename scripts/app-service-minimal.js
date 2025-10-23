@@ -3699,7 +3699,7 @@ globalThis["webpackJsonp"].push([
                             mirroredDownResult = [],
                             reversedLinesArr = [];
                         if (font.mode === 1) {
-                            textLines = getTextLines(opentype, font.data, inputText, numSegments, mirrorVertical);
+                            textLines = getTextLines(font.data, inputText, numSegments, mirrorVertical);
                             mainResult = layoutAndSimplifyShapes(textLines.linesArr, false, isHorizontalLayout, true, false);
                             mirroredUpResult = layoutAndSimplifyShapes(textLines.linesArrUp, false, isHorizontalLayout, true, false);
                             mirroredDownResult = layoutAndSimplifyShapes(textLines.linesArrDown, false, isHorizontalLayout, true, false);

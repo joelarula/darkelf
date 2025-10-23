@@ -125,13 +125,14 @@ pub struct Point {
     pub pen_state: u8,  // 0=pen up/move, 1=pen down/draw
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PolyPoint {
     pub x: f32,
     pub y: f32,
     pub z: u8,
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct PolylineData {
     pub lines: Vec<Vec<PolyPoint>>, 
     pub w: f32,
@@ -144,7 +145,7 @@ pub struct MirroredPolylines {
     pub new_lines_down: Vec<Vec<PolyPoint>>,
 }
 
-
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct TextLinesResult {
     pub lines_arr: Vec<PolylineData>,
     pub lines_arr_up: Vec<PolylineData>,
