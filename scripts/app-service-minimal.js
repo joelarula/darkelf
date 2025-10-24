@@ -3688,6 +3688,7 @@ globalThis["webpackJsonp"].push([
                 }
                 e.exports = {
                     getTextLines: getTextLines,
+                    layoutAndSimplifyShapes: layoutAndSimplifyShapes,
                     getXXYY: function(opentype, font, inputText, mirrorVertical) {
                         console.log(font.mode);
                         var isHorizontalLayout = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],

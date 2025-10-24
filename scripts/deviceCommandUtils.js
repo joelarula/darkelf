@@ -231,37 +231,58 @@ function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
 
 function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointAt) {
 
-const fs = require('fs');
-const path = require('path');
-const opentype = require('opentype.js');
+//const fs = require('fs');
+//const path = require('path');
+//const opentype = require('opentype.js');
 
-  const latinWoffPath = path.join(__dirname, 'Roboto-Bold.ttf');
-  opentype.load(latinWoffPath, function(err, loadedFontOpentype) {
-    if (err) {
-      console.log(err);
-    } else {
+  //const latinWoffPath = path.join(__dirname, 'Roboto-Bold.ttf');
+  //opentype.load(latinWoffPath, function(err, loadedFontOpentype) {
+  //  if (err) {
+  //    console.log(err);
+  //  } else {
   
-    var fontData = {
-      data: loadedFontOpentype, // or just fontBuffer if that's expected
-      mode: 1,
-      sn: 1002
-    };
+ //   var fontData = {
+ //     data: loadedFontOpentype, // or just fontBuffer if that's expected
+ //     mode: 1,
+ //     sn: 1002
+ //   };
 
-    var text = "ABC123";   
+    var text = "DARKELF";   
     console.log("Testing text:", text);
 
-    var textLines = textLineVectorizer.getTextLines(loadedFontOpentype, text);
-    console.log(textLines);
-    const textLinesPath = path.join(__dirname, 'textLines.json');
-    fs.writeFileSync(textLinesPath, JSON.stringify(textLines, null, 2), 'utf8');
-    console.log('textLines written to', textLinesPath);
+
+    
 
 
-    var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
+  //  var textLines = textLineVectorizer.getTextLines(loadedFontOpentype, text);
+  //  console.log(textLines);
+  //  const textLinesPath = path.join(__dirname, 'textLines.json');
+ //   fs.writeFileSync(textLinesPath, JSON.stringify(textLines, null, 2), 'utf8');
+//    console.log('textLines written to', textLinesPath);
+
+
+
+    const darkelfData = JSON.parse(fs.readFileSync(path.join(__dirname, 'darkelf.json'), 'utf8'));
+    //console.log(darkelfData.lines_arr);
+
+    var layoutAndSimplifyShapes = textLineVectorizer.layoutAndSimplifyShapes(darkelfData.lines_arr, false, true, true, false);
+    //console.log(layoutAndSimplifyShapes);
+    //var simplifiedShapes = layoutAndSimplifyShapes(loadedFontOpentype, textLines, codePointAt, true);
+    console.log("Simplified Shapes:", layoutAndSimplifyShapes);
+
+    var textCoordinates = {
+      xxyy: layoutAndSimplifyShapes,
+      notRec: darkelfData.notRec,
+      xxyyRight: [],
+      xxyyUp: [],
+      xxyyDown: []
+    }
+
+    //var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
     console.log(textCoordinates.xxyy);
 
     const outputPath = path.join(__dirname, 'textCoordinates.json');
-    fs.writeFileSync(outputPath, JSON.stringify(textCoordinates, null, 2), 'utf8');
+    fs.writeFileSync(outputPath, JSON.stringify(textCoordinates.xxyy, null, 2), 'utf8');
     console.log('textCoordinates written to', outputPath);
   
     var testTextData = {
@@ -308,8 +329,8 @@ const opentype = require('opentype.js');
   }
 
 
-    }
-  });
+    //}
+  //});
 
 }
   

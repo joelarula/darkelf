@@ -12,6 +12,299 @@ const REFERENCE_COORDINATE_SIZE: f64 = 800.0;
 pub struct DrawUtils;
 
 impl DrawUtils {
+    /// Normalizes and centers lines, similar to JS normalizeAndCenterLines.
+    pub fn normalize_and_center_lines(
+        lines_container: &PolylineData,
+        is_horizontal_adjustment: bool,
+        flip_horizontal: bool,
+    ) -> PolylineData {
+        let n = &lines_container.lines;
+        let mut h = lines_container.w;
+        let mut a = lines_container.h;
+        let mut left = 99999.0_f32;
+        let mut top = 99999.0_f32;
+        let mut right = -99999.0_f32;
+        let mut bottom = -99999.0_f32;
+        let mut width = 0.0_f32;
+        let mut height = 0.0_f32;
+        let mut x0 = 0.0_f32;
+        let mut y0 = 0.0_f32;
+
+        if n.is_empty() {
+            left = 0.0;
+            top = 0.0;
+            right = 0.0;
+            bottom = 0.0;
+            width = 200.0;
+            height = 200.0;
+            x0 = 0.0;
+            y0 = 0.0;
+        } else {
+            for o in n {
+                for pt in o {
+                    left = left.min(pt.x);
+                    top = top.min(pt.y);
+                    right = right.max(pt.x);
+                    bottom = bottom.max(pt.y);
+                }
+            }
+            width = right - left;
+            height = bottom - top;
+            x0 = left + width / 2.0;
+            y0 = top + height / 2.0;
+        }
+
+        let mut p = Vec::new();
+        for b in n {
+            let mut g = Vec::new();
+            for pt in b {
+                let mut x = PolyPoint { x: pt.x, y: pt.y, z: pt.z };
+                if is_horizontal_adjustment {
+                    if flip_horizontal {
+                        x.x = -x.x + 2.0 * x0 - left + 20.0;
+                    } else {
+                        x.x = x.x - left + 20.0;
+                    }
+                } else {
+                    x.y = x.y - top + 20.0;
+                }
+                g.push(x);
+            }
+            p.push(g);
+        }
+        if is_horizontal_adjustment {
+            h = width + 40.0;
+        } else {
+            a = height + 40.0;
+        }
+        PolylineData {
+            lines: p,
+            w: h,
+            h: a,
+        }
+    }
+
+
+
+    /// Arranges and simplifies a collection of PolylineData shapes, similar to JS layoutAndSimplifyShapes.
+    pub fn layout_and_simplify_shapes(
+        shapes: &[PolylineData],
+        mark_corners: bool,
+        is_horizontal_layout: bool,
+        simplify: bool
+    ) -> Vec<(usize, Vec<PolyPoint>, f32, f32)> {
+        // 1. Normalize and center each shape (match JS logic)
+        let normalized_shapes: Vec<PolylineData> = shapes
+            .iter()
+            .map(|shape| Self::normalize_and_center_lines(shape, is_horizontal_layout, false))
+            .collect();
+
+        // 2. Calculate total width/height
+        let (mut total_width, mut total_height) = (0.0, 0.0);
+        for shape in &normalized_shapes {
+            if is_horizontal_layout {
+                total_width += shape.w;
+                total_height = shape.h;
+            } else {
+                total_width = shape.w;
+                total_height += shape.h;
+            }
+        }
+
+        let mut result = Vec::new();
+        let mut offset_x = -total_width / 2.0;
+        let mut offset_y = total_height / 2.0;
+        let mut layout_x = 0.0;
+        let mut layout_y = 0.0;
+
+        for (shape_iter, shape) in normalized_shapes.iter().enumerate() {
+            let lines = &shape.lines;
+            if !is_horizontal_layout {
+                layout_x = -shape.w / 2.0;
+                offset_x = 0.0;
+            }
+            for line in lines {
+                let mut line = line.clone();
+                let mut simplified_line = Vec::new();
+                let mut first_point = PolyPoint {
+                    x: offset_x + line[0].x + layout_x,
+                    y: offset_y - line[0].y + layout_y,
+                    z: 1,
+                };
+                if simplify {
+                    if mark_corners {
+                        line = Self::mark_corner_points(&mut line, 135.0, false);
+                    } else {
+                        let mut point_idx = 1;
+                        while point_idx < line.len() {
+                            let current_point = PolyPoint {
+                                x: offset_x + line[point_idx].x + layout_x,
+                                y: offset_y - line[point_idx].y + layout_y,
+                                z: line[point_idx].z,
+                            };
+                            if Self::distance_between_points(&first_point, &current_point) < 2.0 {
+                                line.remove(point_idx);
+                            } else {
+                                point_idx += 1;
+                                first_point = current_point;
+                            }
+                        }
+                        line = Self::mark_corner_points(&mut line, 145.0, true);
+                    }
+                }
+                first_point = PolyPoint {
+                    x: offset_x + line[0].x + layout_x,
+                    y: offset_y - line[0].y + layout_y,
+                    z: 1,
+                };
+                simplified_line.push(first_point.clone());
+                let mut mid_idx = 1;
+                while mid_idx < line.len() - 1 {
+                    let mid_point = PolyPoint {
+                        x: offset_x + line[mid_idx].x + layout_x,
+                        y: offset_y - line[mid_idx].y + layout_y,
+                        z: line[mid_idx].z,
+                    };
+                    let next_point = PolyPoint {
+                        x: offset_x + line[mid_idx + 1].x + layout_x,
+                        y: offset_y - line[mid_idx + 1].y + layout_y,
+                        z: line[mid_idx + 1].z,
+                    };
+                    if simplify {
+                        let angle = Self::calculate_angle_between_points_b(&first_point, &mid_point, &next_point);
+                        if (angle == 0.0 || angle > 174.0) && mid_point.z == 0 {
+                            line.remove(mid_idx);
+                            if mid_idx > 1 {
+                                mid_idx -= 1;
+                                simplified_line.pop();
+                                first_point = simplified_line[simplified_line.len() - 1].clone();
+                            }
+                            continue;
+                        }
+                        if mid_point.z == 0 && Self::distance_between_points(&simplified_line[simplified_line.len() - 1], &mid_point) < 20.0 {
+                            line.remove(mid_idx);
+                            if mid_idx > 1 {
+                                mid_idx -= 1;
+                                simplified_line.pop();
+                                first_point = simplified_line[simplified_line.len() - 1].clone();
+                            }
+                            continue;
+                        }
+                    }
+                    simplified_line.push(mid_point.clone());
+                    first_point = mid_point;
+                    mid_idx += 1;
+                }
+                let last_point = PolyPoint {
+                    x: offset_x + line[line.len() - 1].x + layout_x,
+                    y: offset_y - line[line.len() - 1].y + layout_y,
+                    z: 1,
+                };
+                simplified_line.push(last_point);
+                result.push((shape_iter, simplified_line, shape.w, shape.h));
+            }
+            if lines.is_empty() {
+                let placeholder = PolyPoint {
+                    x: offset_x + shape.w / 2.0 + layout_x,
+                    y: 0.0,
+                    z: 0,
+                };
+                result.push((shape_iter, vec![placeholder], shape.w, shape.h));
+            }
+            if is_horizontal_layout {
+                layout_x += shape.w;
+            } else {
+                layout_y -= shape.h;
+            }
+        }
+
+        // Final simplification pass (optional, as in JS)
+        if simplify && !mark_corners {
+            for arr in &mut result {
+                let line_arr = &mut arr.1;
+                if line_arr.len() >= 4 {
+                    let start_angle = Self::calculate_angle_between_points_b(
+                        &line_arr[line_arr.len() - 2],
+                        &line_arr[0],
+                        &line_arr[1],
+                    );
+                    if start_angle > 145.0 || start_angle == 0.0 {
+                        for corner_idx in 1..line_arr.len() - 1 {
+                            if line_arr[corner_idx].z == 1 {
+                                let mut new_arr = Vec::new();
+                                for i in corner_idx..line_arr.len() - 1 {
+                                    new_arr.push(line_arr[i].clone());
+                                }
+                                for c in 0..=corner_idx {
+                                    if c == 0 {
+                                        line_arr[c].z = 0;
+                                    }
+                                    new_arr.push(line_arr[c].clone());
+                                }
+                                if !new_arr.is_empty() {
+                                    *line_arr = new_arr;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        result
+    }
+
+    // Dummy stub for distance_between_points
+    fn distance_between_points(a: &PolyPoint, b: &PolyPoint) -> f32 {
+        ((a.x - b.x).powi(2) + (a.y - b.y).powi(2)).sqrt()
+    }
+
+    /// Marks corner points in a polyline based on angle threshold, similar to JS markCornerPoints.
+    fn mark_corner_points(points: &mut Vec<PolyPoint>, angle_threshold: f32, set_z: bool) -> Vec<PolyPoint> {
+        if points.len() < 3 {
+            return points.clone();
+        }
+        let mut point1 = PolyPoint {
+            x: points[0].x,
+            y: points[0].y,
+            z: 1,
+        };
+        for n in 1..points.len() - 1 {
+            let h = PolyPoint {
+                x: points[n].x,
+                y: points[n].y,
+                z: points[n].z,
+            };
+            let a = PolyPoint {
+                x: points[n + 1].x,
+                y: points[n + 1].y,
+                z: points[n + 1].z,
+            };
+            let i = Self::calculate_angle_between_points_b(&point1, &h, &a);
+            if set_z || points[n].z == 1 {
+                points[n].z = if i <= angle_threshold && i > 0.0 { 1 } else { 0 };
+            }
+            point1 = h;
+        }
+        points.clone()
+    }
+
+    /// Calculates the angle (in degrees) between three points: a, b, c.
+    /// Equivalent to JS calculateAngleBetweenPoints_B.
+    fn calculate_angle_between_points_b(a: &PolyPoint, b: &PolyPoint, c: &PolyPoint) -> f32 {
+        let n = [a.x - b.x, a.y - b.y];
+        let h = [c.x - b.x, c.y - b.y];
+        let dot_product = n[0] * h[0] + n[1] * h[1];
+        let i = (n[0].powi(2) + n[1].powi(2)).sqrt();
+        let c_len = (h[0].powi(2) + h[1].powi(2)).sqrt();
+        if i == 0.0 || c_len == 0.0 {
+            return 0.0;
+        }
+        let o = (dot_product / (i * c_len)).acos();
+        let s = 180.0_f32 * o as f32 / std::f64::consts::PI as f32;
+        s
+    }
     /// Converts a single letter to a vector of PathCommand using ttf_parser::Face
     pub fn letter_to_path_commands(face: &Face, letter: char) -> Vec<PathCommand> {
         // Get glyph index for the letter
@@ -502,6 +795,10 @@ pub fn get_text_lines(
         lines_arr_down
     }
 }
+
+
+
+
 
 
 }
