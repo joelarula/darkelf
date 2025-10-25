@@ -710,47 +710,42 @@ pub fn encode_layout_to_command_data(
     let mut counter2 = 0;
     let mut prev_index = -1;
     let mut k = 0;
-
-    for (seg_index, points, seg_width, x_offset) in segment_points {
-        // Find min/max for X and Y in this segment
-        let min_x = points.iter().map(|p| p.x).fold(f32::INFINITY, f32::min);
-        let max_x = points.iter().map(|p| p.x).fold(f32::NEG_INFINITY, f32::max);
-        let min_y = points.iter().map(|p| p.y).fold(f32::INFINITY, f32::min);
-        let max_y = points.iter().map(|p| p.y).fold(f32::NEG_INFINITY, f32::max);
-
-        for (index, point) in points.iter().enumerate() {
-            counter += 1;
-            // Per-segment normalization to [0,255]
-            let norm_x = if max_x != min_x {
-                ((point.x - min_x) / (max_x - min_x) * 255.0).round()
-            } else {
-                0.0
-            };
-            let norm_y = if max_y != min_y {
-                ((point.y - min_y) / (max_y - min_y) * 255.0).round()
-            } else {
-                0.0
-            };
-            let norm_x_clamped = norm_x.max(0.0).min(255.0);
-            let norm_y_clamped = norm_y.max(0.0).min(255.0);
-            let packed_x = format!("{:02X}", norm_x_clamped.round() as u8);
-            let packed_y = format!("{:02X}", norm_y_clamped.round() as u8);
-            let packed_type = format!("{:02X}", point.z as u8);
-            packed_cmd.push_str(&packed_x);
-            packed_cmd.push_str(&packed_y);
-            packed_cmd.push_str(&packed_type);
+for (seg_index, points, seg_width, x_offset) in segment_points {
+    for (index, point) in points.iter().enumerate() {
+        counter += 1;
+        // JS-style: screen coordinates, not per-segment normalized
+        let x_screen = ((point.x * scaling_factor) + x_offset).round() as i32;
+        let y_screen = (point.y * scaling_factor).round() as i32;
+        let mut point_type = point.z as u8;
+        let mut segment_index = *seg_index as u8;
+        if index == 0 {
+            segment_index = 0;
+            point_type = 1;
         }
-        counter2 += 1;
-        packed_char_width_cmd += &Self::to_fixed_width_hex((seg_width * scaling_factor).round() as i32, 2);
-        packed_char_point_cmd += &Self::to_fixed_width_hex(points.len() as i32, 2);
+        if index == points.len() - 1 {
+            point_type = 1;
+        }
+        if points.len() == 1 {
+            point_type = point.z as u8;
+        }
+        let combined = Self::combine_nibbles_b(segment_index, point_type);
+        let packed_x = Self::to_fixed_width_hex_b(x_screen, 2);
+        let packed_y = Self::to_fixed_width_hex_b(y_screen, 2);
+        let packed_type = Self::to_fixed_width_hex_b(combined as i32, 2);
+        packed_cmd.push_str(&packed_x);
+        packed_cmd.push_str(&packed_y);
+        packed_cmd.push_str(&packed_type);
     }
-
+    counter2 += 1;
+    packed_char_width_cmd += &Self::to_fixed_width_hex_b((seg_width * scaling_factor).round() as i32, 2);
+    packed_char_point_cmd += &Self::to_fixed_width_hex_b(points.len() as i32, 2);
+}
     if counter == 0 {
         return None;
     }
 
-    let ver = Self::to_fixed_width_hex(ver_tag as i32, 2);
-    let time = Self::to_fixed_width_hex(segment_time as i32, 2);
+    let ver = Self::to_fixed_width_hex_b(ver_tag as i32, 2);
+    let time = Self::to_fixed_width_hex_b(segment_time as i32, 2);
 
     let result_cmd = format!(
         "{}{}{}{}{}{}{}",
@@ -788,6 +783,22 @@ pub fn to_fixed_width_hex_signed(value: i32, width: usize) -> String {
         };
         format!("{:0width$X}", encoded, width = width)
     }
+
+
+    pub fn combine_nibbles_b(a: u8, b: u8) -> u8 {
+    ((a & 0x0F) << 4) | (b & 0x0F)
+}
+
+pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
+    let clamped = if width == 2 {
+        val.max(0).min(255) as u32
+    } else {
+        val as u32
+    };
+    format!("{:0width$X}", clamped, width = width)
+}
+
+
     }
 
 
