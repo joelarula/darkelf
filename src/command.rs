@@ -758,9 +758,8 @@ pub fn get_xys_cmd(
     let mirror_mode = 0;
     let ver_tag = 0;
     let scaling_factor = 0.5;
-    // JS: can support multiple segments, but we only encode one for now
+    // JS: pack all points from all split segments into a single command
     let (segmented, _, _, _) = CommandGenerator::generate_segmented_layout_data(segment_points, scaling_factor, 0);
-    let mut encoded_segments = Vec::new();
     if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data(
         &segmented,
         segment_time,
@@ -768,51 +767,10 @@ pub fn get_xys_cmd(
         mirror_mode,
         ver_tag,
     ) {
-        encoded_segments.push(encoded_command_data);
+        // Output structure matches JS reference
+        return encoded_command_data.cmd.to_uppercase();
     }
-    if encoded_segments.is_empty() {
-        return String::new();
-    }
-    let mut total_point_count = 0;
-    let mut total_char_count = 0;
-    let mut char_count_hex = String::new();
-    let mut command_hex = String::new();
-    let mut char_width_hex = String::new();
-    let mut char_point_hex = String::new();
-    let mut se1_hex = String::new();
-    let mut se2_hex = String::new();
-    let mut version_hex = String::new();
-    let mut time_hex = String::new();
-    for seg in &encoded_segments {
-        total_point_count += seg.cnt;
-        total_char_count += seg.char_count;
-        char_count_hex += &CommandGenerator::to_fixed_width_hex_b(seg.char_count as i32, 2);
-        command_hex += &seg.cmd;
-        char_width_hex += &seg.char_width_cmd;
-        char_point_hex += &seg.char_point_cmd;
-        se1_hex += &seg.se1;
-        se2_hex += &seg.se2;
-        version_hex += &seg.ver;
-        time_hex += &seg.time;
-    }
-    let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(encoded_segments.len() as i32, 2);
-    let result_cmd = format!(
-        "{}{}{}{}{}{}{}{}{}{}{}{}{}",
-        "A0A1A2A3",
-        CommandGenerator::to_fixed_width_hex_b(total_point_count as i32, 4),
-        CommandGenerator::to_fixed_width_hex_b(total_char_count as i32, 2),
-        command_hex,
-        segment_count_hex,
-        char_count_hex,
-        char_width_hex,
-        char_point_hex,
-        se1_hex,
-        se2_hex,
-        version_hex,
-        time_hex,
-        "A4A5A6A7"
-    );
-    result_cmd.to_uppercase()
+    String::new()
 }
 
 
@@ -833,22 +791,15 @@ pub fn encode_layout_to_command_data(
     let mut packed_point_count = 0;
     let mut segment_width_sum = 0.0;
     let mut x_offset = 0.0;
-    let mut js_segment_index = 8;
-    // Flatten all points from all segments
+    // Pack all points from all segments into a single segment
     for seg in segment_points.iter() {
         segment_width_sum += seg.2 * scaling_factor;
         for (index, point) in seg.1.iter().enumerate() {
-            let mut segment_index = js_segment_index;
+            let segment_index = 0;
             let mut point_type = point.z as u8;
-            if index == 0 { segment_index = 0; point_type = 1; }
+            if index == 0 { point_type = 1; }
             if index == seg.1.len() - 1 { point_type = 1; }
             if seg.1.len() == 1 { point_type = point.z as u8; }
-            if segment_index == 0 && seg.1.len() > 1 && index > 0 && index < seg.1.len() - 1 {
-                point_type = 2;
-            }
-            if segment_index != 0 && seg.1.len() > 1 && index > 0 && index < seg.1.len() - 1 {
-                point_type = 3;
-            }
             let x_screen = ((point.x * scaling_factor) + x_offset).round() as i32;
             let y_screen = (point.y * scaling_factor).round() as i32;
             let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
@@ -861,13 +812,13 @@ pub fn encode_layout_to_command_data(
             packed_point_count += 1;
         }
     }
-    // JS: single segment, charCount = 1, segmentCount = 1, charPointCmd = total points
-    let total_segments = 1;
+    // Only one segment, charCount = 1, segmentCount = 1, charPointCmd = total points
     let packed_char_count_cmd = CommandGenerator::to_fixed_width_hex_b(1, 2);
     let packed_char_width_cmd = CommandGenerator::to_fixed_width_hex_b(segment_width_sum.round() as i32, 2);
-    let packed_char_point_cmd = CommandGenerator::to_fixed_width_hex_b(packed_point_count, 2);
+    let packed_char_point_cmd = CommandGenerator::to_fixed_width_hex_b(packed_point_count as i32, 2);
     let se1 = CommandGenerator::to_fixed_width_hex_b(0, 2);
     let se2 = CommandGenerator::to_fixed_width_hex_b(1, 2);
+    let total_segments = 1;
     // Debug print each output part for parity validation
     println!("[DEBUG] HEADER: {}", XYS_CMD_HEADER);
     println!("[DEBUG] TOTAL POINT COUNT (4 bytes): {}", CommandGenerator::to_fixed_width_hex_b(packed_point_count as i32, 4));
