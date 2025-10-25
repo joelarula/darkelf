@@ -1407,20 +1407,33 @@ globalThis["webpackJsonp"].push([
         timeHex += encodedSegments[segmentIndex].time;
     }
     console.log(totalPointCount, totalCharCount);
-    var segmentCountHex = toFixedWidthHex(encodedSegments.length, 2),
-        resultCmd = "A0A1A2A3" +
-            toFixedWidthHex(totalPointCount) +
-            toFixedWidthHex(totalCharCount, 2) +
-            commandHex +
-            segmentCountHex +
-            charCountHex +
-            charWidthHex +
-            charPointHex +
-            se1Hex +
-            se2Hex +
-            versionHex +
-            timeHex +
-            "A4A5A6A7";
+    var segmentCountHex = toFixedWidthHex(encodedSegments.length, 2);
+    // Log all command parts for inspection
+    console.log("segmentCountHex:", segmentCountHex);
+    console.log("totalPointCount:", toFixedWidthHex(totalPointCount));
+    console.log("totalCharCount:", toFixedWidthHex(totalCharCount, 2));
+    console.log("commandHex:", commandHex);
+    console.log("charCountHex:", charCountHex);
+    console.log("charWidthHex:", charWidthHex);
+    console.log("charPointHex:", charPointHex);
+    console.log("se1Hex:", se1Hex);
+    console.log("se2Hex:", se2Hex);
+    console.log("versionHex:", versionHex);
+    console.log("timeHex:", timeHex);
+
+    var resultCmd = "A0A1A2A3" +
+        toFixedWidthHex(totalPointCount) +
+        toFixedWidthHex(totalCharCount, 2) +
+        commandHex +
+        segmentCountHex +
+        charCountHex +
+        charWidthHex +
+        charPointHex +
+        se1Hex +
+        se2Hex +
+        versionHex +
+        timeHex +
+        "A4A5A6A7";
     return resultCmd.toUpperCase();
 },
 
