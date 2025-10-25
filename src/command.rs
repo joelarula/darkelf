@@ -1,4 +1,5 @@
-use crate::{ model::{DrawData, DrawItem, DrawMode, DrawPoint, Point, ProjectItem}};
+
+use crate::model::{EncodedCommandData, Point, PolyPoint, ProjectItem};
 use log::{debug, info};
 
 use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, SettingsData};
@@ -17,6 +18,8 @@ const FEATURES_CMD_HEADER: &str = "D0D1D2D3";
 const FEATURES_CMD_FOOTER: &str = "D4D5D6D7";
 const DRAW_CMD_HEADER: &str = "F0F1F2F3";
 const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
+pub const XYS_CMD_HEADER: &str = "A0A1A2A3";
+pub const XYS_CMD_FOOTER: &str = "A4A5A6A7";
 
 
 pub struct CommandGenerator;
@@ -395,7 +398,7 @@ impl CommandGenerator {
         // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
 
         // x: group color segment
-        let mut x = "ffffffff0000".to_string();
+    let x = "ffffffff0000".to_string();
         //if let Some(features) = features {
         //    x.clear();
         //    if let Some(group_list) = &features.group_list {
@@ -658,14 +661,167 @@ impl CommandGenerator {
     }
 
 
-    
-
-
-    
 
 
 
+/// Simplified XYS command generator for a vector of (index, points, width, height)
+pub fn get_xys_cmd(
+    segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+) -> String {
+    let mut encoded_segments = Vec::new();
+    // Use fixed values for time, command_type, mirror_mode, matching JS logic
+    let segment_time = 5;
+    let command_type = 0;
+    let mirror_mode = 0;
+    let ver_tag = 0;
+
+    // Use the segment_points directly as required by encode_layout_to_command_data
+    if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data(
+        segment_points,
+        segment_time,
+        command_type,
+        mirror_mode,
+        ver_tag,
+    ) {
+        encoded_segments.push(encoded_command_data);
+    }
+
+    if encoded_segments.is_empty() {
+        return String::new();
+    }
+
+    let mut total_point_count = 0;
+    let mut total_char_count = 0;
+    let mut char_count_hex = String::new();
+    let mut command_hex = String::new();
+    let mut char_width_hex = String::new();
+    let mut char_point_hex = String::new();
+    let mut se1_hex = String::new();
+    let mut se2_hex = String::new();
+    let mut version_hex = String::new();
+    let mut time_hex = String::new();
+    for segment in &encoded_segments {
+        total_point_count += segment.cnt;
+        total_char_count += segment.char_count;
+        char_count_hex += &Self::to_fixed_width_hex(segment.char_count as u32, 2);
+        command_hex += &segment.cmd;
+        char_width_hex += &segment.char_width_cmd;
+        char_point_hex += &segment.char_point_cmd;
+        se1_hex += &segment.se1;
+        se2_hex += &segment.se2;
+        version_hex += &segment.ver;
+        time_hex += &segment.time;
+    }
+    let segment_count_hex = Self::to_fixed_width_hex(encoded_segments.len() as u32, 2);
+    let result_cmd = format!(
+        "{}{}{}{}{}{}{}{}{}{}{}{}{}",
+        XYS_CMD_HEADER,
+        Self::to_fixed_width_hex(total_point_count as u32, 0),
+        Self::to_fixed_width_hex(total_char_count as u32, 2),
+        command_hex,
+        segment_count_hex,
+        char_count_hex,
+        char_width_hex,
+        char_point_hex,
+        se1_hex,
+        se2_hex,
+        version_hex,
+        time_hex,
+        XYS_CMD_FOOTER
+    );
+    return result_cmd.to_uppercase();
 
 }
 
+/// Encodes layout to command data, matching JS logic, for segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>
+pub fn encode_layout_to_command_data(
+    segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+    segment_time: u32,
+    command_options: u8,
+    mirror_mode: u8,
+    ver_tag: u8,
+) -> Option<EncodedCommandData> {
+    if segment_points.is_empty() {
+        return None;
+    }
 
+    let mut counter = 0;
+    let mut counter2 = 0;
+    let mut prev_index = -1;
+    let mut command = String::new();
+    let mut char_point_cmd = String::new();
+    let mut char_width_cmd = String::new();
+    let v = 8;
+    let scaling_factor = 0.5;
+    let mut f = v;
+    let mut k = 0;
+    let text_decimal_time = false;
+    let time = if text_decimal_time {
+        Self::to_fixed_width_hex((segment_time * 10) as usize, 2)
+    } else {
+        Self::to_fixed_width_hex(segment_time as usize, 2)
+    };
+    if v >= 8 {
+        f = 0;
+    }
+    let ver = Self::to_fixed_width_hex(ver_tag, 2);
+
+    // Loop over each segment
+    for (seg_index, points, seg_width, x_offset) in segment_points {
+        if prev_index != *seg_index as i32 {
+            prev_index = *seg_index as i32;
+            if counter2 > 0 {
+                char_point_cmd += &Self::to_fixed_width_hex(k, 2);
+                k = 0;
+            }
+            counter2 += 1;
+            char_width_cmd += &Self::to_fixed_width_hex((*seg_width * scaling_factor).round() as u32, 2);
+            if v >= 8 && points.len() > 1 {
+                f += 1;
+            }
+        }
+        if f >= 8 {
+            f = 1;
+        }
+        k += points.len();
+        for (index, point) in points.iter().enumerate() {
+            counter += 1;
+            let x_screen = (point.x * scaling_factor + x_offset).round() as i32;
+            let y_screen = (point.y * scaling_factor).round() as i32;
+            let mut segment_index = f;
+            let mut point_type = point.z;
+            if index == 0 {
+                segment_index = 0;
+                point_type = 1;
+            }
+            if index == points.len() - 1 {
+                point_type = 1;
+            }
+            if points.len() == 1 {
+                point_type = point.z;
+            }
+            let combined = Self::combine_nibbles(segment_index as u8, point_type as u8);
+            command += &Self::to_fixed_width_hex(x_screen, 2);
+            command += &Self::to_fixed_width_hex(y_screen, 2);
+            command += &Self::to_fixed_width_hex(combined, 2);
+        }
+    }
+    char_point_cmd += &Self::to_fixed_width_hex(k, 2);
+    if counter == 0 {
+        return None;
+    }
+    // se1, se2: set to empty string or default if not used
+    Some(EncodedCommandData {
+        cnt: counter,
+        char_count: counter2,
+        cmd: command,
+        char_width_cmd,
+        char_point_cmd,
+        se1: String::new(),
+        se2: String::new(),
+        ver,
+        time,
+    })
+}
+
+}

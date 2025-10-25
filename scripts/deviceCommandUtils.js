@@ -319,10 +319,16 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
     );
     console.log('Result of getXysCmdArr:', result);
 
-      const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
+    const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
     fs.writeFileSync(getXysCmdArrPath, JSON.stringify(result, null, 2), 'utf8');
     console.log('getXysCmdArr result written to', getXysCmdArrPath);
 
+
+   const resultB = exports.getXysCmdSimplified(layoutAndSimplifyShapes);
+   console.log('Result of getXysCmdSimplified:', resultB);
+
+
+   
 
   } else {
     console.error('getXysCmdArr function not found in module exports.');

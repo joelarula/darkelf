@@ -145,12 +145,18 @@ pub struct MirroredPolylines {
     pub new_lines_down: Vec<Vec<PolyPoint>>,
 }
 
-#[derive(Debug, Clone, serde::Serialize)]
-pub struct TextLinesResult {
-    pub lines_arr: Vec<PolylineData>,
-    pub lines_arr_up: Vec<PolylineData>,
-    pub lines_arr_down: Vec<PolylineData>,
+pub struct EncodedCommandData {
+    pub cnt: usize,
+    pub char_count: usize,
+    pub cmd: String,
+    pub char_width_cmd: String,
+    pub char_point_cmd: String,
+    pub se1: String,
+    pub se2: String,
+    pub ver: String,
+    pub time: String,
 }
+
 #[derive(Debug, Clone)]
 pub struct PathCommand {
     pub cmd_type: char, // 'M', 'L', 'Q', 'Z'

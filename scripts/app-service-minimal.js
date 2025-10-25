@@ -1345,16 +1345,16 @@ globalThis["webpackJsonp"].push([
                         for (var h = arguments.length > 3 && void 0 !== arguments[3] 
                                 ? arguments[3] 
                                 : 0, a = [], c = 0; c < polylinePoints.length; c++) {
-                            var o = polylinePoints[c].xys,
+                            var points = polylinePoints[c].xys,
                                 s = mirrored;
                             255 == mirrored && null != polylinePoints[c].XysRight 
-                                ? o = polylinePoints[c].XysRight 
+                                ? points = polylinePoints[c].XysRight 
                                 : 127 == mirrored && null != polylinePoints[c].XysUp 
-                                    ? o = polylinePoints[c].XysUp 
+                                    ? points = polylinePoints[c].XysUp 
                                     : 128 == mirrored && null != polylinePoints[c].XysDown 
-                                        ? o = polylinePoints[c].XysDown 
+                                        ? points = polylinePoints[c].XysDown 
                                         : s = 0;
-                            var encodedCOmmandData = encodeLayoutToCommandData(o, polylinePoints[c].time, commandType, s, h);
+                            var encodedCOmmandData = encodeLayoutToCommandData(points, polylinePoints[c].time, commandType, s, h);
                             null != encodedCOmmandData && a.push(encodedCOmmandData)
                         }
                         if (0 == a.length) return "";
@@ -1369,6 +1369,60 @@ globalThis["webpackJsonp"].push([
                         return X.toUpperCase()
                     },
 
+
+                    getXysCmdSimplified: function(segmentPoints) {
+    var versionTag = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0;
+    var encodedSegments = [];
+
+        var encodedCommandData = encodeLayoutToCommandData(
+            segmentPoints,
+            5,
+            0,
+            0,
+            0
+        );
+        if (encodedCommandData != null) encodedSegments.push(encodedCommandData);
+
+    if (encodedSegments.length == 0) return "";
+    var totalPointCount = 0,
+        totalCharCount = 0,
+        charCountHex = "",
+        commandHex = "",
+        charWidthHex = "",
+        charPointHex = "",
+        se1Hex = "",
+        se2Hex = "",
+        versionHex = "",
+        timeHex = "";
+    for (var segmentIndex = 0; segmentIndex < encodedSegments.length; segmentIndex++) {
+        totalPointCount += encodedSegments[segmentIndex].cnt;
+        totalCharCount += encodedSegments[segmentIndex].charCount;
+        charCountHex += toFixedWidthHex(encodedSegments[segmentIndex].charCount, 2);
+        commandHex += encodedSegments[segmentIndex].cmd;
+        charWidthHex += encodedSegments[segmentIndex].charWidthCmd;
+        charPointHex += encodedSegments[segmentIndex].charPointCmd;
+        se1Hex += encodedSegments[segmentIndex].se1;
+        se2Hex += encodedSegments[segmentIndex].se2;
+        versionHex += encodedSegments[segmentIndex].ver;
+        timeHex += encodedSegments[segmentIndex].time;
+    }
+    console.log(totalPointCount, totalCharCount);
+    var segmentCountHex = toFixedWidthHex(encodedSegments.length, 2),
+        resultCmd = "A0A1A2A3" +
+            toFixedWidthHex(totalPointCount) +
+            toFixedWidthHex(totalCharCount, 2) +
+            commandHex +
+            segmentCountHex +
+            charCountHex +
+            charWidthHex +
+            charPointHex +
+            se1Hex +
+            se2Hex +
+            versionHex +
+            timeHex +
+            "A4A5A6A7";
+    return resultCmd.toUpperCase();
+},
 
                     getCmdStr: function(commandConfig) {
                         var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
