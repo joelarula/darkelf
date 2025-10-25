@@ -268,7 +268,7 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
     var layoutAndSimplifyShapes = textLineVectorizer.layoutAndSimplifyShapes(darkelfData.lines_arr, false, true, true, false);
     //console.log(layoutAndSimplifyShapes);
     //var simplifiedShapes = layoutAndSimplifyShapes(loadedFontOpentype, textLines, codePointAt, true);
-    console.log("Simplified Shapes:", layoutAndSimplifyShapes);
+    //console.log("Simplified Shapes:", layoutAndSimplifyShapes);
 
     var textCoordinates = {
       xxyy: layoutAndSimplifyShapes,
@@ -279,11 +279,11 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
     }
 
     //var textCoordinates = textLineVectorizer.getXXYY(opentype, fontData, text, true);
-    console.log(textCoordinates.xxyy);
+    //console.log(textCoordinates.xxyy);
 
-    const outputPath = path.join(__dirname, 'textCoordinates.json');
-    fs.writeFileSync(outputPath, JSON.stringify(textCoordinates.xxyy, null, 2), 'utf8');
-    console.log('textCoordinates written to', outputPath);
+    //const outputPath = path.join(__dirname, 'textCoordinates.json');
+    //fs.writeFileSync(outputPath, JSON.stringify(textCoordinates.xxyy, null, 2), 'utf8');
+    //console.log('textCoordinates written to', outputPath);
   
     var testTextData = {
     verTag: 0,
@@ -317,7 +317,7 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
       testTextData.runDir,
       testTextData.verTag
     );
-    console.log('Result of getXysCmdArr:', result);
+    //console.log('Result of getXysCmdArr:', result);
 
     //const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
     //fs.writeFileSync(getXysCmdArrPath, JSON.stringify(result, null, 2), 'utf8');
@@ -331,6 +331,19 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
    const resultB = exports.getXysCmdSimplified(textCoordinates);
    console.log('Result of getXysCmdSimplified:', resultB);
 
+    var encodedSegments = [];
+
+    var encodedCommandData = exports.encodeLayoutToCommandData(
+            textCoordinates,
+            5,
+            0,
+            0,
+            0
+        );
+    encodedSegments.push(encodedCommandData);
+  
+  const outputPath = path.join(__dirname, 'encodedCommandData.json');
+  fs.writeFileSync(outputPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
 
 
 
@@ -486,6 +499,7 @@ if (targetModule && typeof targetModule === 'function') {
   //testShowCmd(exported);
   //testDrawCommand(exported, handDrawGeometryUtils);
   //testPolylineCommand(exported, handDrawGeometryUtils);
+
 
 
 

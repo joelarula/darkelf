@@ -1,5 +1,3 @@
-
-
 use crate::model::{EncodedCommandData, Point, PolyPoint, ProjectItem};
 use log::{debug, info};
 
@@ -132,42 +130,43 @@ impl CommandGenerator {
     
     // Layout and segmentation functions
     pub fn split_into_segments_by_sum_limit(values: &[f32], limit: f32) -> Vec<(usize, usize)> {
-        // Ported from JS: splitIntoSegmentsBySumLimit
+        // JS reference: splitIntoSegmentsBySumLimit
+        println!("[DEBUG] split_into_segments_by_sum_limit input: {:?}, limit: {}", values, limit);
         let mut r = 0.0_f32;
-        let mut result: Vec<(usize, usize)> = Vec::new();
+        let mut n: Vec<(usize, usize)> = Vec::new();
         let mut h = 0_usize;
         let mut a = 0_usize;
-        for (i, &v) in values.iter().enumerate() {
-            if r + v <= limit {
+        let mut i = 0_usize;
+        while i < values.len() {
+            if r + values[i] <= limit {
                 a += 1;
-                result.push((h, a));
-                r += v;
+                n.push((h, a));
+                r += values[i];
             } else {
                 let mut temp_width = r;
                 loop {
                     if temp_width <= limit {
                         a += 1;
-                        result.push((h, a));
-                        r = temp_width + v;
+                        n.push((h, a));
+                        r = temp_width + values[i];
                         break;
                     }
                     if temp_width > limit && temp_width - values[h] < limit {
                         a += 1;
-                        result.push((h, a));
-                        r += v;
+                        n.push((h, a));
+                        r += values[i];
                         break;
                     }
                     temp_width -= values[h];
                     r -= values[h];
                     h += 1;
                     a = a.saturating_sub(1);
-                    if h >= values.len() {
-                        break;
-                    }
                 }
             }
+            i += 1;
         }
-        result
+        println!("[DEBUG] split_into_segments_by_sum_limit output: {:?}", n);
+        n
     }
 
     /// Generate segmented layout data matching the JS generateSegmentedLayoutData behavior
@@ -757,11 +756,15 @@ pub fn get_xys_cmd(
     let command_type = 0;
     let mirror_mode = 0;
     let ver_tag = 0;
-    let scaling_factor = 0.5;
+    //let scaling_factor = 0.5;
     // JS: pack all points from all split segments into a single command
-    let (segmented, _, _, _) = CommandGenerator::generate_segmented_layout_data(segment_points, scaling_factor, 0);
-    if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data(
-        &segmented,
+    //let (segmented, _, _, _) = CommandGenerator::generate_segmented_layout_data(segment_points, scaling_factor, 0);
+    
+
+    
+    
+    if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data_js_parity_debug(
+        segment_points,
         segment_time,
         command_type,
         mirror_mode,
@@ -773,102 +776,6 @@ pub fn get_xys_cmd(
     String::new()
 }
 
-
-pub fn encode_layout_to_command_data(
-    segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
-    segment_time: u32,
-    command_options: u8,
-    mirror_mode: u8,
-    ver_tag: u8,
-) -> Option<EncodedCommandData> {
-    if segment_points.is_empty() {
-        return None;
-    }
-
-    let scaling_factor = 0.5;
-    // JS getXysCmdSimplified: treat all points as a single segment
-    let mut packed_cmd = String::new();
-    let mut packed_point_count = 0;
-    let mut segment_width_sum = 0.0;
-    let mut x_offset = 0.0;
-    // Pack all points from all segments into a single segment
-    for seg in segment_points.iter() {
-        segment_width_sum += seg.2 * scaling_factor;
-        for (index, point) in seg.1.iter().enumerate() {
-            let segment_index = 0;
-            let mut point_type = point.z as u8;
-            if index == 0 { point_type = 1; }
-            if index == seg.1.len() - 1 { point_type = 1; }
-            if seg.1.len() == 1 { point_type = point.z as u8; }
-            let x_screen = ((point.x * scaling_factor) + x_offset).round() as i32;
-            let y_screen = (point.y * scaling_factor).round() as i32;
-            let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
-            let packed_x = CommandGenerator::to_fixed_width_hex_b(x_screen, 2);
-            let packed_y = CommandGenerator::to_fixed_width_hex_b(y_screen, 2);
-            let packed_type = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
-            packed_cmd.push_str(&packed_x);
-            packed_cmd.push_str(&packed_y);
-            packed_cmd.push_str(&packed_type);
-            packed_point_count += 1;
-        }
-    }
-    // Only one segment, charCount = 1, segmentCount = 1, charPointCmd = total points
-    let packed_char_count_cmd = CommandGenerator::to_fixed_width_hex_b(1, 2);
-    let packed_char_width_cmd = CommandGenerator::to_fixed_width_hex_b(segment_width_sum.round() as i32, 2);
-    let packed_char_point_cmd = CommandGenerator::to_fixed_width_hex_b(packed_point_count as i32, 2);
-    let se1 = CommandGenerator::to_fixed_width_hex_b(0, 2);
-    let se2 = CommandGenerator::to_fixed_width_hex_b(1, 2);
-    let total_segments = 1;
-    // Debug print each output part for parity validation
-    println!("[DEBUG] HEADER: {}", XYS_CMD_HEADER);
-    println!("[DEBUG] TOTAL POINT COUNT (4 bytes): {}", CommandGenerator::to_fixed_width_hex_b(packed_point_count as i32, 4));
-    println!("[DEBUG] CHAR COUNT (2 bytes): {}", CommandGenerator::to_fixed_width_hex_b(total_segments as i32, 2));
-    println!("[DEBUG] PACKED POINT DATA: {}", packed_cmd);
-    println!("[DEBUG] SEGMENT COUNT (2 bytes): {}", CommandGenerator::to_fixed_width_hex_b(total_segments as i32, 2));
-    println!("[DEBUG] PER-SEGMENT CHAR COUNT: {}", packed_char_count_cmd);
-    println!("[DEBUG] PER-SEGMENT WIDTH: {}", packed_char_width_cmd);
-    println!("[DEBUG] PER-SEGMENT POINT COUNT: {}", packed_char_point_cmd);
-    println!("[DEBUG] SE1: {}", se1);
-    println!("[DEBUG] SE2: {}", se2);
-    println!("[DEBUG] VER TAG (2 bytes): {}", CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2));
-    println!("[DEBUG] SEGMENT TIME (2 bytes): {}", CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2));
-    println!("[DEBUG] FOOTER: {}", XYS_CMD_FOOTER);
-
-    if packed_point_count == 0 {
-        return None;
-    }
-
-    let total_points_hex = CommandGenerator::to_fixed_width_hex_b(packed_point_count as i32, 4);
-    let char_count_hex = CommandGenerator::to_fixed_width_hex_b(total_segments as i32, 2);
-    let result_cmd = format!(
-        "{}{}{}{}{}{}{}{}{}{}{}{}{}",
-        XYS_CMD_HEADER,
-        total_points_hex,
-        char_count_hex,
-        packed_cmd,
-        CommandGenerator::to_fixed_width_hex_b(total_segments as i32, 2), // segment count
-        packed_char_count_cmd,
-        packed_char_width_cmd,
-        packed_char_point_cmd,
-        se1,
-        se2,
-        CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2),
-        CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2),
-        XYS_CMD_FOOTER
-    );
-
-    Some(EncodedCommandData {
-        cnt: packed_point_count as usize,
-        char_count: total_segments,
-        cmd: result_cmd,
-        char_width_cmd: packed_char_width_cmd,
-        char_point_cmd: packed_char_point_cmd,
-        se1,
-        se2,
-        ver: CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2),
-        time: CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2),
-    })
-}
 
     pub fn combine_nibbles_b(a: u8, b: u8) -> u8 {
     ((a & 0x0F) << 4) | (b & 0x0F)
@@ -884,5 +791,139 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
 }
 
 
+// JS parity version with detailed debug output for each segment and point
+pub fn encode_layout_to_command_data_js_parity_debug(
+    segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+    segment_time: u32,
+    command_options: u8,
+    mirror_mode: u8,
+    ver_tag: u8,
+) -> Option<EncodedCommandData> {
+    if segment_points.is_empty() {
+        return None;
+    }
+
+    let scaling_factor = 0.5;
+    let mut total_point_count = 0;
+    let mut total_char_count = 0;
+    let mut char_count_hex = String::new();
+    let mut command_hex = String::new();
+    let mut char_width_hex = String::new();
+    let mut char_point_hex = String::new();
+    let mut se1_hex = String::new();
+    let mut se2_hex = String::new();
+    let version_hex = CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2);
+    let time_hex = CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2);
+    let mut segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = segment_points.clone();
+    let segment_default_size: f32 = 200.0;
+    let mut k = 0.0;
+    let mut total_segment_width = 0.0;
+    for seg in segment_points {
+        total_segment_width += seg.2;
+    }
+    let mut seg_idx = segments.len() as i32 - 1;
+    // Add 9 filler segments as in JS
+    for _ in 0..9 {
+        seg_idx += 1;
+        let idx = seg_idx as usize;
+        let pt = PolyPoint { x: total_segment_width / 2.0 + segment_default_size / 2.0 + k, y: 0.0, z: 0 };
+        let pts = vec![pt];
+        segments.push((idx, pts, segment_default_size, segment_default_size));
+        k += segment_default_size;
+    }
+    let x_offset = -k * scaling_factor / 2.0;
+    let segment_count = segments.len();
+    let mut v = 8;
+
+    for (seg_idx, seg) in segments.iter().enumerate() {
+        let mut k = 0;
+        let mut segment_cmd = String::new();
+        let seg_width = seg.2;
+        let segment_points = &seg.1;
+        let mut f = v;
+
+        total_char_count += 1;
+        char_count_hex.push_str(&CommandGenerator::to_fixed_width_hex_b(1, 2));
+        char_width_hex.push_str(&CommandGenerator::to_fixed_width_hex_b(seg_width.round() as i32, 2));
+
+        if v >= 8 && segment_points.len() > 1 {
+            f += 1;
+        }
+        if f >= 8 {
+            f = 1;
+        }
+
+        k += segment_points.len();
+        for (index, point) in segment_points.iter().enumerate() {
+            total_point_count += 1;
+            let x_screen = ((point.x * scaling_factor) + x_offset).round() as i32;
+            let y_screen = (point.y * scaling_factor).round() as i32;
+            let mut point_type = point.z as u8;
+            let mut segment_index = f as u8;
+            if index == 0 {
+                segment_index = 0;
+                point_type = 1;
+            }
+            if index == segment_points.len() - 1 {
+                point_type = 1;
+            }
+            if segment_points.len() == 1 {
+                point_type = point.z as u8;
+            }
+            let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
+            let x_hex = CommandGenerator::to_fixed_width_hex_b(x_screen, 2);
+            let y_hex = CommandGenerator::to_fixed_width_hex_b(y_screen, 2);
+            let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
+            segment_cmd.push_str(&x_hex);
+            segment_cmd.push_str(&y_hex);
+            segment_cmd.push_str(&combined_hex);
+            println!("[DEBUG] seg {} pt {}: x={} y={} type={} idx={} packed={}{}{}", seg_idx, index, x_screen, y_screen, point_type, segment_index, x_hex, y_hex, combined_hex);
+        }
+        char_point_hex.push_str(&CommandGenerator::to_fixed_width_hex_b(k as i32, 2));
+        command_hex.push_str(&segment_cmd);
+    }
+
+    if total_point_count == 0 {
+        return None;
+    }
+
+    let total_points_hex = CommandGenerator::to_fixed_width_hex_b(total_point_count as i32, 4);
+    let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(total_char_count as i32, 2);
+    let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+
+    let result_cmd = format!(
+        "{}{}{}{}{}{}{}{}{}{}{}{}{}",
+        XYS_CMD_HEADER,
+        total_points_hex,
+        char_count_total_hex,
+        command_hex,
+        segment_count_hex,
+        char_count_hex,
+        char_width_hex,
+        char_point_hex,
+        se1_hex,
+        se2_hex,
+        version_hex,
+        time_hex,
+        XYS_CMD_FOOTER
+    );
+
+    println!("[DEBUG] segment_count: {}", segment_count);
+    println!("[DEBUG] total_point_count: {}", total_point_count);
+    println!("[DEBUG] result_cmd len: {}", result_cmd.len());
+    println!("[DEBUG] first 32 bytes: {}", &result_cmd[..32.min(result_cmd.len())]);
+
+    Some(EncodedCommandData {
+        cnt: total_point_count as usize,
+        char_count: total_char_count as usize,
+        cmd: result_cmd,
+        char_width_cmd: char_width_hex,
+        char_point_cmd: char_point_hex,
+        se1: se1_hex,
+        se2: se2_hex,
+        ver: version_hex,
+        time: time_hex,
+    })
+}
 
 }

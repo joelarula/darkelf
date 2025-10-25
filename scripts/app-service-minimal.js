@@ -1047,25 +1047,39 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function splitIntoSegmentsBySumLimit(numbers, limit) {
+                   // console.log("splitIntoSegmentsBySumLimit called with:", numbers, "limit:", limit);
                     for (var r = 0, n = [], h = 0, a = 0, i = 0; i < numbers.length; i++)
-                        if (r + numbers[i] <= limit) a += 1, n.push([h, a]), r += numbers[i];
-                        else {
-                            tempWidth = r;
+                        if (r + numbers[i] <= limit) {
+                            a += 1;
+                            n.push([h, a]);
+                            r += numbers[i];
+                        } else {
+                            var tempWidth = r;
                             while (1) {
                                 if (tempWidth <= limit) {
-                                    a += 1, n.push([h, a]), r = tempWidth + numbers[i];
-                                    break
+                                    a += 1;
+                                    n.push([h, a]);
+                                    r = tempWidth + numbers[i];
+                                    break;
                                 }
                                 if (tempWidth > limit && tempWidth - numbers[h] < limit) {
-                                    a += 1, n.push([h, a]), r += numbers[i];
-                                    break
+                                    a += 1;
+                                    n.push([h, a]);
+                                    r += numbers[i];
+                                    break;
                                 }
-                                tempWidth -= numbers[h], r -= numbers[h], h += 1, a -= 1
+                                tempWidth -= numbers[h];
+                                r -= numbers[h];
+                                h += 1;
+                                a -= 1;
                             }
-                        } return n
+                        }
+//console.log("splitIntoSegmentsBySumLimit result:", n);
+                    return n;
                 }
 
                 function generateSegmentedLayoutData(segements, scalingFactor) {
+                 //   console.log("generateSegmentedLayoutData called with:", segements, "scalingFactor:", scalingFactor, "mode:", arguments.length > 2 ? arguments[2] : 0);
                     for (var mode = arguments.length > 2 && void 0 !== arguments[2] 
                         ? arguments[2] 
                         : 0, n = -1, segmentWidths = [], segmentHeights = [], 
@@ -1087,6 +1101,7 @@ globalThis["webpackJsonp"].push([
                         }
                         for (var splitedSegements = splitIntoSegmentsBySumLimit(segmentHeights, 800), V = "", f = "", index = 0; index < splitedSegements.length; index++) 
                             V += toFixedWidthHex(splitedSegements[index][0], 2), f += toFixedWidthHex(splitedSegements[index][1], 2);
+                     //   console.log("generateSegmentedLayoutData result:", [segements.concat(b), V, f, -d * scalingFactor / 2]);
                         return [segements.concat(b), V, f, -d * scalingFactor / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {
@@ -1102,10 +1117,12 @@ globalThis["webpackJsonp"].push([
                     }
                     for (var X = splitIntoSegmentsBySumLimit(segmentWidths, 800), N = "", H = "", z = 0; z < X.length; z++) 
                         N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
+             //       console.log("generateSegmentedLayoutData result:", [segements.concat(m), N, H, -k * scalingFactor / 2]);
                     return [segements.concat(m), N, H, -k * scalingFactor / 2]
                 }
 
                 function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {
+                 //   console.log("encodeLayoutToCommandData called with:", polylineSegments, segmentTime, commandOptions, mirrorMode, arguments.length > 4 ? arguments[4] : 0);
                     var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
                     if (0 == polylineSegments .length) return null;
                     var counter = 0,
@@ -1124,7 +1141,7 @@ globalThis["webpackJsonp"].push([
                     time = commandOptions .textDecimalTime 
                         ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) 
                         : toFixedWidthHex(Math.floor(segmentTime ), 2), 
-                        console.log(time), 
+                        //console.log("encodeLayoutToCommandData time:", time), 
                         V >= 8 && (F = 0);
                     var test = !1;
                     if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), 
@@ -1133,7 +1150,7 @@ globalThis["webpackJsonp"].push([
                         var u = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
                     }
-                    
+                   // console.log("encodeLayoutToCommandData xyss:", xyss, "se1:", se1, "se2:", se2, "xOffset:", xOffset);
                     for (var ix = 0; ix < xyss.length; ix++) {
                         prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
@@ -1151,11 +1168,20 @@ globalThis["webpackJsonp"].push([
                                 && (0 == segmentIndex ? pointType = 2 : (index < segmentPoints.length - 1 
                                     && 0 == segmentPoints[index + 1].s || index == segmentPoints.length - 1) 
                                 && (pointType = 3)), 
-                                command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2), 
-                                test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
+                            command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2);
+
+                          // if (ix < 2)  {
+                          //      console.log("command "+command);
+                          //      console.log("charWidthCmd "+charWidthCmd);
+                         //       console.log("charPointCmd "+charPointCmd); 
+                         //}
+
+                           // console.log("encodeLayoutToCommandData point", ix, index, {xScreen, yScreen, segmentIndex, pointType});
+                            test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
-
+                   // console.log("encodeLayoutToCommandData packed command:", command);
+                 //   console.log("encodeLayoutToCommandData charPointCmd:", charPointCmd, "charWidthCmd:", charWidthCmd);
                     return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), charPointCmd += toFixedWidthHex(k, 2), 0 == counter 
                         ? null : {
                         cnt: counter,
@@ -1266,6 +1292,7 @@ globalThis["webpackJsonp"].push([
                 }
 
                 e.exports = {
+                    encodeLayoutToCommandData: encodeLayoutToCommandData,
                     test: function(e) {
                         return "hello---" + e
                     },
@@ -1363,7 +1390,7 @@ globalThis["webpackJsonp"].push([
                             g += toFixedWidthHex(a[P].charCount, 2), 
                             j += a[P].cmd, x += a[P].charWidthCmd, 
                             V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
-                        console.log(d, b);
+                       // console.log(d, b);
                         var u = toFixedWidthHex(a.length, 2),
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
@@ -1383,6 +1410,10 @@ globalThis["webpackJsonp"].push([
         );
         if (encodedCommandData != null) encodedSegments.push(encodedCommandData);
 
+
+        
+
+
     if (encodedSegments.length == 0) return "";
     var totalPointCount = 0,
         totalCharCount = 0,
@@ -1398,7 +1429,14 @@ globalThis["webpackJsonp"].push([
         totalPointCount += encodedSegments[segmentIndex].cnt;
         totalCharCount += encodedSegments[segmentIndex].charCount;
         charCountHex += toFixedWidthHex(encodedSegments[segmentIndex].charCount, 2);
+        
+
+        //console.log(" segment "+segmentIndex + " cmd "+  encodedSegments[segmentIndex].cmd);
+
         commandHex += encodedSegments[segmentIndex].cmd;
+
+
+
         charWidthHex += encodedSegments[segmentIndex].charWidthCmd;
         charPointHex += encodedSegments[segmentIndex].charPointCmd;
         se1Hex += encodedSegments[segmentIndex].se1;
@@ -3569,7 +3607,7 @@ globalThis["webpackJsonp"].push([
                             linesArrDown = [],
                             notRecognized = "";
 
-                        console.log(inputText);
+                       // console.log(inputText);
                         for (var charIndex = 0; charIndex < inputText.length; charIndex++) {
                             var letter = inputText[charIndex],
                                 glyph = loadedFontOpentype.charToGlyph(letter),
@@ -3606,11 +3644,11 @@ globalThis["webpackJsonp"].push([
                                 w: glyphWidth,
                                 h: glyphHeight
                             });
-                            console.log({
-                                lines: polyline,
-                                w: glyphWidth,
-                                h: glyphHeight
-                            });
+                            //console.log({
+                            //    lines: polyline,
+                            //    w: glyphWidth,
+                            //    h: glyphHeight
+                            //});
                         }
                         return {
                             linesArr: linesArr,

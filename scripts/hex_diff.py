@@ -1,7 +1,14 @@
+
 with open("rust_output.txt", "r") as f:
     left = f.read().strip()
 with open("js_output.txt", "r") as f:
     right = f.read().strip()
+
+# Pad to even length if needed
+if len(left) % 2 != 0:
+    left += "0"
+if len(right) % 2 != 0:
+    right += "0"
 
 # convert to byte arrays (pairs of hex digits)
 def hex_to_bytes(s):
