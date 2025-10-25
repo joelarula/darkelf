@@ -1,4 +1,5 @@
 
+
 use crate::model::{EncodedCommandData, Point, PolyPoint, ProjectItem};
 use log::{debug, info};
 
@@ -224,6 +225,7 @@ impl CommandGenerator {
     pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
         // Parse main and settings command sections
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
+        
         let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data)?;
 
         // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
@@ -668,14 +670,12 @@ impl CommandGenerator {
 pub fn get_xys_cmd(
     segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
 ) -> String {
-    let mut encoded_segments = Vec::new();
-    // Use fixed values for time, command_type, mirror_mode, matching JS logic
+    // Aggregate all points into a single segment and call encode_layout_to_command_data once
     let segment_time = 5;
     let command_type = 0;
     let mirror_mode = 0;
     let ver_tag = 0;
 
-    // Use the segment_points directly as required by encode_layout_to_command_data
     if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data(
         segment_points,
         segment_time,
@@ -683,57 +683,14 @@ pub fn get_xys_cmd(
         mirror_mode,
         ver_tag,
     ) {
-        encoded_segments.push(encoded_command_data);
+        // Return only the packed command string (single header/footer block)
+        return encoded_command_data.cmd.to_uppercase();
     }
-
-    if encoded_segments.is_empty() {
-        return String::new();
-    }
-
-    let mut total_point_count = 0;
-    let mut total_char_count = 0;
-    let mut char_count_hex = String::new();
-    let mut command_hex = String::new();
-    let mut char_width_hex = String::new();
-    let mut char_point_hex = String::new();
-    let mut se1_hex = String::new();
-    let mut se2_hex = String::new();
-    let mut version_hex = String::new();
-    let mut time_hex = String::new();
-    for segment in &encoded_segments {
-        total_point_count += segment.cnt;
-        total_char_count += segment.char_count;
-        char_count_hex += &Self::to_fixed_width_hex(segment.char_count as u32, 2);
-        command_hex += &segment.cmd;
-        char_width_hex += &segment.char_width_cmd;
-        char_point_hex += &segment.char_point_cmd;
-        se1_hex += &segment.se1;
-        se2_hex += &segment.se2;
-        version_hex += &segment.ver;
-        time_hex += &segment.time;
-    }
-    let segment_count_hex = Self::to_fixed_width_hex(encoded_segments.len() as u32, 2);
-    let result_cmd = format!(
-        "{}{}{}{}{}{}{}{}{}{}{}{}{}",
-        XYS_CMD_HEADER,
-        Self::to_fixed_width_hex(total_point_count as u32, 0),
-        Self::to_fixed_width_hex(total_char_count as u32, 2),
-        command_hex,
-        segment_count_hex,
-        char_count_hex,
-        char_width_hex,
-        char_point_hex,
-        se1_hex,
-        se2_hex,
-        version_hex,
-        time_hex,
-        XYS_CMD_FOOTER
-    );
-    return result_cmd.to_uppercase();
+    String::new()
 
 }
 
-/// Encodes layout to command data, matching JS logic, for segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>
+// Main: Encode segmented layout to device command data
 pub fn encode_layout_to_command_data(
     segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
     segment_time: u32,
@@ -741,96 +698,77 @@ pub fn encode_layout_to_command_data(
     mirror_mode: u8,
     ver_tag: u8,
 ) -> Option<EncodedCommandData> {
-    // Find minimum x and y for normalization
-    let min_x = segment_points.iter()
-        .flat_map(|(_, pts, _, _)| pts.iter().map(|p| p.x))
-        .fold(f32::INFINITY, |a, b| a.min(b));
-    let min_y = segment_points.iter()
-        .flat_map(|(_, pts, _, _)| pts.iter().map(|p| p.y))
-        .fold(f32::INFINITY, |a, b| a.min(b));
-
     if segment_points.is_empty() {
         return None;
     }
 
+    let scaling_factor = 0.5;
+    let mut packed_cmd = String::new();
+    let mut packed_char_width_cmd = String::new();
+    let mut packed_char_point_cmd = String::new();
     let mut counter = 0;
     let mut counter2 = 0;
     let mut prev_index = -1;
-    let mut command = String::new();
-    let mut char_point_cmd = String::new();
-    let mut char_width_cmd = String::new();
-    let v = 8;
-    let scaling_factor = 0.5;
-    let mut f = v;
     let mut k = 0;
-    let text_decimal_time = false;
-    let time = if text_decimal_time {
-        Self::to_fixed_width_hex((segment_time * 10) as usize, 2)
-    } else {
-        Self::to_fixed_width_hex(segment_time as usize, 2)
-    };
-    if v >= 8 {
-        f = 0;
-    }
-    let ver = Self::to_fixed_width_hex(ver_tag, 2);
 
-    // Loop over each segment
     for (seg_index, points, seg_width, x_offset) in segment_points {
-        // JS logic: new segment, update char_point_cmd and char_width_cmd
-        if prev_index != *seg_index as i32 {
-            prev_index = *seg_index as i32;
-            if counter2 > 0 {
-                char_point_cmd += &Self::to_fixed_width_hex(k, 2);
-                k = 0;
-            }
-            counter2 += 1;
-            char_width_cmd += &Self::to_fixed_width_hex((*seg_width * scaling_factor).round() as u32, 2);
-            if v >= 8 && points.len() > 1 {
-                f += 1;
-            }
-        }
-        if f >= 8 {
-            f = 1;
-        }
-        k += points.len();
+        // Find min/max for X and Y in this segment
+        let min_x = points.iter().map(|p| p.x).fold(f32::INFINITY, f32::min);
+        let max_x = points.iter().map(|p| p.x).fold(f32::NEG_INFINITY, f32::max);
+        let min_y = points.iter().map(|p| p.y).fold(f32::INFINITY, f32::min);
+        let max_y = points.iter().map(|p| p.y).fold(f32::NEG_INFINITY, f32::max);
+
         for (index, point) in points.iter().enumerate() {
             counter += 1;
-            let x_screen = ((point.x - min_x) * scaling_factor + x_offset).round() as i32;
-            let y_screen = ((point.y - min_y) * scaling_factor).round() as i32;
-            let mut segment_index = f;
-            let mut point_type = point.z;
-            // JS logic for start/stop flags
-            if index == 0 {
-                segment_index = 0;
-                point_type = 1;
-            }
-            if index == points.len() - 1 {
-                point_type = 1;
-            }
-            if points.len() == 1 {
-                point_type = point.z;
-            }
-            let combined = Self::combine_nibbles(segment_index as u8, point_type as u8);
-            // Debug print for comparison
-            println!(
-                "Packing: x={} y={} seg_idx={} pt_type={} combined={:02X} raw_point={:?}",
-                x_screen, y_screen, segment_index, point_type, combined, point
-            );
-            command += &Self::to_fixed_width_hex(x_screen, 2);
-            command += &Self::to_fixed_width_hex(y_screen, 2);
-            command += &Self::to_fixed_width_hex(combined, 2);
+            // Per-segment normalization to [0,255]
+            let norm_x = if max_x != min_x {
+                ((point.x - min_x) / (max_x - min_x) * 255.0).round()
+            } else {
+                0.0
+            };
+            let norm_y = if max_y != min_y {
+                ((point.y - min_y) / (max_y - min_y) * 255.0).round()
+            } else {
+                0.0
+            };
+            let norm_x_clamped = norm_x.max(0.0).min(255.0);
+            let norm_y_clamped = norm_y.max(0.0).min(255.0);
+            let packed_x = format!("{:02X}", norm_x_clamped.round() as u8);
+            let packed_y = format!("{:02X}", norm_y_clamped.round() as u8);
+            let packed_type = format!("{:02X}", point.z as u8);
+            packed_cmd.push_str(&packed_x);
+            packed_cmd.push_str(&packed_y);
+            packed_cmd.push_str(&packed_type);
         }
+        counter2 += 1;
+        packed_char_width_cmd += &Self::to_fixed_width_hex((seg_width * scaling_factor).round() as i32, 2);
+        packed_char_point_cmd += &Self::to_fixed_width_hex(points.len() as i32, 2);
     }
-    char_point_cmd += &Self::to_fixed_width_hex(k, 2);
+
     if counter == 0 {
         return None;
     }
+
+    let ver = Self::to_fixed_width_hex(ver_tag as i32, 2);
+    let time = Self::to_fixed_width_hex(segment_time as i32, 2);
+
+    let result_cmd = format!(
+        "{}{}{}{}{}{}{}",
+        XYS_CMD_HEADER,
+        packed_cmd,
+        packed_char_width_cmd,
+        packed_char_point_cmd,
+        ver,
+        time,
+        XYS_CMD_FOOTER
+    );
+
     Some(EncodedCommandData {
         cnt: counter,
         char_count: counter2,
-        cmd: command,
-        char_width_cmd,
-        char_point_cmd,
+        cmd: result_cmd,
+        char_width_cmd: packed_char_width_cmd,
+        char_point_cmd: packed_char_point_cmd,
         se1: String::new(),
         se2: String::new(),
         ver,
@@ -838,5 +776,18 @@ pub fn encode_layout_to_command_data(
     })
 }
 
+/// Converts signed integer to fixed-width hex, matching JS logic
+pub fn to_fixed_width_hex_signed(value: i32, width: usize) -> String {
+    // Clamp to [-32768, 32767]
+    let clamped = value.max(-32768).min(32767);
+    // If negative, set high bit (0x8000) and use abs
+        let encoded = if clamped < 0 {
+            0x8000 | (-clamped as u16)
+        } else {
+            clamped as u16
+        };
+        format!("{:0width$X}", encoded, width = width)
+    }
+    }
 
-}
+
