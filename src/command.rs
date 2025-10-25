@@ -741,6 +741,14 @@ pub fn encode_layout_to_command_data(
     mirror_mode: u8,
     ver_tag: u8,
 ) -> Option<EncodedCommandData> {
+    // Find minimum x and y for normalization
+    let min_x = segment_points.iter()
+        .flat_map(|(_, pts, _, _)| pts.iter().map(|p| p.x))
+        .fold(f32::INFINITY, |a, b| a.min(b));
+    let min_y = segment_points.iter()
+        .flat_map(|(_, pts, _, _)| pts.iter().map(|p| p.y))
+        .fold(f32::INFINITY, |a, b| a.min(b));
+
     if segment_points.is_empty() {
         return None;
     }
@@ -768,6 +776,7 @@ pub fn encode_layout_to_command_data(
 
     // Loop over each segment
     for (seg_index, points, seg_width, x_offset) in segment_points {
+        // JS logic: new segment, update char_point_cmd and char_width_cmd
         if prev_index != *seg_index as i32 {
             prev_index = *seg_index as i32;
             if counter2 > 0 {
@@ -786,10 +795,11 @@ pub fn encode_layout_to_command_data(
         k += points.len();
         for (index, point) in points.iter().enumerate() {
             counter += 1;
-            let x_screen = (point.x * scaling_factor + x_offset).round() as i32;
-            let y_screen = (point.y * scaling_factor).round() as i32;
+            let x_screen = ((point.x - min_x) * scaling_factor + x_offset).round() as i32;
+            let y_screen = ((point.y - min_y) * scaling_factor).round() as i32;
             let mut segment_index = f;
             let mut point_type = point.z;
+            // JS logic for start/stop flags
             if index == 0 {
                 segment_index = 0;
                 point_type = 1;
@@ -801,6 +811,11 @@ pub fn encode_layout_to_command_data(
                 point_type = point.z;
             }
             let combined = Self::combine_nibbles(segment_index as u8, point_type as u8);
+            // Debug print for comparison
+            println!(
+                "Packing: x={} y={} seg_idx={} pt_type={} combined={:02X} raw_point={:?}",
+                x_screen, y_screen, segment_index, point_type, combined, point
+            );
             command += &Self::to_fixed_width_hex(x_screen, 2);
             command += &Self::to_fixed_width_hex(y_screen, 2);
             command += &Self::to_fixed_width_hex(combined, 2);
@@ -810,7 +825,6 @@ pub fn encode_layout_to_command_data(
     if counter == 0 {
         return None;
     }
-    // se1, se2: set to empty string or default if not used
     Some(EncodedCommandData {
         cnt: counter,
         char_count: counter2,
@@ -823,5 +837,6 @@ pub fn encode_layout_to_command_data(
         time,
     })
 }
+
 
 }

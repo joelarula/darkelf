@@ -319,16 +319,20 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
     );
     console.log('Result of getXysCmdArr:', result);
 
-    const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
-    fs.writeFileSync(getXysCmdArrPath, JSON.stringify(result, null, 2), 'utf8');
-    console.log('getXysCmdArr result written to', getXysCmdArrPath);
+    //const getXysCmdArrPath = path.join(__dirname, 'getXysCmdArr.txt');
+    //fs.writeFileSync(getXysCmdArrPath, JSON.stringify(result, null, 2), 'utf8');
+    //console.log('getXysCmdArr result written to', getXysCmdArrPath);
 
 
-   const resultB = exports.getXysCmdSimplified(layoutAndSimplifyShapes);
+
+   var textCoordinates = JSON.parse(fs.readFileSync(path.join(__dirname, 'darkelf_coordinates.json'), 'utf8'));
+    //console.log(darkelfData.lines_arr);
+
+   const resultB = exports.getXysCmdSimplified(textCoordinates);
    console.log('Result of getXysCmdSimplified:', resultB);
 
 
-   
+
 
   } else {
     console.error('getXysCmdArr function not found in module exports.');
