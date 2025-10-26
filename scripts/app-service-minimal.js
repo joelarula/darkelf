@@ -1081,12 +1081,17 @@ globalThis["webpackJsonp"].push([
                     for (var mode = arguments.length > 2 && void 0 !== arguments[2] 
                         ? arguments[2] 
                         : 0, n = -1, segmentWidths = [], segmentHeights = [], 
-                            segmentDefaultSize  = 200, totalSegmentWidth  = 0, totalSegmentHeight  = 0, ix = 0; ix < segements.length; ix++) 
-                            n != segements[ix][0] 
-                            && (n = segements[ix][0], 
-                                segmentWidths.push(segements[ix][2] * scalingFactor), 
-                                totalSegmentWidth  += segements[ix][2], 
-                                segmentHeights.push(segements[ix][3] * scalingFactor), totalSegmentHeight  += segements[ix][3]);
+                            segmentDefaultSize  = 200, totalSegmentWidth  = 0, totalSegmentHeight  = 0, ix = 0; ix < segements.length; ix++) {
+                        if (n != segements[ix][0]) {
+                            n = segements[ix][0];
+                            segmentWidths.push(segements[ix][2] * scalingFactor);
+                            totalSegmentWidth  += segements[ix][2];
+                            segmentHeights.push(segements[ix][3] * scalingFactor);
+                            totalSegmentHeight  += segements[ix][3];
+                            // Detailed debug output for parity comparison
+                            console.log(`[JS] Segment ${ix}: index=${segements[ix][0]}, width=${segements[ix][2]} (scaled=${segements[ix][2]*scalingFactor}), height=${segements[ix][3]} (scaled=${segements[ix][3]*scalingFactor})`);
+                        }
+                    }
                     // Debug: print segmentWidths and segmentHeights
                     console.log("[JS] generateSegmentedLayoutData segmentWidths:", segmentWidths);
                     console.log("[JS] generateSegmentedLayoutData segmentHeights:", segmentHeights);
