@@ -758,54 +758,32 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         // Use xyss, se1, se2, x_offset as in JS
 
 
-        // JS parity: Build segment_boundaries and segment_point_counts from xyss (flat segment list)
-        let mut segment_boundaries: Vec<u8> = Vec::new();
-        let mut segment_point_counts: Vec<u8> = Vec::new();
-        let mut last_index: Option<u8> = None;
-        let mut current_count: u8 = 0;
-        for seg in &xyss {
-            let seg_idx = seg.0 as u8;
-            if last_index != Some(seg_idx) {
-                if let Some(_) = last_index {
-                    segment_point_counts.push(current_count);
-                }
-                segment_boundaries.push(seg_idx);
-                last_index = Some(seg_idx);
-                current_count = 0;
-            }
-            current_count += seg.1.len() as u8;
-        }
-        if last_index.is_some() {
-            segment_point_counts.push(current_count);
-        }
-        // Debug output for parity
-        println!("[DEBUG] JS-style segment boundaries and point counts:");
-        for (i, (b, c)) in segment_boundaries.iter().zip(segment_point_counts.iter()).enumerate() {
-            println!("  Segment {:02}: point_count = {} (hex {:02X})", b, c, c);
-        }
-        // Pack char_point_cmd and char_width_cmd using JS-style grouping
-        char_point_cmd.clear();
-        char_width_cmd.clear();
-        for (i, seg_idx) in segment_boundaries.iter().enumerate() {
-            let count = segment_point_counts[i];
-            char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(count as i32, 2);
-            // Find first segment with this index for width
-            if let Some(seg) = xyss.iter().find(|s| s.0 as u8 == *seg_idx) {
-                let width = (seg.2 * scaling_factor).round() as u8;
-                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width as i32, 2);
-            } else {
-                char_width_cmd += "00";
-            }
-        }
-        // Pad to 12 segments
-        while char_point_cmd.len() < 24 {
-            char_point_cmd += "00";
-        }
-        while char_width_cmd.len() < 24 {
-            char_width_cmd += "00";
-        }
-        println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
-        println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
+        // JS parity: Build segment boundaries and point counts from grouped_segments (protocol segments)
+    // JS-style calculation for char_width_cmd and char_point_cmd
+    let mut char_width_cmd_vec: Vec<String> = Vec::new();
+    let mut char_point_cmd_vec: Vec<String> = Vec::new();
+    println!("[RUST] Protocol segment boundaries and per-segment values:");
+    for (i, seg) in grouped_segments.iter().enumerate() {
+        let width = (seg.2 * scaling_factor).round().max(0.0).min(255.0) as u8;
+        let point_count = seg.1.len().max(0).min(255) as u8;
+        println!("  Segment {:02}: width = {} (hex {:02X}), point_count = {} (hex {:02X})", i, width, width, point_count, point_count);
+        char_width_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(width as i32, 2));
+        char_point_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2));
+    }
+    // JS pads to 10 segments (20 hex chars)
+    while char_width_cmd_vec.len() < 10 {
+        char_width_cmd_vec.push("FF".to_string());
+    }
+    while char_point_cmd_vec.len() < 10 {
+        char_point_cmd_vec.push("00".to_string());
+    }
+    char_width_cmd = char_width_cmd_vec.join("");
+    char_point_cmd = char_point_cmd_vec.join("");
+    let segment_count = grouped_segments.len();
+    let segment_count_hex = format!("{:02X}", segment_count);
+    println!("[DEBUG] segment count: {} hex: {}", segment_count, segment_count_hex);
+    println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
+    println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
 
         let mut total_point_count = 0;
         let mut total_char_count = 0;
@@ -887,26 +865,35 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
         // JS logic: both total_char_count_hex and segment_count_hex should be the number of segments
     // JS parity: segment_count and total_char_count should be the number of protocol segments (segment_boundaries.len())
-    let segment_count = segment_boundaries.len();
-    let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
-    let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+
+    let segment_count_hex = format!("{:02X}", segment_count); // JS packs as 1 byte, but hex string is 2 chars
+    let total_char_count_hex = format!("{:02X}", segment_count);
     println!("[DEBUG] segment_count source: {} hex: {}", segment_count, segment_count_hex);
     println!("[DEBUG] total_char_count source: {} hex: {}", segment_count, total_char_count_hex);
 
 
 
+        // JS parity: segment_count_hex should be packed immediately after points, no extra header or fields
+        // JS parity: pack only segment_count_hex, char_width_cmd, char_point_cmd after points
+        println!("[DEBUG] Packing segment_count_hex: {}", segment_count_hex);
+        // JS parity: segment metadata region starts with char_point_cmd and char_width_cmd, not segment_count_hex
+        // JS parity: segment metadata region is segment_count_hex + char_width_cmd + char_point_cmd + se1 + se2
+        let segment_metadata_region = format!(
+            "{}{}{}{}{}",
+            segment_count_hex,
+            char_width_cmd,
+            char_point_cmd,
+            format!("{:0<32}", se1),
+            format!("{:0<32}", se2)
+        );
+
         let result_cmd = format!(
-            "{}{}{}{}{}{}{}{}{}{}{}{}{}",
+            "{}{}{}{}{}{}{}{}",
             XYS_CMD_HEADER,
             total_points_hex,
             char_count_total_hex,
             command,
-            segment_count_hex,
-            total_char_count_hex,
-            char_width_cmd,
-            char_point_cmd,
-            format!("{:0<24}", se1), // pad se1 to 24 chars (12 segments)
-            format!("{:0<24}", se2), // pad se2 to 24 chars (12 segments)
+            segment_metadata_region,
             version_hex,
             time,
             XYS_CMD_FOOTER
@@ -928,10 +915,17 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         println!("[DEBUG] Segment metadata region (bytes {}–{}):", start, end-1);
         for i in start..end {
             let b = packed_cmd_bytes[i];
-            let annotation = if i - start < char_point_cmd.len() {
-                format!("char_point_cmd[{}]", i - start)
+            let offset = i - start;
+            let annotation = if offset == 0 {
+                "segment_count_hex".to_string()
+            } else if offset <= 32 {
+                format!("char_width_cmd[{}]", offset - 1)
+            } else if offset <= 64 {
+                format!("char_point_cmd[{}]", offset - 33)
+            } else if offset <= 96 {
+                format!("se1[{}]", offset - 65)
             } else {
-                format!("char_width_cmd[{}]", i - start - char_point_cmd.len())
+                format!("se2[{}]", offset - 97)
             };
             println!("  Byte {:03}: {:02X} [{}]", i, b, annotation);
         }

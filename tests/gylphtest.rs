@@ -35,6 +35,18 @@ fn test_glyphs() {
 
     let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes);
 
+    // Fine-grained protocol assertions
+    // These indices are based on the expected command format and field lengths
+    // Adjust indices if protocol changes
+
+    //let char_width_hex = &cmd_text[138..158];
+    //let char_point_hex = &cmd_text[168..188]; // 10 segments * 2 hex chars
+
+
+    //assert_eq!(char_width_hex, "A8646464646464646464", "charWidthHex mismatch");
+    //assert_eq!(char_point_hex, "11010101010101010101", "charPointHex mismatch");
+
+    
 
     let verify_text = "A0A1A2A3001A0A81E9804F01820C804F1181D1004F1181BB004F1181BE00341081E9804F11819B804F0181C600341081C9004F1181B3004F118178804F11819B804F11819D801401819D802E1181F0802E1181F0801411819D801411813C00000080D800000080740000008010000000005400000000B8000000011C000000018000000001E4000000010AA86464646464646464641101010101010101010100000000000000000001010203040506070809090005A4A5A6A7";
 

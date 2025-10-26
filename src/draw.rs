@@ -975,40 +975,37 @@ impl DrawUtils {
 
 
 pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usize, usize)> {
-    let mut r = 0.0;
-    let mut n = Vec::new();
-    let mut h = 0;
-    let mut a = 0;
-    let mut i = 0;
-    while i < numbers.len() {
-        if r + numbers[i] <= limit {
-            a += 1;
-            n.push((h, a));
-            r += numbers[i];
-        } else {
-            let mut temp_width = r;
-            loop {
-                if temp_width <= limit {
-                    a += 1;
-                    n.push((h, a));
-                    r = temp_width + numbers[i];
-                    break;
-                }
-                if temp_width > limit && temp_width - numbers[h] < limit {
-                    a += 1;
-                    n.push((h, a));
-                    r += numbers[i];
-                    break;
-                }
-                temp_width -= numbers[h];
-                r -= numbers[h];
-                h += 1;
-                a -= 1;
+    println!("[split_into_segments_by_sum_limit] input: {:?}, limit: {}", numbers, limit);
+    let mut result = Vec::new();
+    let mut start = 0;
+    let mut count = 0;
+    let mut sum = 0.0;
+    for (i, &num) in numbers.iter().enumerate() {
+        println!("  i={}, num={:.8}, sum={:.8}, sum+num={:.8}", i, num, sum, sum+num);
+        if sum + num > limit {
+            // Finish current group
+            if count > 0 {
+                result.push((start, count));
+                println!("    -> group: start={}, count={}, sum={:.8}", start, count, sum);
             }
+            // Start new group
+            start = i;
+            count = 1;
+            sum = num;
+            println!("    -> new group: start={}, count={}, sum={:.8}", start, count, sum);
+        } else {
+            count += 1;
+            sum += num;
+            println!("    -> add to group: start={}, count={}, sum={:.8}", start, count, sum);
         }
-        i += 1;
     }
-    n
+    // Push last group
+    if count > 0 {
+        result.push((start, count));
+        println!("    -> final group: start={}, count={}, sum={:.8}", start, count, sum);
+    }
+    println!("[split_into_segments_by_sum_limit] output: {:?}", result);
+    result
 }
 
     pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {

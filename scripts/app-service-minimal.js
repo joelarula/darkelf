@@ -1135,7 +1135,7 @@ globalThis["webpackJsonp"].push([
                         V = 8,
                         scalingFactor = .5,
                         F = V,
-                        k = 0,
+                        segmentPointCount = 0,
                         time = "00";
                     time = commandOptions .textDecimalTime 
                         ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) 
@@ -1174,9 +1174,15 @@ globalThis["webpackJsonp"].push([
                     }
                     for (var ix = 0; ix < xyss.length; ix++) {
                         prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 
-                            && (charPointCmd += toFixedWidthHex(k, 2), console.log(`[JS] charPointCmd append: seg ${counter2-1} count ${k} -> ${toFixedWidthHex(k,2)}`), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), console.log(`[JS] charWidthCmd append: seg ${counter2-1} width ${Math.round(Number(xyss[ix][2] * scalingFactor))} -> ${toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)),2)}`), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
+                            && (charPointCmd += toFixedWidthHex(segmentPointCount, 2), 
+                                console.log(`[JS] charPointCmd append: seg ${counter2-1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount,2)}`), segmentPointCount = 0), 
+                                    counter2++, 
+                                        charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), 
+                                            console.log(`[JS] charWidthCmd append: seg ${counter2-1} width ${Math.round(Number(xyss[ix][2] * scalingFactor))} -> ${toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)),2)}`), 
+                                                V >= 8 && xyss[ix][1].length > 1 && F++), 
+                                                    F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
-                        k += segmentPoints.length;
+                        segmentPointCount += segmentPoints.length;
                         for (var index = 0; index < segmentPoints.length; index++) {
                             counter++;
                             var point = segmentPoints[index],
@@ -1198,8 +1204,8 @@ globalThis["webpackJsonp"].push([
                             test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
-                    charPointCmd += toFixedWidthHex(k, 2);
-                    console.log(`[JS] charPointCmd final append: seg ${counter2-1} count ${k} -> ${toFixedWidthHex(k,2)}`);
+                    charPointCmd += toFixedWidthHex(segmentPointCount, 2);
+                    console.log(`[JS] charPointCmd final append: seg ${counter2-1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount,2)}`);
                     // Print all packed fields for parity analysis
                     console.log("[JS] encodeLayoutToCommandData packed fields:");
                     console.log("  cnt:", counter);
