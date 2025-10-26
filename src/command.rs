@@ -658,7 +658,7 @@ impl CommandGenerator {
 pub fn get_xys_cmd(
     segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
 ) -> String {
-    let segment_time = 5;
+        let segment_time = 5; // Segment time for each segment
     let command_type = 0;
     let mirror_mode = 0;
     let ver_tag = 0;
@@ -709,54 +709,62 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         if polyline_segments.is_empty() {
             return None;
         }
+        // Restore V, F, k as in JS logic, inside function body
+        let mut V = 8;
+        let mut F = V;
+        let mut k = 0;
 
         let mut counter = 0;
         let mut counter2 = 0;
         let mut prev_index: isize = -1;
-        let mut command = String::new();
-        let mut char_point_cmd = String::new();
-        let mut char_width_cmd = String::new();
+    let mut command = String::new();
+    let mut char_point_cmd = String::new();
+    let mut char_width_cmd = String::new();
 
 
 
-        let mut V = 8;
         let scaling_factor = 0.5;
+        let mirror_mode = mirror_mode as i32;
+        let version_hex = CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2);
+        let mut time = if command_options == 1 {
+            CommandGenerator::to_fixed_width_hex_b((segment_time * 10) as i32, 2)
+        } else {
+            CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2)
+        };
+
+        // Restore V, F, k as in JS logic, inside function body
+        let mut V = 8;
         let mut F = V;
         let mut k = 0;
-        let mut time = String::new();
-        let version_hex = CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2);
-        let mut se1_hex = String::new();
-        let mut se2_hex = String::new();
 
-        if command_options == 1 {
-            time = CommandGenerator::to_fixed_width_hex_b((segment_time * 10) as i32, 2);
-        } else {
-            time = CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2);
-        }
-        if V >= 8 {
-            F = 0;
-        }
-
-        // JS: generateSegmentedLayoutData returns (xyss, se1, se2, xOffset)
+        // Match JS: generateSegmentedLayoutData(polylineSegments, scalingFactor, mirrorMode)
         let (xyss, se1, se2, x_offset) = DrawUtils::generate_segmented_layout_data(
             polyline_segments,
             scaling_factor,
-            0,
+            mirror_mode,
         );
-        // Use xyss directly for packing, matching JS logic
+        // Use xyss, se1, se2, x_offset as in JS
 
-            // Fix: pack all grouped segments' width and point count fields
-            char_width_cmd.clear();
-            char_point_cmd.clear();
-            for (ix, seg) in xyss.iter().enumerate() {
-                let width_val = (seg.2 * scaling_factor).round() as i32;
-                println!("[DEBUG] char_width_cmd source for segment {}: {}", ix, width_val);
-                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
-                let point_count = seg.1.len();
-                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
-                println!("[DEBUG] segment {} point_count: {} hex: {}", ix, point_count, point_count_hex);
-                char_point_cmd += &point_count_hex;
-            }
+        // Fix: pack all grouped segments' point count and width fields (JS order: point count first, then width)
+        char_point_cmd.clear();
+        char_width_cmd.clear();
+        let mut debug_table = Vec::new();
+        for (ix, seg) in xyss.iter().enumerate() {
+            let point_count = seg.1.len();
+            let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
+            let width_val = (seg.2 * scaling_factor).round() as i32;
+            let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+            char_point_cmd += &point_count_hex;
+            char_width_cmd += &width_hex;
+            debug_table.push((ix, seg.0, point_count, point_count_hex.clone(), width_hex.clone()));
+        }
+        // Print debug table for segment packing
+        println!("[DEBUG] Segment Packing Table:");
+        println!("| seg_idx | start_idx | point_count | char_point_cmd | char_width_cmd |");
+        println!("|---------|-----------|-------------|----------------|---------------|");
+        for (seg_idx, start_idx, point_count, point_hex, width_hex) in &debug_table {
+            println!("| {:7} | {:9} | {:11} | {:14} | {:13} |", seg_idx, start_idx, point_count, point_hex, width_hex);
+        }
         // Print source values for char_width_cmd
 println!("[DEBUG] char_width_cmd source values:");
 for (ix, seg) in xyss.iter().enumerate() {
@@ -889,12 +897,12 @@ for (ix, seg) in xyss.iter().enumerate() {
             total_points_hex,
             char_count_total_hex,
             command,
-            char_point_cmd, // Move per-segment point counts before total_char_count_hex and segment_count_hex
+            char_point_cmd, // JS expects char_point_cmd before char_width_cmd
+            char_width_cmd,
             total_char_count_hex,
             segment_count_hex,
-            char_width_cmd,
-            se1,
-            se2,
+            format!("{:0<24}", se1), // pad se1 to 24 chars (12 segments)
+            format!("{:0<24}", se2), // pad se2 to 24 chars (12 segments)
             version_hex,
             time,
             XYS_CMD_FOOTER

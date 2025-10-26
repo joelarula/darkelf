@@ -1143,8 +1143,8 @@ globalThis["webpackJsonp"].push([
                     if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), 
                         xyss = polylineSegments , se1 = 0, se2 = 0, xOffset = 0;
                     else {
-                        var u = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
-                        xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
+                        var segementData = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
+                        xyss = segementData[0], se1 = segementData[1], se2 = segementData[2], xOffset = segementData[3]
 
                     }
                     for (var ix = 0; ix < xyss.length; ix++) {

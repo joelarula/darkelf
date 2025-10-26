@@ -894,6 +894,12 @@ impl DrawUtils {
                 f += &Self::to_fixed_width_hex_b(*count as i32, 2);
             }
             let x_offset = -d * scaling_factor / 2.0;
+            // Debug output for vertical mode
+            println!("[generate_segmented_layout_data] mode=127 (vertical)");
+            println!("  segment_heights: {:?}", segment_heights);
+            println!("  V: {} (len {})", V, V.len());
+            println!("  f: {} (len {})", f, f.len());
+            println!("  x_offset: {}", x_offset);
             return (out, V, f, x_offset);
         }
 
@@ -923,6 +929,12 @@ impl DrawUtils {
             H += &Self::to_fixed_width_hex_b(*count as i32, 2);
         }
         let x_offset = -k * scaling_factor / 2.0;
+        // Debug output for horizontal mode
+        println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
+        println!("  segment_widths: {:?}", segment_widths);
+        println!("  N: {} (len {})", N, N.len());
+        println!("  H: {} (len {})", H, H.len());
+        println!("  x_offset: {}", x_offset);
         (out, N, H, x_offset)
     }
 
