@@ -1458,13 +1458,13 @@ globalThis["webpackJsonp"].push([
                     },
 
 
-    getXysCmdSimplified: function(segmentPoints) {
+    getXysCmdSimplified: function(segmentPoints,time) {
     var versionTag = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0;
     var encodedSegments = [];
 
         var encodedCommandData = encodeLayoutToCommandData(
             segmentPoints,
-            0.5,
+            time,
             0,
             0,
             0

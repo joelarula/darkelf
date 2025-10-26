@@ -328,32 +328,32 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
    var textCoordinates = JSON.parse(fs.readFileSync(path.join(__dirname, 'darkelf_coordinates.json'), 'utf8'));
     //console.log(darkelfData.lines_arr);
 
-   const resultB = exports.getXysCmdSimplified(textCoordinates);
+   const resultB = exports.getXysCmdSimplified(textCoordinates,5);
    console.log('Result of getXysCmdSimplified:', resultB);
 
     var encodedSegments = [];
 
     var encodedCommandData = exports.encodeLayoutToCommandData(
             textCoordinates,
-            0.5,
+            5,
             0,
             0,
             0
         );
-    //encodedSegments.push(encodedCommandData);
-  const encodedCommandDataPath = path.join(__dirname, 'encodedCommandData.json');
-  fs.writeFileSync(encodedCommandDataPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
+    encodedSegments.push(encodedCommandData);
+    const encodedCommandDataPath = path.join(__dirname, 'encodedCommandData.json');
+    fs.writeFileSync(encodedCommandDataPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
 
 
 
-  var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
-      textCoordinates,
-      0.5,
-      false
-  );
+  //var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
+  //    textCoordinates,
+  //    0.5,
+  //    false
+  //);
 
-  const outputPath = path.join(__dirname, 'generateSegmentedLayoutData.json');
-  fs.writeFileSync(outputPath, JSON.stringify(generateSegmentedLayoutData, null, 2), 'utf8');
+  //const outputPath = path.join(__dirname, 'generateSegmentedLayoutData.json');
+  //fs.writeFileSync(outputPath, JSON.stringify(generateSegmentedLayoutData, null, 2), 'utf8');
 
 
 
