@@ -845,7 +845,7 @@ impl DrawUtils {
         segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
         scaling_factor: f32,
         mode: i32,
-    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) {
+    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) {
         let mut n = -1_i32;
         let mut segment_widths: Vec<f32> = Vec::new();
         let mut segment_heights: Vec<f32> = Vec::new();
@@ -865,7 +865,8 @@ impl DrawUtils {
             }
         }
 
-        let mut out = segments.clone();
+    let mut out = segments.clone();
+    let mut grouped_segments = Vec::new();
 
         if mode == 127 {
             // JS: vertical filler segments
@@ -900,7 +901,7 @@ impl DrawUtils {
             println!("  V: {} (len {})", V, V.len());
             println!("  f: {} (len {})", f, f.len());
             println!("  x_offset: {}", x_offset);
-            return (out, V, f, x_offset);
+            return (out, grouped_segments, V, f, x_offset);
         }
 
         // JS: horizontal filler segments
@@ -927,6 +928,19 @@ impl DrawUtils {
         for (start, count) in X.iter() {
             N += &Self::to_fixed_width_hex_b(*start as i32, 2);
             H += &Self::to_fixed_width_hex_b(*count as i32, 2);
+            // Group segments according to split boundaries
+            let group = out[*start..(*start + *count)].to_vec();
+            // Flatten group into a single segment: merge all points, sum widths/heights
+            let mut merged_points = Vec::new();
+            let mut total_width = 0.0;
+            let mut total_height = 0.0;
+            let mut group_idx = group.first().map(|seg| seg.0).unwrap_or(0);
+            for seg in &group {
+                merged_points.extend_from_slice(&seg.1);
+                total_width += seg.2;
+                total_height += seg.3;
+            }
+            grouped_segments.push((group_idx, merged_points, total_width, total_height));
         }
         let x_offset = -k * scaling_factor / 2.0;
         // Debug output for horizontal mode
@@ -935,7 +949,12 @@ impl DrawUtils {
         println!("  N: {} (len {})", N, N.len());
         println!("  H: {} (len {})", H, H.len());
         println!("  x_offset: {}", x_offset);
-        (out, N, H, x_offset)
+        println!("[generate_segmented_layout_data] grouped_segments:");
+        for (ix, seg) in grouped_segments.iter().enumerate() {
+            let points_str = seg.1.iter().map(|p| format!("({:.2},{:.2},{})", p.x, p.y, p.z)).collect::<Vec<_>>().join(", ");
+            println!("  Group {}: idx={}, points=[{}], w={:.2}, h={:.2}", ix, seg.0, points_str, seg.2, seg.3);
+        }
+        (out, grouped_segments, N, H, x_offset)
     }
 
     /// Helper function to extract and clamp numeric values

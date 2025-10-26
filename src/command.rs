@@ -738,63 +738,57 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let mut k = 0;
 
         // Match JS: generateSegmentedLayoutData(polylineSegments, scalingFactor, mirrorMode)
-        let (xyss, se1, se2, x_offset) = DrawUtils::generate_segmented_layout_data(
-            polyline_segments,
-            scaling_factor,
-            mirror_mode,
-        );
+        let (xyss, grouped_segments, se1, se2, x_offset) = {
+            let (xyss, grouped_segments, se1, se2, x_offset) = DrawUtils::generate_segmented_layout_data(
+                polyline_segments,
+                scaling_factor,
+                mirror_mode,
+            );
+            (xyss, grouped_segments, se1, se2, x_offset)
+        };
+        // If the function does not return the expected type, you may need to update this line to match the actual return type, for example:
+        // let (xyss, se1, se2, x_offset): (Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) = DrawUtils::generate_segmented_layout_data(
+        //     polyline_segments,
+        //     scaling_factor,
+        //     mirror_mode,
+        // );
+        // Or update the function signature in draw.rs to return the expected tuple type.
         // Use xyss, se1, se2, x_offset as in JS
 
-        // Fix: pack all grouped segments' point count and width fields (JS order: point count first, then width)
+
+        // Only pack char_point_cmd and char_width_cmd for protocol segments using indices from H (se2)
         char_point_cmd.clear();
         char_width_cmd.clear();
+        let num_protocol_segments = se2.len() / 2;
         let mut debug_table = Vec::new();
-        for (ix, seg) in xyss.iter().enumerate() {
-            let point_count = seg.1.len();
-            let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
-            let width_val = (seg.2 * scaling_factor).round() as i32;
-            let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
-            char_point_cmd += &point_count_hex;
-            char_width_cmd += &width_hex;
-            debug_table.push((ix, seg.0, point_count, point_count_hex.clone(), width_hex.clone()));
-        }
-        // Print debug table for segment packing
-        println!("[DEBUG] Segment Packing Table:");
-        println!("| seg_idx | start_idx | point_count | char_point_cmd | char_width_cmd |");
-        println!("|---------|-----------|-------------|----------------|---------------|");
-        for (seg_idx, start_idx, point_count, point_hex, width_hex) in &debug_table {
-            println!("| {:7} | {:9} | {:11} | {:14} | {:13} |", seg_idx, start_idx, point_count, point_hex, width_hex);
-        }
-        // Print source values for char_width_cmd
-println!("[DEBUG] char_width_cmd source values:");
-for (ix, seg) in xyss.iter().enumerate() {
-    let width_val = (seg.2 * scaling_factor).round() as i32;
-    println!("  Segment {}: width source = {}", ix, width_val);
-}
-
-    // Print segment boundaries and point counts for each segment
-    println!("[DEBUG] Segment boundaries and point counts:");
-    for (ix, seg) in xyss.iter().enumerate() {
-        let start_idx = seg.0;
-        let point_count = seg.1.len();
-        println!("  Segment {}: start_idx = {}, point_count = {}", ix, start_idx, point_count);
-    }
-    println!("[DEBUG] Total segment count: {}", xyss.len());
-
-        // Print debug info for first segment's points before packing
-        if !xyss.is_empty() {
-            let seg = &xyss[0];
-            println!("[DEBUG] First segment index: {}", seg.0);
-            for (i, pt) in seg.1.iter().enumerate() {
-                println!("[DEBUG] First segment point {}: x={} y={} z={}", i, pt.x, pt.y, pt.z);
+        // Parse se2 (H) as a sequence of indices (each 2 hex chars)
+        let mut protocol_indices = Vec::new();
+        for i in 0..num_protocol_segments {
+            let idx_hex = &se2[i*2..i*2+2];
+            if let Ok(idx) = u8::from_str_radix(idx_hex, 16) {
+                protocol_indices.push(idx as usize);
             }
         }
-
-            // Print seg.3 for each segment to confirm which field is the segment count
-            println!("[DEBUG] seg.3 values for each segment:");
-            for (i, seg) in xyss.iter().enumerate() {
-                println!("  Segment {}: seg.3 = {}", i, seg.3);
+        // Pack using protocol_indices order
+        for (ix, &group_idx) in protocol_indices.iter().enumerate() {
+            if group_idx < grouped_segments.len() {
+                let seg = &grouped_segments[group_idx];
+                let point_count = seg.1.len();
+                let width_val = (seg.2 * scaling_factor).round() as i32;
+                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
+                let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+                char_point_cmd += &point_count_hex;
+                char_width_cmd += &width_hex;
+                debug_table.push((ix, group_idx, point_count, point_count_hex.clone(), width_hex.clone()));
             }
+        }
+        // Print debug table for protocol segment packing
+        println!("[DEBUG] Protocol Segment Packing Table (H indices):");
+        println!("| proto_idx | group_idx | point_count | char_point_cmd | char_width_cmd |");
+        println!("|-----------|----------|-------------|----------------|---------------|");
+        for (proto_idx, group_idx, point_count, point_hex, width_hex) in &debug_table {
+            println!("| {:9} | {:8} | {:11} | {:14} | {:13} |", proto_idx, group_idx, point_count, point_hex, width_hex);
+        }
 
         let mut total_point_count = 0;
         let mut total_char_count = 0;
@@ -864,14 +858,15 @@ for (ix, seg) in xyss.iter().enumerate() {
         }
     // Remove trailing total point count from char_point_cmd (not in JS)
 
+
             // Debug output for char_width_cmd and char_point_cmd
-    println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
-    println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
-    // Annotate each byte of char_point_cmd with its segment index
-    let bytes = char_point_cmd.as_bytes();
-    for (i, b) in bytes.iter().enumerate() {
-        println!("[DEBUG] char_point_cmd byte {}: {:02X} (segment {})", i, b, i);
-    }
+            println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
+            println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
+            // Annotate each byte of char_point_cmd with its group index
+            let bytes = char_point_cmd.as_bytes();
+            for (i, b) in bytes.iter().enumerate() {
+                println!("[DEBUG] char_point_cmd byte {}: {:02X} (group {})", i, b, i);
+            }
 
         if counter == 0 {
             return None;
