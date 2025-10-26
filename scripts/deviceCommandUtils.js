@@ -333,17 +333,23 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
 
     var encodedSegments = [];
 
-    var encodedCommandData = exports.encodeLayoutToCommandData(
-            textCoordinates,
-            5,
-            0,
-            0,
-            0
-        );
-    encodedSegments.push(encodedCommandData);
-  
-  const outputPath = path.join(__dirname, 'encodedCommandData.json');
-  fs.writeFileSync(outputPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
+   // var encodedCommandData = exports.encodeLayoutToCommandData(
+   //         textCoordinates,
+   //         5,
+   //         0,
+   //         0,
+   //         0
+   //     );
+   // encodedSegments.push(encodedCommandData);
+
+  var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
+      textCoordinates,
+      0.5,
+      false
+  );
+
+  const outputPath = path.join(__dirname, 'generateSegmentedLayoutData.json');
+  fs.writeFileSync(outputPath, JSON.stringify(generateSegmentedLayoutData, null, 2), 'utf8');
 
 
 

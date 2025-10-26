@@ -1079,7 +1079,6 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function generateSegmentedLayoutData(segements, scalingFactor) {
-                 //   console.log("generateSegmentedLayoutData called with:", segements, "scalingFactor:", scalingFactor, "mode:", arguments.length > 2 ? arguments[2] : 0);
                     for (var mode = arguments.length > 2 && void 0 !== arguments[2] 
                         ? arguments[2] 
                         : 0, n = -1, segmentWidths = [], segmentHeights = [], 
@@ -1101,7 +1100,6 @@ globalThis["webpackJsonp"].push([
                         }
                         for (var splitedSegements = splitIntoSegmentsBySumLimit(segmentHeights, 800), V = "", f = "", index = 0; index < splitedSegements.length; index++) 
                             V += toFixedWidthHex(splitedSegements[index][0], 2), f += toFixedWidthHex(splitedSegements[index][1], 2);
-                     //   console.log("generateSegmentedLayoutData result:", [segements.concat(b), V, f, -d * scalingFactor / 2]);
                         return [segements.concat(b), V, f, -d * scalingFactor / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {
@@ -1117,7 +1115,6 @@ globalThis["webpackJsonp"].push([
                     }
                     for (var X = splitIntoSegmentsBySumLimit(segmentWidths, 800), N = "", H = "", z = 0; z < X.length; z++) 
                         N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
-             //       console.log("generateSegmentedLayoutData result:", [segements.concat(m), N, H, -k * scalingFactor / 2]);
                     return [segements.concat(m), N, H, -k * scalingFactor / 2]
                 }
 
@@ -1149,8 +1146,8 @@ globalThis["webpackJsonp"].push([
                     else {
                         var u = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
                         xyss = u[0], se1 = u[1], se2 = u[2], xOffset = u[3]
+
                     }
-                   // console.log("encodeLayoutToCommandData xyss:", xyss, "se1:", se1, "se2:", se2, "xOffset:", xOffset);
                     for (var ix = 0; ix < xyss.length; ix++) {
                         prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
@@ -1170,19 +1167,12 @@ globalThis["webpackJsonp"].push([
                                 && (pointType = 3)), 
                             command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2);
 
-                          // if (ix < 2)  {
-                          //      console.log("command "+command);
-                          //      console.log("charWidthCmd "+charWidthCmd);
-                         //       console.log("charPointCmd "+charPointCmd); 
-                         //}
+     
 
-                           // console.log("encodeLayoutToCommandData point", ix, index, {xScreen, yScreen, segmentIndex, pointType});
-                            test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
+                           test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
-                   // console.log("encodeLayoutToCommandData packed command:", command);
-                 //   console.log("encodeLayoutToCommandData charPointCmd:", charPointCmd, "charWidthCmd:", charWidthCmd);
-                    return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), charPointCmd += toFixedWidthHex(k, 2), 0 == counter 
+                  return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), charPointCmd += toFixedWidthHex(k, 2), 0 == counter 
                         ? null : {
                         cnt: counter,
                         charCount: counter2,
@@ -1292,6 +1282,7 @@ globalThis["webpackJsonp"].push([
                 }
 
                 e.exports = {
+                    generateSegmentedLayoutData: generateSegmentedLayoutData,
                     encodeLayoutToCommandData: encodeLayoutToCommandData,
                     test: function(e) {
                         return "hello---" + e

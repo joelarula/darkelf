@@ -840,7 +840,150 @@ impl DrawUtils {
         lines
     }
 
+     /// Generate segmented layout data matching the JS generateSegmentedLayoutData behavior
+    pub fn generate_segmented_layout_data(
+        segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+        scaling_factor: f32,
+        mode: i32,
+    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) {
+        let mut n = -1_i32;
+        let mut segment_widths: Vec<f32> = Vec::new();
+        let mut segment_heights: Vec<f32> = Vec::new();
+        let segment_default_size: f32 = 200.0;
+        let mut total_segment_width: f32 = 0.0;
+        let mut total_segment_height: f32 = 0.0;
 
+        // Collect widths/heights for real segments
+        for seg in segments.iter() {
+            let seg_id = seg.0 as i32;
+            if n != seg_id {
+                n = seg_id;
+                segment_widths.push(seg.2 * scaling_factor);
+                total_segment_width += seg.2;
+                segment_heights.push(seg.3 * scaling_factor);
+                total_segment_height += seg.3;
+            }
+        }
+
+        let mut out = segments.clone();
+
+        if mode == 127 {
+            // JS: vertical filler segments
+            let mut d = 0.0;
+            let mut b: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+            for i in 0..9 {
+                n += 1;
+                let pt = PolyPoint {
+                    x: 0.0,
+                    y: total_segment_height / 2.0 + segment_default_size / 2.0 + d,
+                    z: 0,
+                };
+                b.push((n as usize, vec![pt], segment_default_size, segment_default_size));
+                d += segment_default_size;
+                segment_heights.push(segment_default_size * scaling_factor);
+            }
+            out.extend(b);
+
+            // JS: split heights for vertical mode
+            let splited_segments = Self::split_into_segments_by_sum_limit(&segment_heights, 800.0);
+            let mut V = String::new();
+            let mut f = String::new();
+            for (start, count) in splited_segments.iter() {
+                V += &Self::to_fixed_width_hex_b(*start as i32, 2);
+                f += &Self::to_fixed_width_hex_b(*count as i32, 2);
+            }
+            let x_offset = -d * scaling_factor / 2.0;
+            return (out, V, f, x_offset);
+        }
+
+        // JS: horizontal filler segments
+        let mut k = 0.0;
+        let mut m: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+        for P in 0..9 {
+            n += 1;
+            let pt = PolyPoint {
+                x: total_segment_width / 2.0 + segment_default_size / 2.0 + k,
+                y: 0.0,
+                z: 0,
+            };
+            m.push((n as usize, vec![pt], segment_default_size, segment_default_size));
+            k += segment_default_size;
+            segment_widths.push(segment_default_size * scaling_factor);
+        }
+        out.extend(m);
+
+        // JS: split widths for horizontal mode
+        let X = Self::split_into_segments_by_sum_limit(&segment_widths, 800.0);
+        let mut N = String::new();
+        let mut H = String::new();
+        for (start, count) in X.iter() {
+            N += &Self::to_fixed_width_hex_b(*start as i32, 2);
+            H += &Self::to_fixed_width_hex_b(*count as i32, 2);
+        }
+        let x_offset = -k * scaling_factor / 2.0;
+        (out, N, H, x_offset)
+    }
+
+    /// Helper function to extract and clamp numeric values
+    fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+        if value < min || value > max {
+            default
+        } else {
+            value
+        }
+    }
+
+
+        // Layout and segmentation functions
+    pub fn split_into_segments_by_sum_limit(values: &[f32], limit: f32) -> Vec<(usize, usize)> {
+        // JS reference: splitIntoSegmentsBySumLimit
+        println!("[DEBUG] split_into_segments_by_sum_limit input: {:?}, limit: {}", values, limit);
+        let mut r = 0.0_f32;
+        let mut n: Vec<(usize, usize)> = Vec::new();
+        let mut h = 0_usize;
+        let mut a = 0_usize;
+        let mut i = 0_usize;
+        while i < values.len() {
+            if r + values[i] <= limit {
+                a += 1;
+                n.push((h, a));
+                r += values[i];
+            } else {
+                let mut temp_width = r;
+                loop {
+                    if temp_width <= limit {
+                        a += 1;
+                        n.push((h, a));
+                        r = temp_width + values[i];
+                        break;
+                    }
+                    if temp_width > limit && temp_width - values[h] < limit {
+                        a += 1;
+                        n.push((h, a));
+                        r += values[i];
+                        break;
+                    }
+                    temp_width -= values[h];
+                    r -= values[h];
+                    h += 1;
+                    a = a.saturating_sub(1);
+                }
+            }
+            i += 1;
+        }
+        println!("[DEBUG] split_into_segments_by_sum_limit output: {:?}", n);
+        n
+    }
+
+
+    pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
+        let clamped = if width == 2 {
+            val.max(0).min(255) as u32
+        } else {
+            val as u32
+        };
+        format!("{:0width$X}", clamped, width = width)
+    }
 
 
 }
