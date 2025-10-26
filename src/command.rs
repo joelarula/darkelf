@@ -845,8 +845,12 @@ for (ix, seg) in xyss.iter().enumerate() {
         let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
         // JS logic: both total_char_count_hex and segment_count_hex should be the number of segments
         let segment_count = xyss.len();
-        let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
-        let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+    // Only count real segments (first 10)
+    let real_segment_count = 10;
+    let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(real_segment_count as i32, 2);
+    let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(real_segment_count as i32, 2);
+    println!("[DEBUG] segment_count source: {} hex: {}", real_segment_count, segment_count_hex);
+    println!("[DEBUG] total_char_count source: {} hex: {}", real_segment_count, total_char_count_hex);
 
 
 
