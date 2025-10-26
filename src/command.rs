@@ -756,39 +756,32 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         // Use xyss, se1, se2, x_offset as in JS
 
 
-        // Only pack char_point_cmd and char_width_cmd for protocol segments using indices from H (se2)
+        // JS parity: pack char_point_cmd and char_width_cmd for all segments in main loop
         char_point_cmd.clear();
         char_width_cmd.clear();
-        let num_protocol_segments = se2.len() / 2;
-        let mut debug_table = Vec::new();
-        // Parse se2 (H) as a sequence of indices (each 2 hex chars)
-        let mut protocol_indices = Vec::new();
-        for i in 0..num_protocol_segments {
-            let idx_hex = &se2[i*2..i*2+2];
-            if let Ok(idx) = u8::from_str_radix(idx_hex, 16) {
-                protocol_indices.push(idx as usize);
-            }
-        }
-        // Pack using protocol_indices order
-        for (ix, &group_idx) in protocol_indices.iter().enumerate() {
-            if group_idx < grouped_segments.len() {
-                let seg = &grouped_segments[group_idx];
-                let point_count = seg.1.len();
+        let mut k = 0;
+        let mut prev_index: isize = -1;
+        for (ix, seg) in xyss.iter().enumerate() {
+            if prev_index != seg.0 as isize {
+                prev_index = seg.0 as isize;
+                if ix > 0 {
+                    // Append previous k value for char_point_cmd
+                    char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+                    k = 0;
+                }
+                // Append width for char_width_cmd
                 let width_val = (seg.2 * scaling_factor).round() as i32;
-                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
-                let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
-                char_point_cmd += &point_count_hex;
-                char_width_cmd += &width_hex;
-                debug_table.push((ix, group_idx, point_count, point_count_hex.clone(), width_hex.clone()));
+                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
             }
+            k += seg.1.len();
         }
+        // Append last k value for char_point_cmd
+        char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
         // Print debug table for protocol segment packing
         println!("[DEBUG] Protocol Segment Packing Table (H indices):");
         println!("| proto_idx | group_idx | point_count | char_point_cmd | char_width_cmd |");
         println!("|-----------|----------|-------------|----------------|---------------|");
-        for (proto_idx, group_idx, point_count, point_hex, width_hex) in &debug_table {
-            println!("| {:9} | {:8} | {:11} | {:14} | {:13} |", proto_idx, group_idx, point_count, point_hex, width_hex);
-        }
+        // Debug table output removed: debug_table is not defined.
 
         let mut total_point_count = 0;
         let mut total_char_count = 0;
@@ -802,14 +795,6 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             if prev_index != seg.0 as isize {
                 prev_index = seg.0 as isize;
                 counter2 += 1;
-                let width_val = (seg.2 * scaling_factor).round() as i32;
-                println!("[DEBUG] char_width_cmd source for segment {}: {}", ix, width_val);
-                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
-                // Pack per-segment point count as a single byte
-                let point_count = seg.1.len();
-                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
-                println!("[DEBUG] segment {} point_count: {} hex: {}", ix, point_count, point_count_hex);
-                char_point_cmd += &point_count_hex;
                 if V >= 8 && seg.1.len() > 1 {
                     F += 1;
                 }
@@ -818,42 +803,41 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
                 F = 1;
             }
 
-            
             let segment_points = &seg.1;
             k += segment_points.len();
             for (index, point) in segment_points.iter().enumerate() {
                 counter += 1;
                 // Calculate packed values
-                    let x_screen = (point.x * scaling_factor) + x_offset;
-                    let y_screen = point.y * scaling_factor;
-                    let mut point_type = point.z as u8;
-                    let mut segment_index = F as u8;
-                    if index == 0 {
-                        segment_index = 0;
-                        point_type = 1;
-                    }
-                    if index == segment_points.len() - 1 {
-                        point_type = 1;
-                    }
-                    if segment_points.len() == 1 {
-                        point_type = point.z as u8;
-                    }
-                    let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
-                    let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
-                    let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
-                    let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
-                    // Debug output for first segment, first point
-                    if ix == 0 && index == 0 {
-                        println!("[DEBUG] Packing first segment/point:");
-                        println!("  x_screen: {:.3} -> {}", x_screen, x_hex);
-                        println!("  y_screen: {:.3} -> {}", y_screen, y_hex);
-                        println!("  segment_index: {}", segment_index);
-                        println!("  point_type: {}", point_type);
-                        println!("  combined: {} -> {}", combined, combined_hex);
-                    }
-                    command += &x_hex;
-                    command += &y_hex;
-                    command += &combined_hex;
+                let x_screen = (point.x * scaling_factor) + x_offset;
+                let y_screen = point.y * scaling_factor;
+                let mut point_type = point.z as u8;
+                let mut segment_index = F as u8;
+                if index == 0 {
+                    segment_index = 0;
+                    point_type = 1;
+                }
+                if index == segment_points.len() - 1 {
+                    point_type = 1;
+                }
+                if segment_points.len() == 1 {
+                    point_type = point.z as u8;
+                }
+                let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
+                let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
+                let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
+                let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
+                // Debug output for first segment, first point
+                if ix == 0 && index == 0 {
+                    println!("[DEBUG] Packing first segment/point:");
+                    println!("  x_screen: {:.3} -> {}", x_screen, x_hex);
+                    println!("  y_screen: {}", y_hex);
+                    println!("  segment_index: {}", segment_index);
+                    println!("  point_type: {}", point_type);
+                    println!("  combined: {} -> {}", combined, combined_hex);
+                }
+                command += &x_hex;
+                command += &y_hex;
+                command += &combined_hex;
             }
         }
     // Remove trailing total point count from char_point_cmd (not in JS)

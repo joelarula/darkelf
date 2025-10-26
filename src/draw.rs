@@ -949,11 +949,11 @@ impl DrawUtils {
         println!("  N: {} (len {})", N, N.len());
         println!("  H: {} (len {})", H, H.len());
         println!("  x_offset: {}", x_offset);
-        println!("[generate_segmented_layout_data] grouped_segments:");
-        for (ix, seg) in grouped_segments.iter().enumerate() {
-            let points_str = seg.1.iter().map(|p| format!("({:.2},{:.2},{})", p.x, p.y, p.z)).collect::<Vec<_>>().join(", ");
-            println!("  Group {}: idx={}, points=[{}], w={:.2}, h={:.2}", ix, seg.0, points_str, seg.2, seg.3);
-        }
+      //  println!("[generate_segmented_layout_data] grouped_segments:");
+       // for (ix, seg) in grouped_segments.iter().enumerate() {
+       //     let points_str = seg.1.iter().map(|p| format!("({:.2},{:.2},{})", p.x, p.y, p.z)).collect::<Vec<_>>().join(", ");
+       //     println!("  Group {}: idx={}, points=[{}], w={:.2}, h={:.2}", ix, seg.0, points_str, seg.2, seg.3);
+       // }
         (out, grouped_segments, N, H, x_offset)
     }
 
