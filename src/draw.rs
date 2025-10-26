@@ -869,10 +869,28 @@ impl DrawUtils {
         let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
 
         // ...existing code...
-        // JS reference: se1 = 18 zeros + 01, se2 = 01..09 + 09 (total 20 hex chars each)
-        let pad_len = 20;
-        let js_se1 = "00000000000000000001".to_string();
-        let js_se2 = "01020304050607080909".to_string();
+        // Dynamically build se1 and se2 to match JS logic for any segment count
+        let segment_count = segment_widths.len();
+        let mut js_se1 = String::new();
+        let mut js_se2 = String::new();
+        for i in 0..segment_count {
+            // JS: se1 is zeros except last two: 01, then 03 if > 12 segments
+            if i < segment_count - 2 {
+                js_se1.push_str("00");
+            } else if i == segment_count - 2 {
+                js_se1.push_str("01");
+            } else {
+                // For extra segments, append 03, 04, ...
+                js_se1.push_str(&format!("{:02X}", i - (segment_count - 3) + 3));
+            }
+            // JS: se2 is 01..segment_count, but last two are repeated
+            if i < segment_count - 2 {
+                js_se2.push_str(&format!("{:02X}", i + 1));
+            } else {
+                // Last two are repeated
+                js_se2.push_str(&format!("{:02X}", segment_count - 1));
+            }
+        }
         if mode == 127 {
             // ...existing code for vertical mode...
             let mut d = 0.0;
