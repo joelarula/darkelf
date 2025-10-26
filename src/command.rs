@@ -741,9 +741,19 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             0,
         );
 
+        // Print debug info for first segment's points before packing
+        if !xyss.is_empty() {
+            let seg = &xyss[0];
+            println!("[DEBUG] First segment index: {}", seg.0);
+            for (i, pt) in seg.1.iter().enumerate() {
+                println!("[DEBUG] First segment point {}: x={} y={} z={}", i, pt.x, pt.y, pt.z);
+            }
+        }
+
         let mut total_point_count = 0;
         let mut total_char_count = 0;
-        let mut char_count_hex = String::new();
+    // JS logic: char_count_hex should be the sum of charCount for all encoded segments (totalCharCount)
+    let char_count_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
         let mut command_hex = String::new();
         let mut char_width_hex = String::new();
         let mut char_point_hex = String::new();
@@ -768,29 +778,37 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             k += segment_points.len();
             for (index, point) in segment_points.iter().enumerate() {
                 counter += 1;
-                let x_screen = ((point.x * scaling_factor) + x_offset).round() as i32;
-                let y_screen = (point.y * scaling_factor).round() as i32;
-                let mut point_type = point.z as u8;
-                let mut segment_index = F as u8;
-                if index == 0 {
-                    segment_index = 0;
-                    point_type = 1;
-                }
-                if index == segment_points.len() - 1 {
-                    point_type = 1;
-                }
-                if segment_points.len() == 1 {
-                    point_type = point.z as u8;
-                }
-                // JS: commandOptions.textStopTime logic
-                // Not implemented here, add if needed
-                let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
-                let x_hex = CommandGenerator::to_fixed_width_hex_b(x_screen, 2);
-                let y_hex = CommandGenerator::to_fixed_width_hex_b(y_screen, 2);
-                let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
-                command += &x_hex;
-                command += &y_hex;
-                command += &combined_hex;
+                // Calculate packed values
+                    let x_screen = (point.x * scaling_factor) + x_offset;
+                    let y_screen = point.y * scaling_factor;
+                    let mut point_type = point.z as u8;
+                    let mut segment_index = F as u8;
+                    if index == 0 {
+                        segment_index = 0;
+                        point_type = 1;
+                    }
+                    if index == segment_points.len() - 1 {
+                        point_type = 1;
+                    }
+                    if segment_points.len() == 1 {
+                        point_type = point.z as u8;
+                    }
+                    let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
+                    let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
+                    let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
+                    let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
+                    // Debug output for first segment, first point
+                    if ix == 0 && index == 0 {
+                        println!("[DEBUG] Packing first segment/point:");
+                        println!("  x_screen: {:.3} -> {}", x_screen, x_hex);
+                        println!("  y_screen: {:.3} -> {}", y_screen, y_hex);
+                        println!("  segment_index: {}", segment_index);
+                        println!("  point_type: {}", point_type);
+                        println!("  combined: {} -> {}", combined, combined_hex);
+                    }
+                    command += &x_hex;
+                    command += &y_hex;
+                    command += &combined_hex;
             }
         }
         char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
@@ -803,6 +821,11 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
         let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
 
+        // JS logic: sum of all segment char counts (totalCharCount)
+        // For single-segment, this is just counter2, but for multi-segment, sum up per-segment char counts
+        // Here, since we only have one segment, use counter2, but for full parity, you may need to sum per-segment counts
+        let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(counter as i32, 2);
+
         let result_cmd = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}",
             XYS_CMD_HEADER,
@@ -810,7 +833,7 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             char_count_total_hex,
             command,
             segment_count_hex,
-            char_count_hex,
+            total_char_count_hex,
             char_width_cmd,
             char_point_cmd,
             se1,
@@ -819,6 +842,25 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             time,
             XYS_CMD_FOOTER
         );
+
+        // Debug: Print and annotate first 16 bytes
+        let debug_bytes = result_cmd.chars().collect::<Vec<_>>();
+        let debug_len = debug_bytes.len().min(32); // 16 bytes = 32 hex chars
+        println!("[DEBUG] First 16 bytes of packed command:");
+        for i in (0..debug_len).step_by(2) {
+            let byte_str = format!("{}{}", debug_bytes[i], debug_bytes[i+1]);
+            let annotation = match i {
+                0 => "Header[0]", 2 => "Header[1]", 4 => "Header[2]", 6 => "Header[3]",
+                8 => "TotalPointCount[0]", 10 => "TotalPointCount[1]",
+                12 => "CharCount[0]", 14 => "CharCount[1]",
+                16 => "FirstPoint[0]", 18 => "FirstPoint[1]",
+                20 => "FirstPoint[2]", 22 => "FirstPoint[3]",
+                24 => "FirstPoint[4]", 26 => "FirstPoint[5]",
+                28 => "FirstPoint[6]", 30 => "FirstPoint[7]",
+                _ => "..."
+            };
+            println!("  Byte {:02}: {} [{}]", i/2, byte_str, annotation);
+        }
 
         Some(EncodedCommandData {
             cnt: counter as usize,
