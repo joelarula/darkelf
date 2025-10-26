@@ -38,11 +38,9 @@ fn test_glyphs() {
     println!("[TEST] h: {} (len {})", h, h.len());
     println!("[TEST] x_offset: {}", x_offset);
 
-    let  data: EncodedCommandData = DrawUtils::encode_layout_to_command_data(
+    let  data: EncodedCommandData = CommandGenerator::encode_layout_to_command_data(
         &simplified_shapes,
         5.0,
-        0,
-        Some(0),
     ).unwrap();
 
     let datapath = serde_json::to_string_pretty(&data).unwrap();
@@ -52,7 +50,7 @@ fn test_glyphs() {
     let verify_cmd = "81e9804f01820c804f1181d1004f1181bb004f1181be00341081e9804f11819b804f0181c600341081c9004f1181b3004f118178804f11819b804f11819d801401819d802e1181f0802e1181f0801411819d801411813c00000080d800000080740000008010000000005400000000b8000000011c000000018000000001e4000000";
     assert_eq!(verify_cmd, data.cmd);
 
-    let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes);
+    let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes, 5.0);
 
     // Fine-grained protocol assertions
     // These indices are based on the expected command format and field lengths

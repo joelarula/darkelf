@@ -1464,7 +1464,7 @@ globalThis["webpackJsonp"].push([
 
         var encodedCommandData = encodeLayoutToCommandData(
             segmentPoints,
-            5,
+            0.5,
             0,
             0,
             0

@@ -335,7 +335,7 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
 
     var encodedCommandData = exports.encodeLayoutToCommandData(
             textCoordinates,
-            5,
+            0.5,
             0,
             0,
             0
