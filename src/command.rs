@@ -761,22 +761,44 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         char_width_cmd.clear();
         let mut k = 0;
         let mut prev_index: isize = -1;
+        // JS parity: pack only 12 segment counts (2 hex chars each), no prepended segment count
+        println!("[DEBUG] Packing char_point_cmd and char_width_cmd per segment:");
+        let mut char_point_cmd_vec = Vec::new();
+        let mut char_width_cmd_vec = Vec::new();
+        let mut k = 0;
+        let mut prev_index: isize = -1;
         for (ix, seg) in xyss.iter().enumerate() {
             if prev_index != seg.0 as isize {
                 prev_index = seg.0 as isize;
                 if ix > 0 {
-                    // Append previous k value for char_point_cmd
-                    char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+                    let point_count_hex = CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+                    char_point_cmd_vec.push(point_count_hex.clone());
+                    println!("  [char_point_cmd] seg {}: count {} hex {}", ix-1, k, point_count_hex);
                     k = 0;
                 }
-                // Append width for char_width_cmd
                 let width_val = (seg.2 * scaling_factor).round() as i32;
-                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+                let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+                char_width_cmd_vec.push(width_hex.clone());
+                println!("  [char_width_cmd] seg {}: width {} hex {}", ix, width_val, width_hex);
             }
             k += seg.1.len();
         }
-        // Append last k value for char_point_cmd
-        char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+        let last_point_count_hex = CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+        char_point_cmd_vec.push(last_point_count_hex.clone());
+        println!("  [char_point_cmd] seg {}: count {} hex {} (final)", xyss.len()-1, k, last_point_count_hex);
+        // Pad to 12 segments
+        while char_point_cmd_vec.len() < 12 {
+            char_point_cmd_vec.push("00".to_string());
+            println!("  [char_point_cmd] pad seg {}: hex 00", char_point_cmd_vec.len()-1);
+        }
+        while char_width_cmd_vec.len() < 12 {
+            char_width_cmd_vec.push("00".to_string());
+            println!("  [char_width_cmd] pad seg {}: hex 00", char_width_cmd_vec.len()-1);
+        }
+        char_point_cmd = char_point_cmd_vec.join("");
+        char_width_cmd = char_width_cmd_vec.join("");
+        println!("[DEBUG] Final char_point_cmd: {}", char_point_cmd);
+        println!("[DEBUG] Final char_width_cmd: {}", char_width_cmd);
         // Print debug table for protocol segment packing
         println!("[DEBUG] Protocol Segment Packing Table (H indices):");
         println!("| proto_idx | group_idx | point_count | char_point_cmd | char_width_cmd |");
@@ -876,7 +898,7 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             total_points_hex,
             char_count_total_hex,
             command,
-            char_point_cmd, // JS expects char_point_cmd before char_width_cmd
+            char_point_cmd,
             char_width_cmd,
             total_char_count_hex,
             segment_count_hex,
@@ -895,6 +917,21 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         println!("  char_point_cmd: {}", char_point_cmd);
         println!("  se1: {}", se1);
         println!("  se2: {}", se2);
+
+        // Print and annotate segment metadata region (bytes 137–150)
+        let packed_cmd_bytes = result_cmd.as_bytes();
+        let start = 137;
+        let end = 150.min(packed_cmd_bytes.len());
+        println!("[DEBUG] Segment metadata region (bytes {}–{}):", start, end-1);
+        for i in start..end {
+            let b = packed_cmd_bytes[i];
+            let annotation = if i - start < char_point_cmd.len() {
+                format!("char_point_cmd[{}]", i - start)
+            } else {
+                format!("char_width_cmd[{}]", i - start - char_point_cmd.len())
+            };
+            println!("  Byte {:03}: {:02X} [{}]", i, b, annotation);
+        }
 
         // Debug: Print and annotate first 16 bytes
         let debug_bytes = result_cmd.chars().collect::<Vec<_>>();
