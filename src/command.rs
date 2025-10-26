@@ -709,10 +709,10 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         if polyline_segments.is_empty() {
             return None;
         }
-        // Restore V, F, k as in JS logic, inside function body
-        let mut V = 8;
-        let mut F = V;
-        let mut k = 0;
+    // Restore v, f, k as in JS logic, inside function body
+    let mut v = 8;
+    let mut f = v;
+    let mut k = 0;
 
         let mut counter = 0;
         let mut counter2 = 0;
@@ -733,9 +733,9 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         };
 
         // Restore V, F, k as in JS logic, inside function body
-        let mut V = 8;
-        let mut F = V;
-        let mut k = 0;
+    let mut v = 8;
+    let mut f = v;
+    let mut k = 0;
 
         // Match JS: generateSegmentedLayoutData(polylineSegments, scalingFactor, mirrorMode)
         let (xyss, grouped_segments, se1, se2, x_offset, group_point_counts) = DrawUtils::generate_segmented_layout_data(
