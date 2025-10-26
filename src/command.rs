@@ -750,30 +750,31 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             println!("  Segment {:02}: point_count = {} (hex {:02X})", i, count, count);
         }
 
-        // JS parity: Build segment metadata fields for up to 16 segments, pad as needed
+        // JS parity: Use actual segment count for metadata region, pad only as needed
+        let actual_segment_count = segment_widths.len().max(group_point_counts.len());
+        let mut padded_segment_widths: Vec<u8> = segment_widths.iter().map(|w| w.round().max(0.0).min(255.0) as u8).collect();
+        let mut padded_point_counts: Vec<u8> = group_point_counts.iter().map(|&c| c.max(0).min(255) as u8).collect();
+        while padded_segment_widths.len() < actual_segment_count {
+            let last = *padded_segment_widths.last().unwrap_or(&0);
+            padded_segment_widths.push(last);
+        }
+        while padded_point_counts.len() < actual_segment_count {
+            let last = *padded_point_counts.last().unwrap_or(&0);
+            padded_point_counts.push(last);
+        }
         let mut char_width_cmd_vec: Vec<String> = Vec::new();
         let mut char_point_cmd_vec: Vec<String> = Vec::new();
-        println!("[RUST] Segment metadata for all 16 segments:");
-        let input_count = segment_widths.len().max(group_point_counts.len());
-        for i in 0..16 {
-            let width = if i < segment_widths.len() {
-                segment_widths[i].round().max(0.0).min(255.0) as u8
-            } else {
-                0x10
-            };
-            let point_count = if i < group_point_counts.len() {
-                group_point_counts[i].max(0).min(255) as u8
-            } else {
-                // JS fallback: pad with incremental values, last is 0
-                if i < 15 { (i - group_point_counts.len() + 1) as u8 } else { 0x00 }
-            };
+        println!("[RUST] Segment metadata for all {} segments:", actual_segment_count);
+        for i in 0..actual_segment_count {
+            let width = padded_segment_widths[i];
+            let point_count = padded_point_counts[i];
             println!("  Segment {:02}: width = {} (hex {:02X}), point_count = {} (hex {:02X})", i, width, width, point_count, point_count);
             char_width_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(width as i32, 2));
             char_point_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2));
         }
         char_width_cmd = char_width_cmd_vec.join("");
         char_point_cmd = char_point_cmd_vec.join("");
-        let segment_count = 16;
+        let segment_count = actual_segment_count;
         let segment_count_hex = format!("{:02X}", segment_count);
         println!("[DEBUG] segment count: {} hex: {}", segment_count, segment_count_hex);
         println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
@@ -857,20 +858,35 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
 
         // JS parity: segment metadata region is segment_count_hex + char_width_cmd + char_point_cmd + se1 + se2
         println!("[DEBUG] Packing segment_count_hex: {}", segment_count_hex);
+        // JS parity: pad se1 and se2 to actual segment count (2 hex chars per segment)
+        let se1_hex = {
+            let mut v = String::new();
+            for i in 0..segment_count {
+                v += &format!("{:02x}", if i < segment_count - 1 { 0 } else { 1 });
+            }
+            v
+        };
+        let se2_hex = {
+            let mut v = String::new();
+            for i in 0..segment_count {
+                v += &format!("{:02x}", (i + 1) as u8);
+            }
+            v
+        };
         let segment_metadata_region = format!(
             "{}{}{}{}{}",
             segment_count_hex,
             char_width_cmd,
             char_point_cmd,
-            format!("{:0<32}", se1),
-            format!("{:0<32}", se2)
+            se1_hex,
+            se2_hex
         );
 
         let result_cmd = format!(
             "{}{}{}{}{}{}{}{}",
             XYS_CMD_HEADER,
             total_points_hex,
-            char_count_total_hex,
+            segment_count_hex,
             command,
             segment_metadata_region,
             version_hex,
