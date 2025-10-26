@@ -738,14 +738,11 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let mut k = 0;
 
         // Match JS: generateSegmentedLayoutData(polylineSegments, scalingFactor, mirrorMode)
-        let (xyss, grouped_segments, se1, se2, x_offset) = {
-            let (xyss, grouped_segments, se1, se2, x_offset) = DrawUtils::generate_segmented_layout_data(
-                polyline_segments,
-                scaling_factor,
-                mirror_mode,
-            );
-            (xyss, grouped_segments, se1, se2, x_offset)
-        };
+        let (xyss, grouped_segments, se1, se2, x_offset, group_point_counts) = DrawUtils::generate_segmented_layout_data(
+            polyline_segments,
+            scaling_factor,
+            mirror_mode,
+        );
         // If the function does not return the expected type, you may need to update this line to match the actual return type, for example:
         // let (xyss, se1, se2, x_offset): (Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) = DrawUtils::generate_segmented_layout_data(
         //     polyline_segments,
@@ -756,49 +753,16 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         // Use xyss, se1, se2, x_offset as in JS
 
 
-        // JS parity: pack char_point_cmd and char_width_cmd for all segments in main loop
+        // JS parity: charPointCmd calculation
+        // Build char_point_cmd using group_point_counts (protocol segments, JS parity)
         char_point_cmd.clear();
-        char_width_cmd.clear();
-        let mut k = 0;
-        let mut prev_index: isize = -1;
-        // JS parity: pack only 12 segment counts (2 hex chars each), no prepended segment count
-        println!("[DEBUG] Packing char_point_cmd and char_width_cmd per segment:");
-        let mut char_point_cmd_vec = Vec::new();
-        let mut char_width_cmd_vec = Vec::new();
-        let mut k = 0;
-        let mut prev_index: isize = -1;
-        for (ix, seg) in xyss.iter().enumerate() {
-            if prev_index != seg.0 as isize {
-                prev_index = seg.0 as isize;
-                if ix > 0 {
-                    let point_count_hex = CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
-                    char_point_cmd_vec.push(point_count_hex.clone());
-                    println!("  [char_point_cmd] seg {}: count {} hex {}", ix-1, k, point_count_hex);
-                    k = 0;
-                }
-                let width_val = (seg.2 * scaling_factor).round() as i32;
-                let width_hex = CommandGenerator::to_fixed_width_hex_b(width_val, 2);
-                char_width_cmd_vec.push(width_hex.clone());
-                println!("  [char_width_cmd] seg {}: width {} hex {}", ix, width_val, width_hex);
-            }
-            k += seg.1.len();
+        for count in &group_point_counts {
+            char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(*count as i32, 2);
         }
-        let last_point_count_hex = CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
-        char_point_cmd_vec.push(last_point_count_hex.clone());
-        println!("  [char_point_cmd] seg {}: count {} hex {} (final)", xyss.len()-1, k, last_point_count_hex);
-        // Pad to 12 segments
-        while char_point_cmd_vec.len() < 12 {
-            char_point_cmd_vec.push("00".to_string());
-            println!("  [char_point_cmd] pad seg {}: hex 00", char_point_cmd_vec.len()-1);
+        // Pad to 12 segments (24 hex chars)
+        while char_point_cmd.len() < 24 {
+            char_point_cmd += "00";
         }
-        while char_width_cmd_vec.len() < 12 {
-            char_width_cmd_vec.push("00".to_string());
-            println!("  [char_width_cmd] pad seg {}: hex 00", char_width_cmd_vec.len()-1);
-        }
-        char_point_cmd = char_point_cmd_vec.join("");
-        char_width_cmd = char_width_cmd_vec.join("");
-        println!("[DEBUG] Final char_point_cmd: {}", char_point_cmd);
-        println!("[DEBUG] Final char_width_cmd: {}", char_width_cmd);
         // Print debug table for protocol segment packing
         println!("[DEBUG] Protocol Segment Packing Table (H indices):");
         println!("| proto_idx | group_idx | point_count | char_point_cmd | char_width_cmd |");

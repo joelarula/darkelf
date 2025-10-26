@@ -845,7 +845,7 @@ impl DrawUtils {
         segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
         scaling_factor: f32,
         mode: i32,
-    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) {
+    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32, Vec<usize>) {
         let mut n = -1_i32;
         let mut segment_widths: Vec<f32> = Vec::new();
         let mut segment_heights: Vec<f32> = Vec::new();
@@ -866,7 +866,7 @@ impl DrawUtils {
         }
 
     let mut out = segments.clone();
-    let mut grouped_segments = Vec::new();
+    let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
 
         if mode == 127 {
             // JS: vertical filler segments
@@ -901,7 +901,13 @@ impl DrawUtils {
             println!("  V: {} (len {})", V, V.len());
             println!("  f: {} (len {})", f, f.len());
             println!("  x_offset: {}", x_offset);
-            return (out, grouped_segments, V, f, x_offset);
+            // For vertical mode, collect per-group point counts
+            let mut group_point_counts: Vec<usize> = Vec::new();
+            for group in &grouped_segments {
+                let count = group.1.len();
+                group_point_counts.push(count);
+            }
+            return (out, grouped_segments, V, f, x_offset, group_point_counts);
         }
 
         // JS: horizontal filler segments
@@ -943,18 +949,19 @@ impl DrawUtils {
             grouped_segments.push((group_idx, merged_points, total_width, total_height));
         }
         let x_offset = -k * scaling_factor / 2.0;
-        // Debug output for horizontal mode
-        println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
-        println!("  segment_widths: {:?}", segment_widths);
-        println!("  N: {} (len {})", N, N.len());
-        println!("  H: {} (len {})", H, H.len());
-        println!("  x_offset: {}", x_offset);
-      //  println!("[generate_segmented_layout_data] grouped_segments:");
-       // for (ix, seg) in grouped_segments.iter().enumerate() {
-       //     let points_str = seg.1.iter().map(|p| format!("({:.2},{:.2},{})", p.x, p.y, p.z)).collect::<Vec<_>>().join(", ");
-       //     println!("  Group {}: idx={}, points=[{}], w={:.2}, h={:.2}", ix, seg.0, points_str, seg.2, seg.3);
-       // }
-        (out, grouped_segments, N, H, x_offset)
+    // For horizontal mode, collect per-group point counts
+    let mut group_point_counts: Vec<usize> = Vec::new();
+    for group in &grouped_segments {
+        let count = group.1.len();
+        group_point_counts.push(count);
+    }
+    // Debug output for horizontal mode
+    println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
+    println!("  segment_widths: {:?}", segment_widths);
+    println!("  N: {} (len {})", N, N.len());
+    println!("  H: {} (len {})", H, H.len());
+    println!("  x_offset: {}", x_offset);
+    (out, grouped_segments, N, H, x_offset, group_point_counts)
     }
 
     /// Helper function to extract and clamp numeric values

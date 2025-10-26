@@ -1148,7 +1148,8 @@ globalThis["webpackJsonp"].push([
 
                     }
                     for (var ix = 0; ix < xyss.length; ix++) {
-                        prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
+                        prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 
+                            && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
                         k += segmentPoints.length;
                         for (var index = 0; index < segmentPoints.length; index++) {
