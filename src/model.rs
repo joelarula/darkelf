@@ -145,6 +145,7 @@ pub struct MirroredPolylines {
     pub new_lines_down: Vec<Vec<PolyPoint>>,
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct EncodedCommandData {
     pub cnt: usize,
     pub char_count: usize,

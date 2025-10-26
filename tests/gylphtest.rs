@@ -1,6 +1,7 @@
 
 use darkelf::draw::DrawUtils;
 use darkelf::command::CommandGenerator;
+use darkelf::model::EncodedCommandData;
 use ttf_parser::Face;
 
 struct PathPrinter;
@@ -29,9 +30,24 @@ fn test_glyphs() {
 
 
     let (segment_points, grouped_segments, n, h, x_offset, group_point_counts, extra_floats) = DrawUtils::generate_segmented_layout_data(&simplified_shapes, 0.5, 0);
+    let segment_pointsJson = serde_json::to_string_pretty(&segment_points).unwrap();
+    std::fs::write("segment_points.json", segment_pointsJson).unwrap();
+    println!("Wrote text_data to segment_points.json");
+    
     println!("[TEST] n: {} (len {})", n, n.len());
     println!("[TEST] h: {} (len {})", h, h.len());
     println!("[TEST] x_offset: {}", x_offset);
+
+    let  data: EncodedCommandData = DrawUtils::encode_layout_to_command_data(
+        &simplified_shapes,
+        5.0,
+        0,
+        Some(0),
+    ).unwrap();
+
+    let datapath = serde_json::to_string_pretty(&data).unwrap();
+    std::fs::write("encodedcommanddata.json", datapath).unwrap();
+    println!("Wrote text_data to encodedcommanddata.json");
 
 
     let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes);

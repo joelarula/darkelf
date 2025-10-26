@@ -751,6 +751,8 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         }
 
         // JS parity: Use actual segment count for metadata region, pad only as needed
+        // JS parity: Always pad segment metadata region to 16 segments, use last value for padding
+        // JS parity: Use actual segment count for metadata region, pad only as needed
         let actual_segment_count = segment_widths.len().max(group_point_counts.len());
         let mut padded_segment_widths: Vec<u8> = segment_widths.iter().map(|w| w.round().max(0.0).min(255.0) as u8).collect();
         let mut padded_point_counts: Vec<u8> = group_point_counts.iter().map(|&c| c.max(0).min(255) as u8).collect();
@@ -779,6 +781,21 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         println!("[DEBUG] segment count: {} hex: {}", segment_count, segment_count_hex);
         println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
         println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
+        // JS parity: pad se1 and se2 to actual segment count (2 hex chars per segment)
+        let se1_hex = {
+            let mut v = String::new();
+            for i in 0..segment_count {
+                v += &format!("{:02x}", if i < segment_count - 1 { 0 } else { 1 });
+            }
+            v
+        };
+        let se2_hex = {
+            let mut v = String::new();
+            for i in 0..segment_count {
+                v += &format!("{:02x}", (i + 1) as u8);
+            }
+            v
+        };
 
         for (ix, seg) in xyss.iter().enumerate() {
             if prev_index != seg.0 as isize {

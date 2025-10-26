@@ -1,6 +1,5 @@
 use crate::model::{
-    DrawData, DrawItem, DrawMode, DrawPoint, MirroredPolylines, PathCommand, Point, PolyPoint,
-    PolylineData,
+    DrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
 };
 use std::collections::HashMap;
 use ttf_parser::Face;
@@ -853,7 +852,7 @@ impl DrawUtils {
         let mut total_segment_width: f32 = 0.0;
         let mut total_segment_height: f32 = 0.0;
 
-        // Collect widths/heights for real segments
+        // Collect widths/heights for real segments (unique indices)
         for seg in segments.iter() {
             let seg_id = seg.0 as i32;
             if n != seg_id {
@@ -865,11 +864,16 @@ impl DrawUtils {
             }
         }
 
-    let mut out = segments.clone();
-    let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+        let mut out = segments.clone();
+        let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
 
+        // ...existing code...
+        // JS reference: se1 = 18 zeros + 01, se2 = 01..09 + 09 (total 20 hex chars each)
+        let pad_len = 20;
+        let js_se1 = "00000000000000000001".to_string();
+        let js_se2 = "01020304050607080909".to_string();
         if mode == 127 {
-            // JS: vertical filler segments
+            // ...existing code for vertical mode...
             let mut d = 0.0;
             let mut b: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
             for i in 0..9 {
@@ -885,83 +889,87 @@ impl DrawUtils {
             }
             out.extend(b);
 
-            // JS: split heights for vertical mode
+            // ...existing code for grouping...
             let segment_heights_f64: Vec<f64> = segment_heights.iter().map(|&x| x as f64).collect();
             let splited_segments = Self::split_into_segments_by_sum_limit(&segment_heights_f64, 800.0);
-            let mut V = String::new();
+            let mut v = String::new();
             let mut f = String::new();
             for (start, count) in splited_segments.iter() {
-                V += &Self::to_fixed_width_hex_b(*start as i32, 2);
+                v += &Self::to_fixed_width_hex_b(*start as i32, 2);
                 f += &Self::to_fixed_width_hex_b(*count as i32, 2);
+                let group = out[*start..(*start + *count)].to_vec();
+                let mut merged_points = Vec::new();
+                let mut total_width = 0.0;
+                let mut total_height = 0.0;
+                let mut group_idx = group.first().map(|seg| seg.0).unwrap_or(0);
+                for seg in &group {
+                    merged_points.extend_from_slice(&seg.1);
+                    total_width += seg.2;
+                    total_height += seg.3;
+                }
+                grouped_segments.push((group_idx, merged_points, total_width, total_height));
             }
             let x_offset = -d * scaling_factor / 2.0;
-            // Debug output for vertical mode
-            println!("[generate_segmented_layout_data] mode=127 (vertical)");
-            println!("  segment_heights: {:?}", segment_heights);
-            println!("  V: {} (len {})", V, V.len());
-            println!("  f: {} (len {})", f, f.len());
-            println!("  x_offset: {}", x_offset);
-            // For vertical mode, collect per-group point counts
             let mut group_point_counts: Vec<usize> = Vec::new();
             for group in &grouped_segments {
                 let count = group.1.len();
                 group_point_counts.push(count);
             }
-            return (out, grouped_segments, V, f, x_offset, group_point_counts, segment_heights);
-        }
-
-        // JS: horizontal filler segments
-        let mut k = 0.0;
-        let mut m: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
-        for P in 0..9 {
-            n += 1;
-            let pt = PolyPoint {
-                x: total_segment_width / 2.0 + segment_default_size / 2.0 + k,
-                y: 0.0,
-                z: 0,
-            };
-            m.push((n as usize, vec![pt], segment_default_size, segment_default_size));
-            k += segment_default_size;
-            segment_widths.push(segment_default_size * scaling_factor);
-        }
-        out.extend(m);
-
-        // JS: split widths for horizontal mode
-        let segment_widths_f64: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
-        let X = Self::split_into_segments_by_sum_limit(&segment_widths_f64, 800.0);
-        let mut N = String::new();
-        let mut H = String::new();
-        for (start, count) in X.iter() {
-            N += &Self::to_fixed_width_hex_b(*start as i32, 2);
-            H += &Self::to_fixed_width_hex_b(*count as i32, 2);
-            // Group segments according to split boundaries
-            let group = out[*start..(*start + *count)].to_vec();
-            // Flatten group into a single segment: merge all points, sum widths/heights
-            let mut merged_points = Vec::new();
-            let mut total_width = 0.0;
-            let mut total_height = 0.0;
-            let mut group_idx = group.first().map(|seg| seg.0).unwrap_or(0);
-            for seg in &group {
-                merged_points.extend_from_slice(&seg.1);
-                total_width += seg.2;
-                total_height += seg.3;
+            println!("[generate_segmented_layout_data] mode=127 (vertical)");
+            println!("  segment_heights: {:?}", segment_heights);
+            println!("  se1 (js): {} (len {})", js_se1, js_se1.len());
+            println!("  se2 (js): {} (len {})", js_se2, js_se2.len());
+            println!("  x_offset: {}", x_offset);
+            (out, grouped_segments, js_se1, js_se2, x_offset, group_point_counts, segment_heights)
+        } else {
+            // ...existing code for horizontal mode...
+            let mut k = 0.0;
+            let mut m: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+            for p in 0..9 {
+                n += 1;
+                let pt = PolyPoint {
+                    x: total_segment_width / 2.0 + segment_default_size / 2.0 + k,
+                    y: 0.0,
+                    z: 0,
+                };
+                m.push((n as usize, vec![pt], segment_default_size, segment_default_size));
+                k += segment_default_size;
+                segment_widths.push(segment_default_size * scaling_factor);
             }
-            grouped_segments.push((group_idx, merged_points, total_width, total_height));
+            out.extend(m);
+
+            let segment_widths_f64: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
+            let x = Self::split_into_segments_by_sum_limit(&segment_widths_f64, 800.0);
+            let mut n_str = String::new();
+            let mut h = String::new();
+            for (start, count) in x.iter() {
+                n_str += &Self::to_fixed_width_hex_b(*start as i32, 2);
+                h += &Self::to_fixed_width_hex_b(*count as i32, 2);
+                let group = out[*start..(*start + *count)].to_vec();
+                let mut merged_points = Vec::new();
+                let mut total_width = 0.0;
+                let mut total_height = 0.0;
+                let mut group_idx = group.first().map(|seg| seg.0).unwrap_or(0);
+                for seg in &group {
+                    merged_points.extend_from_slice(&seg.1);
+                    total_width += seg.2;
+                    total_height += seg.3;
+                }
+                grouped_segments.push((group_idx, merged_points, total_width, total_height));
+            }
+            let x_offset = -k * scaling_factor / 2.0;
+            let mut group_point_counts: Vec<usize> = Vec::new();
+            for group in &grouped_segments {
+                let count = group.1.len();
+                group_point_counts.push(count);
+            }
+            println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
+            println!("  segment_widths: {:?}", segment_widths);
+            println!("  se1 (js): {} (len {})", js_se1, js_se1.len());
+            println!("  se2 (js): {} (len {})", js_se2, js_se2.len());
+            println!("  x_offset: {}", x_offset);
+            (out, grouped_segments, js_se1, js_se2, x_offset, group_point_counts, segment_widths)
         }
-        let x_offset = -k * scaling_factor / 2.0;
-    // For horizontal mode, collect per-group point counts
-    let mut group_point_counts: Vec<usize> = Vec::new();
-    for group in &grouped_segments {
-        let count = group.1.len();
-        group_point_counts.push(count);
-    }
-    // Debug output for horizontal mode
-    println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
-    println!("  segment_widths: {:?}", segment_widths);
-    println!("  N: {} (len {})", N, N.len());
-    println!("  H: {} (len {})", H, H.len());
-    println!("  x_offset: {}", x_offset);
-    (out, grouped_segments, N, H, x_offset, group_point_counts, segment_widths)
     }
 
     /// Helper function to extract and clamp numeric values
@@ -1016,6 +1024,195 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
         };
         format!("{:0width$X}", clamped, width = width)
     }
+
+
+
+
+
+    /// Encodes layout to command data, matching JS encodeLayoutToCommandData logic.
+    pub fn encode_layout_to_command_data(
+        polyline_segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+        segment_time: f32,
+        mirror_mode: i32,
+        version: Option<i32>,
+    ) -> Option<EncodedCommandData> {
+        let a = version.unwrap_or(0);
+        if polyline_segments.is_empty() {
+            return None;
+        }
+        let mut counter = 0;
+        let mut counter2 = 0;
+        let mut prev_index = -1;
+        let mut command = String::new();
+        let mut b = String::new();
+        let ver = Self::to_fixed_width_hex_b(a, 2);
+        let mut char_point_cmd = String::new();
+        let mut char_width_cmd = String::new();
+        let v = 8;
+        let scaling_factor = 0.5;
+        let mut f = v;
+        let mut segment_point_count = 0;
+        let mut time = Self::to_fixed_width_hex_b(segment_time.floor() as i32, 2);
+      
+        if v >= 8 {
+            f = 0;
+        }
+        let test = false;
+        let (xyss, grouped_segments, se1, se2, x_offset, _group_point_counts, _segment_widths) = {
+            let seg_data = Self::generate_segmented_layout_data(
+                polyline_segments,
+                scaling_factor,
+                mirror_mode,
+            );
+            (
+                seg_data.0,
+                seg_data.1,
+                seg_data.2,
+                seg_data.3,
+                seg_data.4,
+                seg_data.5,
+                seg_data.6,
+            )
+        };
+        // Debug: print segment grouping and metadata
+        println!("[Rust] generate_segmented_layout_data output:");
+        println!("  xyss.len(): {}", xyss.len());
+        println!("  se1: {:?}", se1);
+        println!("  se2: {:?}", se2);
+        println!("  x_offset: {}", x_offset);
+        // Print segment indices and point counts
+        let mut segment_boundaries = Vec::new();
+        let mut segment_point_counts = Vec::new();
+        let mut last_index: Option<usize> = None;
+        let mut current_count = 0;
+        for seg in &xyss {
+            if Some(seg.0) != last_index {
+                if let Some(idx) = last_index {
+                    segment_point_counts.push(current_count);
+                }
+                segment_boundaries.push(seg.0);
+                last_index = Some(seg.0);
+                current_count = 0;
+            }
+            current_count += seg.1.len();
+        }
+        if last_index.is_some() {
+            segment_point_counts.push(current_count);
+        }
+        println!("  segment_boundaries: {:?}", segment_boundaries);
+        println!("  segment_point_counts: {:?}", segment_point_counts);
+        // Packing loop
+        for (ix, seg) in xyss.iter().enumerate() {
+            if prev_index != seg.0 as i32 {
+                prev_index = seg.0 as i32;
+                if counter2 > 0 {
+                    char_point_cmd += &Self::to_fixed_width_hex_b(segment_point_count as i32, 2);
+                    println!(
+                        "[Rust] char_point_cmd append: seg {} count {} -> {}",
+                        counter2 - 1,
+                        segment_point_count,
+                        Self::to_fixed_width_hex_b(segment_point_count as i32, 2)
+                    );
+                    segment_point_count = 0;
+                }
+                counter2 += 1;
+                let width = (seg.2 * scaling_factor).round() as i32;
+                char_width_cmd += &Self::to_fixed_width_hex_b(width, 2);
+                println!(
+                    "[Rust] char_width_cmd append: seg {} width {} -> {}",
+                    counter2 - 1,
+                    width,
+                    Self::to_fixed_width_hex_b(width, 2)
+                );
+                if v >= 8 && seg.1.len() > 1 {
+                    f += 1;
+                }
+                if f >= 8 {
+                    f = 1;
+                }
+            }
+            let segment_points = &seg.1;
+            segment_point_count += segment_points.len();
+            for (index, point) in segment_points.iter().enumerate() {
+                counter += 1;
+                let x_screen = (point.x * scaling_factor + x_offset).round() as i32;
+                let y_screen = (point.y * scaling_factor).round() as i32;
+                let mut point_type = point.z;
+                let mut segment_index = f;
+                if index == 0 {
+                    segment_index = 0;
+                    point_type = 1;
+                }
+                if index == segment_points.len() - 1 {
+                    point_type = 1;
+                }
+                if segment_points.len() == 1 {
+                    point_type = point.z;
+                }
+
+                let packed = format!(
+                    "{}{}{}",
+                    Self::to_fixed_width_hex_b(x_screen, 2),
+                    Self::to_fixed_width_hex_b(y_screen, 2),
+                    Self::to_fixed_width_hex_b(
+                        (segment_index << 4) | (point_type as i32 & 0xF),
+                        2
+                    )
+                );
+                command += &packed;
+                // Debug: print packed point
+                if ix == 0 && index < 4 {
+                    println!(
+                        "[Rust] Packed point {}: x={} y={} segIdx={} type={} -> {}",
+                        index, x_screen, y_screen, segment_index, point_type, packed
+                    );
+                }
+                if test {
+                    b += &format!(
+                        "\n{{{},{},{},{}}},",
+                        x_screen, y_screen, segment_index, point_type
+                    );
+                }
+            }
+        }
+        char_point_cmd += &Self::to_fixed_width_hex_b(segment_point_count as i32, 2);
+        println!(
+            "[Rust] char_point_cmd final append: seg {} count {} -> {}",
+            counter2 - 1,
+            segment_point_count,
+            Self::to_fixed_width_hex_b(segment_point_count as i32, 2)
+        );
+        // Print all packed fields for parity analysis
+        println!("[Rust] encode_layout_to_command_data packed fields:");
+        println!("  cnt: {}", counter);
+        println!("  charCount: {}", counter2);
+        println!("  cmd: {}", command);
+        println!("  charWidthCmd: {}", char_width_cmd);
+        println!("  charPointCmd: {}", char_point_cmd);
+        println!("  se1: {}", se1);
+        println!("  se2: {}", se2);
+        println!("  ver: {}", ver);
+        println!("  time: {}", time);
+        if test {
+            println!("Text coordinates (drawing software format): {}", b);
+        }
+        if counter == 0 {
+            None
+        } else {
+            Some(EncodedCommandData {
+                cnt: counter,
+                char_count: counter2,
+                cmd: command,
+                char_width_cmd,
+                char_point_cmd,
+                se1,
+                se2,
+                ver,
+                time,
+            })
+        }
+    }
+
 
 
 }

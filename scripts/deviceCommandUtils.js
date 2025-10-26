@@ -333,14 +333,18 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
 
     var encodedSegments = [];
 
-   // var encodedCommandData = exports.encodeLayoutToCommandData(
-   //         textCoordinates,
-   //         5,
-   //         0,
-   //         0,
-   //         0
-   //     );
-   // encodedSegments.push(encodedCommandData);
+    var encodedCommandData = exports.encodeLayoutToCommandData(
+            textCoordinates,
+            5,
+            0,
+            0,
+            0
+        );
+    //encodedSegments.push(encodedCommandData);
+  const encodedCommandDataPath = path.join(__dirname, 'encodedCommandData.json');
+  fs.writeFileSync(encodedCommandDataPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
+
+
 
   var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
       textCoordinates,

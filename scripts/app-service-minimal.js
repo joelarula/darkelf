@@ -1077,53 +1077,72 @@ globalThis["webpackJsonp"].push([
                     return n;
                 }
 
-                function generateSegmentedLayoutData(segements, scalingFactor) {
-                    for (var mode = arguments.length > 2 && void 0 !== arguments[2] 
-                        ? arguments[2] 
-                        : 0, n = -1, segmentWidths = [], segmentHeights = [], 
-                            segmentDefaultSize  = 200, totalSegmentWidth  = 0, totalSegmentHeight  = 0, ix = 0; ix < segements.length; ix++) {
-                        if (n != segements[ix][0]) {
-                            n = segements[ix][0];
-                            segmentWidths.push(segements[ix][2] * scalingFactor);
-                            totalSegmentWidth  += segements[ix][2];
-                            segmentHeights.push(segements[ix][3] * scalingFactor);
-                            totalSegmentHeight  += segements[ix][3];
+                function generateSegmentedLayoutData(segments, scalingFactor) {
+                    var mode = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0;
+                    var lastSegmentIndex = -1;
+                    var segmentWidths = [];
+                    var segmentHeights = [];
+                    var segmentDefaultSize = 200;
+                    var totalSegmentWidth = 0;
+                    var totalSegmentHeight = 0;
+                    for (var segmentIdx = 0; segmentIdx < segments.length; segmentIdx++) {
+                        if (lastSegmentIndex != segments[segmentIdx][0]) {
+                            lastSegmentIndex = segments[segmentIdx][0];
+                            segmentWidths.push(segments[segmentIdx][2] * scalingFactor);
+                            totalSegmentWidth += segments[segmentIdx][2];
+                            segmentHeights.push(segments[segmentIdx][3] * scalingFactor);
+                            totalSegmentHeight += segments[segmentIdx][3];
                             // Detailed debug output for parity comparison
-                            console.log(`[JS] Segment ${ix}: index=${segements[ix][0]}, width=${segements[ix][2]} (scaled=${segements[ix][2]*scalingFactor}), height=${segements[ix][3]} (scaled=${segements[ix][3]*scalingFactor})`);
+                            console.log(`[JS] Segment ${segmentIdx}: index=${segments[segmentIdx][0]}, width=${segments[segmentIdx][2]} (scaled=${segments[segmentIdx][2]*scalingFactor}), height=${segments[segmentIdx][3]} (scaled=${segments[segmentIdx][3]*scalingFactor})`);
                         }
                     }
                     // Debug: print segmentWidths and segmentHeights
                     console.log("[JS] generateSegmentedLayoutData segmentWidths:", segmentWidths);
                     console.log("[JS] generateSegmentedLayoutData segmentHeights:", segmentHeights);
                     if (127 == mode || 127 == mode) {
-                        for (var d = 0, b = [], i = 0; i < 9; i++) {
-                            n++;
-                            var j = [{
+                        var verticalOffset = 0;
+                        var verticalFillers = [];
+                        for (var verticalFillerIdx = 0; verticalFillerIdx < 9; verticalFillerIdx++) {
+                            lastSegmentIndex++;
+                            var verticalFillerPoints = [{
                                 x: 0,
-                                y: totalSegmentHeight  / 2 + segmentDefaultSize  / 2 + d,
+                                y: totalSegmentHeight / 2 + segmentDefaultSize / 2 + verticalOffset,
                                 z: 0
                             }];
-                            b.push([n, j, segmentDefaultSize , segmentDefaultSize ]), d += segmentDefaultSize , segmentHeights.push(segmentDefaultSize  * scalingFactor)
+                            verticalFillers.push([lastSegmentIndex, verticalFillerPoints, segmentDefaultSize, segmentDefaultSize]);
+                            verticalOffset += segmentDefaultSize;
+                            segmentHeights.push(segmentDefaultSize * scalingFactor);
                         }
-                        for (var splitedSegements = splitIntoSegmentsBySumLimit(segmentHeights, 800), V = "", f = "", index = 0; index < splitedSegements.length; index++) 
-                            V += toFixedWidthHex(splitedSegements[index][0], 2), 
-                        f += toFixedWidthHex(splitedSegements[index][1], 2);
-                        return [segements.concat(b), V, f, -d * scalingFactor / 2]
+                        var splitVerticalSegments = splitIntoSegmentsBySumLimit(segmentHeights, 800);
+                        var verticalStartHex = "";
+                        var verticalCountHex = "";
+                        for (var splitIdx = 0; splitIdx < splitVerticalSegments.length; splitIdx++) {
+                            verticalStartHex += toFixedWidthHex(splitVerticalSegments[splitIdx][0], 2);
+                            verticalCountHex += toFixedWidthHex(splitVerticalSegments[splitIdx][1], 2);
+                        }
+                        return [segments.concat(verticalFillers), verticalStartHex, verticalCountHex, -verticalOffset * scalingFactor / 2];
                     }
-                    for (var k = 0, m = [], P = 0; P < 9; P++) {
-                        n++;
-                        var u = [{
-                            x: totalSegmentWidth  / 2 + segmentDefaultSize  / 2 + k,
+                    var horizontalOffset = 0;
+                    var horizontalFillers = [];
+                    for (var horizontalFillerIdx = 0; horizontalFillerIdx < 9; horizontalFillerIdx++) {
+                        lastSegmentIndex++;
+                        var horizontalFillerPoints = [{
+                            x: totalSegmentWidth / 2 + segmentDefaultSize / 2 + horizontalOffset,
                             y: 0,
                             z: 0
                         }];
-                        m.push([n, u, segmentDefaultSize , segmentDefaultSize ]), 
-                        k += segmentDefaultSize , 
-                        segmentWidths.push(segmentDefaultSize  * scalingFactor)
+                        horizontalFillers.push([lastSegmentIndex, horizontalFillerPoints, segmentDefaultSize, segmentDefaultSize]);
+                        horizontalOffset += segmentDefaultSize;
+                        segmentWidths.push(segmentDefaultSize * scalingFactor);
                     }
-                    for (var X = splitIntoSegmentsBySumLimit(segmentWidths, 800), N = "", H = "", z = 0; z < X.length; z++) 
-                        N += toFixedWidthHex(X[z][0], 2), H += toFixedWidthHex(X[z][1], 2);
-                    return [segements.concat(m), N, H, -k * scalingFactor / 2]
+                    var splitHorizontalSegments = splitIntoSegmentsBySumLimit(segmentWidths, 800);
+                    var horizontalStartHex = "";
+                    var horizontalCountHex = "";
+                    for (var splitIdx = 0; splitIdx < splitHorizontalSegments.length; splitIdx++) {
+                        horizontalStartHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][0], 2);
+                        horizontalCountHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][1], 2);
+                    }
+                    return [segments.concat(horizontalFillers), horizontalStartHex, horizontalCountHex, -horizontalOffset * scalingFactor / 2];
                 }
 
                 function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {
