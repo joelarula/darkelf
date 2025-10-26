@@ -1,3 +1,4 @@
+use crate::command::CommandGenerator;
 use crate::model::{
     DrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
 };
@@ -1101,6 +1102,14 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
         }
         println!("  segment_boundaries: {:?}", segment_boundaries);
         println!("  segment_point_counts: {:?}", segment_point_counts);
+        // Print xyss segment array for parity comparison
+        println!("[Rust] xyss (segment array):");
+        for (seg_idx, seg) in xyss.iter().enumerate() {
+            println!("  seg {}: idx={}, width={:.2}, points={}", seg_idx, seg.0, seg.2, seg.1.len());
+            for (pt_idx, pt) in seg.1.iter().enumerate() {
+                println!("    pt {}: x={:.2} y={:.2} z={}", pt_idx, pt.x, pt.y, pt.z);
+            }
+        }
         // Packing loop
         for (ix, seg) in xyss.iter().enumerate() {
             if prev_index != seg.0 as i32 {
@@ -1135,10 +1144,10 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
             segment_point_count += segment_points.len();
             for (index, point) in segment_points.iter().enumerate() {
                 counter += 1;
-                let x_screen = (point.x * scaling_factor + x_offset).round() as i32;
-                let y_screen = (point.y * scaling_factor).round() as i32;
-                let mut point_type = point.z;
-                let mut segment_index = f;
+                let x_screen = (point.x * scaling_factor) + x_offset;
+                let y_screen = point.y * scaling_factor;
+                let mut point_type = point.z as u8;
+                let mut segment_index = f as u8;
                 if index == 0 {
                     segment_index = 0;
                     point_type = 1;
@@ -1147,32 +1156,17 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
                     point_type = 1;
                 }
                 if segment_points.len() == 1 {
-                    point_type = point.z;
+                    point_type = point.z as u8;
                 }
-
-                let packed = format!(
-                    "{}{}{}",
-                    Self::to_fixed_width_hex_b(x_screen, 2),
-                    Self::to_fixed_width_hex_b(y_screen, 2),
-                    Self::to_fixed_width_hex_b(
-                        (segment_index << 4) | (point_type as i32 & 0xF),
-                        2
-                    )
-                );
-                command += &packed;
-                // Debug: print packed point
-                if ix == 0 && index < 4 {
-                    println!(
-                        "[Rust] Packed point {}: x={} y={} segIdx={} type={} -> {}",
-                        index, x_screen, y_screen, segment_index, point_type, packed
-                    );
-                }
-                if test {
-                    b += &format!(
-                        "\n{{{},{},{},{}}},",
-                        x_screen, y_screen, segment_index, point_type
-                    );
-                }
+                let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
+                let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
+                let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
+                let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
+                // Print packed hex for each point for parity comparison
+                println!("[Rust] Packed point: seg={} idx={} x={:.3} y={:.3} z={} segIdx={} type={} -> {}{}{}", seg.0, index, x_screen, y_screen, point.z, segment_index, point_type, x_hex, y_hex, combined_hex);
+                command += &x_hex;
+                command += &y_hex;
+                command += &combined_hex;
             }
         }
         char_point_cmd += &Self::to_fixed_width_hex_b(segment_point_count as i32, 2);

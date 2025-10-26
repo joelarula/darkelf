@@ -1458,7 +1458,7 @@ globalThis["webpackJsonp"].push([
                     },
 
 
-                    getXysCmdSimplified: function(segmentPoints) {
+    getXysCmdSimplified: function(segmentPoints) {
     var versionTag = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0;
     var encodedSegments = [];
 

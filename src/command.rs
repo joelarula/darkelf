@@ -654,36 +654,38 @@ impl CommandGenerator {
 
 
 
-/// Simplified XYS command generator for a vector of (index, points, width, height)
 pub fn get_xys_cmd(
     segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
 ) -> String {
-        let segment_time = 5; // Segment time for each segment
-    let command_type = 0;
-    let mirror_mode = 0;
-    let ver_tag = 0;
-    //let scaling_factor = 0.5;
-    // JS: pack all points from all split segments into a single command
-    //let (segmented, _, _, _) = CommandGenerator::generate_segmented_layout_data(segment_points, scaling_factor, 0);
-    
-
-    
-    
-    if let Some(encoded_command_data) = CommandGenerator::encode_layout_to_command_data(
+    if let Some(encoded_command_data) = DrawUtils::encode_layout_to_command_data(
         segment_points,
-        segment_time,
-        command_type,
-        mirror_mode,
-        ver_tag,
+        5.0, // segment_time, matches JS
+        0,   // command_type
+        Some(0), // mirror_mode
     ) {
-        // Output structure matches JS reference
-        return encoded_command_data.cmd.to_uppercase();
+        let result_cmd = format!(
+            "{}{}{}{}{}{}{}{}{}{}{}{}{}",
+            XYS_CMD_HEADER,
+            CommandGenerator::to_fixed_width_hex(encoded_command_data.cnt, 4), // totalPointCount
+            CommandGenerator::to_fixed_width_hex(encoded_command_data.char_count, 2), // totalCharCount
+            encoded_command_data.cmd,
+            CommandGenerator::to_fixed_width_hex(1, 2), // segmentCountHex (always 1 for single segment)
+            CommandGenerator::to_fixed_width_hex(encoded_command_data.char_count, 2), // charCountHex
+            encoded_command_data.char_width_cmd,
+            encoded_command_data.char_point_cmd,
+            encoded_command_data.se1,
+            encoded_command_data.se2,
+            encoded_command_data.ver,
+            encoded_command_data.time,
+            XYS_CMD_FOOTER
+        );
+        return result_cmd.to_uppercase();
     }
     String::new()
 }
 
 
-    pub fn combine_nibbles_b(a: u8, b: u8) -> u8 {
+pub fn combine_nibbles_b(a: u8, b: u8) -> u8 {
     ((a & 0x0F) << 4) | (b & 0x0F)
 }
 
@@ -697,292 +699,5 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
 }
 
 
-// JS parity version with detailed debug output for each segment and point
-
-    pub fn encode_layout_to_command_data(
-        polyline_segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
-        segment_time: u32,
-        command_options: u8,
-        mirror_mode: u8,
-        ver_tag: u8,
-    ) -> Option<EncodedCommandData> {
-        if polyline_segments.is_empty() {
-            return None;
-        }
-        // JS parity: restore v, f, k as in JS logic
-        let mut v = 8;
-        let mut f = v;
-        let mut k = 0;
-
-        let mut counter = 0;
-        let mut counter2 = 0;
-        let mut prev_index: isize = -1;
-        let mut command = String::new();
-        let mut char_point_cmd = String::new();
-        let mut char_width_cmd = String::new();
-
-        let scaling_factor = 0.5;
-        let mirror_mode = mirror_mode as i32;
-        let version_hex = CommandGenerator::to_fixed_width_hex_b(ver_tag as i32, 2);
-        let mut time = if command_options == 1 {
-            CommandGenerator::to_fixed_width_hex_b((segment_time * 10) as i32, 2)
-        } else {
-            CommandGenerator::to_fixed_width_hex_b(segment_time as i32, 2)
-        };
-
-        // Match JS: generateSegmentedLayoutData(polyline_segments, scaling_factor, mirror_mode)
-        let (xyss, grouped_segments, se1, se2, x_offset, group_point_counts, segment_widths) = DrawUtils::generate_segmented_layout_data(
-            polyline_segments,
-            scaling_factor,
-            mirror_mode,
-        );
-        // Debug: Print protocol segment boundaries, start/end indices, and point counts for parity analysis
-        println!("[DEBUG] Protocol segment boundaries and indices:");
-        for (i, seg) in grouped_segments.iter().enumerate() {
-            let start_idx = if seg.1.is_empty() { 0 } else { 0 };
-            let end_idx = if seg.1.is_empty() { 0 } else { seg.1.len() - 1 };
-            let point_count = seg.1.len();
-            println!("  Group {:02}: start_idx = {}, end_idx = {}, point_count = {}", i, start_idx, end_idx, point_count);
-        }
-        // Debug: Print protocol segment boundaries and per-segment point counts for parity analysis
-        println!("[DEBUG] Protocol segment boundaries and point counts:");
-        for (i, count) in group_point_counts.iter().enumerate() {
-            println!("  Segment {:02}: point_count = {} (hex {:02X})", i, count, count);
-        }
-
-        // JS parity: Use actual segment count for metadata region, pad only as needed
-        // JS parity: Always pad segment metadata region to 16 segments, use last value for padding
-        // JS parity: Use actual segment count for metadata region, pad only as needed
-        let actual_segment_count = segment_widths.len().max(group_point_counts.len());
-        let mut padded_segment_widths: Vec<u8> = segment_widths.iter().map(|w| w.round().max(0.0).min(255.0) as u8).collect();
-        let mut padded_point_counts: Vec<u8> = group_point_counts.iter().map(|&c| c.max(0).min(255) as u8).collect();
-        while padded_segment_widths.len() < actual_segment_count {
-            let last = *padded_segment_widths.last().unwrap_or(&0);
-            padded_segment_widths.push(last);
-        }
-        while padded_point_counts.len() < actual_segment_count {
-            let last = *padded_point_counts.last().unwrap_or(&0);
-            padded_point_counts.push(last);
-        }
-        let mut char_width_cmd_vec: Vec<String> = Vec::new();
-        let mut char_point_cmd_vec: Vec<String> = Vec::new();
-        println!("[RUST] Segment metadata for all {} segments:", actual_segment_count);
-        for i in 0..actual_segment_count {
-            let width = padded_segment_widths[i];
-            let point_count = padded_point_counts[i];
-            println!("  Segment {:02}: width = {} (hex {:02X}), point_count = {} (hex {:02X})", i, width, width, point_count, point_count);
-            char_width_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(width as i32, 2));
-            char_point_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2));
-        }
-        char_width_cmd = char_width_cmd_vec.join("");
-        char_point_cmd = char_point_cmd_vec.join("");
-        let segment_count = actual_segment_count;
-        let segment_count_hex = format!("{:02X}", segment_count);
-        println!("[DEBUG] segment count: {} hex: {}", segment_count, segment_count_hex);
-        println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
-        println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
-        // JS parity: pad se1 and se2 to actual segment count (2 hex chars per segment)
-        let se1_hex = {
-            let mut v = String::new();
-            for i in 0..segment_count {
-                v += &format!("{:02x}", if i < segment_count - 1 { 0 } else { 1 });
-            }
-            v
-        };
-        let se2_hex = {
-            let mut v = String::new();
-            for i in 0..segment_count {
-                v += &format!("{:02x}", (i + 1) as u8);
-            }
-            v
-        };
-
-        for (ix, seg) in xyss.iter().enumerate() {
-            if prev_index != seg.0 as isize {
-                prev_index = seg.0 as isize;
-                counter2 += 1;
-                if v >= 8 && seg.1.len() > 1 {
-                    f += 1;
-                }
-            }
-            if f >= 8 {
-                f = 1;
-            }
-
-            let segment_points = &seg.1;
-            k += segment_points.len();
-            for (index, point) in segment_points.iter().enumerate() {
-                counter += 1;
-                // Calculate packed values
-                let x_screen = (point.x * scaling_factor) + x_offset;
-                let y_screen = point.y * scaling_factor;
-                let mut point_type = point.z as u8;
-                let mut segment_index = f as u8;
-                if index == 0 {
-                    segment_index = 0;
-                    point_type = 1;
-                }
-                if index == segment_points.len() - 1 {
-                    point_type = 1;
-                }
-                if segment_points.len() == 1 {
-                    point_type = point.z as u8;
-                }
-                let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
-                let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
-                let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
-                let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
-                // Debug output for first segment, first point
-                if ix == 0 && index == 0 {
-                    println!("[DEBUG] Packing first segment/point:");
-                    println!("  x_screen: {:.3} -> {}", x_screen, x_hex);
-                    println!("  y_screen: {}", y_hex);
-                    println!("  segment_index: {}", segment_index);
-                    println!("  point_type: {}", point_type);
-                    println!("  combined: {} -> {}", combined, combined_hex);
-                }
-                command += &x_hex;
-                command += &y_hex;
-                command += &combined_hex;
-            }
-        }
-
-        // Debug output for char_width_cmd and char_point_cmd
-        println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
-        println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
-        // Annotate each byte of char_point_cmd with its group index
-        let bytes = char_point_cmd.as_bytes();
-        for (i, b) in bytes.iter().enumerate() {
-            println!("[DEBUG] char_point_cmd byte {}: {:02X} (group {})", i, b, i);
-        }
-
-        if counter == 0 {
-            return None;
-        }
-
-        // JS parity: total point count is sum of all points in grouped segments
-        let total_point_count: usize = xyss.iter().map(|seg| seg.1.len()).sum();
-        let total_points_hex = CommandGenerator::to_fixed_width_hex_b(total_point_count as i32, 4);
-        println!("[DEBUG] total_point_count: {} hex: {}", total_point_count, total_points_hex);
-        let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
-        // JS logic: both total_char_count_hex and segment_count_hex should be the number of segments
-        // JS parity: segment_count and total_char_count should be the number of protocol segments (segment_boundaries.len())
-
-        let segment_count_hex = format!("{:02X}", segment_count); // JS packs as 1 byte, but hex string is 2 chars
-        let total_char_count_hex = format!("{:02X}", segment_count);
-        println!("[DEBUG] segment_count source: {} hex: {}", segment_count, segment_count_hex);
-        println!("[DEBUG] total_char_count source: {} hex: {}", segment_count, total_char_count_hex);
-
-        // JS parity: segment metadata region is segment_count_hex + char_width_cmd + char_point_cmd + se1 + se2
-        println!("[DEBUG] Packing segment_count_hex: {}", segment_count_hex);
-        // JS parity: pad se1 and se2 to actual segment count (2 hex chars per segment)
-        let se1_hex = {
-            let mut v = String::new();
-            for i in 0..segment_count {
-                v += &format!("{:02x}", if i < segment_count - 1 { 0 } else { 1 });
-            }
-            v
-        };
-        let se2_hex = {
-            let mut v = String::new();
-            for i in 0..segment_count {
-                v += &format!("{:02x}", (i + 1) as u8);
-            }
-            v
-        };
-        let segment_metadata_region = format!(
-            "{}{}{}{}{}",
-            segment_count_hex,
-            char_width_cmd,
-            char_point_cmd,
-            se1_hex,
-            se2_hex
-        );
-
-        let result_cmd = format!(
-            "{}{}{}{}{}{}{}{}",
-            XYS_CMD_HEADER,
-            total_points_hex,
-            segment_count_hex,
-            command,
-            segment_metadata_region,
-            version_hex,
-            time,
-            XYS_CMD_FOOTER
-        );
-
-        // Print annotated debug output for packed fields around byte 137
-        println!("[DEBUG] Packed fields around byte 137:");
-        println!("  total_char_count_hex: {}", total_char_count_hex);
-        println!("  segment_count_hex: {}", segment_count_hex);
-        println!("  char_width_cmd: {}", char_width_cmd);
-        println!("  char_point_cmd: {}", char_point_cmd);
-        println!("  se1: {}", se1);
-        println!("  se2: {}", se2);
-
-        // Print and annotate segment metadata region (bytes 137–150)
-        let packed_cmd_bytes = result_cmd.as_bytes();
-        let start = 137;
-        let end = 150.min(packed_cmd_bytes.len());
-        println!("[DEBUG] Segment metadata region (bytes {}–{}):", start, end-1);
-        for i in start..end {
-            let b = packed_cmd_bytes[i];
-            let offset = i - start;
-            let annotation = if offset == 0 {
-                "segment_count_hex".to_string()
-            } else if offset <= 32 {
-                format!("char_width_cmd[{}]", offset - 1)
-            } else if offset <= 64 {
-                format!("char_point_cmd[{}]", offset - 33)
-            } else if offset <= 96 {
-                format!("se1[{}]", offset - 65)
-            } else {
-                format!("se2[{}]", offset - 97)
-            };
-            println!("  Byte {:03}: {:02X} [{}]", i, b, annotation);
-        }
-
-        // Debug: Print and annotate first 16 bytes
-        let debug_bytes = result_cmd.chars().collect::<Vec<_>>();
-        let debug_len = debug_bytes.len().min(32); // 16 bytes = 32 hex chars
-        println!("[DEBUG] First 16 bytes of packed command:");
-        for i in (0..debug_len).step_by(2) {
-            let byte_str = format!("{}{}", debug_bytes[i], debug_bytes[i+1]);
-            let annotation = match i {
-                0 => "Header[0]", 2 => "Header[1]", 4 => "Header[2]", 6 => "Header[3]",
-                8 => "TotalPointCount[0]", 10 => "TotalPointCount[1]",
-                12 => "CharCount[0]", 14 => "CharCount[1]",
-                16 => "FirstPoint[0]", 18 => "FirstPoint[1]",
-                20 => "FirstPoint[2]", 22 => "FirstPoint[3]",
-                24 => "FirstPoint[4]", 26 => "FirstPoint[5]",
-                28 => "FirstPoint[6]", 30 => "FirstPoint[7]",
-                _ => "..."
-            };
-            println!("  Byte {:02}: {} [{}]", i/2, byte_str, annotation);
-        }
-
-        let result = EncodedCommandData {
-            cnt: counter as usize,
-            char_count: counter2 as usize,
-            cmd: result_cmd.clone(),
-            char_width_cmd: char_width_cmd.clone(),
-            char_point_cmd: char_point_cmd.clone(),
-            se1: se1.clone(),
-            se2: se2.clone(),
-            ver: version_hex.clone(),
-            time: time.clone(),
-        };
-        println!("[DEBUG] EncodedCommandData result:");
-        println!("  cnt: {}", result.cnt);
-        println!("  char_count: {}", result.char_count);
-        println!("  cmd: {}", result.cmd);
-        println!("  char_width_cmd: {}", result.char_width_cmd);
-        println!("  char_point_cmd: {}", result.char_point_cmd);
-        println!("  se1: {}", result.se1);
-        println!("  se2: {}", result.se2);
-        println!("  ver: {}", result.ver);
-        println!("  time: {}", result.time);
-        Some(result)
-    }
 
 }
