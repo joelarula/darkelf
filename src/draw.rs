@@ -885,7 +885,8 @@ impl DrawUtils {
             out.extend(b);
 
             // JS: split heights for vertical mode
-            let splited_segments = Self::split_into_segments_by_sum_limit(&segment_heights, 800.0);
+            let segment_heights_f64: Vec<f64> = segment_heights.iter().map(|&x| x as f64).collect();
+            let splited_segments = Self::split_into_segments_by_sum_limit(&segment_heights_f64, 800.0);
             let mut V = String::new();
             let mut f = String::new();
             for (start, count) in splited_segments.iter() {
@@ -913,7 +914,8 @@ impl DrawUtils {
         out.extend(m);
 
         // JS: split widths for horizontal mode
-        let X = Self::split_into_segments_by_sum_limit(&segment_widths, 800.0);
+        let segment_widths_f64: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
+        let X = Self::split_into_segments_by_sum_limit(&segment_widths_f64, 800.0);
         let mut N = String::new();
         let mut H = String::new();
         for (start, count) in X.iter() {
@@ -934,47 +936,42 @@ impl DrawUtils {
     }
 
 
-        // Layout and segmentation functions
-    pub fn split_into_segments_by_sum_limit(values: &[f32], limit: f32) -> Vec<(usize, usize)> {
-        // JS reference: splitIntoSegmentsBySumLimit
-        println!("[DEBUG] split_into_segments_by_sum_limit input: {:?}, limit: {}", values, limit);
-        let mut r = 0.0_f32;
-        let mut n: Vec<(usize, usize)> = Vec::new();
-        let mut h = 0_usize;
-        let mut a = 0_usize;
-        let mut i = 0_usize;
-        while i < values.len() {
-            if r + values[i] <= limit {
-                a += 1;
-                n.push((h, a));
-                r += values[i];
-            } else {
-                let mut temp_width = r;
-                loop {
-                    if temp_width <= limit {
-                        a += 1;
-                        n.push((h, a));
-                        r = temp_width + values[i];
-                        break;
-                    }
-                    if temp_width > limit && temp_width - values[h] < limit {
-                        a += 1;
-                        n.push((h, a));
-                        r += values[i];
-                        break;
-                    }
-                    temp_width -= values[h];
-                    r -= values[h];
-                    h += 1;
-                    a = a.saturating_sub(1);
+pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usize, usize)> {
+    let mut r = 0.0;
+    let mut n = Vec::new();
+    let mut h = 0;
+    let mut a = 0;
+    let mut i = 0;
+    while i < numbers.len() {
+        if r + numbers[i] <= limit {
+            a += 1;
+            n.push((h, a));
+            r += numbers[i];
+        } else {
+            let mut temp_width = r;
+            loop {
+                if temp_width <= limit {
+                    a += 1;
+                    n.push((h, a));
+                    r = temp_width + numbers[i];
+                    break;
                 }
+                if temp_width > limit && temp_width - numbers[h] < limit {
+                    a += 1;
+                    n.push((h, a));
+                    r += numbers[i];
+                    break;
+                }
+                temp_width -= numbers[h];
+                r -= numbers[h];
+                h += 1;
+                a -= 1;
             }
-            i += 1;
         }
-        println!("[DEBUG] split_into_segments_by_sum_limit output: {:?}", n);
-        n
+        i += 1;
     }
-
+    n
+}
 
     pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let clamped = if width == 2 {

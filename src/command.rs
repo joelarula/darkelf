@@ -743,13 +743,35 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             scaling_factor,
             0,
         );
+        // Use xyss directly for packing, matching JS logic
 
+            // Fix: pack all grouped segments' width and point count fields
+            char_width_cmd.clear();
+            char_point_cmd.clear();
+            for (ix, seg) in xyss.iter().enumerate() {
+                let width_val = (seg.2 * scaling_factor).round() as i32;
+                println!("[DEBUG] char_width_cmd source for segment {}: {}", ix, width_val);
+                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+                let point_count = seg.1.len();
+                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
+                println!("[DEBUG] segment {} point_count: {} hex: {}", ix, point_count, point_count_hex);
+                char_point_cmd += &point_count_hex;
+            }
         // Print source values for char_width_cmd
 println!("[DEBUG] char_width_cmd source values:");
 for (ix, seg) in xyss.iter().enumerate() {
     let width_val = (seg.2 * scaling_factor).round() as i32;
     println!("  Segment {}: width source = {}", ix, width_val);
 }
+
+    // Print segment boundaries and point counts for each segment
+    println!("[DEBUG] Segment boundaries and point counts:");
+    for (ix, seg) in xyss.iter().enumerate() {
+        let start_idx = seg.0;
+        let point_count = seg.1.len();
+        println!("  Segment {}: start_idx = {}, point_count = {}", ix, start_idx, point_count);
+    }
+    println!("[DEBUG] Total segment count: {}", xyss.len());
 
         // Print debug info for first segment's points before packing
         if !xyss.is_empty() {
@@ -777,14 +799,15 @@ for (ix, seg) in xyss.iter().enumerate() {
         for (ix, seg) in xyss.iter().enumerate() {
             if prev_index != seg.0 as isize {
                 prev_index = seg.0 as isize;
-                if counter2 > 0 {
-                    char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
-                    k = 0;
-                }
                 counter2 += 1;
                 let width_val = (seg.2 * scaling_factor).round() as i32;
                 println!("[DEBUG] char_width_cmd source for segment {}: {}", ix, width_val);
                 char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
+                // Pack per-segment point count as a single byte
+                let point_count = seg.1.len();
+                let point_count_hex = CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2);
+                println!("[DEBUG] segment {} point_count: {} hex: {}", ix, point_count, point_count_hex);
+                char_point_cmd += &point_count_hex;
                 if V >= 8 && seg.1.len() > 1 {
                     F += 1;
                 }
@@ -831,26 +854,32 @@ for (ix, seg) in xyss.iter().enumerate() {
                     command += &combined_hex;
             }
         }
-        char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
+    // Remove trailing total point count from char_point_cmd (not in JS)
 
             // Debug output for char_width_cmd and char_point_cmd
     println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
     println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
+    // Annotate each byte of char_point_cmd with its segment index
+    let bytes = char_point_cmd.as_bytes();
+    for (i, b) in bytes.iter().enumerate() {
+        println!("[DEBUG] char_point_cmd byte {}: {:02X} (segment {})", i, b, i);
+    }
 
         if counter == 0 {
             return None;
         }
 
-        let total_points_hex = CommandGenerator::to_fixed_width_hex_b(counter as i32, 4);
+    // JS parity: total point count is sum of all points in grouped segments
+    let total_point_count: usize = xyss.iter().map(|seg| seg.1.len()).sum();
+    let total_points_hex = CommandGenerator::to_fixed_width_hex_b(total_point_count as i32, 4);
+    println!("[DEBUG] total_point_count: {} hex: {}", total_point_count, total_points_hex);
         let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
         // JS logic: both total_char_count_hex and segment_count_hex should be the number of segments
         let segment_count = xyss.len();
-    // Only count real segments (first 10)
-    let real_segment_count = 10;
-    let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(real_segment_count as i32, 2);
-    let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(real_segment_count as i32, 2);
-    println!("[DEBUG] segment_count source: {} hex: {}", real_segment_count, segment_count_hex);
-    println!("[DEBUG] total_char_count source: {} hex: {}", real_segment_count, total_char_count_hex);
+        let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+        let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+        println!("[DEBUG] segment_count source: {} hex: {}", segment_count, segment_count_hex);
+        println!("[DEBUG] total_char_count source: {} hex: {}", segment_count, total_char_count_hex);
 
 
 
@@ -860,16 +889,25 @@ for (ix, seg) in xyss.iter().enumerate() {
             total_points_hex,
             char_count_total_hex,
             command,
+            char_point_cmd, // Move per-segment point counts before total_char_count_hex and segment_count_hex
             total_char_count_hex,
             segment_count_hex,
             char_width_cmd,
-            char_point_cmd,
             se1,
             se2,
             version_hex,
             time,
             XYS_CMD_FOOTER
         );
+
+        // Print annotated debug output for packed fields around byte 137
+        println!("[DEBUG] Packed fields around byte 137:");
+        println!("  total_char_count_hex: {}", total_char_count_hex);
+        println!("  segment_count_hex: {}", segment_count_hex);
+        println!("  char_width_cmd: {}", char_width_cmd);
+        println!("  char_point_cmd: {}", char_point_cmd);
+        println!("  se1: {}", se1);
+        println!("  se2: {}", se2);
 
         // Debug: Print and annotate first 16 bytes
         let debug_bytes = result_cmd.chars().collect::<Vec<_>>();
