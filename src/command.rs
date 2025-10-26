@@ -731,34 +731,45 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         };
 
         // Match JS: generateSegmentedLayoutData(polyline_segments, scaling_factor, mirror_mode)
-        let (xyss, grouped_segments, se1, se2, x_offset, group_point_counts) = DrawUtils::generate_segmented_layout_data(
+        let (xyss, grouped_segments, se1, se2, x_offset, group_point_counts, segment_widths) = DrawUtils::generate_segmented_layout_data(
             polyline_segments,
             scaling_factor,
             mirror_mode,
         );
+        // Debug: Print protocol segment boundaries, start/end indices, and point counts for parity analysis
+        println!("[DEBUG] Protocol segment boundaries and indices:");
+        for (i, seg) in grouped_segments.iter().enumerate() {
+            let start_idx = if seg.1.is_empty() { 0 } else { 0 };
+            let end_idx = if seg.1.is_empty() { 0 } else { seg.1.len() - 1 };
+            let point_count = seg.1.len();
+            println!("  Group {:02}: start_idx = {}, end_idx = {}, point_count = {}", i, start_idx, end_idx, point_count);
+        }
         // Debug: Print protocol segment boundaries and per-segment point counts for parity analysis
         println!("[DEBUG] Protocol segment boundaries and point counts:");
         for (i, count) in group_point_counts.iter().enumerate() {
             println!("  Segment {:02}: point_count = {} (hex {:02X})", i, count, count);
         }
 
-        // JS parity: Build segment boundaries and point counts from the full segment list (not just protocol segments)
+        // JS parity: Build segment metadata fields for up to 16 segments, pad as needed
         let mut char_width_cmd_vec: Vec<String> = Vec::new();
         let mut char_point_cmd_vec: Vec<String> = Vec::new();
-        println!("[RUST] Segment boundaries and per-segment values (full segment list, padded to 16):");
+        println!("[RUST] Segment metadata for all 16 segments:");
+        let input_count = segment_widths.len().max(group_point_counts.len());
         for i in 0..16 {
-            if i < xyss.len() {
-                let seg = &xyss[i];
-                let width = (seg.2 * scaling_factor).round().max(0.0).min(255.0) as u8;
-                let point_count = seg.1.len().max(0).min(255) as u8;
-                println!("  Segment {:02}: width = {} (hex {:02X}), point_count = {} (hex {:02X})", i, width, width, point_count, point_count);
-                char_width_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(width as i32, 2));
-                char_point_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2));
+            let width = if i < segment_widths.len() {
+                segment_widths[i].round().max(0.0).min(255.0) as u8
             } else {
-                // Pad unused segments
-                char_width_cmd_vec.push("FF".to_string());
-                char_point_cmd_vec.push("00".to_string());
-            }
+                0x10
+            };
+            let point_count = if i < group_point_counts.len() {
+                group_point_counts[i].max(0).min(255) as u8
+            } else {
+                // JS fallback: pad with incremental values, last is 0
+                if i < 15 { (i - group_point_counts.len() + 1) as u8 } else { 0x00 }
+            };
+            println!("  Segment {:02}: width = {} (hex {:02X}), point_count = {} (hex {:02X})", i, width, width, point_count, point_count);
+            char_width_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(width as i32, 2));
+            char_point_cmd_vec.push(CommandGenerator::to_fixed_width_hex_b(point_count as i32, 2));
         }
         char_width_cmd = char_width_cmd_vec.join("");
         char_point_cmd = char_point_cmd_vec.join("");
@@ -917,17 +928,28 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             println!("  Byte {:02}: {} [{}]", i/2, byte_str, annotation);
         }
 
-        Some(EncodedCommandData {
+        let result = EncodedCommandData {
             cnt: counter as usize,
             char_count: counter2 as usize,
-            cmd: result_cmd,
-            char_width_cmd: char_width_cmd,
-            char_point_cmd: char_point_cmd,
-            se1: se1,
-            se2: se2,
-            ver: version_hex,
-            time: time,
-        })
+            cmd: result_cmd.clone(),
+            char_width_cmd: char_width_cmd.clone(),
+            char_point_cmd: char_point_cmd.clone(),
+            se1: se1.clone(),
+            se2: se2.clone(),
+            ver: version_hex.clone(),
+            time: time.clone(),
+        };
+        println!("[DEBUG] EncodedCommandData result:");
+        println!("  cnt: {}", result.cnt);
+        println!("  char_count: {}", result.char_count);
+        println!("  cmd: {}", result.cmd);
+        println!("  char_width_cmd: {}", result.char_width_cmd);
+        println!("  char_point_cmd: {}", result.char_point_cmd);
+        println!("  se1: {}", result.se1);
+        println!("  se2: {}", result.se2);
+        println!("  ver: {}", result.ver);
+        println!("  time: {}", result.time);
+        Some(result)
     }
 
 }

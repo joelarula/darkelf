@@ -1106,7 +1106,8 @@ globalThis["webpackJsonp"].push([
                             b.push([n, j, segmentDefaultSize , segmentDefaultSize ]), d += segmentDefaultSize , segmentHeights.push(segmentDefaultSize  * scalingFactor)
                         }
                         for (var splitedSegements = splitIntoSegmentsBySumLimit(segmentHeights, 800), V = "", f = "", index = 0; index < splitedSegements.length; index++) 
-                            V += toFixedWidthHex(splitedSegements[index][0], 2), f += toFixedWidthHex(splitedSegements[index][1], 2);
+                            V += toFixedWidthHex(splitedSegements[index][0], 2), 
+                        f += toFixedWidthHex(splitedSegements[index][1], 2);
                         return [segements.concat(b), V, f, -d * scalingFactor / 2]
                     }
                     for (var k = 0, m = [], P = 0; P < 9; P++) {

@@ -845,7 +845,7 @@ impl DrawUtils {
         segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
         scaling_factor: f32,
         mode: i32,
-    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32, Vec<usize>) {
+    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32, Vec<usize>, Vec<f32>) {
         let mut n = -1_i32;
         let mut segment_widths: Vec<f32> = Vec::new();
         let mut segment_heights: Vec<f32> = Vec::new();
@@ -907,7 +907,7 @@ impl DrawUtils {
                 let count = group.1.len();
                 group_point_counts.push(count);
             }
-            return (out, grouped_segments, V, f, x_offset, group_point_counts);
+            return (out, grouped_segments, V, f, x_offset, group_point_counts, segment_heights);
         }
 
         // JS: horizontal filler segments
@@ -961,7 +961,7 @@ impl DrawUtils {
     println!("  N: {} (len {})", N, N.len());
     println!("  H: {} (len {})", H, H.len());
     println!("  x_offset: {}", x_offset);
-    (out, grouped_segments, N, H, x_offset, group_point_counts)
+    (out, grouped_segments, N, H, x_offset, group_point_counts, segment_widths)
     }
 
     /// Helper function to extract and clamp numeric values

@@ -28,9 +28,10 @@ fn test_glyphs() {
     println!("Wrote text_data to darkelf_coordinates.json");
 
 
-    let segment_points  = DrawUtils::generate_segmented_layout_data(&simplified_shapes, 0.5, 0);
-    let json2 = serde_json::to_string_pretty(&segment_points).unwrap();
-    std::fs::write("segment_points.txt", json2).unwrap();
+    let (segment_points, grouped_segments, n, h, x_offset, group_point_counts, extra_floats) = DrawUtils::generate_segmented_layout_data(&simplified_shapes, 0.5, 0);
+    println!("[TEST] n: {} (len {})", n, n.len());
+    println!("[TEST] h: {} (len {})", h, h.len());
+    println!("[TEST] x_offset: {}", x_offset);
 
 
     let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes);
