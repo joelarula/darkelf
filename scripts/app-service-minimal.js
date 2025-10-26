@@ -1087,6 +1087,9 @@ globalThis["webpackJsonp"].push([
                                 segmentWidths.push(segements[ix][2] * scalingFactor), 
                                 totalSegmentWidth  += segements[ix][2], 
                                 segmentHeights.push(segements[ix][3] * scalingFactor), totalSegmentHeight  += segements[ix][3]);
+                    // Debug: print segmentWidths and segmentHeights
+                    console.log("[JS] generateSegmentedLayoutData segmentWidths:", segmentWidths);
+                    console.log("[JS] generateSegmentedLayoutData segmentHeights:", segmentHeights);
                     if (127 == mode || 127 == mode) {
                         for (var d = 0, b = [], i = 0; i < 9; i++) {
                             n++;
@@ -1145,11 +1148,33 @@ globalThis["webpackJsonp"].push([
                     else {
                         var segementData = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
                         xyss = segementData[0], se1 = segementData[1], se2 = segementData[2], xOffset = segementData[3]
-
+                        // Debug: print segment grouping and metadata
+                        console.log("[JS] generateSegmentedLayoutData output:");
+                        console.log("  xyss.length:", xyss.length);
+                        console.log("  se1:", se1);
+                        console.log("  se2:", se2);
+                        console.log("  xOffset:", xOffset);
+                        // Print segment indices and point counts
+                        let segmentBoundaries = [];
+                        let segmentPointCounts = [];
+                        let lastIndex = null;
+                        let currentCount = 0;
+                        for (let i = 0; i < xyss.length; i++) {
+                            if (xyss[i][0] !== lastIndex) {
+                                if (lastIndex !== null) segmentPointCounts.push(currentCount);
+                                segmentBoundaries.push(xyss[i][0]);
+                                lastIndex = xyss[i][0];
+                                currentCount = 0;
+                            }
+                            currentCount += xyss[i][1].length;
+                        }
+                        if (lastIndex !== null) segmentPointCounts.push(currentCount);
+                        console.log("  segmentBoundaries:", segmentBoundaries);
+                        console.log("  segmentPointCounts:", segmentPointCounts);
                     }
                     for (var ix = 0; ix < xyss.length; ix++) {
                         prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 
-                            && (charPointCmd += toFixedWidthHex(k, 2), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
+                            && (charPointCmd += toFixedWidthHex(k, 2), console.log(`[JS] charPointCmd append: seg ${counter2-1} count ${k} -> ${toFixedWidthHex(k,2)}`), k = 0), counter2++, charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), console.log(`[JS] charWidthCmd append: seg ${counter2-1} width ${Math.round(Number(xyss[ix][2] * scalingFactor))} -> ${toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)),2)}`), V >= 8 && xyss[ix][1].length > 1 && F++), F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
                         k += segmentPoints.length;
                         for (var index = 0; index < segmentPoints.length; index++) {
@@ -1166,13 +1191,27 @@ globalThis["webpackJsonp"].push([
                                     && 0 == segmentPoints[index + 1].s || index == segmentPoints.length - 1) 
                                 && (pointType = 3)), 
                             command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2);
-
-     
-
-                           test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
+                            // Debug: print packed point
+                            if (ix === 0 && index < 4) {
+                                console.log(`[JS] Packed point ${index}: x=${xScreen} y=${yScreen} segIdx=${segmentIndex} type=${pointType} -> ${toFixedWidthHex(xScreen)}${toFixedWidthHex(yScreen)}${toFixedWidthHex(combineNibbles(segmentIndex, pointType),2)}`);
+                            }
+                            test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
-                  return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), charPointCmd += toFixedWidthHex(k, 2), 0 == counter 
+                    charPointCmd += toFixedWidthHex(k, 2);
+                    console.log(`[JS] charPointCmd final append: seg ${counter2-1} count ${k} -> ${toFixedWidthHex(k,2)}`);
+                    // Print all packed fields for parity analysis
+                    console.log("[JS] encodeLayoutToCommandData packed fields:");
+                    console.log("  cnt:", counter);
+                    console.log("  charCount:", counter2);
+                    console.log("  cmd:", command);
+                    console.log("  charWidthCmd:", charWidthCmd);
+                    console.log("  charPointCmd:", charPointCmd);
+                    console.log("  se1:", se1);
+                    console.log("  se2:", se2);
+                    console.log("  ver:", ver);
+                    console.log("  time:", time);
+                    return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), 0 == counter 
                         ? null : {
                         cnt: counter,
                         charCount: counter2,

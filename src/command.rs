@@ -743,6 +743,11 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             scaling_factor,
             mirror_mode,
         );
+        // Debug: Print protocol segment boundaries and per-segment point counts for parity analysis
+        println!("[DEBUG] Protocol segment boundaries and point counts:");
+        for (i, count) in group_point_counts.iter().enumerate() {
+            println!("  Segment {:02}: point_count = {} (hex {:02X})", i, count, count);
+        }
         // If the function does not return the expected type, you may need to update this line to match the actual return type, for example:
         // let (xyss, se1, se2, x_offset): (Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32) = DrawUtils::generate_segmented_layout_data(
         //     polyline_segments,
