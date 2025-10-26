@@ -716,6 +716,9 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         let mut command = String::new();
         let mut char_point_cmd = String::new();
         let mut char_width_cmd = String::new();
+
+
+
         let mut V = 8;
         let scaling_factor = 0.5;
         let mut F = V;
@@ -741,6 +744,13 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             0,
         );
 
+        // Print source values for char_width_cmd
+println!("[DEBUG] char_width_cmd source values:");
+for (ix, seg) in xyss.iter().enumerate() {
+    let width_val = (seg.2 * scaling_factor).round() as i32;
+    println!("  Segment {}: width source = {}", ix, width_val);
+}
+
         // Print debug info for first segment's points before packing
         if !xyss.is_empty() {
             let seg = &xyss[0];
@@ -749,6 +759,12 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
                 println!("[DEBUG] First segment point {}: x={} y={} z={}", i, pt.x, pt.y, pt.z);
             }
         }
+
+            // Print seg.3 for each segment to confirm which field is the segment count
+            println!("[DEBUG] seg.3 values for each segment:");
+            for (i, seg) in xyss.iter().enumerate() {
+                println!("  Segment {}: seg.3 = {}", i, seg.3);
+            }
 
         let mut total_point_count = 0;
         let mut total_char_count = 0;
@@ -766,7 +782,9 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
                     k = 0;
                 }
                 counter2 += 1;
-                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b((seg.2 * scaling_factor).round() as i32, 2);
+                let width_val = (seg.2 * scaling_factor).round() as i32;
+                println!("[DEBUG] char_width_cmd source for segment {}: {}", ix, width_val);
+                char_width_cmd += &CommandGenerator::to_fixed_width_hex_b(width_val, 2);
                 if V >= 8 && seg.1.len() > 1 {
                     F += 1;
                 }
@@ -774,6 +792,8 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             if F >= 8 {
                 F = 1;
             }
+
+            
             let segment_points = &seg.1;
             k += segment_points.len();
             for (index, point) in segment_points.iter().enumerate() {
@@ -813,18 +833,22 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
         }
         char_point_cmd += &CommandGenerator::to_fixed_width_hex_b(k as i32, 2);
 
+            // Debug output for char_width_cmd and char_point_cmd
+    println!("[DEBUG] char_width_cmd: {}", char_width_cmd);
+    println!("[DEBUG] char_point_cmd: {}", char_point_cmd);
+
         if counter == 0 {
             return None;
         }
 
         let total_points_hex = CommandGenerator::to_fixed_width_hex_b(counter as i32, 4);
         let char_count_total_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
-        let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(counter2 as i32, 2);
+        // JS logic: both total_char_count_hex and segment_count_hex should be the number of segments
+        let segment_count = xyss.len();
+        let segment_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
+        let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(segment_count as i32, 2);
 
-        // JS logic: sum of all segment char counts (totalCharCount)
-        // For single-segment, this is just counter2, but for multi-segment, sum up per-segment char counts
-        // Here, since we only have one segment, use counter2, but for full parity, you may need to sum per-segment counts
-        let total_char_count_hex = CommandGenerator::to_fixed_width_hex_b(counter as i32, 2);
+
 
         let result_cmd = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}",
@@ -832,8 +856,8 @@ pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
             total_points_hex,
             char_count_total_hex,
             command,
-            segment_count_hex,
             total_char_count_hex,
+            segment_count_hex,
             char_width_cmd,
             char_point_cmd,
             se1,
