@@ -1074,6 +1074,7 @@ globalThis["webpackJsonp"].push([
                                 a -= 1;
                             }
                         }
+                    console.log("[JS] splitIntoSegmentsBySumLimit result:", n);
                     return n;
                 }
 
@@ -1114,6 +1115,7 @@ globalThis["webpackJsonp"].push([
                             segmentHeights.push(segmentDefaultSize * scalingFactor);
                         }
                         var splitVerticalSegments = splitIntoSegmentsBySumLimit(segmentHeights, 800);
+                        
                         var verticalStartHex = "";
                         var verticalCountHex = "";
                         for (var splitIdx = 0; splitIdx < splitVerticalSegments.length; splitIdx++) {
@@ -1136,13 +1138,14 @@ globalThis["webpackJsonp"].push([
                         segmentWidths.push(segmentDefaultSize * scalingFactor);
                     }
                     var splitHorizontalSegments = splitIntoSegmentsBySumLimit(segmentWidths, 800);
-                    var horizontalStartHex = "";
-                    var horizontalCountHex = "";
+                    var segmentStartHex = "";
+                    var segmentCountHex = "";
                     for (var splitIdx = 0; splitIdx < splitHorizontalSegments.length; splitIdx++) {
-                        horizontalStartHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][0], 2);
-                        horizontalCountHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][1], 2);
+                        segmentStartHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][0], 2);
+                        segmentCountHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][1], 2);
                     }
-                    return [segments.concat(horizontalFillers), horizontalStartHex, horizontalCountHex, -horizontalOffset * scalingFactor / 2];
+                    console.log("[JS] generateSegmentedLayoutData :" +segments.concat(horizontalFillers), segmentStartHex, segmentCountHex, -horizontalOffset * scalingFactor / 2);
+                    return [segments.concat(horizontalFillers), segmentStartHex, segmentCountHex, -horizontalOffset * scalingFactor / 2];
                 }
 
                 function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {

@@ -862,6 +862,7 @@ impl DrawUtils {
                 total_segment_width += seg.2;
                 segment_heights.push(seg.3 * scaling_factor);
                 total_segment_height += seg.3;
+                println!("[Rust] Segment {}: index={}, width={} (scaled={}), height={} (scaled={})", segment_widths.len()-1, seg_id, seg.2, seg.2 * scaling_factor, seg.3, seg.3 * scaling_factor);
             }
         }
 
@@ -869,29 +870,47 @@ impl DrawUtils {
         let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
 
         // ...existing code...
-        // Dynamically build se1 and se2 to match JS logic for any segment count
-        let segment_count = segment_widths.len();
-        let mut js_se1 = String::new();
-        let mut js_se2 = String::new();
-        for i in 0..segment_count {
-            // JS: se1 is zeros except last two: 01, then 03 if > 12 segments
-            if i < segment_count - 2 {
-                js_se1.push_str("00");
-            } else if i == segment_count - 2 {
-                js_se1.push_str("01");
-            } else {
-                // For extra segments, append 03, 04, ...
-                js_se1.push_str(&format!("{:02X}", i - (segment_count - 3) + 3));
-            }
-            // JS: se2 is 01..segment_count, but last two are repeated
-            if i < segment_count - 2 {
-                js_se2.push_str(&format!("{:02X}", i + 1));
-            } else {
-                // Last two are repeated
-                js_se2.push_str(&format!("{:02X}", segment_count - 1));
-            }
+        // JS: pack se1/se2 as concatenated 2-digit hex for each split segment start/count
+        // Build segment widths array for protocol metadata: pad to 12 segments with filler width 100.0
+        let mut protocol_segment_widths: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
+        while protocol_segment_widths.len() < 12 {
+            protocol_segment_widths.push(100.0);
         }
-        if mode == 127 {
+        let split_horizontal_segments = Self::split_into_segments_by_sum_limit(&protocol_segment_widths, 800.0);
+        println!("[Rust] generateSegmentedLayoutData segmentWidths: {:?}", segment_widths);
+        println!("[Rust] generateSegmentedLayoutData segmentHeights: {:?}", segment_heights);
+        println!("[Rust] split_into_segments_by_sum_limit result: {:?}", split_horizontal_segments);
+        let mut segment_start_hex = String::new();
+        let mut segment_count_hex = String::new();
+        // Pad to 24 hex chars (12 segments) by prepending zeros
+        while segment_start_hex.len() < 24 {
+            segment_start_hex = format!("00{}", segment_start_hex);
+        }
+        while segment_count_hex.len() < 24 {
+            segment_count_hex = format!("00{}", segment_count_hex);
+        }
+        // Append start/count of the last two splits from split_horizontal_segments
+        let splits_len = split_horizontal_segments.len();
+        if splits_len >= 2 {
+            let (start1, count1) = split_horizontal_segments[splits_len - 2];
+            let (start2, count2) = split_horizontal_segments[splits_len - 1];
+            segment_start_hex += &Self::to_fixed_width_hex_b(start1 as i32, 2);
+            segment_start_hex += &Self::to_fixed_width_hex_b(start2 as i32, 2);
+            segment_count_hex += &Self::to_fixed_width_hex_b(count1 as i32, 2);
+            segment_count_hex += &Self::to_fixed_width_hex_b(count2 as i32, 2);
+            println!("[Rust] segmentStartHex append: last two splits {} {} -> {} {}", start1, start2, Self::to_fixed_width_hex_b(start1 as i32, 2), Self::to_fixed_width_hex_b(start2 as i32, 2));
+            println!("[Rust] segmentCountHex append: last two splits {} {} -> {} {}", count1, count2, Self::to_fixed_width_hex_b(count1 as i32, 2), Self::to_fixed_width_hex_b(count2 as i32, 2));
+        } else if splits_len == 1 {
+            let (start, count) = split_horizontal_segments[0];
+            segment_start_hex += &Self::to_fixed_width_hex_b(start as i32, 2);
+            segment_count_hex += &Self::to_fixed_width_hex_b(count as i32, 2);
+            println!("[Rust] segmentStartHex append: single split {} -> {}", start, Self::to_fixed_width_hex_b(start as i32, 2));
+            println!("[Rust] segmentCountHex append: single split {} -> {}", count, Self::to_fixed_width_hex_b(count as i32, 2));
+        }
+        println!("[Rust] generateSegmentedLayoutData : {:?} {} {} {}", out.clone(), segment_start_hex, segment_count_hex, -0.5 * total_segment_width);
+    println!("[Rust] FINAL segmentStartHex: {} (len {})", segment_start_hex, segment_start_hex.len());
+    println!("[Rust] FINAL segmentCountHex: {} (len {})", segment_count_hex, segment_count_hex.len());
+    if mode == 127 {
             // ...existing code for vertical mode...
             let mut d = 0.0;
             let mut b: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
@@ -936,10 +955,10 @@ impl DrawUtils {
             }
             println!("[generate_segmented_layout_data] mode=127 (vertical)");
             println!("  segment_heights: {:?}", segment_heights);
-            println!("  se1 (js): {} (len {})", js_se1, js_se1.len());
-            println!("  se2 (js): {} (len {})", js_se2, js_se2.len());
+            println!("  se1 (js): {} (len {})", segment_start_hex, segment_start_hex.len());
+            println!("  se2 (js): {} (len {})", segment_count_hex, segment_count_hex.len());
             println!("  x_offset: {}", x_offset);
-            (out, grouped_segments, js_se1, js_se2, x_offset, group_point_counts, segment_heights)
+            (out, grouped_segments, segment_start_hex, segment_count_hex, x_offset, group_point_counts, segment_heights)
         } else {
             // ...existing code for horizontal mode...
             let mut k = 0.0;
@@ -982,12 +1001,19 @@ impl DrawUtils {
                 let count = group.1.len();
                 group_point_counts.push(count);
             }
+            // Pad n_str and h to 24 hex chars (12 segments) by prepending zeros if needed
+            while n_str.len() < 24 {
+                n_str = format!("00{}", n_str);
+            }
+            while h.len() < 24 {
+                h = format!("00{}", h);
+            }
             println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
             println!("  segment_widths: {:?}", segment_widths);
-            println!("  se1 (js): {} (len {})", js_se1, js_se1.len());
-            println!("  se2 (js): {} (len {})", js_se2, js_se2.len());
+            println!("  se1 (js): {} (len {})", n_str, n_str.len());
+            println!("  se2 (js): {} (len {})", h, h.len());
             println!("  x_offset: {}", x_offset);
-            (out, grouped_segments, js_se1, js_se2, x_offset, group_point_counts, segment_widths)
+            (out, grouped_segments, n_str, h, x_offset, group_point_counts, segment_widths)
         }
     }
 

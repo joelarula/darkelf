@@ -345,15 +345,16 @@ function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointA
     fs.writeFileSync(encodedCommandDataPath, JSON.stringify(encodedCommandData, null, 2), 'utf8');
 
 
+  console.log('Generated segmented layout data test:', generateSegmentedLayoutData);
+  var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
+      textCoordinates,
+      0.5,
+      false
+  );
+  
 
-  //var generateSegmentedLayoutData = exports.generateSegmentedLayoutData(
-  //    textCoordinates,
-  //    0.5,
-  //    false
-  //);
-
-  //const outputPath = path.join(__dirname, 'generateSegmentedLayoutData.json');
-  //fs.writeFileSync(outputPath, JSON.stringify(generateSegmentedLayoutData, null, 2), 'utf8');
+  const outputPath = path.join(__dirname, 'generateSegmentedLayoutData.json');
+  fs.writeFileSync(outputPath, JSON.stringify(generateSegmentedLayoutData, null, 2), 'utf8');
 
 
 
