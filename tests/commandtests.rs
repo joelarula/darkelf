@@ -1,0 +1,94 @@
+use std::env;
+use log::info;
+use darkelf::{command::CommandGenerator, util};
+
+#[test]
+fn test_check_received_data() {
+   
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+
+    // Test data from the log
+    let random_data = [0xED, 0x00, 0x05, 0xD5];
+    
+    // These are the expected values from actual device response
+    let expected = [0x88, 0x7F, 0x42, 0x82];
+    info!("Expected verification bytes: {:02X?}", expected);
+    
+    let received_data = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+    info!("Response verification part: {}", &received_data[received_data.len() - 24..received_data.len() - 16]);
+    
+    // Print expected verification bytes
+    info!("Expected verification bytes: {:02X?}", expected);
+    
+    // Get verification part from response (8 bytes)
+    let response_verify = &received_data[received_data.len() - 24..received_data.len() - 16];
+    info!("Response verification part: {}", response_verify);
+    
+    // Parse received verification bytes
+    let mut received = Vec::with_capacity(4);
+    for i in 0..4 {
+        let hex_pair = &response_verify[i*2..i*2+2];
+        let value = u8::from_str_radix(hex_pair, 16).unwrap();
+        received.push(value);
+    }
+    info!("Received verification bytes: {:02X?}", received);
+    
+    // Execute the verification
+    let (success, device_info) = CommandGenerator::check_received_data(received_data, &random_data);
+    
+    // Verify the results
+    assert!(success, "Verification should pass");
+    
+    let device_info = device_info.expect("Device info should be present");
+    assert_eq!(device_info.device_on, true, "Device should be on");
+    assert_eq!(device_info.device_type, "02", "Device type should be '02'");
+    assert_eq!(device_info.version, "00", "Version should be '00'");
+    assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
+       
+}
+
+
+#[test]
+fn test_parse_device_response() {
+   
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+    info!("Testing parse_device_response");
+
+    let received_data = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+    
+    // Parse the response
+    let response = CommandGenerator::parse_device_response(received_data)
+        .expect("Should successfully parse device response");
+
+    // Verify main command data
+    assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
+    assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
+    assert_eq!(response.main_data.text_size, 58, "Text size should be 58");
+    assert_eq!(response.main_data.run_speed, 21, "Run speed should be 21");
+    assert_eq!(response.main_data.text_distance, 64, "Text distance should be 64");
+
+    // Verify settings data
+    assert_eq!(response.settings.values[0], 1, "Channel value (values[0]) should be 1");  // Channel starts at 1 (range 1-512)
+    assert_eq!(response.settings.values[1], 48, "Display range (values[1]) should be 48 (hex 0x30)");  // Display range from command
+    assert_eq!(response.settings.values[2], 255, "R value (values[2]) should be 255");  // Position 6, Red
+    assert_eq!(response.settings.values[3], 255, "G value (values[3]) should be 255");  // Position 7, Green
+    assert_eq!(response.settings.values[4], 255, "B value (values[4]) should be 255");  // Position 8, Blue
+    assert_eq!(response.settings.xy, 0, "XY config should be 0");
+    assert_eq!(response.settings.light, 3, "Light mode should be 3");
+    assert_eq!(response.settings.cfg, 0, "Config should be 0");
+
+
+    // Verify device info
+    let device_info = response.device_info.expect("Device info should be present");
+    assert!(device_info.device_on, "Device should be on");
+    assert_eq!(device_info.device_type, "02", "Device type should be '02'");
+    assert_eq!(device_info.version, "00", "Version should be '00'");
+    assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
+}
+

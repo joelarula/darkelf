@@ -1,7 +1,7 @@
-use egui::*;
+use eframe::egui::*;
 use crate::ui::console::{Console, Light, Sign};
 
-pub fn show_settings_panel(console: &mut Console, ctx: &egui::Context) {
+pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
     TopBottomPanel::bottom("bottom_panel")
         .exact_height(50.0)
         .show(ctx, |ui| {

@@ -1,9 +1,9 @@
 use crate::{model::PlaybackMode, ui::console::Console};
-use egui::*;
+use eframe::egui::*;
 use crate::model;
 
-pub fn show_mode_buttons(console: &mut Console, ctx: &egui::Context) {
-    TopBottomPanel::top("top_panel").show(ctx, |ui| {
+pub fn show_mode_buttons(console: &mut Console, ctx: &eframe::egui::Context) {
+    TopBottomPanel::top("top_panel").show(ctx, | ui| {
         ui.horizontal(|ui| {
              mode_toggle(ui, console, PlaybackMode::Dmx, "DMX");
             mode_toggle(ui, console, PlaybackMode::RandomPlayback, "Random");

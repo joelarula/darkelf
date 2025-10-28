@@ -625,7 +625,7 @@
             1
           ],
           "type": "Generic",
-          "menuName": "No Function",
+          "menuName": "No decremental`",
           "menuValue": null,
           "description": "No function"
         },
@@ -640,6 +640,10 @@
           "description": "Manual gradual drawing 1"
         },
         {
+          "dmxRange": [
+            64,
+            127
+          ],
           "type": "Generic",
           "menuName": "Manual Gradual Drawing 2",
           "menuValue": null,

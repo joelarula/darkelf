@@ -1,6 +1,7 @@
 use crate::ui::console::Console;
+use eframe::egui::*;
 
-pub fn show_text_ui(console: &mut Console, ctx: &egui::Context) {
+pub fn show_text_ui(console: &mut Console, ctx: &eframe::egui::Context) {
     egui::CentralPanel::default().show(ctx, |ui| {
         ui.vertical_centered(|ui| {
             ui.add_space(50.0);

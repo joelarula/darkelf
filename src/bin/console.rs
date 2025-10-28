@@ -120,10 +120,10 @@ fn main() -> eframe::Result<()> {
         "DarkElf",
         options,
         Box::new(|_cc| {
-            Box::new(Console::new(
+            Ok(Box::new(Console::new(
                 Arc::new(Mutex::new(ui_message_channel_incomming)),
                 device_command_channel_outbound,
-            ))
+            )))
         }),
     )
 }

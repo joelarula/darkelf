@@ -2,10 +2,10 @@ globalThis["webpackJsonp"] = globalThis["webpackJsonp"] || [];
 globalThis["webpackJsonp"].push([
 
     ["app-service"], {
-			
-        "appStateManager": function(e, t, r) {
+
+        "appStateManager": function (e, t, r) {
             "use strict";
-            (function(logger) {
+            (function (logger) {
 
                 var r = {
                     globalData: {
@@ -75,7 +75,7 @@ globalThis["webpackJsonp"].push([
                                     },
                                     6: {
                                         pyMode: 0,
-                                        prjSelected: [0, 0, 0, 0], 
+                                        prjSelected: [0, 0, 0, 0],
                                         ckValues: []
                                     }
                                 }
@@ -85,30 +85,30 @@ globalThis["webpackJsonp"].push([
 
                         // sets the value of blu_data_send_interval in the global data object to the value passed as e.
                         // It is used to update the interval (in milliseconds) at which Bluetooth data is sent.
-                        setbluDataSendInterval: function(interval) {
+                        setbluDataSendInterval: function (interval) {
                             this.blu_data_send_interval = interval
                         },
 
                         // invokes the registered Bluetooth receive callback with the provided data, 
                         //  if a callback is set.
-                        setRecCallBack: function(data) {
+                        setRecCallBack: function (data) {
                             var callbackFunc = this.blu_rec_call_back;
                             null != callbackFunc && callbackFunc(data)
                         },
 
                         // updates the Bluetooth connection state, saves the device if connected, 
                         // and notifies any registered callback.
-                        setBluCnnState: function(connectionState , isManualChange) {
-                            this.blu_connected = connectionState , 2 == this.blu_connected && this.saveDevice();
-                            var connectionCallback  = this.blu_cnn_call_back;
-                            null != connectionCallback  && connectionCallback (connectionState , isManualChange)
+                        setBluCnnState: function (connectionState, isManualChange) {
+                            this.blu_connected = connectionState, 2 == this.blu_connected && this.saveDevice();
+                            var connectionCallback = this.blu_cnn_call_back;
+                            null != connectionCallback && connectionCallback(connectionState, isManualChange)
                         },
 
-                        setCmdMode: function(mode) {
-                            this.cmd["curMode"] = mode, 
-                            this.cmd["prjData"].prjIndex = mode
+                        setCmdMode: function (mode) {
+                            this.cmd["curMode"] = mode,
+                                this.cmd["prjData"].prjIndex = mode
                         },
-                        getCmdData: function(commandKey) {
+                        getCmdData: function (commandKey) {
                             return this.cmd[commandKey]
                         },
 
@@ -126,48 +126,48 @@ globalThis["webpackJsonp"].push([
                         // to match the new values in t. This ensures that related properties stay consistent across different 
                         // sections of the command data structure.
 
-                        setCmdData: function(key, data) {
-                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex 
-                                && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item), 
-                                    this.cmd.textData.runSpeed = data.public.runSpeed, 
-                                    void(this.cmd.textData.txColor = data.public.txColor);
-                            this.cmd[key] = data, "textData" == key 
+                        setCmdData: function (key, data) {
+                            if ("prjData" == key) return this.cmd[key].public = data.public, 1 != data.prjIndex
+                                && (this.cmd[key].prjItem[data.prjIndex + ""] = data.item),
+                                this.cmd.textData.runSpeed = data.public.runSpeed,
+                                void (this.cmd.textData.txColor = data.public.txColor);
+                            this.cmd[key] = data, "textData" == key
                                 && (this.cmd.prjData.public.runSpeed = data.runSpeed, this.cmd.prjData.public.txColor = data.txColor)
                         },
 
                         // restores the last used Bluetooth UUID configuration by reading a saved index 
                         // and updating the relevant UUID arrays for device communication.
-                        readSetting: function() {
+                        readSetting: function () {
                             switch (this.muuidSel = this.readData("lastsel") || 0, this.muuidSel) {
                                 case 0:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], 
-                                    this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], 
-                                    this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"],
+                                        this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"],
+                                        this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
                                     break;
                                 case 1:
-                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"], 
-                                    this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"], 
-                                    this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
+                                    this.mserviceuuids = ["0000FFE0-0000-1000-8000-00805F9B34FB"],
+                                        this.mtxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"],
+                                        this.mrxduuids = ["0000FFE1-0000-1000-8000-00805F9B34FB"];
                                     break;
                                 case 2:
-                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"], 
-                                    this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"], 
-                                    this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
+                                    this.mserviceuuids = ["0000FF00-0000-1000-8000-00805F9B34FB"],
+                                        this.mtxduuids = ["0000FF02-0000-1000-8000-00805F9B34FB"],
+                                        this.mrxduuids = "0000FF01-0000-1000-8000-00805F9B34FB";
                                     break
                             }
                         },
 
-                        setDeviceInfo: function(deviceType, version, userType) {
-                            this.deviceInfo["deviceType"] = deviceType, 
-                            this.deviceInfo["version"] = version, 
-                            this.deviceInfo["userType"] = userType
+                        setDeviceInfo: function (deviceType, version, userType) {
+                            this.deviceInfo["deviceType"] = deviceType,
+                                this.deviceInfo["version"] = version,
+                                this.deviceInfo["userType"] = userType
                         },
-                        getDeviceInfo: function() {
-                            var e = his.deviceInfo["deviceType"] ;
+                        getDeviceInfo: function () {
+                            var e = his.deviceInfo["deviceType"];
                             "" == e && (e = 0);
                             var t = this.deviceInfo["version"];
                             "" == t && (t = 0);
-                            var r = this.deviceInfo["userType"] ;
+                            var r = this.deviceInfo["userType"];
                             return "" == r && (r = 0), {
                                 deviceType: parseInt(e),
                                 version: parseInt(t),
@@ -177,21 +177,21 @@ globalThis["webpackJsonp"].push([
 
                         // getDeviceFeatures() returns an object indicating which features are supported by the current device, 
                         // based on its type and version.
-                        getDeviceFeatures: function() {
+                        getDeviceFeatures: function () {
                             var features = {
-                                    textStopTime: false,
-                                    textDecimalTime: false,
-                                    displayType: 0,
-                                    showOutDoorTips: false,
-                                    xyCnf: false,
-                                    arbPlay: false,
-                                    ilda: false,
-                                    // device supports TTL analog
-                                    ttlAn: false,
-                                    picsPlay: false,
-                                    textUpDown: false,
-                                    animationFix: false
-                                },
+                                textStopTime: false,
+                                textDecimalTime: false,
+                                displayType: 0,
+                                showOutDoorTips: false,
+                                xyCnf: false,
+                                arbPlay: false,
+                                ilda: false,
+                                // device supports TTL analog
+                                ttlAn: false,
+                                picsPlay: false,
+                                textUpDown: false,
+                                animationFix: false
+                            },
                                 deviceType = this.deviceInfo["deviceType"],
                                 version = this.deviceInfo["version"];
                             // Determine device features based on deviceType and version
@@ -247,96 +247,96 @@ globalThis["webpackJsonp"].push([
                         },
 
 
-                        savelastsel: function(t) {
+                        savelastsel: function (t) {
                             this.saveData("lastsel", t), logger("log", "Writelastsel ", t, " at App.vue:328")
                         },
 
                         // restores the last used Bluetooth device from persistent storage into the ble_device property.
-                        readDevice: function() {
+                        readDevice: function () {
                             this.ble_device = this.readData("device")
                         },
-                        saveDevice: function() {
+                        saveDevice: function () {
                             this.saveData("device", this.ble_device)
                         },
 
-                        clearDevice: function() {
+                        clearDevice: function () {
                             this.ble_device = null, this.saveDevice()
                         },
 
-                        createBLEConnection: function(deviceId) {
+                        createBLEConnection: function (deviceId) {
                             var r = this,
-                                callbackFunc = arguments.length > 1 && void 0 !== arguments[1] 
-                                    ? arguments[1] 
+                                callbackFunc = arguments.length > 1 && void 0 !== arguments[1]
+                                    ? arguments[1]
                                     : null;
- 
-                            this.blu_connected = -1, 
-                            uni.createBLEConnection({
-                                deviceId: deviceId,
-                                timeout: 6e3,
-                                success: function(e) {
-                                    callbackFunc && callbackFunc(!0)
-                                },
-                                fail: function(h) {
-                                    r.bleManualDisCnn 
-                                        ? callbackFunc && callbackFunc(!1) 
-                                        : r.doCloseBLEConnection(deviceId, (function(e) {
-                                            callbackFunc && callbackFunc(!1)
-                                    }))
-                                }
-                            })
+
+                            this.blu_connected = -1,
+                                uni.createBLEConnection({
+                                    deviceId: deviceId,
+                                    timeout: 6e3,
+                                    success: function (e) {
+                                        callbackFunc && callbackFunc(!0)
+                                    },
+                                    fail: function (h) {
+                                        r.bleManualDisCnn
+                                            ? callbackFunc && callbackFunc(!1)
+                                            : r.doCloseBLEConnection(deviceId, (function (e) {
+                                                callbackFunc && callbackFunc(!1)
+                                            }))
+                                    }
+                                })
                         },
 
-                        doCloseBLEConnection: function(deviceId) {
+                        doCloseBLEConnection: function (deviceId) {
                             var callbackFunc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
 
                             this.bleManualDisCnn = true;
                             var n = this,
-                                h = setTimeout((function() {
+                                h = setTimeout((function () {
                                     h = null, n.bleManualDisCnn = !1, callbackFunc && callbackFunc(!0)
                                 }), 200);
                             uni.closeBLEConnection({
                                 deviceId: deviceId,
-                                success: function(t) {
-                                    logger("log", "doCloseBLEConnection success", t, " at App.vue:384"), h 
+                                success: function (t) {
+                                    logger("log", "doCloseBLEConnection success", t, " at App.vue:384"), h
                                         && callbackFunc && callbackFunc(!0)
                                 },
-                                fail: function(t) {
-                                    logger("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h 
+                                fail: function (t) {
+                                    logger("log", "doCloseBLEConnection fail", t, " at App.vue:389"), h
                                         && callbackFunc && callbackFunc(!1)
                                 },
-                                complete: function() {
-                                    logger("log", "doCloseBLEConnection complete", " at App.vue:394"), h 
+                                complete: function () {
+                                    logger("log", "doCloseBLEConnection complete", " at App.vue:394"), h
                                         && clearTimeout(h), this.bleManualDisCnn = !1
                                 }
                             })
                         },
-                        closeBLEConnection: function() {
+                        closeBLEConnection: function () {
                             var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             if (this.blu_connected) {
                                 var device = this.ble_device;
-                                device ? this.doCloseBLEConnection(device.deviceId, (function(r) {
-                                    logger("log", "do callback", " at App.vue:409"), 
-                                    callbackFunc && callbackFunc(r)
+                                device ? this.doCloseBLEConnection(device.deviceId, (function (r) {
+                                    logger("log", "do callback", " at App.vue:409"),
+                                        callbackFunc && callbackFunc(r)
                                 })) : callbackFunc && callbackFunc(!0)
                             } else callbackFunc && callbackFunc(!0)
                         },
-                        doCloseBluetoothAdapter: function() {
+                        doCloseBluetoothAdapter: function () {
                             var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             this.bleOpenCloseCount--, this.BluetoothAdapterOpen = !1, uni.closeBluetoothAdapter({
-                                success: function(e) {
+                                success: function (e) {
                                     callbackFunc && callbackFunc(!0)
                                 },
-                                fail: function(r) {
-                                    logger("log", "closeBluetoothAdapter fail", r, " at App.vue:424"), 
-                                    callbackFunc && callbackFunc(!1)
+                                fail: function (r) {
+                                    logger("log", "closeBluetoothAdapter fail", r, " at App.vue:424"),
+                                        callbackFunc && callbackFunc(!1)
                                 }
                             })
                         },
-                        closeBluetoothAdapter: function() {
+                        closeBluetoothAdapter: function () {
                             var callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             this.BluetoothAdapterOpen ? this.doCloseBluetoothAdapter(callbackFunc) : callbackFunc && callbackFunc(!0)
                         },
-                        openBluetoothAdapter: function() {
+                        openBluetoothAdapter: function () {
                             var t = this,
                                 callbackFunc = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                             if (this.BluetoothAdapterOpen) callbackFunc && callbackFunc(!0);
@@ -344,39 +344,39 @@ globalThis["webpackJsonp"].push([
                                 this.bleOpenCloseCount++;
                                 var n = this;
                                 uni.openBluetoothAdapter({
-                                    success: function(e) {
+                                    success: function (e) {
                                         t.BluetoothAdapterOpen = !0, t.setBLEConnectionStateChange(), callbackFunc && callbackFunc(!0)
                                     },
-                                    fail: function(h) {
-                                        t.doCloseBluetoothAdapter(), 10001 === h.errCode 
+                                    fail: function (h) {
+                                        t.doCloseBluetoothAdapter(), 10001 === h.errCode
                                             && t.showModalTips(n.$t("\u8bf7\u68c0\u67e5\u624b\u673aBluetooth\u662f\u5426\u542f\u7528"), !0), 103 == h.errno ? t.showModalTips(n.$t("\u8bf7Settings\u5c0f\u7a0b\u5e8fBluetooth\u6743\u9650"), !0) : t.showModalTips("Open Bluetooth Adapter Fail"), callbackFunc && callbackFunc(!1)
                                     }
                                 })
                             }
                         },
-                        setBLEConnectionStateChange: function() {
+                        setBLEConnectionStateChange: function () {
                             if (!this.BLEConnectionStateChangeSet) {
                                 this.BLEConnectionStateChangeSet = !0;
                                 var t = this;
-                                uni.onBLEConnectionStateChange((function(result) {
-                                    t.blu_data_cmdSending = !1, 
-                                    result.connected || (logger("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"), 
-                                    t.bleManualDisCnn || t.doCloseBLEConnection(result.deviceId), 
-                                    t.ble_device && t.ble_device.deviceId != result.deviceId || (t.blu_data_canSend = !1, 
-                                    t.setBluCnnState(0, !0)))
+                                uni.onBLEConnectionStateChange((function (result) {
+                                    t.blu_data_cmdSending = !1,
+                                        result.connected || (logger("log", "setBLEConnectionStateChange", t.bleManualDisCnn, " at App.vue:471"),
+                                            t.bleManualDisCnn || t.doCloseBLEConnection(result.deviceId),
+                                            t.ble_device && t.ble_device.deviceId != result.deviceId || (t.blu_data_canSend = !1,
+                                                t.setBluCnnState(0, !0)))
                                 }))
                             }
                         },
                     },
-                    onLaunch: function() {
+                    onLaunch: function () {
                         this.globalData.getDeviceInfo(),
-                        this.globalData.getSysinfo();
+                            this.globalData.getSysinfo();
                     },
-                    onHide: function() {
-                        this.globalData.closeBLEConnection((function(t) {
+                    onHide: function () {
+                        this.globalData.closeBLEConnection((function (t) {
                             this.globalData.blu_state = 0,
-                            this.globalData.setBluCnnState(0, false), 
-                            this.globalData.closeBluetoothAdapter()
+                                this.globalData.setBluCnnState(0, false),
+                                this.globalData.closeBluetoothAdapter()
                         }))
                     }
                 };
@@ -385,16 +385,16 @@ globalThis["webpackJsonp"].push([
         },
 
 
-		"mainPageComponent": function(e, t, r) {
-        "use strict";
-            (function(logger) {
+        "mainPageComponent": function (e, t, r) {
+            "use strict";
+            (function (logger) {
 
                 var app = r("appStateManager")["default"],
-                deviceCommandUtil = r("deviceCommandUtils "),
-                uni = r("uni"),
-                bleDeviceController = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
-                module = {
-                        data: function() {
+                    deviceCommandUtil = r("deviceCommandUtils "),
+                    uni = r("uni"),
+                    bleDeviceController = (r("handDrawFileManager"), r("bleDeviceControlUtils ")),
+                    module = {
+                        data: function () {
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
                                 modeCmdSend: "",
@@ -464,61 +464,61 @@ globalThis["webpackJsonp"].push([
                                 initShow: false,
                             }
                         },
-                        onLoad: function() {
+                        onLoad: function () {
                             this.genRandomCheck();
                         },
-                        onShow: function() {
+                        onShow: function () {
                             this.features = app.globalData.getDeviceFeatures();
                             if (!this.data.initShow) {
                                 this.data.initShow = true;
                                 this.methods.bluInitPro();
-                            }             
+                            }
                         },
                         methods: {
-                            bluInitPro: function() {
-                                app.globalData.blu_cnn_call_back = this.blu_cnn_call_back, 
-                                app.globalData.blu_rec_call_back = this.blu_rec_call_back, 
-                                bleDeviceController.cnnPreBlu()                      
+                            bluInitPro: function () {
+                                app.globalData.blu_cnn_call_back = this.blu_cnn_call_back,
+                                    app.globalData.blu_rec_call_back = this.blu_rec_call_back,
+                                    bleDeviceController.cnnPreBlu()
                             },
-                            goQueryCmd: function() {
+                            goQueryCmd: function () {
                                 bleDeviceController.gosend(!1, deviceCommandUtil.getQueryCmd(this.data.randomCheck));
                             },
-                            blu_cnn_call_back: function(connectionStatus, resultCode) {
+                            blu_cnn_call_back: function (connectionStatus, resultCode) {
                                 if (1 != connectionStatus) {
                                     var device = app.globalData.ble_device;
-                                    logger("log", "blu_cnn_call_back1", connectionStatus, resultCode); 
-                                    if (connectionStatus && device && "characteristicId" in device) 
-                                        logger("log", "Connected", device.name), 
-                                        this.cnnDevice = device.name, 
-                                        this.cnnState = true, 
-                                        this.goQueryCmd();
+                                    logger("log", "blu_cnn_call_back1", connectionStatus, resultCode);
+                                    if (connectionStatus && device && "characteristicId" in device)
+                                        logger("log", "Connected", device.name),
+                                            this.cnnDevice = device.name,
+                                            this.cnnState = true,
+                                            this.goQueryCmd();
                                     else {
-                                        this.cnnState = false, 
-                                        this.deviceOn = false, 
-                                        this.prjIndex = -1;
+                                        this.cnnState = false,
+                                            this.deviceOn = false,
+                                            this.prjIndex = -1;
                                     }
                                 }
                             },
 
-                            blu_rec_call_back: function(data) {
+                            blu_rec_call_back: function (data) {
                                 logger("log", "blu_rec_call_back");
-                                this.checkRcvData(data, this.randomCheck) 
-                                    ? (bleDeviceController.setCanSend(true), 
-                                        bleDeviceController.setCmdData(data), 
-                                        this.prjIndex = app.globalData.cmd.curMode) 
+                                this.checkRcvData(data, this.randomCheck)
+                                    ? (bleDeviceController.setCanSend(true),
+                                        bleDeviceController.setCmdData(data),
+                                        this.prjIndex = app.globalData.cmd.curMode)
                                     : logger("log", "Abnormality in reading device parameters");
                             },
-                            
+
                             // fill the this.randomCheck array with 4 random integers between 0 and 255 (inclusive). 
-                            genRandomCheck: function() {
+                            genRandomCheck: function () {
                                 for (var e = 0; e < 4; e++) this.randomCheck[e] = Math.floor(256 * Math.random())
                             },
-                        
+
                             // Validates the received data string and random check array.
                             // Decodes and checks a checksum validation code.
                             // Updates device status and features if valid.
                             // Returns true if the data is valid and processed, otherwise false.
-                            checkRcvData: function(data, randomVerify) {
+                            checkRcvData: function (data, randomVerify) {
                                 if (4 != randomVerify.length || data.length < 24) return !1;
                                 for (var r = data.substr(data.length - 24, 8), n = [], h = 0; h < 4; h++) {
                                     var i = 0,
@@ -537,50 +537,50 @@ globalThis["webpackJsonp"].push([
                                 var deviceType = data.substr(data.length - 14, 2),
                                     version = data.substr(data.length - 12, 2),
                                     userType = data.substr(data.length - 10, 2);
-                                return  (app.globalData.setDeviceInfo(deviceType, version, userType), 
-                                    this.features = app.globalData.getDeviceFeatures()), 
+                                return (app.globalData.setDeviceInfo(deviceType, version, userType),
+                                    this.features = app.globalData.getDeviceFeatures()),
                                     this.features = app.globalData.getDeviceFeatures(), !0
                             },
 
-                            cnnLaser: function() {
+                            cnnLaser: function () {
                                 bleDeviceController.cnnLaser()
                             },
 
                             // decides whether to switch to DMX mode and send a command, 
                             // navigate to the settings page, or prompt the user to turn on the device, 
                             // based on the clicked tag and device/debug state.
-                            settingClick: function(e) {
+                            settingClick: function (e) {
                                 var tag = e.currentTarget.dataset.tag;
-                                if (0 != tag || this.deviceOn ) 
-                                    return this.prjIndex != tag && 0 == tag 
-                                        ? (this.prjIndex = tag, app.globalData.setCmdMode(tag), void this.sendCmd()) 
+                                if (0 != tag || this.deviceOn)
+                                    return this.prjIndex != tag && 0 == tag
+                                        ? (this.prjIndex = tag, app.globalData.setCmdMode(tag), void this.sendCmd())
                                         : void uni.navigateTo({ url: "/pages/setting/setting?dmx=" + tag });
-      
+
                             },
-                            
+
                             // This function handles toggling the device's power state and 
                             // sending the appropriate command, with user feedback if the action cannot be performed.
-                            onOffChange: function(t) {
+                            onOffChange: function (t) {
                                 if (bleDeviceController.getCanSend()) {
                                     this.deviceOn = !this.deviceOn;
                                     var command = "B0B1B2B300B4B5B6B7";
                                     this.deviceOn && (command = "B0B1B2B3FFB4B5B6B7"), bleDeviceController.gosend(!1, command)
-                                } else this.cnnState 
-                                    ? app.globalData.showModalTips(this.$t("The current device cannot be identified"), !0) 
+                                } else this.cnnState
+                                    ? app.globalData.showModalTips(this.$t("The current device cannot be identified"), !0)
                                     : app.globalData.showModalTips(this.$t("Please connect first 5Bluetooth"), !0)
                             },
-                            
+
                             // testFunc injects a specific test command into the device controller 
                             // and synchronizes the project index with the current command mode, 
                             // probably to simulate or test device behavior with known data.
-                            testFunc: function() {
-                                bleDeviceController.setCmdData("E0E1E2E3B0B1B2B300B4B5B6B7C0C1C2C30400098080800080003309FFFFFF320000000000000000000000000000000000000000000000000000000000000000000000000000FF035393C06600000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001000A00FFFFFF020000000000000004050607D0D1D2D3820000FF28000000000000000000003200FF00FF28000000000000000000FF3200FFD4D5D6D7F0F1F2F300000000070102030405060700004466F4F5F6F743E3A317F0000000E4E5E6E7"), 
-                                this.prjIndex = app.globalData.cmd.curMode
+                            testFunc: function () {
+                                bleDeviceController.setCmdData("E0E1E2E3B0B1B2B300B4B5B6B7C0C1C2C30400098080800080003309FFFFFF320000000000000000000000000000000000000000000000000000000000000000000000000000FF035393C06600000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001000A00FFFFFF020000000000000004050607D0D1D2D3820000FF28000000000000000000003200FF00FF28000000000000000000FF3200FFD4D5D6D7F0F1F2F300000000070102030405060700004466F4F5F6F743E3A317F0000000E4E5E6E7"),
+                                    this.prjIndex = app.globalData.cmd.curMode
                             },
 
                             // sendCmd generates a device command string based on the current mode and features, 
                             // stores it, and triggers the sending process.
-                            sendCmd: function() {
+                            sendCmd: function () {
                                 var command = deviceCommandUtil.getCmdStr(app.globalData.cmd, {
                                     features: this.features
                                 });
@@ -589,11 +589,11 @@ globalThis["webpackJsonp"].push([
 
                             // doSendCmd tries to send the current command. If it fails, it retries every 100ms until successful. 
                             // When successful, it clears the command buffer.
-                            doSendCmd: function() {
+                            doSendCmd: function () {
                                 if ("" != this.modeCmdSend) {
                                     var result = bleDeviceController.gosend(!1, this.modeCmdSend),
                                         t = this;
-                                    result ? this.modeCmdSend = "" : setTimeout((function() {
+                                    result ? this.modeCmdSend = "" : setTimeout((function () {
                                         t.doSendCmd()
                                     }), 100)
                                 }
@@ -601,45 +601,45 @@ globalThis["webpackJsonp"].push([
                             //  routes the user to the correct function or project page, 
                             // sending the necessary command to the device, 
                             // and handles device state checks and navigation logic.
-                            prjClick: function(e) {
-                                
-                                var mode = e.currentTarget.dataset.tag;
-                                
-                                if (0 != mode)
-                                    if (this.deviceOn ) {
-                                        
-                                        if (this.prjIndex != mode || 5 == mode && this.features.ilda) return this.prjIndex = mode, 
-                                            app.globalData.setCmdMode(mode), void this.sendCmd();
-                                        
-                                        this.sendCmd(), 
-                                        
-                                        4 == mode && uni.navigateTo({
-                                            url: "/sub/pages/text/text"
-                                        }), 
+                            prjClick: function (e) {
 
-                                        7 == mode && uni.navigateTo({
-                                            url: "/sub2/pages/pgs/pgs"
-                                        }), 
-                                        
-                                        8 == mode && uni.navigateTo({
-                                            url: "/sub/pages/draw/draw"
-                                        }), 
-                                        9 == mode && uni.navigateTo({
-                                            url: "/sub/pages/listMaster/listMaster"
-                                        }), 
-                                        
-                                        mode >= 1 && mode <= 6 && 4 != mode && uni.navigateTo({
-                                            url: "/pages/prj/prj?tag=" + mode
-                                        })
-                                    } 
-                                else this.settingClick(e)
+                                var mode = e.currentTarget.dataset.tag;
+
+                                if (0 != mode)
+                                    if (this.deviceOn) {
+
+                                        if (this.prjIndex != mode || 5 == mode && this.features.ilda) return this.prjIndex = mode,
+                                            app.globalData.setCmdMode(mode), void this.sendCmd();
+
+                                        this.sendCmd(),
+
+                                            4 == mode && uni.navigateTo({
+                                                url: "/sub/pages/text/text"
+                                            }),
+
+                                            7 == mode && uni.navigateTo({
+                                                url: "/sub2/pages/pgs/pgs"
+                                            }),
+
+                                            8 == mode && uni.navigateTo({
+                                                url: "/sub/pages/draw/draw"
+                                            }),
+                                            9 == mode && uni.navigateTo({
+                                                url: "/sub/pages/listMaster/listMaster"
+                                            }),
+
+                                            mode >= 1 && mode <= 6 && 4 != mode && uni.navigateTo({
+                                                url: "/pages/prj/prj?tag=" + mode
+                                            })
+                                    }
+                                    else this.settingClick(e)
                             },
 
 
-                            sendLastCmd: function(e) {
+                            sendLastCmd: function (e) {
                                 this.lastCmdTime = (new Date).getTime(), this.sendCmd2(e)
                             },
-             
+
                         }
                     };
                 t.default = module
@@ -647,14 +647,14 @@ globalThis["webpackJsonp"].push([
         },
 
 
-        "DeviceConfigPageController": function(e, t, r) {
+        "DeviceConfigPageController": function (e, t, r) {
             "use strict";
-            (function(logger) {
-                    app = getApp(),
+            (function (logger) {
+                app = getApp(),
                     deviceCommandUtil = r("deviceCommandUtils "),
                     bleDeviceController = r("bleDeviceControlUtils "),
                     module = (r("geometryAndUuidUtils"), {
-                        data: function() {
+                        data: function () {
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
                                 showCtr: {
@@ -685,22 +685,22 @@ globalThis["webpackJsonp"].push([
                                 ]
                             }
                         },
-                        
-                        onLoad: function(e) {
+
+                        onLoad: function (e) {
                             var t = this;
                             this.version = plus.runtime.version, this.version = this.version.trim();
                             var settingData = app.globalData.getCmdData("settingData");
                             settingData.dmx = e.dmx;
                             var n = this;
-                            Object.keys(settingData).forEach((function(e) {
+                            Object.keys(settingData).forEach((function (e) {
                                 n.$set(t, e, settingData[e])
-                            })), 
-                            this.deviceInfo = app.globalData.getDeviceInfo(), 
-                            this.machine = ("0" + this.deviceInfo.deviceType).slice(-2) + " - " + ("0" + this.deviceInfo.version).slice(-2), 
-                            this.initData()
+                            })),
+                                this.deviceInfo = app.globalData.getDeviceInfo(),
+                                this.machine = ("0" + this.deviceInfo.deviceType).slice(-2) + " - " + ("0" + this.deviceInfo.version).slice(-2),
+                                this.initData()
                         },
 
-                        onUnload: function() {
+                        onUnload: function () {
                             var settingData = {
                                 ch: this.ch, // channel
                                 dmx: this.dmx, // 0 or 1
@@ -714,7 +714,7 @@ globalThis["webpackJsonp"].push([
                         },
 
                         methods: {
-                            sendCmd: function() {
+                            sendCmd: function () {
                                 var settingData = {
                                     ch: this.ch,
                                     dmx: this.dmx,
@@ -728,16 +728,16 @@ globalThis["webpackJsonp"].push([
                                 var command = deviceCommandUtil.getSettingCmd(app.globalData.cmd.settingData);
                                 this.SetCmdSend = command, this.doSendCmd()
                             },
-                            doSendCmd: function() {
+                            doSendCmd: function () {
                                 if ("" != this.SetCmdSend) {
                                     var commandResult = bleDeviceController.gosend(!1, this.SetCmdSend),
                                         t = this;
-                                    commandResult ? this.SetCmdSend = "" : setTimeout((function() {
+                                    commandResult ? this.SetCmdSend = "" : setTimeout((function () {
                                         t.doSendCmd()
                                     }), 100)
                                 }
                             },
-                            initData: function() {
+                            initData: function () {
                                 if (1 == this.deviceInfo.deviceType) {
                                     this.valRange = [
                                         [1, 512],
@@ -747,17 +747,17 @@ globalThis["webpackJsonp"].push([
                                         [0, 100]
                                     ];
                                     for (var e = 2; e < 5; e++) this.valArr[e] > this.valRange[e][1] && (this.valArr[e] = this.valRange[e][1])
-                                }(1 == this.deviceInfo.deviceType 
-                                    || 0 == this.deviceInfo.deviceType 
-                                        && this.deviceInfo.version >= 1) && (
-                                            this.showCtr = {
-                                                light1: false,
-                                                light2: false,
-                                                light3: false,
-                                                lightExt: true
-                                            })
+                                } (1 == this.deviceInfo.deviceType
+                                    || 0 == this.deviceInfo.deviceType
+                                    && this.deviceInfo.version >= 1) && (
+                                        this.showCtr = {
+                                            light1: false,
+                                            light2: false,
+                                            light3: false,
+                                            lightExt: true
+                                        })
                             },
-   
+
 
 
                         }
@@ -766,15 +766,15 @@ globalThis["webpackJsonp"].push([
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-        "bleDeviceProjectConfigPageComponent": function(e, t, r) {
+        "bleDeviceProjectConfigPageComponent": function (e, t, r) {
             "use strict";
-            (function(e) {
+            (function (e) {
 
                 var app = getApp(),
                     deviceCommandUtils = r("deviceCommandUtils "),
                     deviceBleController = r("bleDeviceControlUtils "),
                     module = {
-                        data: function() {
+                        data: function () {
                             var deviceFeatures = app.globalData.getDeviceFeatures();
                             return {
 
@@ -841,42 +841,42 @@ globalThis["webpackJsonp"].push([
                                 },
                             }
                         },
-                        onLoad: function(e) {
+                        onLoad: function (e) {
                             var prjIndex = e.tag,
                                 prjData = app.globalData.getCmdData("prjData"),
-                                projectConfig  = {},
-                                publicSettings  = prjData.public;
-                            if (1 == prjIndex) projectConfig  = {
-                                public: publicSettings ,
+                                projectConfig = {},
+                                publicSettings = prjData.public;
+                            if (1 == prjIndex) projectConfig = {
+                                public: publicSettings,
                                 prjIndex: prjIndex
                             };
                             else {
                                 var index = prjData.prjItem[prjIndex + ""];
-                                projectConfig  = {
-                                    public: publicSettings ,
+                                projectConfig = {
+                                    public: publicSettings,
                                     item: index,
                                     prjIndex: prjIndex
                                 };
                                 var selectionBits = this.getCkValues(projectConfig.item.prjSelected);
-                                projectConfig .item["ckValues"] = selectionBits
+                                projectConfig.item["ckValues"] = selectionBits
                             }
-                            this.prjIndex = projectConfig .prjIndex, 
-                            this.public = projectConfig .public, 
-                            this.item = projectConfig .item, 
-                            6 == this.prjIndex && this.features.showOutDoorTips && (this.showOutDoorTips = !0)
+                            this.prjIndex = projectConfig.prjIndex,
+                                this.public = projectConfig.public,
+                                this.item = projectConfig.item,
+                                6 == this.prjIndex && this.features.showOutDoorTips && (this.showOutDoorTips = !0)
                         },
 
 
                         methods: {
-                            sendCmd: function() {
+                            sendCmd: function () {
                                 var commandParams = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
-                                this.refreshShow(), 
+                                this.refreshShow(),
                                     app.globalData.setCmdData("prjData", {
                                         prjIndex: this.prjIndex,
                                         public: this.public,
                                         item: this.item
-                                    }), 
-                                    null == commandParams && (commandParams = {}), 
+                                    }),
+                                    null == commandParams && (commandParams = {}),
                                     commandParams["features"] = app.globalData.getDeviceFeatures();
                                 var command = deviceCommandUtils.getCmdStr(app.globalData.cmd, commandParams),
                                     r = deviceBleController.gosend(!1, command);
@@ -888,7 +888,7 @@ globalThis["webpackJsonp"].push([
                             // It extracts each bit (from least significant to most significant) from every number 
                             // and flattens all bits into a single array of 0s and 1s. 
                             // This is useful for converting compact bitfield representations into a simple array of booleans for UI display or logic.
-                            getCkValues: function(e) {
+                            getCkValues: function (e) {
                                 for (var t = [], r = 0; r < e.length; r++)
                                     for (var n = e[r], h = 0; h < 16; h++) {
                                         var a = n >> h & 1;
@@ -902,7 +902,7 @@ globalThis["webpackJsonp"].push([
                             // by setting the appropriate bits, then stores it in the result array. 
                             // This is useful for compressing a long list of boolean flags into a smaller, 
                             // more efficient format for storage or transmission.
-                            getprjSelected: function(e) {
+                            getprjSelected: function (e) {
                                 for (var t = 0, r = [0, 0, 0, 0], n = 0; n < e.length; n++) {
                                     var h = n % 16;
                                     1 == e[n] && (t += Math.pow(2, h)), 15 == h && (r[(n + 1) / 16 - 1] = t, t = 0)
@@ -914,19 +914,19 @@ globalThis["webpackJsonp"].push([
                             // (if t == 2, it inverts each bit; if t == 3, it clears all bits; otherwise, it sets all bits to 1).
                             //  After updating the bit array, it uses getprjSelected to pack the bits into integers, 
                             // updates the relevant properties using Vue's $set for reactivity, and sends the updated command.
-                            selectAutoBtnClick: function(selectionAction) {
-                                for (var r = selectionAction, selectionBits  = this.item.ckValues, h = 0; h < selectionBits .length; h++) 2 == r ? 1 == selectionBits [h] ? selectionBits [h] = 0 : selectionBits [h] = 1 : selectionBits [h] = 3 == r ? 0 : 1;
-                                var packedBits = this.getprjSelected(selectionBits );
-                                this.item.prjSelected = packedBits, 
-                                this.item.ckValues = selectionBits, 
-                                this.sendCmd()
+                            selectAutoBtnClick: function (selectionAction) {
+                                for (var r = selectionAction, selectionBits = this.item.ckValues, h = 0; h < selectionBits.length; h++) 2 == r ? 1 == selectionBits[h] ? selectionBits[h] = 0 : selectionBits[h] = 1 : selectionBits[h] = 3 == r ? 0 : 1;
+                                var packedBits = this.getprjSelected(selectionBits);
+                                this.item.prjSelected = packedBits,
+                                    this.item.ckValues = selectionBits,
+                                    this.sendCmd()
                             },
                             // This function responds to checkbox group changes. 
                             // It receives the indices of checked boxes, 
                             // then sets the corresponding bits in a four-element integer array (r). 
                             // Each checked index is mapped to a specific bit in the appropriate integer.
                             //  The packed result is stored in prjSelected, and the updated state is sent.
-                            checkboxChange: function(indices) {
+                            checkboxChange: function (indices) {
                                 var packedBits = [0, 0, 0, 0];
                                 for (var n = indices.detail.value, h = 0; h < n.length; h++) {
                                     var a = n[h] - 1,
@@ -936,59 +936,59 @@ globalThis["webpackJsonp"].push([
                                     packedBits[i] = packedBits[i] | o
                                 }
                                 this.item.prjSelected = packedBits,
-                                this.sendCmd()
+                                    this.sendCmd()
                             },
 
-                            btnSelectClick: function(selectedIndex ) {
+                            btnSelectClick: function (selectedIndex) {
                                 if (0 != this.item.pyMode) {
-                                    var  selectionBits = this.item.ckValues,
+                                    var selectionBits = this.item.ckValues,
                                         commandParams = null;
-                                    1 == selectionBits[selectedIndex ] 
-                                        ? selectionBits[selectedIndex ] = 0 
-                                            : (selectionBits[selectedIndex ] = 1, commandParams = {
-                                        prjParm: {
-                                            prjIndex: this.prjIndex,
-                                            selIndex: selectedIndex  + 1
-                                        }
-                                    });
+                                    1 == selectionBits[selectedIndex]
+                                        ? selectionBits[selectedIndex] = 0
+                                        : (selectionBits[selectedIndex] = 1, commandParams = {
+                                            prjParm: {
+                                                prjIndex: this.prjIndex,
+                                                selIndex: selectedIndex + 1
+                                            }
+                                        });
                                     var packedBits = this.getprjSelected(selectionBits);
                                     this.item.prjSelected = packedBits,
-                                    this.item.ckValues = selectionBits, 
-                                    this.sendCmdParms(commandParams)
+                                        this.item.ckValues = selectionBits,
+                                        this.sendCmdParms(commandParams)
                                 }
                             },
 
-                            sendCmdParms: function(commandParams) {
-                              this.sendCmd(commandParams);
+                            sendCmdParms: function (commandParams) {
+                                this.sendCmd(commandParams);
                             }
- 
+
                         }
                     };
                 t.default = module
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-       "deviceCommandUtils ": function(e, t, r) {
-            (function(t) {
+        "deviceCommandUtils ": function (e, t, r) {
+            (function (t) {
                 var arrayConverionUtil = r("arrayConversionHelper");
 
                 function createIteratorHelper(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
                     if (!r) {
-                        if (Array.isArray(e) || (r = function(e, t) {
-                                if (!e) return;
-                                if ("string" === typeof e) return arrayLikeToArray(e, t);
-                                var r = Object.prototype.toString.call(e).slice(8, -1);
-                                "Object" === r && e.constructor && (r = e.constructor.name);
-                                if ("Map" === r || "Set" === r) return Array.from(e);
-                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return arrayLikeToArray(e, t)
-                            }(e)) || t && e && "number" === typeof e.length) {
+                        if (Array.isArray(e) || (r = function (e, t) {
+                            if (!e) return;
+                            if ("string" === typeof e) return arrayLikeToArray(e, t);
+                            var r = Object.prototype.toString.call(e).slice(8, -1);
+                            "Object" === r && e.constructor && (r = e.constructor.name);
+                            if ("Map" === r || "Set" === r) return Array.from(e);
+                            if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return arrayLikeToArray(e, t)
+                        }(e)) || t && e && "number" === typeof e.length) {
                             r && (e = r);
                             var n = 0,
-                                h = function() {};
+                                h = function () { };
                             return {
                                 s: h,
-                                n: function() {
+                                n: function () {
                                     return n >= e.length ? {
                                         done: !0
                                     } : {
@@ -996,7 +996,7 @@ globalThis["webpackJsonp"].push([
                                         value: e[n++]
                                     }
                                 },
-                                e: function(e) {
+                                e: function (e) {
                                     throw e
                                 },
                                 f: h
@@ -1007,17 +1007,17 @@ globalThis["webpackJsonp"].push([
                     var i, c = !0,
                         o = !1;
                     return {
-                        s: function() {
+                        s: function () {
                             r = r.call(e)
                         },
-                        n: function() {
+                        n: function () {
                             var e = r.next();
                             return c = e.done, e
                         },
-                        e: function(e) {
+                        e: function (e) {
                             o = !0, i = e
                         },
-                        f: function() {
+                        f: function () {
                             try {
                                 c || null == r.return || r.return()
                             } finally {
@@ -1047,35 +1047,40 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function splitIntoSegmentsBySumLimit(numbers, limit) {
-                   // console.log("splitIntoSegmentsBySumLimit called with:", numbers, "limit:", limit);
-                    for (var r = 0, n = [], h = 0, a = 0, i = 0; i < numbers.length; i++)
-                        if (r + numbers[i] <= limit) {
-                            a += 1;
-                            n.push([h, a]);
-                            r += numbers[i];
+                    // console.log("splitIntoSegmentsBySumLimit called with:", numbers, "limit:", limit);
+                    let currentSum = 0;
+                    let segmentRanges = [];
+                    let segmentStartIdx = 0;
+                    let segmentSize = 0;
+                    for (let numberIdx = 0; numberIdx < numbers.length; numberIdx++) {
+                        if (currentSum + numbers[numberIdx] <= limit) {
+                            segmentSize += 1;
+                            segmentRanges.push([segmentStartIdx, segmentSize]);
+                            currentSum += numbers[numberIdx];
                         } else {
-                            var tempWidth = r;
-                            while (1) {
-                                if (tempWidth <= limit) {
-                                    a += 1;
-                                    n.push([h, a]);
-                                    r = tempWidth + numbers[i];
+                            let tempSum = currentSum;
+                            while (true) {
+                                if (tempSum <= limit) {
+                                    segmentSize += 1;
+                                    segmentRanges.push([segmentStartIdx, segmentSize]);
+                                    currentSum = tempSum + numbers[numberIdx];
                                     break;
                                 }
-                                if (tempWidth > limit && tempWidth - numbers[h] < limit) {
-                                    a += 1;
-                                    n.push([h, a]);
-                                    r += numbers[i];
+                                if (tempSum > limit && tempSum - numbers[segmentStartIdx] < limit) {
+                                    segmentSize += 1;
+                                    segmentRanges.push([segmentStartIdx, segmentSize]);
+                                    currentSum += numbers[numberIdx];
                                     break;
                                 }
-                                tempWidth -= numbers[h];
-                                r -= numbers[h];
-                                h += 1;
-                                a -= 1;
+                                tempSum -= numbers[segmentStartIdx];
+                                currentSum -= numbers[segmentStartIdx];
+                                segmentStartIdx += 1;
+                                segmentSize -= 1;
                             }
                         }
-                    console.log("[JS] splitIntoSegmentsBySumLimit result:", n);
-                    return n;
+                    }
+                    console.log("[JS] splitIntoSegmentsBySumLimit result:", segmentRanges);
+                    return segmentRanges;
                 }
 
                 function generateSegmentedLayoutData(segments, scalingFactor) {
@@ -1094,7 +1099,7 @@ globalThis["webpackJsonp"].push([
                             segmentHeights.push(segments[segmentIdx][3] * scalingFactor);
                             totalSegmentHeight += segments[segmentIdx][3];
                             // Detailed debug output for parity comparison
-                            console.log(`[JS] Segment ${segmentIdx}: index=${segments[segmentIdx][0]}, width=${segments[segmentIdx][2]} (scaled=${segments[segmentIdx][2]*scalingFactor}), height=${segments[segmentIdx][3]} (scaled=${segments[segmentIdx][3]*scalingFactor})`);
+                            console.log(`[JS] Segment ${segmentIdx}: index=${segments[segmentIdx][0]}, width=${segments[segmentIdx][2]} (scaled=${segments[segmentIdx][2] * scalingFactor}), height=${segments[segmentIdx][3]} (scaled=${segments[segmentIdx][3] * scalingFactor})`);
                         }
                     }
                     // Debug: print segmentWidths and segmentHeights
@@ -1115,7 +1120,7 @@ globalThis["webpackJsonp"].push([
                             segmentHeights.push(segmentDefaultSize * scalingFactor);
                         }
                         var splitVerticalSegments = splitIntoSegmentsBySumLimit(segmentHeights, 800);
-                        
+
                         var verticalStartHex = "";
                         var verticalCountHex = "";
                         for (var splitIdx = 0; splitIdx < splitVerticalSegments.length; splitIdx++) {
@@ -1144,14 +1149,14 @@ globalThis["webpackJsonp"].push([
                         segmentStartHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][0], 2);
                         segmentCountHex += toFixedWidthHex(splitHorizontalSegments[splitIdx][1], 2);
                     }
-                    console.log("[JS] generateSegmentedLayoutData :" +segments.concat(horizontalFillers), segmentStartHex, segmentCountHex, -horizontalOffset * scalingFactor / 2);
+                    console.log("[JS] generateSegmentedLayoutData :" + segments.concat(horizontalFillers), segmentStartHex, segmentCountHex, -horizontalOffset * scalingFactor / 2);
                     return [segments.concat(horizontalFillers), segmentStartHex, segmentCountHex, -horizontalOffset * scalingFactor / 2];
                 }
 
-                function encodeLayoutToCommandData(polylineSegments , segmentTime , commandOptions , mirrorMode ) {
-                 //   console.log("encodeLayoutToCommandData called with:", polylineSegments, segmentTime, commandOptions, mirrorMode, arguments.length > 4 ? arguments[4] : 0);
+                function encodeLayoutToCommandData(polylineSegments, segmentTime, commandOptions, mirrorMode) {
+                    //   console.log("encodeLayoutToCommandData called with:", polylineSegments, segmentTime, commandOptions, mirrorMode, arguments.length > 4 ? arguments[4] : 0);
                     var a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 0;
-                    if (0 == polylineSegments .length) return null;
+                    if (0 == polylineSegments.length) return null;
                     var counter = 0,
                         counter2 = 0,
                         prevIndex = -1,
@@ -1165,16 +1170,16 @@ globalThis["webpackJsonp"].push([
                         F = V,
                         segmentPointCount = 0,
                         time = "00";
-                    time = commandOptions .textDecimalTime 
-                        ? toFixedWidthHex(Math.floor(10 * segmentTime ), 2) 
-                        : toFixedWidthHex(Math.floor(segmentTime ), 2), 
+                    time = commandOptions.textDecimalTime
+                        ? toFixedWidthHex(Math.floor(10 * segmentTime), 2)
+                        : toFixedWidthHex(Math.floor(segmentTime), 2),
                         //console.log("encodeLayoutToCommandData time:", time), 
                         V >= 8 && (F = 0);
                     var test = !1;
-                    if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"), 
-                        xyss = polylineSegments , se1 = 0, se2 = 0, xOffset = 0;
+                    if (test) t("error", "20241210 - Current code is in coordinate adjustment mode and cannot be published.", " at utils/funcTools.js:345"),
+                        xyss = polylineSegments, se1 = 0, se2 = 0, xOffset = 0;
                     else {
-                        var segementData = generateSegmentedLayoutData(polylineSegments , scalingFactor, mirrorMode );
+                        var segementData = generateSegmentedLayoutData(polylineSegments, scalingFactor, mirrorMode);
                         xyss = segementData[0], se1 = segementData[1], se2 = segementData[2], xOffset = segementData[3]
                         // Debug: print segment grouping and metadata
                         console.log("[JS] generateSegmentedLayoutData output:");
@@ -1201,14 +1206,14 @@ globalThis["webpackJsonp"].push([
                         console.log("  segmentPointCounts:", segmentPointCounts);
                     }
                     for (var ix = 0; ix < xyss.length; ix++) {
-                        prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0 
-                            && (charPointCmd += toFixedWidthHex(segmentPointCount, 2), 
-                                console.log(`[JS] charPointCmd append: seg ${counter2-1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount,2)}`), segmentPointCount = 0), 
-                                    counter2++, 
-                                        charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2), 
-                                            console.log(`[JS] charWidthCmd append: seg ${counter2-1} width ${Math.round(Number(xyss[ix][2] * scalingFactor))} -> ${toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)),2)}`), 
-                                                V >= 8 && xyss[ix][1].length > 1 && F++), 
-                                                    F >= 8 && (F = 1);
+                        prevIndex != xyss[ix][0] && (prevIndex = xyss[ix][0], counter2 > 0
+                            && (charPointCmd += toFixedWidthHex(segmentPointCount, 2),
+                                console.log(`[JS] charPointCmd append: seg ${counter2 - 1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount, 2)}`), segmentPointCount = 0),
+                            counter2++,
+                            charWidthCmd += toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2),
+                            console.log(`[JS] charWidthCmd append: seg ${counter2 - 1} width ${Math.round(Number(xyss[ix][2] * scalingFactor))} -> ${toFixedWidthHex(Math.round(Number(xyss[ix][2] * scalingFactor)), 2)}`),
+                            V >= 8 && xyss[ix][1].length > 1 && F++),
+                            F >= 8 && (F = 1);
                         var segmentPoints = xyss[ix][1];
                         segmentPointCount += segmentPoints.length;
                         for (var index = 0; index < segmentPoints.length; index++) {
@@ -1218,22 +1223,22 @@ globalThis["webpackJsonp"].push([
                                 yScreen = Math.round(Number(point.y * scalingFactor)),
                                 pointType = Number(point.z),
                                 segmentIndex = F;
-                            0 == index && (segmentIndex = 0, pointType = 1), index == segmentPoints.length - 1 
-                                && (pointType = 1), 1 == segmentPoints.length && (pointType = Number(point.z)), 
-                            commandOptions.textStopTime && segmentPoints.length > 1 
-                                && (0 == segmentIndex ? pointType = 2 : (index < segmentPoints.length - 1 
-                                    && 0 == segmentPoints[index + 1].s || index == segmentPoints.length - 1) 
-                                && (pointType = 3)), 
-                            command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2);
+                            0 == index && (segmentIndex = 0, pointType = 1), index == segmentPoints.length - 1
+                                && (pointType = 1), 1 == segmentPoints.length && (pointType = Number(point.z)),
+                                commandOptions.textStopTime && segmentPoints.length > 1
+                                && (0 == segmentIndex ? pointType = 2 : (index < segmentPoints.length - 1
+                                    && 0 == segmentPoints[index + 1].s || index == segmentPoints.length - 1)
+                                    && (pointType = 3)),
+                                command = command + toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2);
                             // Debug: print packed point
                             if (ix === 0 && index < 4) {
-                                console.log(`[JS] Packed point ${index}: x=${xScreen} y=${yScreen} segIdx=${segmentIndex} type=${pointType} -> ${toFixedWidthHex(xScreen)}${toFixedWidthHex(yScreen)}${toFixedWidthHex(combineNibbles(segmentIndex, pointType),2)}`);
+                                console.log(`[JS] Packed point ${index}: x=${xScreen} y=${yScreen} segIdx=${segmentIndex} type=${pointType} -> ${toFixedWidthHex(xScreen)}${toFixedWidthHex(yScreen)}${toFixedWidthHex(combineNibbles(segmentIndex, pointType), 2)}`);
                             }
                             test && (b = b + "\n{" + xScreen + "," + yScreen + "," + segmentIndex + "," + pointType + "},")
                         }
                     }
                     charPointCmd += toFixedWidthHex(segmentPointCount, 2);
-                    console.log(`[JS] charPointCmd final append: seg ${counter2-1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount,2)}`);
+                    console.log(`[JS] charPointCmd final append: seg ${counter2 - 1} count ${segmentPointCount} -> ${toFixedWidthHex(segmentPointCount, 2)}`);
                     // Print all packed fields for parity analysis
                     console.log("[JS] encodeLayoutToCommandData packed fields:");
                     console.log("  cnt:", counter);
@@ -1245,18 +1250,18 @@ globalThis["webpackJsonp"].push([
                     console.log("  se2:", se2);
                     console.log("  ver:", ver);
                     console.log("  time:", time);
-                    return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), 0 == counter 
+                    return test && t("log", "Text coordinates (drawing software format)", b, " at utils/funcTools.js:408"), 0 == counter
                         ? null : {
-                        cnt: counter,
-                        charCount: counter2,
-                        cmd: command,
-                        charWidthCmd: charWidthCmd,
-                        charPointCmd: charPointCmd,
-                        se1: se1,
-                        se2: se2,
-                        ver: ver,
-                        time: time
-                    }
+                            cnt: counter,
+                            charCount: counter2,
+                            cmd: command,
+                            charWidthCmd: charWidthCmd,
+                            charPointCmd: charPointCmd,
+                            se1: se1,
+                            se2: se2,
+                            ver: ver,
+                            time: time
+                        }
                 }
 
                 function padHexStringToByteLength(e, t) {
@@ -1312,71 +1317,81 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function encodeDrawPointCommand(points, config, features, pointTimeValue) {
-                    for (var h = arguments.length > 4 && void 0 !== arguments[4] 
-                            ? arguments[4] 
-                            : "00", a = "", o = "", index = 0; index < 15; index++) 
-                                index <= 11 
-                                    ? o += toFixedWidthHex(config.cnfValus[index], 2) 
-                                        : 13 == index 
-                                            ? getFeatureValue({
-                                                features: features
-                                            }, "picsPlay") 
-                                                ? o += toFixedWidthHex(-1 == pointTimeValue 
-                                                    ? 10 * config.cnfValus[12] 
-                                                    : 10 * pointTimeValue, 2) 
-                                                : o += "00" : 14 == index && features.textStopTime 
-                                                    ? o += toFixedWidthHex(config.txPointTime, 2) : o += "00";
-                    if ("00" == h) {
-                        o += h;
-                        for (var ix = 0; ix < points.length; ix++) {
-                            var point = points[ix],
-                                d = point[3];
-                            features.textStopTime && (0 == point[2] 
-                                ? d = 2 
-                                : (ix < points.length - 1 && 0 == points[ix + 1][2] || ix == points.length - 1) 
-                                    && (d = 3)), 
-                                    a = a + toFixedWidthHex(point[0].toFixed()) + toFixedWidthHex(point[1].toFixed()) + toFixedWidthHex(combineNibbles(point[2], d), 2)
+                    var headerSuffix = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : "00";
+                    var encodedPoints = "";
+                    var configHeader = "";
+                    for (var configIndex = 0; configIndex < 15; configIndex++) {
+                        if (configIndex <= 11) {
+                            configHeader += toFixedWidthHex(config.cnfValus[configIndex], 2);
+                        } else if (configIndex === 13) {
+                            if (getFeatureValue({ features: features }, "picsPlay")) {
+                                configHeader += toFixedWidthHex(-1 == pointTimeValue ? 10 * config.cnfValus[12] : 10 * pointTimeValue, 2);
+                            } else {
+                                configHeader += "00";
+                            }
+                        } else if (configIndex === 14 && features.textStopTime) {
+                            configHeader += toFixedWidthHex(config.txPointTime, 2);
+                        } else {
+                            configHeader += "00";
                         }
-                        a = o + toFixedWidthHex(points.length) + a
-                    } else o += h, a = o;
-                    return a
+                    }
+                    if ("00" == headerSuffix) {
+                        configHeader += headerSuffix;
+                        for (var pointIndex = 0; pointIndex < points.length; pointIndex++) {
+                            var point = points[pointIndex];
+                            var pointType = point[3];
+                            if (features.textStopTime) {
+                                if (point[2] == 0) {
+                                    pointType = 2;
+                                } else if ((pointIndex < points.length - 1 && points[pointIndex + 1][2] == 0) || pointIndex == points.length - 1) {
+                                    pointType = 3;
+                                }
+                            }
+                            encodedPoints += toFixedWidthHex(point[0].toFixed()) + toFixedWidthHex(point[1].toFixed()) + toFixedWidthHex(combineNibbles(point[2], pointType), 2);
+                        }
+                        encodedPoints = configHeader + toFixedWidthHex(points.length) + encodedPoints;
+                    } else {
+                        configHeader += headerSuffix;
+                        encodedPoints = configHeader;
+                    }
+                    return encodedPoints;
                 }
 
                 function drawPointStrToCmd(pointString, config) {
-                    var headerSuffix  = arguments.length > 2 && void 0 !== arguments[2] 
-                        ? arguments[2] 
+                    var headerSuffix = arguments.length > 2 && void 0 !== arguments[2]
+                        ? arguments[2]
                         : null,
-                        commandStr  = "";
-                    return commandStr  = null == headerSuffix  
-                        ? config.picsPlay 
-                            ? "f0f1f200" + pointString + "f4f5f6f7" 
-                            : "f0f1f2f3" + pointString + "f4f5f6f7" 
-                        : "f0f1f2" + toFixedWidthHex(headerSuffix , 2) + pointString + "f4f5f6f7", commandStr .toUpperCase()
+                        commandStr = "";
+                    return commandStr = null == headerSuffix
+                        ? config.picsPlay
+                            ? "f0f1f200" + pointString + "f4f5f6f7"
+                            : "f0f1f2f3" + pointString + "f4f5f6f7"
+                        : "f0f1f2" + toFixedWidthHex(headerSuffix, 2) + pointString + "f4f5f6f7", commandStr.toUpperCase()
                 }
 
                 e.exports = {
                     generateSegmentedLayoutData: generateSegmentedLayoutData,
                     encodeLayoutToCommandData: encodeLayoutToCommandData,
-                    test: function(e) {
+                    test: function (e) {
                         return "hello---" + e
                     },
-                    inArray: function(e, t, r) {
+                    inArray: function (e, t, r) {
                         for (var n = 0; n < e.length; n++)
                             if (e[n][t] === r) return n;
                         return -1
                     },
-                    ab2hex: function(e) {
-                        var t = Array.prototype.map.call(new Uint8Array(e), (function(e) {
+                    ab2hex: function (e) {
+                        var t = Array.prototype.map.call(new Uint8Array(e), (function (e) {
                             return ("00" + e.toString(16)).slice(-2) + ""
                         }));
                         return t.join("").toUpperCase()
                     },
-                    ab2Str: function(e) {
+                    ab2Str: function (e) {
                         var t = new Uint8Array(e),
                             r = String.fromCharCode.apply(null, t);
                         return r
                     },
-                    stringToBytes: function(e) {
+                    stringToBytes: function (e) {
                         for (var t, r, n = [], h = 0; h < e.length; h++) {
                             t = e.charCodeAt(h), r = [];
                             do {
@@ -1386,7 +1401,7 @@ globalThis["webpackJsonp"].push([
                         }
                         return n
                     },
-                    getXtsCmd: function(e) {
+                    getXtsCmd: function (e) {
                         for (var t = e.split("\n"), r = 0, n = "", h = 0; h < t.length; h++) {
                             var a = t[h];
                             if ("" != a) {
@@ -1399,195 +1414,230 @@ globalThis["webpackJsonp"].push([
                         }
                         return 0 == r ? "" : (n = "55667788" + ("00" + r.toString(16)).slice(-2) + n + "88776655", n)
                     },
-                    getXysCmd: function(e) {
-                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
-                            r = 0,
-                            n = 0,
-                            h = -1,
-                            a = "",
-                            o = "",
-                            l = "",
-                            p = "",
-                            d = toFixedWidthHex(t, 2),
-                            b = 8,
-                            g = .5,
-                            j = b,
-                            x = 0;
-                        b >= 8 && (j = 0);
-                        var V = generateSegmentedLayoutData(xyss, j);
-                        xyss = V[0], se = V[1] + V[2], xOffset = V[3];
-                        for (var f = 0; f < xyss.length; f++) {
-                            h != xyss[f][0] && (h = xyss[f][0], n > 0 && (l += toFixedWidthHex(x, 2), x = 0), n++, p += toFixedWidthHex(Math.round(Number(xyss[f][2] * g)), 2), b >= 8 && xyss[f][1].length > 1 && j++), j >= 8 && (j = 1);
-                            var F = xyss[f][1];
-                            x += F.length;
-                            for (var k = 0; k < F.length; k++) {
-                                r++;
-                                var m = F[k],
-                                    P = Math.round(Number(m.x * g) + xOffset),
-                                    u = Math.round(Number(m.y * g)),
-                                    X = Number(m.z),
-                                    N = j;
-                                0 == k && (N = 0, X = 1), k == F.length - 1 && (X = 1), 1 == F.length && (X = Number(m.z)), a = a + toFixedWidthHex(P) + toFixedWidthHex(u) + toFixedWidthHex(combineNibbles(N, X), 2), o = o + "\n" + P + "," + u + ",(" + N + "," + X + "),"
+                    getXysCmd: function (inputPoints) {
+                        var version = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
+                        var totalPointCount = 0;
+                        var segmentCount = 0;
+                        var lastSegmentIndex = -1;
+                        var encodedPoints = "";
+                        var debugOutput = "";
+                        var segmentSizesHex = "";
+                        var segmentWidthsHex = "";
+                        var versionHex = toFixedWidthHex(version, 2);
+                        var segmentWidth = 8;
+                        var scalingFactor = 0.5;
+                        var segmentIndex = segmentWidth;
+                        var currentSegmentSize = 0;
+                        if (segmentWidth >= 8) segmentIndex = 0;
+                        var segmentedData = generateSegmentedLayoutData(xyss, segmentIndex);
+                        xyss = segmentedData[0];
+                        var segmentMetadataHex = segmentedData[1] + segmentedData[2];
+                        var xOffset = segmentedData[3];
+                        for (var segmentIdx = 0; segmentIdx < xyss.length; segmentIdx++) {
+                            if (lastSegmentIndex != xyss[segmentIdx][0]) {
+                                lastSegmentIndex = xyss[segmentIdx][0];
+                                if (segmentCount > 0) segmentSizesHex += toFixedWidthHex(currentSegmentSize, 2);
+                                currentSegmentSize = 0;
+                                segmentCount++;
+                                segmentWidthsHex += toFixedWidthHex(Math.round(Number(xyss[segmentIdx][2] * scalingFactor)), 2);
+                                if (segmentWidth >= 8 && xyss[segmentIdx][1].length > 1) segmentIndex++;
+                            }
+                            if (segmentIndex >= 8) segmentIndex = 1;
+                            var segmentPoints = xyss[segmentIdx][1];
+                            currentSegmentSize += segmentPoints.length;
+                            for (var pointIdx = 0; pointIdx < segmentPoints.length; pointIdx++) {
+                                totalPointCount++;
+                                var point = segmentPoints[pointIdx];
+                                var xScreen = Math.round(Number(point.x * scalingFactor) + xOffset);
+                                var yScreen = Math.round(Number(point.y * scalingFactor));
+                                var pointType = Number(point.z);
+                                var packedSegmentIndex = segmentIndex;
+                                if (pointIdx == 0) { packedSegmentIndex = 0; pointType = 1; }
+                                if (pointIdx == segmentPoints.length - 1) pointType = 1;
+                                if (segmentPoints.length == 1) pointType = Number(point.z);
+                                encodedPoints += toFixedWidthHex(xScreen) + toFixedWidthHex(yScreen) + toFixedWidthHex(combineNibbles(packedSegmentIndex, pointType), 2);
+                                debugOutput += "\n" + xScreen + "," + yScreen + ",(" + packedSegmentIndex + "," + pointType + "),";
                             }
                         }
-                        return l += toFixedWidthHex(x, 2), 0 == r ? "" : (a = "A0A1A2A3" + toFixedWidthHex(r) + toFixedWidthHex(n, 2) + a + p + l + se + d + "A4A5A6A7", a.toUpperCase())
+                        segmentSizesHex += toFixedWidthHex(currentSegmentSize, 2);
+                        if (totalPointCount == 0) return "";
+                        encodedPoints = "A0A1A2A3" + toFixedWidthHex(totalPointCount) + toFixedWidthHex(segmentCount, 2) + encodedPoints + segmentWidthsHex + segmentSizesHex + segmentMetadataHex + versionHex + "A4A5A6A7";
+                        return encodedPoints.toUpperCase();
                     },
-                    getXysCmdArr: function(polylinePoints, commandType, mirrored) {
-                        for (var h = arguments.length > 3 && void 0 !== arguments[3] 
-                                ? arguments[3] 
-                                : 0, a = [], c = 0; c < polylinePoints.length; c++) {
+                    getXysCmdArr: function (polylinePoints, commandType, mirrored) {
+                        for (var h = arguments.length > 3 && void 0 !== arguments[3]
+                            ? arguments[3]
+                            : 0, a = [], c = 0; c < polylinePoints.length; c++) {
                             var points = polylinePoints[c].xys,
                                 s = mirrored;
-                            255 == mirrored && null != polylinePoints[c].XysRight 
-                                ? points = polylinePoints[c].XysRight 
-                                : 127 == mirrored && null != polylinePoints[c].XysUp 
-                                    ? points = polylinePoints[c].XysUp 
-                                    : 128 == mirrored && null != polylinePoints[c].XysDown 
-                                        ? points = polylinePoints[c].XysDown 
+                            255 == mirrored && null != polylinePoints[c].XysRight
+                                ? points = polylinePoints[c].XysRight
+                                : 127 == mirrored && null != polylinePoints[c].XysUp
+                                    ? points = polylinePoints[c].XysUp
+                                    : 128 == mirrored && null != polylinePoints[c].XysDown
+                                        ? points = polylinePoints[c].XysDown
                                         : s = 0;
                             var encodedCOmmandData = encodeLayoutToCommandData(points, polylinePoints[c].time, commandType, s, h);
                             null != encodedCOmmandData && a.push(encodedCOmmandData)
                         }
                         if (0 == a.length) return "";
-                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++) 
-                            d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt), 
-                            g += toFixedWidthHex(a[P].charCount, 2), 
-                            j += a[P].cmd, x += a[P].charWidthCmd, 
-                            V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
-                       // console.log(d, b);
+                        for (var d = 0, b = 0, g = "", j = "", x = "", V = "", f = "", F = "", k = "", m = "", P = 0; P < a.length; P++)
+                            d += a[P].cnt, b += a[P].charCount, toFixedWidthHex(a[P].cnt),
+                                g += toFixedWidthHex(a[P].charCount, 2),
+                                j += a[P].cmd, x += a[P].charWidthCmd,
+                                V += a[P].charPointCmd, f += a[P].se1, F += a[P].se2, k += a[P].ver, m += a[P].time;
+                        // console.log(d, b);
                         var u = toFixedWidthHex(a.length, 2),
                             X = "A0A1A2A3" + toFixedWidthHex(d) + toFixedWidthHex(b, 2) + j + u + g + x + V + f + F + k + m + "A4A5A6A7";
                         return X.toUpperCase()
                     },
 
 
-    getXysCmdSimplified: function(segmentPoints,time) {
-    var versionTag = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0;
-    var encodedSegments = [];
+                    getXysCmdSimplified: function (segmentPoints, time) {
+                        var versionTag = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 0;
+                        var encodedSegments = [];
 
-        var encodedCommandData = encodeLayoutToCommandData(
-            segmentPoints,
-            time,
-            0,
-            0,
-            0
-        );
-        if (encodedCommandData != null) encodedSegments.push(encodedCommandData);
-
-
-        
-
-
-    if (encodedSegments.length == 0) return "";
-    var totalPointCount = 0,
-        totalCharCount = 0,
-        charCountHex = "",
-        commandHex = "",
-        charWidthHex = "",
-        charPointHex = "",
-        se1Hex = "",
-        se2Hex = "",
-        versionHex = "",
-        timeHex = "";
-    for (var segmentIndex = 0; segmentIndex < encodedSegments.length; segmentIndex++) {
-        totalPointCount += encodedSegments[segmentIndex].cnt;
-        totalCharCount += encodedSegments[segmentIndex].charCount;
-        charCountHex += toFixedWidthHex(encodedSegments[segmentIndex].charCount, 2);
-        
-
-        //console.log(" segment "+segmentIndex + " cmd "+  encodedSegments[segmentIndex].cmd);
-
-        commandHex += encodedSegments[segmentIndex].cmd;
+                        var encodedCommandData = encodeLayoutToCommandData(
+                            segmentPoints,
+                            time,
+                            0,
+                            0,
+                            0
+                        );
+                        if (encodedCommandData != null) encodedSegments.push(encodedCommandData);
 
 
 
-        charWidthHex += encodedSegments[segmentIndex].charWidthCmd;
-        charPointHex += encodedSegments[segmentIndex].charPointCmd;
-        se1Hex += encodedSegments[segmentIndex].se1;
-        se2Hex += encodedSegments[segmentIndex].se2;
-        versionHex += encodedSegments[segmentIndex].ver;
-        timeHex += encodedSegments[segmentIndex].time;
-    }
-    console.log(totalPointCount, totalCharCount);
-    var segmentCountHex = toFixedWidthHex(encodedSegments.length, 2);
-    // Log all command parts for inspection
-    console.log("segmentCountHex:", segmentCountHex);
-    console.log("totalPointCount:", toFixedWidthHex(totalPointCount));
-    console.log("totalCharCount:", toFixedWidthHex(totalCharCount, 2));
-    console.log("commandHex:", commandHex);
-    console.log("charCountHex:", charCountHex);
-    console.log("charWidthHex:", charWidthHex);
-    console.log("charPointHex:", charPointHex);
-    console.log("se1Hex:", se1Hex);
-    console.log("se2Hex:", se2Hex);
-    console.log("versionHex:", versionHex);
-    console.log("timeHex:", timeHex);
 
-    var resultCmd = "A0A1A2A3" +
-        toFixedWidthHex(totalPointCount) +
-        toFixedWidthHex(totalCharCount, 2) +
-        commandHex +
-        segmentCountHex +
-        charCountHex +
-        charWidthHex +
-        charPointHex +
-        se1Hex +
-        se2Hex +
-        versionHex +
-        timeHex +
-        "A4A5A6A7";
-    return resultCmd.toUpperCase();
-},
 
-                    getCmdStr: function(commandConfig) {
-                        var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
-                            curModeHex = toFixedWidthHex(commandConfig.curMode, 2),
-                            reservedHex  = toFixedWidthHex(0, 2),
-                            colorHex = toFixedWidthHex(commandConfig.textData.txColor, 2),
-                            c = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
-                            o = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2),
-                            runSpeedHex = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2),
-                            l = "00",
-                            p = toFixedWidthHex(commandConfig.textData.txDist / 100 * 255, 2),
-                            audioTriggerModeHex  = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2),
-                            soundSensitivityHex  = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2),
-                            x = "ffffffff0000";
+                        if (encodedSegments.length == 0) return "";
+                        var totalPointCount = 0,
+                            totalCharCount = 0,
+                            charCountHex = "",
+                            commandHex = "",
+                            charWidthHex = "",
+                            charPointHex = "",
+                            se1Hex = "",
+                            se2Hex = "",
+                            versionHex = "",
+                            timeHex = "";
+                        for (var segmentIndex = 0; segmentIndex < encodedSegments.length; segmentIndex++) {
+                            totalPointCount += encodedSegments[segmentIndex].cnt;
+                            totalCharCount += encodedSegments[segmentIndex].charCount;
+                            charCountHex += toFixedWidthHex(encodedSegments[segmentIndex].charCount, 2);
+
+
+                            //console.log(" segment "+segmentIndex + " cmd "+  encodedSegments[segmentIndex].cmd);
+
+                            commandHex += encodedSegments[segmentIndex].cmd;
+
+
+
+                            charWidthHex += encodedSegments[segmentIndex].charWidthCmd;
+                            charPointHex += encodedSegments[segmentIndex].charPointCmd;
+                            se1Hex += encodedSegments[segmentIndex].se1;
+                            se2Hex += encodedSegments[segmentIndex].se2;
+                            versionHex += encodedSegments[segmentIndex].ver;
+                            timeHex += encodedSegments[segmentIndex].time;
+                        }
+                        console.log(totalPointCount, totalCharCount);
+                        var segmentCountHex = toFixedWidthHex(encodedSegments.length, 2);
+                        // Log all command parts for inspection
+                        console.log("segmentCountHex:", segmentCountHex);
+                        console.log("totalPointCount:", toFixedWidthHex(totalPointCount));
+                        console.log("totalCharCount:", toFixedWidthHex(totalCharCount, 2));
+                        console.log("commandHex:", commandHex);
+                        console.log("charCountHex:", charCountHex);
+                        console.log("charWidthHex:", charWidthHex);
+                        console.log("charPointHex:", charPointHex);
+                        console.log("se1Hex:", se1Hex);
+                        console.log("se2Hex:", se2Hex);
+                        console.log("versionHex:", versionHex);
+                        console.log("timeHex:", timeHex);
+
+                        var resultCmd = "A0A1A2A3" +
+                            toFixedWidthHex(totalPointCount) +
+                            toFixedWidthHex(totalCharCount, 2) +
+                            commandHex +
+                            segmentCountHex +
+                            charCountHex +
+                            charWidthHex +
+                            charPointHex +
+                            se1Hex +
+                            se2Hex +
+                            versionHex +
+                            timeHex +
+                            "A4A5A6A7";
+                        return resultCmd.toUpperCase();
+                    },
+
+                    getCmdStr: function (commandConfig) {
+                        var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
+                        var curModeHex = toFixedWidthHex(commandConfig.curMode, 2);
+                        var reservedHex = toFixedWidthHex(0, 2);
+                        var colorHex = toFixedWidthHex(commandConfig.textData.txColor, 2);
+                        var textSizeHex = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2);
+                        var textSizeHex2 = toFixedWidthHex(commandConfig.textData.txSize / 100 * 255, 2);
+                        var runSpeedHex = toFixedWidthHex(commandConfig.textData.runSpeed / 100 * 255, 2);
+                        var reservedZeroHex = "00";
+                        var textDistanceHex = toFixedWidthHex(commandConfig.textData.txDist / 100 * 255, 2);
+                        var audioTriggerModeHex = toFixedWidthHex(commandConfig.prjData.public.rdMode, 2);
+                        var soundSensitivityHex = toFixedWidthHex(commandConfig.prjData.public.soundVal / 100 * 255, 2);
+                        var colorGroupHex = "ffffffff0000";
 
                         if (null != featureParams) {
-                            if (x = "", featureParams.hasOwnProperty("groupList"))
-                                for (var ix = 0; ix < featureParams.groupList.length; ix++) 
-                                    x += toFixedWidthHex(featureParams.groupList[ix].color, 2);
-                            x += "ffffffff", x = x.substring(0, 8), getFeatureValue(featureParams, "textStopTime") 
-                                && (x += toFixedWidthHex(commandConfig.textData.txPointTime, 2)), x += "0000", x = x.substring(0, 12)
+                            colorGroupHex = "";
+                            if (featureParams.hasOwnProperty("groupList")) {
+                                for (var groupIdx = 0; groupIdx < featureParams.groupList.length; groupIdx++) {
+                                    colorGroupHex += toFixedWidthHex(featureParams.groupList[groupIdx].color, 2);
+                                }
+                            }
+                            colorGroupHex += "ffffffff";
+                            colorGroupHex = colorGroupHex.substring(0, 8);
+                            if (getFeatureValue(featureParams, "textStopTime")) {
+                                colorGroupHex += toFixedWidthHex(commandConfig.textData.txPointTime, 2);
+                            }
+                            colorGroupHex += "0000";
+                            colorGroupHex = colorGroupHex.substring(0, 12);
                         }
 
-                        var f = "",
-                            projectItems = commandConfig.prjData.prjItem;
-                        for (var index in projectItems) {
-                            var projectItem = projectItems[index],
-                                playBackMode = 0 == projectItem.pyMode ? 0 : 128;
-                            0 != playBackMode && null != featureParams 
-                                && featureParams.hasOwnProperty("prjParm") 
-                                    && featureParams.prjParm.prjIndex == index 
-                                        && (3 == index && getFeatureValue(featureParams, "animationFix") 
-                                            && [2, 4, 11, 13, 19].includes(featureParams.prjParm.selIndex) 
-                                                ? playBackMode |= 50 - featureParams.prjParm.selIndex 
-                                                : playBackMode |= featureParams.prjParm.selIndex);
-                            var playBackModeHex = toFixedWidthHex(playBackMode, 2),
-                                X = "",
-                                selectionBits = arrayConverionUtil(projectItem.prjSelected);
-                            3 == index && getFeatureValue(featureParams, "animationFix") && (selectionBits = applyBitmaskUpdates([2, 4, 11, 13, 19], selectionBits));
-                            for (var H = 0; H < selectionBits.length; H++) X = toFixedWidthHex(selectionBits[H]) + X;
-                            f = f + playBackModeHex + X
+                        var playbackHex = "";
+                        var projectItems = commandConfig.prjData.prjItem;
+                        for (var projectIdx in projectItems) {
+                            var projectItem = projectItems[projectIdx];
+                            var playbackMode = projectItem.pyMode == 0 ? 0 : 128;
+                            if (playbackMode != 0 && featureParams != null && featureParams.hasOwnProperty("prjParm") && featureParams.prjParm.prjIndex == projectIdx) {
+                                if (projectIdx == 3 && getFeatureValue(featureParams, "animationFix") && [2, 4, 11, 13, 19].includes(featureParams.prjParm.selIndex)) {
+                                    playbackMode |= 50 - featureParams.prjParm.selIndex;
+                                } else {
+                                    playbackMode |= featureParams.prjParm.selIndex;
+                                }
+                            }
+                            var playbackModeHex = toFixedWidthHex(playbackMode, 2);
+                            var selectionBitsHex = "";
+                            var selectionBits = arrayConverionUtil(projectItem.prjSelected);
+                            if (projectIdx == 3 && getFeatureValue(featureParams, "animationFix")) {
+                                selectionBits = applyBitmaskUpdates([2, 4, 11, 13, 19], selectionBits);
+                            }
+                            for (var selectionIdx = 0; selectionIdx < selectionBits.length; selectionIdx++) {
+                                selectionBitsHex = toFixedWidthHex(selectionBits[selectionIdx]) + selectionBitsHex;
+                            }
+                            playbackHex += playbackModeHex + selectionBitsHex;
                         }
-                        var runDirection = "";
-                        getFeatureValue(featureParams, "arbPlay") && (runDirection += toFixedWidthHex(commandConfig.textData.runDir, 2));
-                        for (var padding = "", R = Math.floor(runDirection.length / 2), v = R; v < 44; v++) padding += "00";
-                        var command = "c0c1c2c3" + curModeHex + reservedHex  + colorHex + c + o + runSpeedHex + l + p + audioTriggerModeHex  + soundSensitivityHex  + x + f + runDirection + padding + "c4c5c6c7";
-                        return command.toUpperCase()
+                        var runDirectionHex = "";
+                        if (getFeatureValue(featureParams, "arbPlay")) {
+                            runDirectionHex += toFixedWidthHex(commandConfig.textData.runDir, 2);
+                        }
+                        var paddingHex = "";
+                        var runDirectionLen = Math.floor(runDirectionHex.length / 2);
+                        for (var padIdx = runDirectionLen; padIdx < 44; padIdx++) {
+                            paddingHex += "00";
+                        }
+                        var command = "c0c1c2c3" + curModeHex + reservedHex + colorHex + textSizeHex + textSizeHex2 + runSpeedHex + reservedZeroHex + textDistanceHex + audioTriggerModeHex + soundSensitivityHex + colorGroupHex + playbackHex + runDirectionHex + paddingHex + "c4c5c6c7";
+                        return command.toUpperCase();
                     },
-                    
-                    getShakeCmdStr: function(e) {
+
+                    getShakeCmdStr: function (e) {
                         var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
                             n = "";
                         if (getFeatureValue(r, "xyCnf")) {
@@ -1612,35 +1662,68 @@ globalThis["webpackJsonp"].push([
                         return l.toUpperCase()
                     },
                     getDrawPointStr: encodeDrawPointCommand,
-                    getDrawCmdStr: function(drawPoints , drawconfig, features) {
+                    getDrawCmdStr: function (drawPoints, drawconfig, features) {
                         var pointTime = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : "00",
-                            encodedDrawCmd = encodeDrawPointCommand(drawPoints , drawconfig, features, -1, pointTime);
+                            encodedDrawCmd = encodeDrawPointCommand(drawPoints, drawconfig, features, -1, pointTime);
                         return drawPointStrToCmd(encodedDrawCmd, features)
                     },
                     drawPointStrToCmd: drawPointStrToCmd,
-                    getPisCmdStr: function(e, r) {
-                        for (var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, h = r.cnfValus, a = "01", c = toFixedWidthHex(e, 2), o = a + c, s = 0; s <= 12; s++) o += toFixedWidthHex(h[s], 2);
-                        var l = toFixedWidthHex(10 * r.playTime, 2);
-                        if (o += l, getFeatureValue(n, "xyCnf")) {
-                            for (var d = 14; d <= 18; d++) o += toFixedWidthHex(h[d], 2);
-                            t("log", "13-17", h[14], h[15], h[16], h[17], h[18], " at utils/funcTools.js:516"), o = padHexStringToByteLength(o, 24, "00")
-                        } else o = padHexStringToByteLength(o, 18, "00");
-                        var b = "d0d1d2d3" + o + "d4d5d6d7";
-                        return b.toUpperCase()
-                    },
-                    getPisListCmdStr: function(e) {
-                        for (var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null, n = toFixedWidthHex(128 | e.length, 2), h = "FF", a = "", c = 0; c < e.length; c++) {
-                            for (var o = "", s = e[c], l = 0; l <= 12; l++) o += toFixedWidthHex(s.cnfValus[l], 2);
-                            var d = toFixedWidthHex(10 * s.playTime, 2);
-                            if (o += d, getFeatureValue(r, "xyCnf")) {
-                                for (var b = s.cnfValus, j = 14; j <= 18; j++) o += toFixedWidthHex(b[j], 2);
-                                t("log", "pgs 14-18", b[14], b[15], b[16], b[17], b[18], " at utils/funcTools.js:488"), o = padHexStringToByteLength(o, 21, "00")
-                            } else o = padHexStringToByteLength(o, 15, "00");
-                            a = a + o + h
+                    getPisCmdStr: function (segmentIndex, segmentConfig) {
+                        var featureParams = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                        var configValues = segmentConfig.cnfValus;
+                        var startMarker = "01";
+                        var segmentIndexHex = toFixedWidthHex(segmentIndex, 2);
+                        var packedHex = startMarker + segmentIndexHex;
+                        for (var configIdx = 0; configIdx <= 12; configIdx++) {
+                            packedHex += toFixedWidthHex(configValues[configIdx], 2);
                         }
-                        return a = "d0d1d2d3" + n + "00" + a + "d4d5d6d7", a.toUpperCase()
+                        var playTimeHex = toFixedWidthHex(10 * r.playTime, 2);
+                        packedHex += playTimeHex;
+                        if (getFeatureValue(featureParams, "xyCnf")) {
+                            for (var extraIdx = 14; extraIdx <= 18; extraIdx++) {
+                                packedHex += toFixedWidthHex(configValues[extraIdx], 2);
+                            }
+                            t("log", "13-17", configValues[14], configValues[15], configValues[16], configValues[17], configValues[18], " at utils/funcTools.js:516");
+                            packedHex = padHexStringToByteLength(packedHex, 24, "00");
+                        } else {
+                            packedHex = padHexStringToByteLength(packedHex, 18, "00");
+                        }
+                        var fullCommand = "d0d1d2d3" + packedHex + "d4d5d6d7";
+                        return fullCommand.toUpperCase();
                     },
-                    getSettingCmd: function(settingData) {
+                    getPisListCmdStr: function (segmentList) {
+                        for (
+                            var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
+                            segmentCountHex = toFixedWidthHex(128 | e.length, 2),
+                            segmentEndMarker = "FF",
+                            encodedSegments = "",
+                            segmentIdx = 0;
+                            segmentIdx < e.length;
+                            segmentIdx++
+                        ) {
+                            var segmentHex = "";
+                            var segmentObj = e[segmentIdx];
+                            for (var valueIdx = 0; valueIdx <= 12; valueIdx++) {
+                                segmentHex += toFixedWidthHex(segmentObj.cnfValus[valueIdx], 2);
+                            }
+                            var playTimeHex = toFixedWidthHex(10 * segmentObj.playTime, 2);
+                            segmentHex += playTimeHex;
+                            if (getFeatureValue(featureParams, "xyCnf")) {
+                                var cnfValusArr = segmentObj.cnfValus;
+                                for (var extraIdx = 14; extraIdx <= 18; extraIdx++) {
+                                    segmentHex += toFixedWidthHex(cnfValusArr[extraIdx], 2);
+                                }
+                                t("log", "pgs 14-18", cnfValusArr[14], cnfValusArr[15], cnfValusArr[16], cnfValusArr[17], cnfValusArr[18], " at utils/funcTools.js:488");
+                                segmentHex = padHexStringToByteLength(segmentHex, 21, "00");
+                            } else {
+                                segmentHex = padHexStringToByteLength(segmentHex, 15, "00");
+                            }
+                            encodedSegments += segmentHex + segmentEndMarker;
+                        }
+                        encodedSegments = "d0d1d2d3" + segmentCountHex + "00" + encodedSegments + "d4d5d6d7";
+                        return encodedSegments.toUpperCase();
+                    },
+                    getSettingCmd: function (settingData) {
                         var channel = toFixedWidthHex(settingData.valArr[0]),
                             channelSetting = toFixedWidthHex(settingData.ch, 2),
                             displayValue = toFixedWidthHex(settingData.valArr[1], 2),
@@ -1655,89 +1738,93 @@ globalThis["webpackJsonp"].push([
                             command = "00010203" + channel + channelSetting + displayValue + xy + redValue + greenValue + blueValue + lightMode + ttlAnalog + lang + "000000000004050607";
                         return command.toUpperCase()
                     },
-                    getCmdValue: function(startPattern , endPattern , inputString ) {
-                        var matcher = new RegExp(startPattern  + "(.+?)" + endPattern ),
-                            matchResult = matcher.exec(inputString );
-                        return null !== matchResult ? matchResult[1] : (t("log", "No matching string found that meets the requirements", startPattern , endPattern , " at utils/funcTools.js:7"), "")
+                    getCmdValue: function (startPattern, endPattern, inputString) {
+                        var matcher = new RegExp(startPattern + "(.+?)" + endPattern),
+                            matchResult = matcher.exec(inputString);
+                        return null !== matchResult ? matchResult[1] : (t("log", "No matching string found that meets the requirements", startPattern, endPattern, " at utils/funcTools.js:7"), "")
                     },
-                    getQueryCmd: function(randomData) {
-                        for (var encodedRandomBytes  = "", i = 0; i < randomData.length; i++) encodedRandomBytes  += toFixedWidthHex(randomData[i], 2);
-                        var queryCommand  = "E0E1E2E3" + encodedRandomBytes  + "E4E5E6E7";
-                        return queryCommand .toUpperCase()
+                    getQueryCmd: function (randomData) {
+                        for (var encodedRandomBytes = "", i = 0; i < randomData.length; i++) encodedRandomBytes += toFixedWidthHex(randomData[i], 2);
+                        var queryCommand = "E0E1E2E3" + encodedRandomBytes + "E4E5E6E7";
+                        return queryCommand.toUpperCase()
                     },
-                    getDrawLineStr: function(points, config) {
-                        for (var r = "", index = 0; index < points.length; index++) {
-                            var h = points[index];
-                            r = r + toFixedWidthHex(h.pt.x) + toFixedWidthHex(h.pt.y) + toFixedWidthHex(combineNibbles(h.color, h.z), 2)
+                    getDrawLineStr: function (points, config) {
+                        let encodedLine = "";
+                        for (let pointIdx = 0; pointIdx < points.length; pointIdx++) {
+                            let pointObj = points[pointIdx];
+                            encodedLine += toFixedWidthHex(pointObj.pt.x);
+                            encodedLine += toFixedWidthHex(pointObj.pt.y);
+                            encodedLine += toFixedWidthHex(combineNibbles(pointObj.color, pointObj.z), 2);
                         }
-                        return r = "10111213" + toFixedWidthHex(config) + toFixedWidthHex(points.length, 2) + r + "14151617", r.toUpperCase()
+                        encodedLine = "10111213" + toFixedWidthHex(config) + toFixedWidthHex(points.length, 2) + encodedLine + "14151617";
+                        return encodedLine.toUpperCase();
                     },
                     getFeaturesValue: getFeatureValue
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-  
-        "bleDeviceControlUtils" : function(e, t, r) {
-            (function(t) {
+
+        "bleDeviceControlUtils": function (e, t, r) {
+            (function (t) {
                 var appStateManager = getApp(),
                     deviceCommandUtils = r("deviceCommandUtils ");
 
- 
-                function discoverAndConfigureCharacteristics(deviceId , serviceId , retryCount) {
-                    var callback  = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
-                    if (appStateManager.globalData.blu_connect_stop) callback  && callback (!1);
+
+                function discoverAndConfigureCharacteristics(deviceId, serviceId, retryCount) {
+                    var callback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
+                    if (appStateManager.globalData.blu_connect_stop) callback && callback(!1);
                     else {
                         var i = !1,
                             c = "",
                             s = -1;
                         uni.getBLEDeviceCharacteristics({
-                            deviceId: deviceId ,
-                            serviceId: serviceId ,
-                            success: function(h) {
+                            deviceId: deviceId,
+                            serviceId: serviceId,
+                            success: function (h) {
                                 s = 0, t("log", "getBLEDeviceCharacteristics success", h.characteristics, " at utils/bluCtrl.js:173");
-                                for (var o = function(o) {
-                                        var characteristicInfo = h.characteristics[o];
-                                        characteristicInfo.properties.read && (c = characteristicInfo.uuid, i && uni.readBLECharacteristicValue({
-                                            deviceId: deviceId ,
-                                            serviceId: serviceId ,
-                                            characteristicId: characteristicInfo.uuid,
-                                            success: function(e) {
-                                                t("log", "readBLECharacteristicValue1:", e, " at utils/bluCtrl.js:184")
-                                            },
-                                            fail: function(e) {
-                                                t("log", "readBLECharacteristicValue1-fail:", e, " at utils/bluCtrl.js:187")
-                                            }
-                                        })), characteristicInfo.properties.write && -1 != appStateManager.globalData.mtxduuids.indexOf(characteristicInfo.uuid) && (appStateManager.globalData.ble_device.characteristicId = characteristicInfo.uuid, appStateManager.globalData.ble_device.serviceId = serviceId , s++), (characteristicInfo.properties.notify || characteristicInfo.properties.indicate) && -1 != appStateManager.globalData.mrxduuids.indexOf(characteristicInfo.uuid) && uni.notifyBLECharacteristicValueChange({
-                                            deviceId: deviceId ,
-                                            serviceId: serviceId ,
-                                            characteristicId: characteristicInfo.uuid,
-                                            state: !0,
-                                            success: function(h) {
-                                                appStateManager.globalData.blu_readyRec = !0, i = !0, "" != c && uni.readBLECharacteristicValue({
-                                                    deviceId: deviceId ,
-                                                    serviceId: serviceId ,
-                                                    characteristicId: characteristicInfo.uuid,
-                                                    success: function(e) {
-                                                        t("log", "readBLECharacteristicValue2:", e, " at utils/bluCtrl.js:217")
-                                                    },
-                                                    fail: function(e) {
-                                                        t("log", "readBLECharacteristicValue2-fail:", e, " at utils/bluCtrl.js:220")
-                                                    }
-                                                }), appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0)
-                                            },
-                                            fail: function(e) {
-                                                s > 0 && (appStateManager.globalData.blu_readyRec = !0, i = !0, appStateManager.globalData.setBluCnnState(2, !1), callback  && callback (!0))
-                                            }
-                                        })
-                                    }, l = 0; l < h.characteristics.length; l++) o(l)
+                                for (var o = function (o) {
+                                    var characteristicInfo = h.characteristics[o];
+                                    characteristicInfo.properties.read && (c = characteristicInfo.uuid, i && uni.readBLECharacteristicValue({
+                                        deviceId: deviceId,
+                                        serviceId: serviceId,
+                                        characteristicId: characteristicInfo.uuid,
+                                        success: function (e) {
+                                            t("log", "readBLECharacteristicValue1:", e, " at utils/bluCtrl.js:184")
+                                        },
+                                        fail: function (e) {
+                                            t("log", "readBLECharacteristicValue1-fail:", e, " at utils/bluCtrl.js:187")
+                                        }
+                                    })), characteristicInfo.properties.write && -1 != appStateManager.globalData.mtxduuids.indexOf(characteristicInfo.uuid) && (appStateManager.globalData.ble_device.characteristicId = characteristicInfo.uuid, appStateManager.globalData.ble_device.serviceId = serviceId, s++), (characteristicInfo.properties.notify || characteristicInfo.properties.indicate) && -1 != appStateManager.globalData.mrxduuids.indexOf(characteristicInfo.uuid) && uni.notifyBLECharacteristicValueChange({
+                                        deviceId: deviceId,
+                                        serviceId: serviceId,
+                                        characteristicId: characteristicInfo.uuid,
+                                        state: !0,
+                                        success: function (h) {
+                                            appStateManager.globalData.blu_readyRec = !0, i = !0, "" != c && uni.readBLECharacteristicValue({
+                                                deviceId: deviceId,
+                                                serviceId: serviceId,
+                                                characteristicId: characteristicInfo.uuid,
+                                                success: function (e) {
+                                                    t("log", "readBLECharacteristicValue2:", e, " at utils/bluCtrl.js:217")
+                                                },
+                                                fail: function (e) {
+                                                    t("log", "readBLECharacteristicValue2-fail:", e, " at utils/bluCtrl.js:220")
+                                                }
+                                            }), appStateManager.globalData.setBluCnnState(2, !1), callback && callback(!0)
+                                        },
+                                        fail: function (e) {
+                                            s > 0 && (appStateManager.globalData.blu_readyRec = !0, i = !0, appStateManager.globalData.setBluCnnState(2, !1), callback && callback(!0))
+                                        }
+                                    })
+                                }, l = 0; l < h.characteristics.length; l++) o(l)
                             },
-                            fail: function(e) {
+                            fail: function (e) {
                                 0 == retryCount && appStateManager.globalData.showModalTips(translate("Connection failed") + "-1002"), s = -2
                             },
-                            complete: function() {
-                                s <= 0 && (retryCount > 0 ? setTimeout((function() {
-                                    discoverAndConfigureCharacteristics(deviceId , serviceId , --retryCount, callback )
-                                }), 1500) : (uni.hideLoading(), callback  && callback (!1), appStateManager.globalData.showModalTips(translate("Connection failed") + "-1001")))
+                            complete: function () {
+                                s <= 0 && (retryCount > 0 ? setTimeout((function () {
+                                    discoverAndConfigureCharacteristics(deviceId, serviceId, --retryCount, callback)
+                                }), 1500) : (uni.hideLoading(), callback && callback(!1), appStateManager.globalData.showModalTips(translate("Connection failed") + "-1001")))
                             }
                         })
                     }
@@ -1755,7 +1842,7 @@ globalThis["webpackJsonp"].push([
                             c = !1;
                         uni.getBLEDeviceServices({
                             deviceId: i,
-                            success: function(e) {
+                            success: function (e) {
                                 t("log", "services: ", e, " at utils/bluCtrl.js:301");
                                 for (var r = 0; r < e.services.length; r++)
                                     if (-1 != appStateManager.globalData.mserviceuuids.indexOf(e.services[r].uuid)) {
@@ -1763,11 +1850,11 @@ globalThis["webpackJsonp"].push([
                                         break
                                     }
                             },
-                            fail: function(e) {
+                            fail: function (e) {
                                 t("log", "getBLEDeviceServices fail:", JSON.stringify(e), " at utils/bluCtrl.js:311")
                             },
-                            complete: function() {
-                                c || setTimeout((function() {
+                            complete: function () {
+                                c || setTimeout((function () {
                                     discoverAndSetupServices(i, r, --h)
                                 }), 1e3)
                             }
@@ -1775,18 +1862,18 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function connectToDevice(device ) {
-                    var showMsg  = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+                function connectToDevice(device) {
+                    var showMsg = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                         connectionCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
                     if (appStateManager.globalData.blu_connect_stop) connectionCallback && connectionCallback(!1);
-                    else if (void 0 != device  && "" != device  && null != device ) {
+                    else if (void 0 != device && "" != device && null != device) {
                         appStateManager.globalData.readSetting(), appStateManager.globalData.blu_readyRec = !1;
-                        var h = device .deviceId;
-                        appStateManager.globalData.createBLEConnection(h, (function(e) {
+                        var h = device.deviceId;
+                        appStateManager.globalData.createBLEConnection(h, (function (e) {
                             e ? (appStateManager.globalData.setBluCnnState(1, !1), discoverAndSetupServices(h, {
-                                showMsg: showMsg ,
+                                showMsg: showMsg,
                                 callback: connectionCallback
-                            })) : (uni.hideLoading(), showMsg  && appStateManager.globalData.showModalTips(translate("Connection failed"), !0), connectionCallback && connectionCallback(!1))
+                            })) : (uni.hideLoading(), showMsg && appStateManager.globalData.showModalTips(translate("Connection failed"), !0), connectionCallback && connectionCallback(!1))
                         }))
                     } else connectionCallback && connectionCallback(!1)
                 }
@@ -1802,26 +1889,26 @@ globalThis["webpackJsonp"].push([
                     t("log", r, " at utils/bluCtrl.js:494")
                 }
 
-               function extractHexValue (startByte , byteLength , hexString) {
-                    var n = 2 * (startByte  - 1),
-                        h = n + 2 * byteLength ,
+                function extractHexValue(startByte, byteLength, hexString) {
+                    var n = 2 * (startByte - 1),
+                        h = n + 2 * byteLength,
                         a = hexString.slice(n, h),
                         i = parseInt(a, 16);
                     return i
                 }
 
-                function clampOrDefault(value, min, max, defaultValue ) {
-                    return isNaN(value) || value < min || value > max ? defaultValue  : value
+                function clampOrDefault(value, min, max, defaultValue) {
+                    return isNaN(value) || value < min || value > max ? defaultValue : value
                 }
 
-                function setupCharacteristicNotification(deviceId , serviceId ) {
-                    var callback  = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                    appStateManager.globalData.blu_connect_stop ? callback  && callback (!1) 
-                        : (uni.onBLECharacteristicValueChange((function(characteristicEvent) {
-                        var dataBytes = new Uint8Array(characteristicEvent.value),
-                            valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
-                        deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
-                    })), discoverAndConfigureCharacteristics(deviceId , serviceId , 1, callback ))
+                function setupCharacteristicNotification(deviceId, serviceId) {
+                    var callback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+                    appStateManager.globalData.blu_connect_stop ? callback && callback(!1)
+                        : (uni.onBLECharacteristicValueChange((function (characteristicEvent) {
+                            var dataBytes = new Uint8Array(characteristicEvent.value),
+                                valueHex = deviceCommandUtils.ab2hex(characteristicEvent.value);
+                            deviceCommandUtils.ab2Str(characteristicEvent.value); - 1 != appStateManager.globalData.mrxduuids.indexOf(characteristicEvent.characteristicId) ? appStateManager.globalData.blu_readyRec && dataBytes.length > 0 && processReceivedDataFragment(valueHex) : t("error", "no same characteristicId: ", appStateManager.globalData.mrxduuids, characteristicEvent.characteristicId, " at utils/bluCtrl.js:270")
+                        })), discoverAndConfigureCharacteristics(deviceId, serviceId, 1, callback))
                 }
 
 
@@ -1854,7 +1941,7 @@ globalThis["webpackJsonp"].push([
 
 
                 function sendBleDataBuffers(sendContext) {
-                    var lastSendTimestamp  = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
+                    var lastSendTimestamp = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0,
                         sendInterval = 20,
                         a = appStateManager.globalData.blu_data_send_interval;
                     if (appStateManager.globalData.platform.app && "android" == appStateManager.globalData.platform.system && (sendInterval = 40), sendContext.showMsg) {
@@ -1867,30 +1954,30 @@ globalThis["webpackJsonp"].push([
                     }
                     if (0 != sendContext.sendBufs.length) {
                         var nowTimestamp = (new Date).getTime();
-                        lastSendTimestamp  = 0 == lastSendTimestamp  ? nowTimestamp : lastSendTimestamp ;
-                        var timeUntilNextSend = sendInterval - (nowTimestamp - lastSendTimestamp ),
-                            delayBeforeSend  = timeUntilNextSend > 0 ? timeUntilNextSend : 1;
-                        setTimeout((function() {
-                            var currentBuffer  = sendContext.sendBufs.shift();
-                            "split" != currentBuffer  ? (t("log", "send date---", (new Date).getTime() / 1e3, " at utils/bluCtrl.js:441"), uni.writeBLECharacteristicValue({
+                        lastSendTimestamp = 0 == lastSendTimestamp ? nowTimestamp : lastSendTimestamp;
+                        var timeUntilNextSend = sendInterval - (nowTimestamp - lastSendTimestamp),
+                            delayBeforeSend = timeUntilNextSend > 0 ? timeUntilNextSend : 1;
+                        setTimeout((function () {
+                            var currentBuffer = sendContext.sendBufs.shift();
+                            "split" != currentBuffer ? (t("log", "send date---", (new Date).getTime() / 1e3, " at utils/bluCtrl.js:441"), uni.writeBLECharacteristicValue({
                                 deviceId: sendContext.device.deviceId,
                                 serviceId: sendContext.device.serviceId,
                                 characteristicId: sendContext.device.characteristicId,
-                                value: currentBuffer ,
-                                success: function(t) {
+                                value: currentBuffer,
+                                success: function (t) {
                                     sendBleDataBuffers(sendContext, nowTimestamp)
                                 },
-                                fail: function(r) {
-                                    t("log", "writeBLECharacteristicValue fail", r, " at utils/bluCtrl.js:454"), setTimeout((function() {
+                                fail: function (r) {
+                                    t("log", "writeBLECharacteristicValue fail", r, " at utils/bluCtrl.js:454"), setTimeout((function () {
                                         sendContext.fail(r)
                                     }), sendInterval)
                                 },
-                                complete: function(e) {}
-                            })) : setTimeout((function() {
+                                complete: function (e) { }
+                            })) : setTimeout((function () {
                                 t("log", "sleep---", a, sendInterval, " at utils/bluCtrl.js:436"), sendBleDataBuffers(sendContext, nowTimestamp)
-                            }), a - (nowTimestamp - lastSendTimestamp ))
-                        }), delayBeforeSend )
-                    } else setTimeout((function() {
+                            }), a - (nowTimestamp - lastSendTimestamp))
+                        }), delayBeforeSend)
+                    } else setTimeout((function () {
                         sendContext.success({})
                     }), sendInterval)
                 }
@@ -1899,7 +1986,7 @@ globalThis["webpackJsonp"].push([
                 function splitHexStringToBuffers(hexString) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 20;
                     if ("" == hexString) return [];
-                    var r = new Uint8Array(hexString.match(/[\da-f]{2}/gi).map((function(e) {
+                    var r = new Uint8Array(hexString.match(/[\da-f]{2}/gi).map((function (e) {
                         return parseInt(e, 16)
                     })));
                     if (null == r) return [];
@@ -1927,192 +2014,192 @@ globalThis["webpackJsonp"].push([
 
                 function sendBleBuffersPromise(dataBuffers, deviceInfo, showProgress) {
                     var progressCallback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
-                    return new Promise((function(h, a) {
+                    return new Promise((function (h, a) {
                         sendBleDataBuffers({
                             device: deviceInfo,
                             sendBufs: dataBuffers,
                             count: dataBuffers.length,
                             showMsg: showProgress,
                             callBack: progressCallback,
-                            success: function(e) {
+                            success: function (e) {
                                 h(e)
                             },
-                            fail: function(e) {
+                            fail: function (e) {
                                 a(e)
                             }
                         })
                     }))
                 }
 
-        
+
 
 
                 e.exports = {
 
-                // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
+                    // manages the process of sending data over Bluetooth Low Energy (BLE) and handles various edge 
                     // cases and UI feedback.
                     // In summary, gosend returns true if the send process (real or simulated) is started or handled, 
                     // and false if it is blocked due to an ongoing send or invalid data. The actual BLE send is asynchronous,
                     //  so the return value does not indicate send success, only that the process was started or handled.
-                    gosend: function(showProgress, hexData) {
+                    gosend: function (showProgress, hexData) {
                         var sendCallback = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
-                        if (canSendBleData() 
-                                ? logHexBytes(hexData) 
-                            :  0 == hexData.length || !canSendBleData() 
-                                && !hexData.startsWith("E0E1E2E3")) 
-                                    return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms", 
-                                        appStateManager.globalData.blu_data_cmdSending, 
-                                        " at utils/bluCtrl.js:552"), 
-                                        !appStateManager.globalData.blu_data_cmdSending 
-                                        && (appStateManager.globalData.blu_data_cmdSending = !0, 
-                                            
-                                            setTimeout((function() {
-                                                appStateManager.globalData.blu_data_cmdSending = !1, 
-                                                sendCallback && sendCallback(1, 100)
-                                            }), 20), !0));
-                        if (appStateManager.globalData.blu_data_cmdSending) 
+                        if (canSendBleData()
+                            ? logHexBytes(hexData)
+                            : 0 == hexData.length || !canSendBleData()
+                            && !hexData.startsWith("E0E1E2E3"))
+                            return 0 == hexData.length || (t("log", "Simulate sending ------- 20ms",
+                                appStateManager.globalData.blu_data_cmdSending,
+                                " at utils/bluCtrl.js:552"),
+                                !appStateManager.globalData.blu_data_cmdSending
+                                && (appStateManager.globalData.blu_data_cmdSending = !0,
+
+                                    setTimeout((function () {
+                                        appStateManager.globalData.blu_data_cmdSending = !1,
+                                            sendCallback && sendCallback(1, 100)
+                                    }), 20), !0));
+                        if (appStateManager.globalData.blu_data_cmdSending)
                             return t("error", "last cmd is sending", " at utils/bluCtrl.js:563"), !1;
-                        if (2 != appStateManager.globalData.blu_connected) 
+                        if (2 != appStateManager.globalData.blu_connected)
                             return appStateManager.globalData.showModalTips(translate("Bluetooth not connected")), !0;
-                        showProgress && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(), 
-                        sendCallback ? sendCallback(0, 0) : uni.showLoading({
-                            mask: !0
-                        }));
+                        showProgress && (appStateManager.globalData.blu_data_lastShowTime = (new Date).getTime(),
+                            sendCallback ? sendCallback(0, 0) : uni.showLoading({
+                                mask: !0
+                            }));
                         var bufferSequence = hexStringToBufferSequence(hexData);
                         if (0 == bufferSequence.length) return !1;
                         if (appStateManager.globalData.blu_data_cmdSending) return !1;
                         appStateManager.globalData.blu_data_cmdSending = !0;
                         var i = bufferSequence,
                             c = appStateManager.globalData.ble_device;
-                        return sendBleBuffersPromise(i, c, showProgress, sendCallback).then((function(r) {
+                        return sendBleBuffersPromise(i, c, showProgress, sendCallback).then((function (r) {
                             showProgress && uni.hideLoading(), appStateManager.globalData.blu_data_cmdSending = !1, t("log", "bluSend succ", " at utils/bluCtrl.js:592"), sendCallback && sendCallback(1, 100)
-                        })).catch((function(r) {
+                        })).catch((function (r) {
                             showProgress && uni.hideLoading(), t("log", "Sending failed", r, " at utils/bluCtrl.js:596"), appStateManager.globalData.blu_data_cmdSending = !1, sendCallback && sendCallback(-1, 0)
                         })), !0
                     },
 
                     // Initiates BLE connection if not already connected
-                    cnnPreBlu: function() {
+                    cnnPreBlu: function () {
                         if (0 == appStateManager.globalData.blu_state) {
-                            appStateManager.globalData.blu_state = 1, 
-                            appStateManager.globalData.blu_connect_stop = !1, 
-                            appStateManager.globalData.readDevice();
+                            appStateManager.globalData.blu_state = 1,
+                                appStateManager.globalData.blu_connect_stop = !1,
+                                appStateManager.globalData.readDevice();
                             var e = appStateManager.globalData.ble_device;
-                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function(r) {
-                                r && connectToDevice(e, !1, (function(e) {
+                            void 0 != e && "" != e && null != e ? appStateManager.globalData.openBluetoothAdapter((function (r) {
+                                r && connectToDevice(e, !1, (function (e) {
                                     1 == appStateManager.globalData.blu_state && (appStateManager.globalData.blu_state = 0)
-                                   
+
                                 }))
                             })) : appStateManager.globalData.blu_state = 0
                         }
                     },
 
-                    setCanSend: function(canSend) {
+                    setCanSend: function (canSend) {
                         appStateManager.globalData.blu_data_canSend = canSend
                     },
                     getCanSend: canSendBleData,
-       
-                    drawProgress: function(canvas, size , progress ) {
+
+                    drawProgress: function (canvas, size, progress) {
                         canvas.beginPath(), canvas.setFillStyle("#4C4C4C");
-                        var n = size  - 0,
+                        var n = size - 0,
                             h = n;
                         canvas.moveTo(20, 0), canvas.lineTo(0 + n - 20, 0), canvas.arcTo(0 + n, 0, 0 + n, 20, 20), canvas.lineTo(0 + n, 0 + h - 20), canvas.arcTo(0 + n, 0 + h, 0 + n - 20, 0 + h, 20), canvas.lineTo(20, 0 + h), canvas.arcTo(0, 0 + h, 0, 0 + h - 20, 20), canvas.lineTo(0, 20), canvas.arcTo(0, 0, 20, 0, 20), canvas.fill();
-                        var a = size  / 2,
+                        var a = size / 2,
                             i = a,
-                            c = size  / 3,
+                            c = size / 3,
                             o = -Math.PI / 2,
-                            s = 2 * Math.PI * progress  / 100 + o;
-                        canvas.setLineWidth(size  / 30), canvas.beginPath(), canvas.arc(a, i, c, 0, 2 * Math.PI), canvas.setStrokeStyle("#616161"), canvas.stroke(), canvas.beginPath(), canvas.arc(a, i, c, o, s), canvas.setStrokeStyle("#ECECEC"), canvas.stroke(), canvas.beginPath();
-                        var l = progress  + "%",
-                            p = size  / 5;
+                            s = 2 * Math.PI * progress / 100 + o;
+                        canvas.setLineWidth(size / 30), canvas.beginPath(), canvas.arc(a, i, c, 0, 2 * Math.PI), canvas.setStrokeStyle("#616161"), canvas.stroke(), canvas.beginPath(), canvas.arc(a, i, c, o, s), canvas.setStrokeStyle("#ECECEC"), canvas.stroke(), canvas.beginPath();
+                        var l = progress + "%",
+                            p = size / 5;
                         canvas.setFillStyle("#ECECEC"), canvas.setFontSize(p);
                         var d = canvas.measureText(l).width;
-                        canvas.fillText(progress  + "%", a - d / 2, i + p / 3), canvas.fill(), canvas.draw()
+                        canvas.fillText(progress + "%", a - d / 2, i + p / 3), canvas.fill(), canvas.draw()
                     },
-                    
+
                     // responsible for parsing and updating the application's global state based on a device's response data,
                     // typically received as a buffer or hex string. It performs several key tasks:
-                    setCmdData: function(deviceResponseData ) {
-                        
-                        deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", deviceResponseData );
-                        
-                        var mainCommandData  = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", deviceResponseData );
-                        
-                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0), 
-                        
-                        appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue (1, 1, mainCommandData ), 0, 12, 0),
-                        
-                        appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue (3, 1, mainCommandData ), 0, 9, 0), 
-                        
-                        appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor, 
-                        appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue (4, 1, mainCommandData ) / 255 * 100), 10, 100, 60), 
-                        appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue (6, 1, mainCommandData ) / 255 * 100), 0, 255, 128), 
-                        
-                        appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed, 
-                        
-                        appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue (8, 1, mainCommandData ) / 255 * 100), 10, 100, 60), 
-                        
-                        appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue (9, 1, mainCommandData ), 0, 255, 0), 
-                        appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue (10, 1, mainCommandData ) / 255 * 100), 0, 255, 0), 
-                        
-                        appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue (15, 1, mainCommandData ), 0, 100, 50), 
-                        
-                        appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue (16, 1, mainCommandData ), 0, 100, 50), 
-                        appStateManager.globalData.cmd.textData.refresh = !0;
+                    setCmdData: function (deviceResponseData) {
+
+                        deviceCommandUtils.getCmdValue("B0B1B2B3", "B4B5B6B7", deviceResponseData);
+
+                        var mainCommandData = deviceCommandUtils.getCmdValue("C0C1C2C3", "C4C5C6C7", deviceResponseData);
+
+                        appStateManager.globalData.cmd.curMode = clampOrDefault(extractHexValue(1, 1, mainCommandData), 0, 12, 0),
+
+                            appStateManager.globalData.cmd.prjData.prjIndex = clampOrDefault(extractHexValue(1, 1, mainCommandData), 0, 12, 0),
+
+                            appStateManager.globalData.cmd.prjData.public.txColor = clampOrDefault(extractHexValue(3, 1, mainCommandData), 0, 9, 0),
+
+                            appStateManager.globalData.cmd.textData.txColor = appStateManager.globalData.cmd.prjData.public.txColor,
+                            appStateManager.globalData.cmd.textData.txSize = clampOrDefault(Math.round(extractHexValue(4, 1, mainCommandData) / 255 * 100), 10, 100, 60),
+                            appStateManager.globalData.cmd.textData.runSpeed = clampOrDefault(Math.round(extractHexValue(6, 1, mainCommandData) / 255 * 100), 0, 255, 128),
+
+                            appStateManager.globalData.cmd.prjData.public.runSpeed = appStateManager.globalData.cmd.textData.runSpeed,
+
+                            appStateManager.globalData.cmd.textData.txDist = clampOrDefault(Math.round(extractHexValue(8, 1, mainCommandData) / 255 * 100), 10, 100, 60),
+
+                            appStateManager.globalData.cmd.prjData.public.rdMode = clampOrDefault(extractHexValue(9, 1, mainCommandData), 0, 255, 0),
+                            appStateManager.globalData.cmd.prjData.public.soundVal = clampOrDefault(Math.round(extractHexValue(10, 1, mainCommandData) / 255 * 100), 0, 255, 0),
+
+                            appStateManager.globalData.cmd.textData.txPointTime = clampOrDefault(extractHexValue(15, 1, mainCommandData), 0, 100, 50),
+
+                            appStateManager.globalData.cmd.drawData.pisObj.txPointTime = clampOrDefault(extractHexValue(16, 1, mainCommandData), 0, 100, 50),
+                            appStateManager.globalData.cmd.textData.refresh = !0;
                         var projectItems = appStateManager.globalData.cmd.prjData.prjItem,
-                            projectItemStartIndex  = 17;
+                            projectItemStartIndex = 17;
                         for (var itemKey in projectItems) {
                             var projectItem = projectItems[itemKey];
-                            projectItem.pyMode = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), 
-                            projectItem.prjSelected[3] = extractHexValue (projectItemStartIndex  + 1, 2, mainCommandData ), 
-                            projectItem.prjSelected[2] = extractHexValue (projectItemStartIndex  + 3, 2, mainCommandData ), 
-                            projectItem.prjSelected[1] = extractHexValue (projectItemStartIndex  + 5, 2, mainCommandData ), 
-                            projectItem.prjSelected[0] = extractHexValue (projectItemStartIndex  + 7, 2, mainCommandData ), 
-                            projectItemStartIndex  += 9
+                            projectItem.pyMode = clampOrDefault(extractHexValue(projectItemStartIndex, 1, mainCommandData), 0, 255, 0),
+                                projectItem.prjSelected[3] = extractHexValue(projectItemStartIndex + 1, 2, mainCommandData),
+                                projectItem.prjSelected[2] = extractHexValue(projectItemStartIndex + 3, 2, mainCommandData),
+                                projectItem.prjSelected[1] = extractHexValue(projectItemStartIndex + 5, 2, mainCommandData),
+                                projectItem.prjSelected[0] = extractHexValue(projectItemStartIndex + 7, 2, mainCommandData),
+                                projectItemStartIndex += 9
                         }
-                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue (projectItemStartIndex , 1, mainCommandData ), 0, 255, 0), 
-                        projectItemStartIndex  += 1;
-                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++) 
-                            0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) 
-                                    : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0) 
-                                            : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue (projectItemStartIndex  + d, 1, mainCommandData ), 0, 255, 0);
-                        
-                        var settingCommandData = deviceCommandUtils.getCmdValue("00010203", "04050607", deviceResponseData );
-                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue (1, 2, settingCommandData),1, 512, 1), 
-                        appStateManager.globalData.cmd.settingData.ch = extractHexValue (3, 1, settingCommandData), 
-                        appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue (4, 1, settingCommandData), 10, 100, 10), 
-                        appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue (5, 1, settingCommandData), 0, 7, 0),
-                        appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue (6, 1, settingCommandData), 0, 255, 255), 
-                        appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue (7, 1, settingCommandData), 0, 255, 255), 
-                        appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue (8, 1, settingCommandData), 0, 255, 255), 
-                        appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue (9, 1, settingCommandData), 1, 3, 3), 
-                        appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue (10, 1, settingCommandData), 0, 255, 0);
+                        appStateManager.globalData.cmd.textData.runDir = clampOrDefault(extractHexValue(projectItemStartIndex, 1, mainCommandData), 0, 255, 0),
+                            projectItemStartIndex += 1;
+                        for (var p = appStateManager.globalData.cmd.subsetData, d = 0; d < 6; d++)
+                            0 == d ? p.xyCnf.auto = p.xyCnf.autoValue == clampOrDefault(extractHexValue(projectItemStartIndex + d, 1, mainCommandData), 0, 255, 0)
+                                : 1 == d ? p.xyCnf.phase = clampOrDefault(extractHexValue(projectItemStartIndex + d, 1, mainCommandData), 0, 255, 0)
+                                    : p.xyCnf.xy[d - 2].value = clampOrDefault(extractHexValue(projectItemStartIndex + d, 1, mainCommandData), 0, 255, 0);
 
-                        var featureCommandData = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", deviceResponseData );
+                        var settingCommandData = deviceCommandUtils.getCmdValue("00010203", "04050607", deviceResponseData);
+                        appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue(1, 2, settingCommandData), 1, 512, 1),
+                            appStateManager.globalData.cmd.settingData.ch = extractHexValue(3, 1, settingCommandData),
+                            appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue(4, 1, settingCommandData), 10, 100, 10),
+                            appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue(5, 1, settingCommandData), 0, 7, 0),
+                            appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue(6, 1, settingCommandData), 0, 255, 255),
+                            appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue(7, 1, settingCommandData), 0, 255, 255),
+                            appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue(8, 1, settingCommandData), 0, 255, 255),
+                            appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue(9, 1, settingCommandData), 1, 3, 3),
+                            appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue(10, 1, settingCommandData), 0, 255, 0);
+
+                        var featureCommandData = deviceCommandUtils.getCmdValue("D0D1D2D3", "D4D5D6D7", deviceResponseData);
                         if ("" != featureCommandData) {
                             var j = appStateManager.globalData.getDeviceFeatures(),
                                 x = 16;
-                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"), 
-                            deviceCommandUtils.getFeaturesValue({
-                                features: j
-                            }, "xyCnf") && (x = 22);
-                            for (var featureConfigList = [], f = clampOrDefault(extractHexValue (1, 1, featureCommandData), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
+                            t("log", "features", JSON.stringify(j), " at utils/bluCtrl.js:96"),
+                                deviceCommandUtils.getFeaturesValue({
+                                    features: j
+                                }, "xyCnf") && (x = 22);
+                            for (var featureConfigList = [], f = clampOrDefault(extractHexValue(1, 1, featureCommandData), 0, 255, 0), F = 127 & f, k = 0; k < F; k++) {
                                 for (var m = {
-                                        playTime: 0,
-                                        cnfValus: []
-                                    }, P = 0; P < x; P++) {
-                                    var u = clampOrDefault(extractHexValue (3 + k * x + P, 1, featureCommandData), 0, 255, 0);
+                                    playTime: 0,
+                                    cnfValus: []
+                                }, P = 0; P < x; P++) {
+                                    var u = clampOrDefault(extractHexValue(3 + k * x + P, 1, featureCommandData), 0, 255, 0);
                                     m.cnfValus.push(u), 13 == P && (m.playTime = (u / 10).toFixed())
                                 }
                                 t("log", "pis.cnfValus", JSON.stringify(m.cnfValus), " at utils/bluCtrl.js:111"), featureConfigList.push(m)
                             }
                             appStateManager.globalData.cmd.pgsData.pisList = featureConfigList
                         }
-                        var drawConfigData = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", deviceResponseData );
+                        var drawConfigData = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", deviceResponseData);
                         if ("" != drawConfigData)
-                            for (var drawConfigObject = appStateManager.globalData.cmd.drawData.pisObj, configIndex  = 0; configIndex  < 15; configIndex ++) {
-                                var drawConfigParam = clampOrDefault(extractHexValue (configIndex  + 1, 1, drawConfigData), 0, 255, 0);
-                                configIndex  < drawConfigObject.cnfValus.length && (drawConfigObject.cnfValus[configIndex ] = drawConfigParam), 14 == configIndex  && (drawConfigObject.txPointTime = drawConfigParam)
+                            for (var drawConfigObject = appStateManager.globalData.cmd.drawData.pisObj, configIndex = 0; configIndex < 15; configIndex++) {
+                                var drawConfigParam = clampOrDefault(extractHexValue(configIndex + 1, 1, drawConfigData), 0, 255, 0);
+                                configIndex < drawConfigObject.cnfValus.length && (drawConfigObject.cnfValus[configIndex] = drawConfigParam), 14 == configIndex && (drawConfigObject.txPointTime = drawConfigParam)
                             }
                     }
                 }
@@ -2121,9 +2208,9 @@ globalThis["webpackJsonp"].push([
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-        "textPlaybackPageComponent ": function(e, t, r) {
+        "textPlaybackPageComponent ": function (e, t, r) {
             "use strict";
-            (function(e) {
+            (function (e) {
                 var n = r("esModuleInteropHelper");
                 Object.defineProperty(t, "__esModule", {
                     value: !0
@@ -2138,7 +2225,7 @@ globalThis["webpackJsonp"].push([
                     textLineVectorizer = r("textLineVectorizer"),
                     fontGeometryUtils = r("fontGeometryUtils"),
                     b = {
-                        data: function() {
+                        data: function () {
                             var fontIndex = 0 | app.globalData.readData("text_fontIdex"),
                                 t = app.globalData.getDeviceFeatures(),
                                 r = 650 * app.globalData.screen_width_float,
@@ -2245,18 +2332,18 @@ globalThis["webpackJsonp"].push([
                                     runSpeed: 50, // run speed
                                     groupIdex: 0,
                                     // [the groupList: textObject array contains objects with the following structure]
-  //text: "",         // The actual text string for this group
-  //update: 0,        // A flag indicating if the group needs to be updated/redrawn
-  //color: 9,         // Color index for the text
-  //fontIdex: <int>,  // Index of the font to use for rendering
- // time: 5,          // Duration or timing value for playback
-  //xys: [],          // Array of coordinate points for the text's shape
+                                    //text: "",         // The actual text string for this group
+                                    //update: 0,        // A flag indicating if the group needs to be updated/redrawn
+                                    //color: 9,         // Color index for the text
+                                    //fontIdex: <int>,  // Index of the font to use for rendering
+                                    // time: 5,          // Duration or timing value for playback
+                                    //xys: [],          // Array of coordinate points for the text's shape
 
 
-  //XysRight: [],     // Optional: coordinates for rightward animation
- // XysUp: [],        // Optional: coordinates for upward animation
-  //XysDown: []       // Optional: coordinates for downward animation
-//}
+                                    //XysRight: [],     // Optional: coordinates for rightward animation
+                                    // XysUp: [],        // Optional: coordinates for upward animation
+                                    //XysDown: []       // Optional: coordinates for downward animation
+                                    //}
                                     //
                                     groupList: textObject
                                 },
@@ -2270,19 +2357,19 @@ globalThis["webpackJsonp"].push([
                                 }
                             }
                         },
-                        onLoad: function() {
+                        onLoad: function () {
                             var fontRegistryModule = r("fontRegistryModule ");
                             this.fontNameList = fontRegistryModule.getFontNameList();
                             var textData = app.globalData.getCmdData("textData");
                             this.textData = textData;
-                            for (var n = 0; n < this.textData.groupList.length; n++) 
-                                null == this.textData.groupList[n].fontIdex 
+                            for (var n = 0; n < this.textData.groupList.length; n++)
+                                null == this.textData.groupList[n].fontIdex
                                     && (this.textData.groupList[n].fontIdex = this.fontIdex)
                         },
 
                         computed: {
                             textTime: {
-                                get: function() {
+                                get: function () {
                                     for (var e = [], t = 0; t < this.textData.groupList.length; t++) {
                                         var r = parseFloat(this.textData.groupList[t].time);
                                         this.features.textDecimalTime ? e.push(r.toFixed(1)) : e.push(r.toFixed(0))
@@ -2292,21 +2379,21 @@ globalThis["webpackJsonp"].push([
                             }
                         },
                         methods: {
-                             // send text command
-                            sendTxtCmd: function() {
+                            // send text command
+                            sendTxtCmd: function () {
                                 var e = this;
                                 app.globalData.setCmdData("textData", this.textData);
                                 var runDir = this.textData.runDir,
                                     command = deviceCommandUtils.getXysCmdArr(
-                                        this.textData.groupList, 
-                                        this.features, runDir, 
+                                        this.textData.groupList,
+                                        this.features, runDir,
                                         this.textData.verTag),
                                     n = this;
                                 bleManager.gosend(!0, command);
-         
+
                             },
-                           
-                            sendCmd: function() {
+
+                            sendCmd: function () {
                                 app.globalData.setCmdData("textData", this.textData);
                                 var command = deviceCommandUtils.getCmdStr(
                                     app.globalData.cmd, {
@@ -2315,13 +2402,13 @@ globalThis["webpackJsonp"].push([
                                 });
                                 bleManager.gosend(!1, command) && (this.sendColorTag = !1)
                             },
-                            sendRvXysCmd: function() {
+                            sendRvXysCmd: function () {
                                 var settingData = app.globalData.cmd.settingData;
                                 0 == this.textData.runDir ? settingData.xy = 0 : settingData.xy = 3;
                                 var settingCommand = deviceCommandUtils.getSettingCmd(app.globalData.cmd.settingData);
                                 bleManager.gosend(!1, settingCommand) && this.sendCmdBtn(null)
                             },
-                            readFontBase64: function(fontIdex) {
+                            readFontBase64: function (fontIdex) {
                                 var t = this,
                                     callback = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
                                 if (this.fontLoadIdex != fontIdex) {
@@ -2330,7 +2417,7 @@ globalThis["webpackJsonp"].push([
                                         file = fontList[fontIdex].file,
                                         mode = fontList[fontIdex].mode,
                                         sn = fontList[fontIdex].sn;
-                                    fontGeometryUtils.readTTF(file, mode, (function(data, mode) {
+                                    fontGeometryUtils.readTTF(file, mode, (function (data, mode) {
                                         fontGeometryUtils.fontData = {
                                             data: data,
                                             mode: mode,
@@ -2339,56 +2426,56 @@ globalThis["webpackJsonp"].push([
                                     }))
                                 } else callback && callback()
                             },
-                            setFontIdex: function(e) {
+                            setFontIdex: function (e) {
                                 this.fontIdex != e && (this.fontIdex = e, app.globalData.saveData("text_fontIdex", this.fontIdex))
                             },
-                            onFontChange: function(e) {
+                            onFontChange: function (e) {
                                 var t = e.detail.value;
                                 this.setFontIdex(t), this.textData.groupList[this.textData.groupIdex].fontIdex = t,
-                                     this.textData.groupList[this.textData.groupIdex].update = 1
+                                    this.textData.groupList[this.textData.groupIdex].update = 1
                             },
-                            slPointTimeChange: function(e) {
+                            slPointTimeChange: function (e) {
                                 var t = e.detail.value;
-                                this.textData.txPointTime = t, 
+                                this.textData.txPointTime = t,
                                     this.sendCmd()
                             },
-                            slTxSizeChange: function(e) {
+                            slTxSizeChange: function (e) {
                                 var t = e.detail.value;
-                                this.textData.txSize = t, 
+                                this.textData.txSize = t,
                                     handwritingCanvasHelper.doDrawPicEx(this), this.sendCmd()
                             },
-                            btnColorChange: function(e) {
+                            btnColorChange: function (e) {
                                 var t = parseInt(e.currentTarget.dataset.tag);
-                                this.textData.groupList[this.textData.groupIdex].color = t, 
-                                    this.$set(this.textData, "txColor", t), 
+                                this.textData.groupList[this.textData.groupIdex].color = t,
+                                    this.$set(this.textData, "txColor", t),
                                     handwritingCanvasHelper.doDrawPicEx(this), this.sendCmd()
                             },
-                            slTxDistChange: function(e) {
+                            slTxDistChange: function (e) {
                                 var t = e.detail.value;
-                                this.textData.txDist = t, 
-                                this.sendCmd()
+                                this.textData.txDist = t,
+                                    this.sendCmd()
                             },
-                            slRunSpeedChange: function(e) {
+                            slRunSpeedChange: function (e) {
                                 var t = e.detail.value;
-                                this.textData.runSpeed = t, 
-                                this.sendCmd()
+                                this.textData.runSpeed = t,
+                                    this.sendCmd()
                             },
-                            radioRunDirectionChange: function(e) {
+                            radioRunDirectionChange: function (e) {
                                 var t = e.detail.value;
-                                "textUp" == t ? this.$set(this.textData, "runDir", 127) : "textDown" == t 
-                                    ? this.$set(this.textData, "runDir", 128) 
-                                        : "right" == t 
-                                            ? this.$set(this.textData, "runDir", 255) 
-                                                : this.$set(this.textData, "runDir", 0), 
-                                                this.sendColorTag = !0, this.sendCmdBtn(null)
+                                "textUp" == t ? this.$set(this.textData, "runDir", 127) : "textDown" == t
+                                    ? this.$set(this.textData, "runDir", 128)
+                                    : "right" == t
+                                        ? this.$set(this.textData, "runDir", 255)
+                                        : this.$set(this.textData, "runDir", 0),
+                                    this.sendColorTag = !0, this.sendCmdBtn(null)
                             },
-                            radioDisplayChange: function(e) {
+                            radioDisplayChange: function (e) {
                                 var t = e.detail.value;
-                                "h" == t 
-                                    ? this.$set(this.textData, "verTag", 0) 
+                                "h" == t
+                                    ? this.$set(this.textData, "verTag", 0)
                                     : this.$set(this.textData, "verTag", 255)
                             },
-                            createXys: function(inputText) {
+                            createXys: function (inputText) {
                                 var textPlaybackPageComponent = this,
                                     callback = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
                                     fallBackShapes = [
@@ -2817,76 +2904,76 @@ globalThis["webpackJsonp"].push([
                                 "" != cleanedInput ? (uni.showLoading({
                                     title: this.$t("Generating coordinate points..."),
                                     mask: !0
-                                }), this.readFontBase64(this.fontIdex, (function() {
+                                }), this.readFontBase64(this.fontIdex, (function () {
                                     var textCoordinates = textLineVectorizer.getXXYY(codePointAt, fontGeometryUtils.fontData, cleanedInput, textPlaybackPageComponent.textRv);
-                                    uni.hideLoading(), 
-                                    fallBackShapes = textCoordinates.xxyy, 
-                                    fontGeometryUtils.ifHasChinese(textCoordinates.notRec) 
-                                        && 1001 == fontGeometryUtils.fontData.sn 
+                                    uni.hideLoading(),
+                                        fallBackShapes = textCoordinates.xxyy,
+                                        fontGeometryUtils.ifHasChinese(textCoordinates.notRec)
+                                        && 1001 == fontGeometryUtils.fontData.sn
                                         && app.globalData.showModalTips(textPlaybackPageComponent.$t("Due to capacity limitations, some Chinese characters are not included in the font library. For the complete font library, please refer to the APP version"), !0);
                                     var i = textPlaybackPageComponent.getSumSizeExclude(textPlaybackPageComponent.textData.groupIdex),
                                         c = handwritingCanvasHelper.getTxXySize(fallBackShapes);
-                                    c.chCount + i.chCount > textPlaybackPageComponent.maxChar 
-                                        ? app.globalData.showModalTips(textPlaybackPageComponent.$t("The number of text coordinate points has exceeded 2048, please re-enter."), !0) 
-                                        : c.ptCount + i.ptCount > textPlaybackPageComponent.maxPoints 
-                                            ? app.globalData.showModalTips(textPlaybackPageComponent.$t("The number of text coordinate points has exceeded 2048, please re-enter."), !0) 
+                                    c.chCount + i.chCount > textPlaybackPageComponent.maxChar
+                                        ? app.globalData.showModalTips(textPlaybackPageComponent.$t("The number of text coordinate points has exceeded 2048, please re-enter."), !0)
+                                        : c.ptCount + i.ptCount > textPlaybackPageComponent.maxPoints
+                                            ? app.globalData.showModalTips(textPlaybackPageComponent.$t("The number of text coordinate points has exceeded 2048, please re-enter."), !0)
                                             : callback && callback(fallBackShapes, textCoordinates.xxyyRight, textCoordinates.xxyyUp, textCoordinates.xxyyDown)
                                 }))) : callback && callback([])
                             },
-                            getSumSizeExclude: function() {
+                            getSumSizeExclude: function () {
                                 for (var excludedIndex = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null, charCount = 0, pointCount = 0, n = 0; n < this.textData.groupList.length; n++)
                                     if (null == excludedIndex || n != excludedIndex) {
                                         var h = handwritingCanvasHelper.getTxXySize(this.textData.groupList[n].xys);
                                         charCount += h.chCount, pointCount += h.ptCount
                                     } return {
-                                    chCount: charCount,
-                                    ptCount: pointCount
-                                }
+                                        chCount: charCount,
+                                        ptCount: pointCount
+                                    }
                             },
-                            inputEvent: function(e) {
+                            inputEvent: function (e) {
                                 var t = e.detail.value;
-                                this.textData.groupList[this.textData.groupIdex].update = 1, 
-                                this.$set(this.textData.groupList[this.textData.groupIdex], "text", t)
+                                this.textData.groupList[this.textData.groupIdex].update = 1,
+                                    this.$set(this.textData.groupList[this.textData.groupIdex], "text", t)
                             },
-                            onTimeBlur: function(t) {
+                            onTimeBlur: function (t) {
                                 var r = this.textData.groupList[t].time;
-                                e("log", "time", r, " at sub/pages/text/text.js:973"), 
-                                this.features.textDecimalTime ? r < 1 || r > 25.5 ? (app.globalData.showModalTips(this.$t("text_time_range"), !0), this.$set(this.textData.groupList[t], "time", 5)) : this.$set(this.textData.groupList[t], "time", Math.floor(10 * r) / 10) : r < 1 || r > 255 ? (app.globalData.showModalTips(this.$t("\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c"), !0), this.$set(this.textData.groupList[t], "time", 5)) : this.$set(this.textData.groupList[t], "time", Math.floor(r))
+                                e("log", "time", r, " at sub/pages/text/text.js:973"),
+                                    this.features.textDecimalTime ? r < 1 || r > 25.5 ? (app.globalData.showModalTips(this.$t("text_time_range"), !0), this.$set(this.textData.groupList[t], "time", 5)) : this.$set(this.textData.groupList[t], "time", Math.floor(10 * r) / 10) : r < 1 || r > 255 ? (app.globalData.showModalTips(this.$t("\u8bf7\u8f93\u51651-255\u8303\u56f4\u7684\u6570\u503c"), !0), this.$set(this.textData.groupList[t], "time", 5)) : this.$set(this.textData.groupList[t], "time", Math.floor(r))
                             },
-                            onGroupChange: function(e) {
+                            onGroupChange: function (e) {
                                 this.textData.groupIdex != e.detail.value && (this.$set(this.textData, "groupIdex", e.detail.value), handwritingCanvasHelper.doDrawPicEx(this))
                             },
-                            refreshCanvasDraw: function() {
+                            refreshCanvasDraw: function () {
                                 var e = this;
-                                this.$nextTick((function() {
+                                this.$nextTick((function () {
                                     var t = uni.createSelectorQuery().in(e);
-                                    t.select("#myCanvas").boundingClientRect((function(t) {
+                                    t.select("#myCanvas").boundingClientRect((function (t) {
                                         e.cvWH = {
                                             w: t.width,
                                             h: t.height
-                                        }, setTimeout((function() {
+                                        }, setTimeout((function () {
                                             handwritingCanvasHelper.doDrawPicEx(e)
                                         }), 100)
                                     })).exec()
                                 }))
                             },
-                            createXyByIdex: function(index) {
+                            createXyByIdex: function (index) {
                                 var t = this,
                                     r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
                                 if (0 != this.textData.groupList[index].update) {
                                     var text = this.textData.groupList[index].text;
-                                    this.createXys(text, (function(mainCoords , rightCoords, upCoords, downCoords) {
-                                            if (0 == mainCoords .length) return app.globalData.showModalTips(t.inputNote, !0), void(r && r());
-                                            t.textData.groupList[index].xys = mainCoords , 
-                                            t.textData.groupList[index].XysRight = rightCoords, 
-                                            t.textData.groupList[index].XysUp = upCoords, 
-                                            t.textData.groupList[index].XysDown = downCoords, 
-                                            t.textData.groupList[index].update = 0, 
+                                    this.createXys(text, (function (mainCoords, rightCoords, upCoords, downCoords) {
+                                        if (0 == mainCoords.length) return app.globalData.showModalTips(t.inputNote, !0), void (r && r());
+                                        t.textData.groupList[index].xys = mainCoords,
+                                            t.textData.groupList[index].XysRight = rightCoords,
+                                            t.textData.groupList[index].XysUp = upCoords,
+                                            t.textData.groupList[index].XysDown = downCoords,
+                                            t.textData.groupList[index].update = 0,
                                             r && r()
                                     }))
                                 } else r && r()
                             },
-                            checkCurrentGroupOk: function() {
+                            checkCurrentGroupOk: function () {
                                 var e = this.textData.groupList[this.textData.groupIdex].xys,
                                     t = this.textData.groupList[this.textData.groupIdex].text,
                                     r = this.textData.groupList[this.textData.groupIdex].fontIdex,
@@ -2905,79 +2992,79 @@ globalThis["webpackJsonp"].push([
                                 }
                                 if (!n) {
                                     var l = this.fontNameList[r].name;
-                                    return h.length > 4 && (h = h.substring(0, 3) + "..."), 
-                                    app.globalData.showModalTips(this.$t("\u7b2c") + (this.textData.groupIdex + 1) + this.$t("\u7ec4\u5b57\u4f53") + this.$t(l) + this.$t("\u4e0d\u652f\u6301\u6587\u672c") + '"' + h + '",' + this.$t("\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5"), !0), !1
+                                    return h.length > 4 && (h = h.substring(0, 3) + "..."),
+                                        app.globalData.showModalTips(this.$t("\u7b2c") + (this.textData.groupIdex + 1) + this.$t("\u7ec4\u5b57\u4f53") + this.$t(l) + this.$t("\u4e0d\u652f\u6301\u6587\u672c") + '"' + h + '",' + this.$t("\u8bf7\u4fee\u6539\u5b57\u4f53\u6216\u6587\u672c\u540e\u91cd\u8bd5"), !0), !1
                                 }
                                 return !0
                             },
-                            addGroup: function(e) {
+                            addGroup: function (e) {
                                 var t = this;
                                 if (this.textData.groupList.length >= 4) app.globalData.showModalTips(this.$t("\u6700\u591a4\u4e2a\u5206\u7ec4"), !0);
                                 else if ("" != this.textData.groupList[this.textData.groupIdex].text.trim()) {
                                     var r = this;
-                                    this.createXyByIdex(this.textData.groupIdex, (function() {
-                                        "" != t.textData.groupList[t.textData.groupIdex].text.trim() 
+                                    this.createXyByIdex(this.textData.groupIdex, (function () {
+                                        "" != t.textData.groupList[t.textData.groupIdex].text.trim()
                                             ? r.checkCurrentGroupOk() && (r.textData.groupList.push({
-                                            text: "",
-                                            time: 5,
-                                            color: 9,
-                                            update: 0,
-                                            fontIdex: r.fontIdex,
-                                            xys: []
-                                        }), r.$set(r.textData, "groupIdex", r.textData.groupList.length - 1),
-                                            r.$set(t.textData, "txColor", r.textData.groupList[r.textData.groupIdex].color), 
-                                            r.refreshCanvasDraw(), r.sendColorTag = !0, r.textInput = !1, setTimeout((function() {
-                                            r.textInput = !0
-                                        }), 100)) : app.globalData.showModalTips(t.inputNote, !0)
+                                                text: "",
+                                                time: 5,
+                                                color: 9,
+                                                update: 0,
+                                                fontIdex: r.fontIdex,
+                                                xys: []
+                                            }), r.$set(r.textData, "groupIdex", r.textData.groupList.length - 1),
+                                                r.$set(t.textData, "txColor", r.textData.groupList[r.textData.groupIdex].color),
+                                                r.refreshCanvasDraw(), r.sendColorTag = !0, r.textInput = !1, setTimeout((function () {
+                                                    r.textInput = !0
+                                                }), 100)) : app.globalData.showModalTips(t.inputNote, !0)
                                     }))
                                 } else app.globalData.showModalTips(this.inputNote, !0)
                             },
-                            oprEdit: function(e) {
+                            oprEdit: function (e) {
                                 var t = this;
-                                this.textData.groupIdex !== e && ("" != this.textData.groupList[this.textData.groupIdex].text.trim() ? this.createXyByIdex(this.textData.groupIdex, (function() {
+                                this.textData.groupIdex !== e && ("" != this.textData.groupList[this.textData.groupIdex].text.trim() ? this.createXyByIdex(this.textData.groupIdex, (function () {
                                     t.checkCurrentGroupOk() && (t.$set(t.textData, "groupIdex", e), t.setFontIdex(t.textData.groupList[t.textData.groupIdex].fontIdex), t.$set(t.textData, "txColor", t.textData.groupList[t.textData.groupIdex].color), t.refreshCanvasDraw())
                                 })) : app.globalData.showModalTips(this.inputNote, !0))
                             },
-                            changeTimeClick: function(e, t) {
+                            changeTimeClick: function (e, t) {
                                 var r = 0;
                                 this.features.textDecimalTime ? (r = parseFloat(this.textData.groupList[t].time), r += .1 * e, r < 1 && (r = 1), r > 25.5 && (r = 25.5), r = Math.round(10 * r) / 10) : (r = parseInt(this.textData.groupList[t].time), r += e, r < 1 && (r = 1), r > 255 && (r = 255)), this.$set(this.textData.groupList[t], "time", r)
                             },
-                            setTimeInput: function(e) {
+                            setTimeInput: function (e) {
                                 this.popupTimeIndex = e, this.$refs.popupTime.open("bottom")
                             },
-                            previwBtn: function(e) {
+                            previwBtn: function (e) {
                                 var t = this;
-                                this.createXyByIdex(this.textData.groupIdex, (function() {
+                                this.createXyByIdex(this.textData.groupIdex, (function () {
                                     handwritingCanvasHelper.doDrawPicEx(t)
                                 }))
                             },
-                            sendCmdBtn: function(e) {
+                            sendCmdBtn: function (e) {
                                 var t = this;
-                                this.lastSendTxtCmdComplete 
-                                    && this.createXyByIdex(this.textData.groupIdex, (function() {
-                                    "" != t.textData.groupList[t.textData.groupIdex].text.trim() 
-                                        ? t.checkCurrentGroupOk() && (t.sendColorTag && t.sendCmd(), 
-                                            t.lastSendTxtCmdComplete = !1, 
-                                            t.sendTextCmdMustOk((new Date).getTime()), 
-                                            handwritingCanvasHelper.doDrawPicEx(t)) 
-                                                : app.globalData.showModalTips(t.inputNote, !0)
-                                }))
+                                this.lastSendTxtCmdComplete
+                                    && this.createXyByIdex(this.textData.groupIdex, (function () {
+                                        "" != t.textData.groupList[t.textData.groupIdex].text.trim()
+                                            ? t.checkCurrentGroupOk() && (t.sendColorTag && t.sendCmd(),
+                                                t.lastSendTxtCmdComplete = !1,
+                                                t.sendTextCmdMustOk((new Date).getTime()),
+                                                handwritingCanvasHelper.doDrawPicEx(t))
+                                            : app.globalData.showModalTips(t.inputNote, !0)
+                                    }))
                             },
 
-                            restoreDeskTop: function() {
+                            restoreDeskTop: function () {
                                 var t = handDrawFileManager.getTextFileData("saveDeskTopFile_002", !0);
                                 if (t) {
                                     var r = t.data.features,
                                         n = this.features;
-                                    if (r.textDecimalTime != n.textDecimalTime || r.textModeFix01 != n.textModeFix01 || !(n.textUpDown && r.hasOwnProperty("textUpDown") && r.textUpDown) && n.textUpDown) return e("log", "\u5f53\u524d\u4fdd\u5b58\u7684\u6587\u672c\u683c\u5f0f\u4e0d\u652f\u6301", " at sub/pages/text/text.js:1211"), this.textData.groupList = this.defGroupList, void(this.textData.groupIdex = 0);
+                                    if (r.textDecimalTime != n.textDecimalTime || r.textModeFix01 != n.textModeFix01 || !(n.textUpDown && r.hasOwnProperty("textUpDown") && r.textUpDown) && n.textUpDown) return e("log", "\u5f53\u524d\u4fdd\u5b58\u7684\u6587\u672c\u683c\u5f0f\u4e0d\u652f\u6301", " at sub/pages/text/text.js:1211"), this.textData.groupList = this.defGroupList, void (this.textData.groupIdex = 0);
                                     app.globalData.cmd.textData.refresh ? (app.globalData.cmd.textData.refresh = !1, this.textData.groupIdex = t.data.textData.groupIdex, this.textData.groupList = t.data.textData.groupList) : this.textData = t.data.textData;
                                     for (var h = 0; h < this.textData.groupList.length; h++) null == this.textData.groupList[h].fontIdex && (this.textData.groupList[h].fontIdex = this.fontIdex);
                                     this.textData.groupList.length > 0 && this.setFontIdex(this.textData.groupList[this.textData.groupIdex].fontIdex), this.sendColorTag = !0, this.needRefresh = !0
                                 }
                             },
-                            saveTextFileData: function(e) {
+                            saveTextFileData: function (e) {
                                 var t = this;
-                                this.createXyByIdex(this.textData.groupIdex, (function() {
+                                this.createXyByIdex(this.textData.groupIdex, (function () {
                                     if ("" == t.textData.groupList[t.textData.groupIdex].text.trim()) return app.globalData.showModalTips(t.$t("\u7b2c") + (t.textData.groupIdex + 1) + t.$t("\u7ec4\u6587\u672c\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u518d\u4fdd\u5b58"), !0), !1;
                                     if (t.checkCurrentGroupOk()) {
                                         handwritingCanvasHelper.doDrawPicEx(t);
@@ -2990,7 +3077,7 @@ globalThis["webpackJsonp"].push([
                                     }
                                 }))
                             },
-                            getFileDataByName: function(e) {
+                            getFileDataByName: function (e) {
                                 var t = handDrawFileManager.getTextFileData(e);
                                 if (t) {
                                     this.textData = t.data.textData;
@@ -3005,15 +3092,15 @@ globalThis["webpackJsonp"].push([
                     };
                 t.default = b
             }).call(this, r("enhancedConsoleLogger")["default"])
-  
-			
-	    },
-    
-        "handwritingCanvasHelper": function(e, t) {
-            function getTxXySize(xysArray ) {
-                for (var currentCharId  = -1, pointCount = 0, charCount = 0, index = 0; index < xysArray .length; index++) {
-                    var currentItem = xysArray [index];
-                    currentCharId  != currentItem[0] && (currentCharId  = currentItem[0], charCount++), pointCount += currentItem[1].length
+
+
+        },
+
+        "handwritingCanvasHelper": function (e, t) {
+            function getTxXySize(xysArray) {
+                for (var currentCharId = -1, pointCount = 0, charCount = 0, index = 0; index < xysArray.length; index++) {
+                    var currentItem = xysArray[index];
+                    currentCharId != currentItem[0] && (currentCharId = currentItem[0], charCount++), pointCount += currentItem[1].length
                 }
                 return {
                     chCount: charCount,
@@ -3023,7 +3110,7 @@ globalThis["webpackJsonp"].push([
 
             function doDrawPicEx(textComponenet) {
                 var textCompnenet2 = textComponenet;
-                (function(textCompnenet3) {
+                (function (textCompnenet3) {
                     var textPlaybackPageComponent = textCompnenet3,
                         textData = textPlaybackPageComponent.textData,
                         xyData = 0 == textData.groupList.length ? null : textData.groupList[textData.groupIdex].xys;
@@ -3048,13 +3135,13 @@ globalThis["webpackJsonp"].push([
             e.exports = {
                 getTxXySize: getTxXySize,
                 doDrawPicEx: doDrawPicEx,
-                onReady: function(e) {
+                onReady: function (e) {
                     var t = e,
                         r = uni.createSelectorQuery();
                     r.select("#myCanvas").fields({
                         node: !0,
                         size: !0
-                    }).exec((function(e) {
+                    }).exec((function (e) {
                         e[0].node;
                         var r = uni.createCanvasContext("myCanvas", t);
                         t.ctx = r;
@@ -3066,7 +3153,7 @@ globalThis["webpackJsonp"].push([
                         }, t.cvWH = {
                             w: e[0].width,
                             h: e[0].height
-                        }, t.$nextTick((function() {
+                        }, t.$nextTick((function () {
                             doDrawPicEx(t)
                         }))
                     }))
@@ -3074,7 +3161,7 @@ globalThis["webpackJsonp"].push([
             }
         },
 
-        "fontRegistryModule": function(e, t, r) {
+        "fontRegistryModule": function (e, t, r) {
             var mergedDrawFontsUtils = r("mergedDrawFontsUtils"),
                 h = [{
                     name: "Single Line Font",
@@ -3115,7 +3202,7 @@ globalThis["webpackJsonp"].push([
                     note: "font_note_1007"
                 }];
             e.exports = {
-                getFontNameList: function(e) {
+                getFontNameList: function (e) {
                     for (var t = [], r = 0; r < h.length; r++) {
                         var n = h[r].name,
                             a = h[r].sn;
@@ -3126,21 +3213,21 @@ globalThis["webpackJsonp"].push([
                     }
                     return t
                 },
-                getFontList: function(e) {
+                getFontList: function (e) {
                     return h
                 }
             }
         },
 
-        "fontGeometryUtils": function(e, t) {
-            function calculateAngleBetweenPoints (pointA , vertex , pointB) {
+        "fontGeometryUtils": function (e, t) {
+            function calculateAngleBetweenPoints(pointA, vertex, pointB) {
                 var vectorA = {
-                        x: pointA [0] - vertex [0],
-                        y: pointA [1] - vertex [1]
-                    },
+                    x: pointA[0] - vertex[0],
+                    y: pointA[1] - vertex[1]
+                },
                     vectorB = {
-                        x: pointB[0] - vertex [0],
-                        y: pointB[1] - vertex [1]
+                        x: pointB[0] - vertex[0],
+                        y: pointB[1] - vertex[1]
                     },
                     dotProduct = vectorA.x * vectorB.x + vectorA.y * vectorB.y,
                     magnitudeA = Math.sqrt(Math.pow(vectorA.x, 2) + Math.pow(vectorA.y, 2)),
@@ -3151,11 +3238,11 @@ globalThis["webpackJsonp"].push([
                 return s
             }
 
-            function getLineRectangleIntersection (pointA, pointB, box) {
+            function getLineRectangleIntersection(pointA, pointB, box) {
                 var rectangleBoundary = {
-                        w: box.w,
-                        h: -box.h
-                    },
+                    w: box.w,
+                    h: -box.h
+                },
                     slope = (pointA[1] - pointB[1]) / (pointB[0] - pointA[0]),
                     yIntercept = -pointB[1] - slope * pointB[0],
                     intersectionPoint = [];
@@ -3175,28 +3262,28 @@ globalThis["webpackJsonp"].push([
             }
             e.exports = {
                 fontData: null,
-                ifHasChinese: function(e) {
+                ifHasChinese: function (e) {
                     if (null == e) return !1;
                     for (var t = 0; t < e.length; t++)
                         if (isChineese(e[t])) return !0;
                     return !1
                 },
-                parseLines: function(points) {
+                parseLines: function (points) {
                     for (var rextangleSize = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {
-                            w: 800,
-                            h: 800
-                        }, r = [], h = [], a = 0; a < points.length; a++) {
+                        w: 800,
+                        h: 800
+                    }, r = [], h = [], a = 0; a < points.length; a++) {
                         var i = points[a];
                         if (i[0] < 0 || i[0] > rextangleSize.w || i[1] < 0 || i[1] > rextangleSize.h) {
                             if (0 != h.length) {
-                                var c = getLineRectangleIntersection (h[h.length - 1], i, rextangleSize);
+                                var c = getLineRectangleIntersection(h[h.length - 1], i, rextangleSize);
                                 c.length > 0 && h.push(c), r.push(h), h = []
                             }
                         } else {
                             if (a > 0 && 0 == h.length) {
                                 var o = points[a - 1];
                                 if (o[0] < 0 || o[0] > rextangleSize.w || o[1] < 0 || o[1] > rextangleSize.h) {
-                                    var s = getLineRectangleIntersection (o, i, rextangleSize);
+                                    var s = getLineRectangleIntersection(o, i, rextangleSize);
                                     s.length > 0 && h.push(s)
                                 }
                             }
@@ -3205,29 +3292,29 @@ globalThis["webpackJsonp"].push([
                     }
                     return h.length > 0 && r.push(h), r
                 },
-                readTTF: function(fontName, mode, callback) {
-                    2 != mode ? plus.io.resolveLocalFileSystemURL("_www/static/app-plus/font/" + fontName, (function(e) {
-                        e.file((function(e) {
+                readTTF: function (fontName, mode, callback) {
+                    2 != mode ? plus.io.resolveLocalFileSystemURL("_www/static/app-plus/font/" + fontName, (function (e) {
+                        e.file((function (e) {
                             var fileReader = new plus.io.FileReader;
-                            fileReader.onloadend = function(e) {
+                            fileReader.onloadend = function (e) {
                                 var dataURl = e.target.result,
                                     fontData = dataURl.split(",")[1];
                                 callback(fontData, mode)
-                            }, fileReader.onerror = function() {
+                            }, fileReader.onerror = function () {
                                 uni.hideLoading(), uni.showToast({
                                     title: "\u8bfb\u53d6\u5b57\u4f53\u5931\u8d25",
                                     icon: "none"
                                 })
                             }, fileReader.readAsDataURL(e)
                         }))
-                    }), (function(e) {
+                    }), (function (e) {
                         uni.hideLoading(), uni.showToast({
                             title: "\u5b57\u4f53\u6587\u4ef6\u89e3\u6790\u5931\u8d25\uff1a" + JSON.stringify(e),
                             icon: "none"
                         })
                     })) : callback(fontName, mode)
                 },
-                dealLine: function(points) {
+                dealLine: function (points) {
                     var t = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1],
                         output = [],
                         previousPoint = points[0];
@@ -3235,7 +3322,7 @@ globalThis["webpackJsonp"].push([
                     for (var index = 1; index < points.length - 1; index++) {
                         var currentPoint = points[index],
                             nextPoint = points[index + 1],
-                            angle = calculateAngleBetweenPoints (previousPoint, currentPoint, nextPoint);
+                            angle = calculateAngleBetweenPoints(previousPoint, currentPoint, nextPoint);
                         if (0 != angle && 180 != angle) {
                             var s = angle <= 135 ? 1 : 0;
                             t || (s = 0), output.push([currentPoint[0], currentPoint[1], 1, s]), previousPoint = currentPoint
@@ -3245,16 +3332,16 @@ globalThis["webpackJsonp"].push([
                     return output.push([l[0], l[1], 1, 1]), output
                 }
             }
-     
+
         },
 
-        "textLineVectorizer": function(e, t, r) {
-            (function(t) {
+        "textLineVectorizer": function (e, t, r) {
+            (function (t) {
                 var spreadToArrayHelper = r("spreadToArrayHelper"),
                     arrayConversionHelper = r("arrayConversionHelper"),
                     arabicHelper = r("arabicPresentationFormsConverter");
 
-                function sampleQuadraticBezier (start, controlPoint, endPoint, n) {
+                function sampleQuadraticBezier(start, controlPoint, endPoint, n) {
                     for (var h = [], a = 0; a <= 1; a += 1 / n) {
                         var i = Math.pow(1 - a, 2) * start.x + 2 * (1 - a) * a * controlPoint.x + Math.pow(a, 2) * endPoint.x,
                             c = Math.pow(1 - a, 2) * start.y + 2 * (1 - a) * a * controlPoint.y + Math.pow(a, 2) * endPoint.y;
@@ -3271,9 +3358,9 @@ globalThis["webpackJsonp"].push([
                     return e.length, e.push(t), !0
                 }
 
-                function parsePathCommands (pathCommands ) {
-                    for (var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 5, r = [], n = [], h = 0, index = 0; index < pathCommands .length; index++) {
-                        var cmd = pathCommands [index];
+                function parsePathCommands(pathCommands) {
+                    for (var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 5, r = [], n = [], h = 0, index = 0; index < pathCommands.length; index++) {
+                        var cmd = pathCommands[index];
                         // MOVE
                         if ("M" == cmd.type) {
                             var s = {
@@ -3294,13 +3381,13 @@ globalThis["webpackJsonp"].push([
                         }
                         //QUADRATICBEZIER
                         if ("Q" == cmd.type)
-                            for (var p = sampleQuadraticBezier (n[n.length - 1], {
-                                    x: cmd.x1,
-                                    y: cmd.y1
-                                }, {
-                                    x: cmd.x,
-                                    y: cmd.y
-                                }, t), d = 0; d < p.length; d++) h = appendToArrayOr(n, p[d]) ? h : h + 1;
+                            for (var p = sampleQuadraticBezier(n[n.length - 1], {
+                                x: cmd.x1,
+                                y: cmd.y1
+                            }, {
+                                x: cmd.x,
+                                y: cmd.y
+                            }, t), d = 0; d < p.length; d++) h = appendToArrayOr(n, p[d]) ? h : h + 1;
                         //CLOSEPATH 
                         if ("Z" == cmd.type) {
                             var b = n[0],
@@ -3311,7 +3398,7 @@ globalThis["webpackJsonp"].push([
                     return r
                 }
 
-                function markCornerPoints (points) {
+                function markCornerPoints(points) {
                     var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 145,
                         r = arguments.length > 2 ? arguments[2] : void 0;
                     point1 = {
@@ -3321,10 +3408,10 @@ globalThis["webpackJsonp"].push([
                     };
                     for (var n = 1; n < points.length - 1; n++) {
                         var h = {
-                                x: points[n].x,
-                                y: points[n].y,
-                                z: points[n].z
-                            },
+                            x: points[n].x,
+                            y: points[n].y,
+                            z: points[n].z
+                        },
                             a = {
                                 x: points[n + 1].x,
                                 y: points[n + 1].y,
@@ -3336,7 +3423,7 @@ globalThis["webpackJsonp"].push([
                     return points
                 }
 
-                function normalizeAndCenterLines (linesContainer, isHorizontalAdjustment, flipHorizontal) {
+                function normalizeAndCenterLines(linesContainer, isHorizontalAdjustment, flipHorizontal) {
                     var n = linesContainer.lines,
                         h = linesContainer.w,
                         a = linesContainer.h,
@@ -3388,7 +3475,7 @@ globalThis["webpackJsonp"].push([
                     return V
                 }
 
-                function layoutAndSimplifyShapes (shapes, markCorners , isHorizontalLayout , simplify , flipHorizontal) {
+                function layoutAndSimplifyShapes(shapes, markCorners, isHorizontalLayout, simplify, flipHorizontal) {
                     var totalWidth = 0, totalHeight = 0;
                     for (var shapeIndex = 0; shapeIndex < shapes.length; shapeIndex++) {
                         shapes[shapeIndex] = normalizeAndCenterLines(shapes[shapeIndex], isHorizontalLayout, flipHorizontal);
@@ -3451,10 +3538,10 @@ globalThis["webpackJsonp"].push([
                             var midIdx = 1;
                             while (midIdx < line.length - 1) {
                                 var midPoint = {
-                                        x: offsetX + line[midIdx].x + layoutX,
-                                        y: offsetY - line[midIdx].y + layoutY,
-                                        z: line[midIdx].z
-                                    },
+                                    x: offsetX + line[midIdx].x + layoutX,
+                                    y: offsetY - line[midIdx].y + layoutY,
+                                    z: line[midIdx].z
+                                },
                                     nextPoint = {
                                         x: offsetX + line[midIdx + 1].x + layoutX,
                                         y: offsetY - line[midIdx + 1].y + layoutY,
@@ -3508,7 +3595,7 @@ globalThis["webpackJsonp"].push([
                         }
                     }
                     if (simplify && !markCorners) {
-                        result = (function(linesArr) {
+                        result = (function (linesArr) {
                             for (var arrIdx = 0; arrIdx < linesArr.length; arrIdx++) {
                                 var lineArr = linesArr[arrIdx][1];
                                 if (!(lineArr.length < 4)) {
@@ -3563,10 +3650,10 @@ globalThis["webpackJsonp"].push([
                     };
                     for (var n = 1; n < polylinePoints.length - 1; n++) {
                         var h = {
-                                x: polylinePoints[n][0],
-                                y: polylinePoints[n][1],
-                                z: polylinePoints[n][3]
-                            },
+                            x: polylinePoints[n][0],
+                            y: polylinePoints[n][1],
+                            z: polylinePoints[n][3]
+                        },
                             a = {
                                 x: polylinePoints[n + 1][0],
                                 y: polylinePoints[n + 1][1],
@@ -3598,9 +3685,9 @@ globalThis["webpackJsonp"].push([
 
                 function calculateAngleBetweenPoints_B(e, point, r) {
                     var n = {
-                            x: e[0] - point[0],
-                            y: e[1] - point[1]
-                        },
+                        x: e[0] - point[0],
+                        y: e[1] - point[1]
+                    },
                         h = {
                             x: r[0] - point[0],
                             y: r[1] - point[1]
@@ -3633,7 +3720,7 @@ globalThis["webpackJsonp"].push([
                     return "" != r && (t += r), t = t.split("").reverse().join(""), t
                 }
 
-                function transformPolylinesForVerticalMirroring(inputPolylines, unused , width, height) {
+                function transformPolylinesForVerticalMirroring(inputPolylines, unused, width, height) {
                     for (var h = [], a = [], i = 0; i < inputPolylines.length; i++) {
                         for (var c = [], o = [], s = 0; s < inputPolylines[i].length; s++) {
                             var l = inputPolylines[i][s];
@@ -3671,7 +3758,7 @@ globalThis["webpackJsonp"].push([
                             linesArrDown = [],
                             notRecognized = "";
 
-                       // console.log(inputText);
+                        // console.log(inputText);
                         for (var charIndex = 0; charIndex < inputText.length; charIndex++) {
                             var letter = inputText[charIndex],
                                 glyph = loadedFontOpentype.charToGlyph(letter),
@@ -3726,7 +3813,7 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function normalizeAndCenterPolylines (polyLinePoints, targetWidth, r) {
+                function normalizeAndCenterPolylines(polyLinePoints, targetWidth, r) {
                     for (var n = targetWidth / 800, h = [], a = [], i = 0, c = 0, o = 99999, s = 99999, index = 0; index < polyLinePoints.length; index++) {
                         var p = polyLinePoints[index],
                             d = [p[0] * n, p[1] * n, p[2], p[3]];
@@ -3752,7 +3839,7 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function getCharHexCode (e) {
+                function getCharHexCode(e) {
                     var t = e[0],
                         r = t.charCodeAt(0),
                         n = r.toString(16);
@@ -3761,7 +3848,7 @@ globalThis["webpackJsonp"].push([
 
                 function unpackEncodedNumber(e) {
                     var t = e % 10,
-                        r = function(e) {
+                        r = function (e) {
                             var t, r, n;
                             return e < 4 ? (t = e, r = 0, n = 1) : e < 7 ? (t = e - 3, r = 1, n = 0) : (t = e - 6, r = 1, n = 1), [t, r, n]
                         }(t),
@@ -3781,21 +3868,21 @@ globalThis["webpackJsonp"].push([
                     return t
                 }
 
-                function decodePackedNumberList (inputString) {
-                    for (var t = [], r = function(e) {
-                            for (var t = e.split(","), r = [], n = 0; n < t.length; n++) {
-                                var h = base64CustomToInt(t[n]);
-                                r.push(h)
-                            }
-                            return r
-                        }(inputString), n = 0; n < r.length; n++) {
+                function decodePackedNumberList(inputString) {
+                    for (var t = [], r = function (e) {
+                        for (var t = e.split(","), r = [], n = 0; n < t.length; n++) {
+                            var h = base64CustomToInt(t[n]);
+                            r.push(h)
+                        }
+                        return r
+                    }(inputString), n = 0; n < r.length; n++) {
                         var h = unpackEncodedNumber(r[n]);
                         t.push(h)
                     }
                     return t
                 }
 
-                function mirrorPolylineFields (e) {
+                function mirrorPolylineFields(e) {
                     for (var t = [], r = [], h = 0; h < e.length; h++) {
                         var a = spreadToArrayHelper(e[h], 4),
                             i = a[0],
@@ -3810,9 +3897,9 @@ globalThis["webpackJsonp"].push([
                     }
                 }
 
-                function getCharacterPolylineData (polyLinelookup, characters) {
+                function getCharacterPolylineData(polyLinelookup, characters) {
                     for (var n = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], h = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], a = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], i = 400, c = [], o = [], s = [], l = "", p = 0; p < characters.length; p++) {
-                        var d = getCharHexCode (characters[p]),
+                        var d = getCharHexCode(characters[p]),
                             b = [],
                             g = [],
                             j = [],
@@ -3822,16 +3909,16 @@ globalThis["webpackJsonp"].push([
                             F = i / 3;
                         if (d in polyLinelookup) {
                             var k = polyLinelookup[d];
-                            if (n && (k = decodePackedNumberList (k)), a) {
+                            if (n && (k = decodePackedNumberList(k)), a) {
                                 t("log", "xysVer", JSON.stringify(k), " at utils/TextLine.js:680");
                                 var u = JSON.parse(JSON.stringify(k));
-                                u = mirrorPolylineFields (u);
-                                var X = normalizeAndCenterPolylines (u.xysUp, i, h);
+                                u = mirrorPolylineFields(u);
+                                var X = normalizeAndCenterPolylines(u.xysUp, i, h);
                                 g = X.lines, f = X.w, F = X.h;
-                                var N = normalizeAndCenterPolylines (u.xysDown, i, h);
+                                var N = normalizeAndCenterPolylines(u.xysDown, i, h);
                                 j = N.lines
                             }
-                            var Q = normalizeAndCenterPolylines (k, i, h);
+                            var Q = normalizeAndCenterPolylines(k, i, h);
                             b = Q.lines, x = Q.w, V = Q.h
                         } else l += characters[p];
                         c.push({
@@ -3858,7 +3945,7 @@ globalThis["webpackJsonp"].push([
                 e.exports = {
                     getTextLines: getTextLines,
                     layoutAndSimplifyShapes: layoutAndSimplifyShapes,
-                    getXXYY: function(opentype, font, inputText, mirrorVertical) {
+                    getXXYY: function (opentype, font, inputText, mirrorVertical) {
                         console.log(font.mode);
                         var isHorizontalLayout = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4],
                             numSegments = arguments.length > 5 && void 0 !== arguments[5] ? arguments[5] : 5,
@@ -3900,13 +3987,13 @@ globalThis["webpackJsonp"].push([
                             xxyyDown: mirroredDownResult
                         }
                     },
-                    dealObjLines: function(polylinePoints) {
+                    dealObjLines: function (polylinePoints) {
                         for (var filtering = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], r = 20, n = [], h = [], a = {
-                                left: 99999,
-                                top: -99999,
-                                right: -99999,
-                                bottom: 99999
-                            }, i = polylinePoints, c = 0; c < i.length; c++) {
+                            left: 99999,
+                            top: -99999,
+                            right: -99999,
+                            bottom: 99999
+                        }, i = polylinePoints, c = 0; c < i.length; c++) {
                             var o = [i[c][0], i[c][1]];
                             a.left = Math.min(a.left, o[0]), a.top = Math.max(a.top, o[1]), a.right = Math.max(a.right, o[0]), a.bottom = Math.min(a.bottom, o[1])
                         }
@@ -3925,14 +4012,14 @@ globalThis["webpackJsonp"].push([
                         }
                         return n
                     },
-                    dealImgLines: function(polylinePoints) {
+                    dealImgLines: function (polylinePoints) {
                         for (var t = [], index = 0; index < polylinePoints.length; index++) {
                             var n = markPolylineCorners(polylinePoints[index], 135, !1);
                             n = rotatePolylineToCornerStart(n, 135), t.push.apply(t, arrayConversionHelper(n))
                         }
                         return t
                     },
-                    printXXYY: function(e, r) {
+                    printXXYY: function (e, r) {
                         for (var n = "", h = -1, a = 0; a < e.length; a++) {
                             var i = e[a][1];
                             h != e[a][0] && ("" != n && t("log", h, "printXXYY", n, " at utils/TextLine.js:713"), h = e[a][0], n = "");
@@ -3950,30 +4037,30 @@ globalThis["webpackJsonp"].push([
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-  
-        "spreadToArrayHelper": function(e, t, r) {
+
+        "spreadToArrayHelper": function (e, t, r) {
             var n = r("arrayIfArrayHelper"),
                 h = r("iterableToArrayLimitHelper"),
                 a = r("toConsumableArrayHelper"),
                 i = r("nonIterableDestructuringErrorHelper");
-            e.exports = function(e, t) {
+            e.exports = function (e, t) {
                 return n(e) || h(e, t) || a(e, t) || i()
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
-        
-        "arrayConversionHelper": function(e, t, r) {
+
+        "arrayConversionHelper": function (e, t, r) {
             var n = r("arrayToArrayLikeHelper"),
                 h = r("b893"),
                 a = r("toConsumableArrayHelper"),
                 i = r("nonIterableSpreadErrorHelper");
-            e.exports = function(e) {
+            e.exports = function (e) {
                 return n(e) || h(e) || a(e) || i()
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-        "handDrawPageComponent": function(e, t, r) {
+        "handDrawPageComponent": function (e, t, r) {
             "use strict";
-            (function(e) {
+            (function (e) {
                 var n = r("esModuleInteropHelper");
                 Object.defineProperty(t, "__esModule", {
                     value: !0
@@ -3991,7 +4078,7 @@ globalThis["webpackJsonp"].push([
                     g = [15, 5],
                     j = [20, 20],
                     x = {
-                        data: function() {
+                        data: function () {
                             var e = 0 | app.globalData.readData("draw_fontIdex"),
                                 t = app.globalData.getDeviceFeatures(),
                                 r = app.globalData.getTipsParm(),
@@ -4091,34 +4178,34 @@ globalThis["webpackJsonp"].push([
                                         [256, this.$t("Pattern Selection")]
                                     ],
                                     1: [
-                                                                            [25, this.$t("Straight Line Pattern")],
-                                                                            [25, this.$t("Arc Pattern")],
-                                                                            [25, this.$t("Bright Spot Pattern")],
-                                                                            [25, this.$t("Dot Pattern")],
-                                                                            [25, this.$t("Christmas Pattern")],
-                                                                            [25, this.$t("Animation Group 1")],
-                                                                            [25, this.$t("Animation Group 2")],
-                                                                            [25, this.$t("Animation Group 3")],
-                                                                            [25, this.$t("Animation Group 4")],
-                                                                            [31, this.$t("Animation Group 5")]
+                                        [25, this.$t("Straight Line Pattern")],
+                                        [25, this.$t("Arc Pattern")],
+                                        [25, this.$t("Bright Spot Pattern")],
+                                        [25, this.$t("Dot Pattern")],
+                                        [25, this.$t("Christmas Pattern")],
+                                        [25, this.$t("Animation Group 1")],
+                                        [25, this.$t("Animation Group 2")],
+                                        [25, this.$t("Animation Group 3")],
+                                        [25, this.$t("Animation Group 4")],
+                                        [31, this.$t("Animation Group 5")]
                                     ],
                                     2: [
-[10, this.$t("White")],
-[10, this.$t("Red")],
-[10, this.$t("Blue")],
-[10, this.$t("Pink")],
-[10, this.$t("Cyan")],
-[10, this.$t("Yellow")],
-[10, this.$t("Green")],
-[10, this.$t("Overall Color Change")],
-[13, this.$t("Rainbow Colors")],
-[18, this.$t("2-Segment Color")],
-[21, this.$t("3-Segment Color")],
-[18, this.$t("4-Segment Color")],
-[33, this.$t("8-Segment Color")],
-[36, this.$t("16-Segment Color")],
-[35, this.$t("32-Segment Color")],
-[2, this.$t("Color Gradient Drawing")]
+                                        [10, this.$t("White")],
+                                        [10, this.$t("Red")],
+                                        [10, this.$t("Blue")],
+                                        [10, this.$t("Pink")],
+                                        [10, this.$t("Cyan")],
+                                        [10, this.$t("Yellow")],
+                                        [10, this.$t("Green")],
+                                        [10, this.$t("Overall Color Change")],
+                                        [13, this.$t("Rainbow Colors")],
+                                        [18, this.$t("2-Segment Color")],
+                                        [21, this.$t("3-Segment Color")],
+                                        [18, this.$t("4-Segment Color")],
+                                        [33, this.$t("8-Segment Color")],
+                                        [36, this.$t("16-Segment Color")],
+                                        [35, this.$t("32-Segment Color")],
+                                        [2, this.$t("Color Gradient Drawing")]
                                     ],
                                     3: [
                                         [10, this.$t("Non-Flowing Water")],
@@ -4126,7 +4213,7 @@ globalThis["webpackJsonp"].push([
                                         [128, this.$t("Reverse Flowing Water")]
                                     ],
                                     4: [
-                                     [256, this.$t("Pattern Size")]
+                                        [256, this.$t("Pattern Size")]
                                     ],
                                     5: [
                                         [16, this.$t("Expand Manual Selection")],
@@ -4169,7 +4256,7 @@ globalThis["webpackJsonp"].push([
                                     ]
                                 },
                                 cnfList: [{
-         name: this.$t("Pattern Size"),
+                                    name: this.$t("Pattern Size"),
                                     value: 255,
                                     idx: 4
                                 }, {
@@ -4239,7 +4326,7 @@ globalThis["webpackJsonp"].push([
                                     name: "Blue Yellow (16 segments)"
                                 }],
                                 segDisplayOrder: [{
-                                   name: "Pick 3 (4 segments)",
+                                    name: "Pick 3 (4 segments)",
                                     color: "color-seg-1",
                                     order: 0,
                                     idx: 11
@@ -4249,7 +4336,7 @@ globalThis["webpackJsonp"].push([
                                     order: 1,
                                     idx: 12
                                 }, {
-                 name: "White Green (8 segments)",
+                                    name: "White Green (8 segments)",
                                     color: "color-seg-3",
                                     order: 2,
                                     idx: 13
@@ -4290,7 +4377,7 @@ globalThis["webpackJsonp"].push([
                                     idx: 20
                                 }],
                                 colorDisplayOrder: [{
-                                name: "Red",
+                                    name: "Red",
                                     color: "red",
                                     order: 0,
                                     idx: 1
@@ -4379,7 +4466,7 @@ globalThis["webpackJsonp"].push([
                                 }
                             }
                         },
-                        onLoad: function() {
+                        onLoad: function () {
                             var picArrayShapes = r("picArrayShapes");
                             this.objCount = picArrayShapes.picArray.length;
                             var fontRegistryModule = r("fontRegistryModule ");
@@ -4387,21 +4474,21 @@ globalThis["webpackJsonp"].push([
                             var drawData = app.globalData.getCmdData("drawData");
                             this.pisObj = drawData.pisObj, handDrawFileManager.clearDrawPointsHis()
                         },
-                        onUnload: function() {
+                        onUnload: function () {
                             e("log", "onunload", " at sub/pages/draw/draw.js:203"), this.saveDeskTop()
                         },
-                        onReady: function() {
+                        onReady: function () {
                             var e = this;
-                            setTimeout((function() {
+                            setTimeout((function () {
                                 e.initShow()
                             }), 20)
                         },
-                        onHide: function() {
+                        onHide: function () {
                             this.saveDeskTop()
                         },
-                        onShow: function() {
+                        onShow: function () {
                             var e = this;
-                            this.needReDraw && (this.needReDraw = !1, setTimeout((function() {
+                            this.needReDraw && (this.needReDraw = !1, setTimeout((function () {
                                 e.reDraw(e.drawPoints)
                             }), 10))
                         },
@@ -4410,17 +4497,17 @@ globalThis["webpackJsonp"].push([
                         },
                         computed: {
                             inputTextX: {
-                                get: function() {
+                                get: function () {
                                     return this.inputText
                                 },
-                                set: function(e) {
+                                set: function (e) {
                                     var t = e.replace("\n", "");
                                     this.inputText = t, this.resetSelectMode()
                                 }
                             }
                         },
                         methods: {
-                            sendCmd: function() {
+                            sendCmd: function () {
                                 var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "00",
                                     t = (new Date).getTime(),
                                     points = [];
@@ -4429,45 +4516,45 @@ globalThis["webpackJsonp"].push([
                                     h = bleDeviceControlUtils.gosend("00" == e, drawCommand, this.sendComplete);
                                 return h && (this.lastSendtime = t), h
                             },
-                            sendLastCmd: function() {
+                            sendLastCmd: function () {
                                 var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "00",
                                     t = this;
-                                t.lastCmdTime <= t.lastSendtime || setTimeout((function() {
+                                t.lastCmdTime <= t.lastSendtime || setTimeout((function () {
                                     t.lastCmdTime <= t.lastSendtime || (t.sendCmd(e), t.lastCmdTime > t.lastSendtime && t.sendLastCmd(e))
                                 }), 10)
                             },
-                            initShow: function() {
+                            initShow: function () {
                                 var e = this,
                                     t = uni.createSelectorQuery().in(e);
                                 uni.showLoading({
                                     mask: !0
-                                }), t.select("#drawCanvasContainer0").boundingClientRect((function(t) {
-                                    e.drawCanvas.w = t.height, e.$set(e.drawCanvas, "h", t.height), setTimeout((function() {
+                                }), t.select("#drawCanvasContainer0").boundingClientRect((function (t) {
+                                    e.drawCanvas.w = t.height, e.$set(e.drawCanvas, "h", t.height), setTimeout((function () {
                                         var t = uni.createSelectorQuery().in(e);
-                                        t.select("#btn_draw_group").boundingClientRect((function(t) {
-                                            e.setBtnDrawGroup(t.width, t.height), setTimeout((function() {
+                                        t.select("#btn_draw_group").boundingClientRect((function (t) {
+                                            e.setBtnDrawGroup(t.width, t.height), setTimeout((function () {
                                                 e.readFontBase64(), e.setCanvasSub(), e.restoreDeskTop()
                                             }), 1e3)
                                         })).exec()
                                     }), 100)
                                 })).exec()
                             },
-                            inputBlur: function(e) {
+                            inputBlur: function (e) {
                                 this.createTextPoints(), this.drawMode = 9999
                             },
-                            refreshTextPoints: function() {
+                            refreshTextPoints: function () {
                                 var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 1500;
                                 null != this.createTextPointsTimer && (clearTimeout(this.createTextPointsTimer), this.createTextPointsTimer);
                                 var t = this;
-                                this.createTextPointsTimer = setTimeout((function() {
+                                this.createTextPointsTimer = setTimeout((function () {
                                     t.createTextPointsTimer, t.createTextPoints(), t.drawMode = 9999
                                 }), e)
                             },
-                            setBtnDrawGroup: function(e, t) {
+                            setBtnDrawGroup: function (e, t) {
                                 var r = 2 * this.scUnit;
                                 t >= 90 * r ? (this.$set(this.btnDrawGroup, "h", t), this.$set(this.btnDrawGroup, "w", e), this.$set(this.btnDrawGroup, "x", "hidden"), this.$set(this.btnDrawGroup, "y", "auto"), this.$set(this.btnDrawGroup, "wrap", "wrap")) : (t = t < 60 * r ? 50 * r : t, this.$set(this.btnDrawGroup, "x", "auto"), this.$set(this.btnDrawGroup, "y", "hidden"), this.$set(this.btnDrawGroup, "wrap", "nowrap"), this.$set(this.btnDrawGroup, "h", t), this.$set(this.btnDrawGroup, "w", e))
                             },
-                            createTextPoints: function() {
+                            createTextPoints: function () {
                                 if ("" == this.inputText) this.xxyy = [];
                                 else {
                                     uni.showLoading({
@@ -4478,7 +4565,7 @@ globalThis["webpackJsonp"].push([
                                     uni.hideLoading(), this.xxyy = e.xxyy, fontGeometryUtils.ifHasChinese(e.notRec) && 1001 == fontGeometryUtils.fontData.sn && app.globalData.showModalTips(this.$t("\u56e0\u5bb9\u91cf\u9650\u5236\uff0c\u90e8\u5206\u6c49\u5b57\u672a\u7eb3\u5165\u5b57\u5e93\uff0c\u5b8c\u6574\u5b57\u5e93\u8bf7\u524d\u5f80APP\u7248\u672c"), !0)
                                 }
                             },
-                            readFontBase64: function() {
+                            readFontBase64: function () {
                                 var e = this,
                                     t = r("fontRegistryModule "),
                                     n = t.getFontList(this),
@@ -4488,7 +4575,7 @@ globalThis["webpackJsonp"].push([
                                 n = null, uni.showLoading({
                                     mask: !0,
                                     title: this.$t("\u6b63\u5728\u8bfb\u53d6\u5b57\u4f53...")
-                                }), fontGeometryUtils.readTTF(h, a, (function(t, r) {
+                                }), fontGeometryUtils.readTTF(h, a, (function (t, r) {
                                     fontGeometryUtils.fontData = {
                                         data: t,
                                         mode: r,
@@ -4496,52 +4583,52 @@ globalThis["webpackJsonp"].push([
                                     }, e.createTextPoints(), uni.hideLoading()
                                 }))
                             },
-                            onFontChange: function(e) {
+                            onFontChange: function (e) {
                                 this.setFontIdex(e.detail.value)
                             },
-                            setFontIdex: function(e) {
+                            setFontIdex: function (e) {
                                 this.fontIdex != e && (this.fontIdex = e, app.globalData.saveData("draw_fontIdex", this.fontIdex), this.readFontBase64(), this.drawMode = 9999)
                             },
-                            fontSelect: function(t) {
+                            fontSelect: function (t) {
                                 var r = this;
                                 uni.navigateTo({
                                     url: "/sub/pages/font/font?fontIdex=" + this.fontIdex,
                                     events: {
-                                        acceptDataFromOpenedPage: function(t) {
+                                        acceptDataFromOpenedPage: function (t) {
                                             e("log", "acceptDataFromOpenedPage", t, " at sub/pages/draw/draw.js:390"), r.setFontIdex(t.fontIdex)
                                         }
                                     }
                                 })
                             },
-                            resetSelectMode: function() {
-                                return !!this.selectMode && (this.selectClick = !1, this.selectMode = !1, this.selectLines = [], this.selectRect = null, this.setCanvasSub(), 
-                                this.reDraw(this.drawPoints), !0)
+                            resetSelectMode: function () {
+                                return !!this.selectMode && (this.selectClick = !1, this.selectMode = !1, this.selectLines = [], this.selectRect = null, this.setCanvasSub(),
+                                    this.reDraw(this.drawPoints), !0)
                             },
-                            btnDrawChange: function(e) {
+                            btnDrawChange: function (e) {
                                 this.resetSelectMode();
                                 var tag = e.currentTarget.dataset.tag;
-                                if (9999 == tag 
-                                        && this.textToLeft 
-                                            && (this.textToLeft = !1, this.refreshTextPoints(0)), 
-                                                9998 == tag 
-                                                    && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), tag = 9999), 
-                                                        tag >= 0 && tag < 9999) {
+                                if (9999 == tag
+                                    && this.textToLeft
+                                    && (this.textToLeft = !1, this.refreshTextPoints(0)),
+                                    9998 == tag
+                                    && (this.textToLeft || (this.textToLeft = !0, this.refreshTextPoints(0)), tag = 9999),
+                                    tag >= 0 && tag < 9999) {
                                     var picArrayShapes = r("picArrayShapes"),
                                         picArray = picArrayShapes.picArray;
                                     this.obj = textLineVectorizer.dealObjLines(picArray[tag], !1)
                                 }
                                 this.drawMode = tag
                             },
-                            getCurrentPointCount: function() {
+                            getCurrentPointCount: function () {
                                 return -1 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.points, !0) : 9999 == this.drawMode ? handDrawGeometryUtils.getPointCount(this.drawMode, this.xxyy) : handDrawGeometryUtils.getPointCount(this.drawMode, this.obj)
                             },
-//                          1: Freehand drawing mode (user draws lines or shapes manually)
-//9999: Text drawing mode (drawing vectorized text or handwriting)
-//9998: Text drawing mode, right-to-left (used for RTL text, toggled in btnDrawChange)
-//8888, 8887: Special selection or editing modes (used for selection rectangles or editing, seen in dealTouchEnd)
-//0 and positive integers less than 9999: Predefined geometric shapes or patterns (selected from picArrayShapes, e.g., rectangles, circles, custom shapes)
-//2: Likely a specific shape or object drawing mode (used in drawObj)
-                            dealTouchEnd: function() {
+                            //                          1: Freehand drawing mode (user draws lines or shapes manually)
+                            //9999: Text drawing mode (drawing vectorized text or handwriting)
+                            //9998: Text drawing mode, right-to-left (used for RTL text, toggled in btnDrawChange)
+                            //8888, 8887: Special selection or editing modes (used for selection rectangles or editing, seen in dealTouchEnd)
+                            //0 and positive integers less than 9999: Predefined geometric shapes or patterns (selected from picArrayShapes, e.g., rectangles, circles, custom shapes)
+                            //2: Likely a specific shape or object drawing mode (used in drawObj)
+                            dealTouchEnd: function () {
                                 if (-1 == this.drawMode) this.points = fontGeometryUtils.dealLine(this.points, !1);
                                 else if (Math.abs(this.subCanvasStartPoint.x - this.subCanvasEndPoint.x) < 20 && 8888 != this.drawMode && Math.abs(this.subCanvasStartPoint.y - this.subCanvasEndPoint.y) < 20) return !1;
                                 8888 == this.drawMode && (this.drawMode = 8887);
@@ -4550,23 +4637,23 @@ globalThis["webpackJsonp"].push([
                                 if (this.drawPointCount = this.drawPointCount + e, -1 == this.drawMode) return this.touchEnd(null), !0;
                                 this.addToHis();
                                 var canvasContext = uni.createCanvasContext("drawCanvas", this),
-                                    drawConfig  = (this.objParm.x0, this.objParm.y0, this.objParm.z, this.objParm.ang, this.lineColor, {
+                                    drawConfig = (this.objParm.x0, this.objParm.y0, this.objParm.z, this.objParm.ang, this.lineColor, {
                                         ctx: canvasContext,
                                         w: this.drawCanvas.w,
                                         h: this.drawCanvas.h,
                                         draw_line_type: j,
                                         colorSeg: this.colorSeg
                                     });
-                                return this.objParm.lineColor = this.lineColor, 
-                                 9999 == this.drawMode 
-                                    ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy, 
-                                        handDrawGeometryUtils.drawText(drawConfig , this.objParm),
-                                        this.drawPoints.push(this.objParm)) 
-                                        : (this.objParm.drawMode = 2, this.objParm.ps = this.obj, 
-                                            handDrawGeometryUtils.drawObj(drawConfig , this.objParm), 
+                                return this.objParm.lineColor = this.lineColor,
+                                    9999 == this.drawMode
+                                        ? (this.objParm.drawMode = 9999, this.objParm.ps = this.xxyy,
+                                            handDrawGeometryUtils.drawText(drawConfig, this.objParm),
+                                            this.drawPoints.push(this.objParm))
+                                        : (this.objParm.drawMode = 2, this.objParm.ps = this.obj,
+                                            handDrawGeometryUtils.drawObj(drawConfig, this.objParm),
                                             this.drawPoints.push(this.objParm)), canvasContext.draw(!0), !0
                             },
-                            addToHis: function() {
+                            addToHis: function () {
                                 if (!(this.drawPoints.length <= 0)) {
                                     for (var drawPointsHistory = [], index = 0; index < this.drawPoints.length; index++) {
                                         var drawPoint = this.drawPoints[index];
@@ -4583,7 +4670,7 @@ globalThis["webpackJsonp"].push([
                                     handDrawFileManager.pushDrawPointsHis(drawPointsHistory)
                                 }
                             },
-                            setCanvasSub: function() {
+                            setCanvasSub: function () {
                                 var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
                                 e("log", "setCanvasSub", " at sub/pages/draw/draw.js:501");
                                 var r = !1;
@@ -4598,7 +4685,7 @@ globalThis["webpackJsonp"].push([
                                     o = t.measureText(c).width;
                                 Number.isNaN(o) && (o = t.measureText(c).width), this.selectModeRange[0] = this.drawCanvas.w - (h - i - o + i), t.fillText(c, h - i - o, (2 * i - n) / 2 + a - i + n), t.setStrokeStyle("white"), t.stroke(), this.selectMode && null == this.selectRect && (t.beginPath(), t.arc(h, a, i - 3, 0, 2 * Math.PI), t.setFillStyle("yellow"), t.fill()), r && t.draw()
                             },
-                            drawSelectRect: function() {
+                            drawSelectRect: function () {
                                 var e = null,
                                     t = null != this.selectRect ? this.selectRect : this.getRect(this.drawPoints);
                                 if (this.selectRect = t, null != t) {
@@ -4611,7 +4698,7 @@ globalThis["webpackJsonp"].push([
                                 }
                                 this.setCanvasSub(e), null != e && e.draw()
                             },
-                            touchEndSub: function(e) {
+                            touchEndSub: function (e) {
                                 var t = this;
                                 null != this.drawTimerSub && (clearInterval(this.drawTimerSub), this.drawTimerSub = null);
                                 var r = this;
@@ -4619,16 +4706,16 @@ globalThis["webpackJsonp"].push([
                                     var n = this.selectRect;
                                     null != n && Math.abs(this.subCanvasStartPoint.x - this.subCanvasEndPoint.x) < 4 && Math.abs(this.subCanvasStartPoint.y - this.subCanvasEndPoint.y) < 4 && (this.subCanvasStartPoint.x < n.left + n.mx || this.subCanvasStartPoint.x > n.left + n.mx + n.width * n.z || this.subCanvasStartPoint.y < n.top + n.my || this.subCanvasStartPoint.y > n.top + n.my + n.height * n.z) && this.resetSelectMode()
                                 }
-                                setTimeout((function() {
+                                setTimeout((function () {
                                     if (r.selectMode) {
                                         r.drawSelectRect();
                                         var e = t.selectRect;
-                                        null == e || 0 == e.mx && 0 == e.my && 1 == e.z && e.lastAng - e.startAng == 0 
-                                        || r.addToHis(), r.reDraw(r.drawPoints)
+                                        null == e || 0 == e.mx && 0 == e.my && 1 == e.z && e.lastAng - e.startAng == 0
+                                            || r.addToHis(), r.reDraw(r.drawPoints)
                                     } else r.setCanvasSub()
                                 }), 1)
                             },
-                            touchMoveSub: function(e) {
+                            touchMoveSub: function (e) {
                                 if (!this.selectClick) {
                                     var t = e.touches[0],
                                         r = t.x,
@@ -4641,9 +4728,9 @@ globalThis["webpackJsonp"].push([
                                         if (!(Math.abs(a) < 5 && Math.abs(i) < 5)) {
                                             this.subCanvasEndPoint.x = r, this.subCanvasEndPoint.y = n;
                                             var c = {
-                                                    w: this.drawCanvas.w - 8,
-                                                    h: this.drawCanvas.h - 8
-                                                },
+                                                w: this.drawCanvas.w - 8,
+                                                h: this.drawCanvas.h - 8
+                                            },
                                                 o = 0,
                                                 l = 0;
                                             if (this.selectMode && null != this.selectRect) {
@@ -4694,25 +4781,25 @@ globalThis["webpackJsonp"].push([
                                     } else this.touchMove(e)
                                 }
                             },
-                            touchStartSub: function(e) {
+                            touchStartSub: function (e) {
                                 var t = this;
                                 null != this.drawTimerSub && (clearInterval(this.drawTimerSub), this.drawTimerSub = null);
                                 var r = this,
                                     n = e.touches[0],
                                     h = n.x,
                                     a = n.y;
-                                if (this.subCanvasStartPoint.x = h, this.subCanvasStartPoint.y = a, this.subCanvasEndPoint.x = h, this.subCanvasEndPoint.y = a, this.zoomObj = !1, 2 === e.touches.length && (this.selectDistance = handDrawFileManager.getDistance(e.touches), this.zoomObj = !0), this.selectClick = !1, this.drawCanvas.w - this.selectModeRange[0] < h && this.drawCanvas.h - this.selectModeRange[1] < a) return this.selectClick = !0, this.selectDistance = null, null != this.selectRect ? this.selectMode = !0 : this.selectMode = !this.selectMode, this.selectLines = [], this.selectRect = null, void(this.selectMode && this.tipOpen());
+                                if (this.subCanvasStartPoint.x = h, this.subCanvasStartPoint.y = a, this.subCanvasEndPoint.x = h, this.subCanvasEndPoint.y = a, this.zoomObj = !1, 2 === e.touches.length && (this.selectDistance = handDrawFileManager.getDistance(e.touches), this.zoomObj = !0), this.selectClick = !1, this.drawCanvas.w - this.selectModeRange[0] < h && this.drawCanvas.h - this.selectModeRange[1] < a) return this.selectClick = !0, this.selectDistance = null, null != this.selectRect ? this.selectMode = !0 : this.selectMode = !this.selectMode, this.selectLines = [], this.selectRect = null, void (this.selectMode && this.tipOpen());
                                 if (this.selectMode) {
                                     if (null != this.selectRect) {
                                         this.selectRect["rotate"] = !1;
                                         var i = handDrawGeometryUtils.getSelectRectInfo(this.selectRect);
                                         this.selectRect["x0"] = i.x0, this.selectRect["y0"] = i.y0, this.selectRect.ang = this.selectRect.ang + this.selectRect.lastAng - this.selectRect.startAng, this.selectRect.startAng = 0, this.selectRect.lastAng = 0;
                                         if (Math.abs(h - i.x0) < 30 && Math.abs(a - i.y0) < 30) return;
-                                        return this.selectRect["rotate"] = !0, this.selectRect.startAng = handDrawGeometryUtils.calcAngle(this.selectRect.x0, this.selectRect.y0, h, a), void(this.selectRect.lastAng = this.selectRect.startAng)
+                                        return this.selectRect["rotate"] = !0, this.selectRect.startAng = handDrawGeometryUtils.calcAngle(this.selectRect.x0, this.selectRect.y0, h, a), void (this.selectRect.lastAng = this.selectRect.startAng)
                                     }
                                     return this.selectPoints = [
                                         [h, a]
-                                    ], this.selectLines = [], void(this.drawTimerSub = setInterval((function() {
+                                    ], this.selectLines = [], void (this.drawTimerSub = setInterval((function () {
                                         if (null != t.selectPoints) {
                                             var e = r.selectPoints[r.selectPoints.length - 1];
                                             if (!(Math.abs(e[0] - r.subCanvasEndPoint.x) < 4 && Math.abs(e[1] - r.subCanvasEndPoint.y) < 4)) {
@@ -4725,7 +4812,7 @@ globalThis["webpackJsonp"].push([
                                         }
                                     }), 20))
                                 }
-                                this.drawMode < -1 || (-1 != this.drawMode ? this.drawTimerSub = setInterval((function() {
+                                this.drawMode < -1 || (-1 != this.drawMode ? this.drawTimerSub = setInterval((function () {
                                     var e = r.subCanvasEndPoint.x - r.subCanvasStartPoint.x,
                                         n = r.subCanvasEndPoint.y - r.subCanvasStartPoint.y;
                                     if (!(Math.abs(e) + Math.abs(n) < 15)) {
@@ -4762,15 +4849,15 @@ globalThis["webpackJsonp"].push([
                                     }
                                 }), 50) : this.touchStart(e))
                             },
-                            checkObjectSelect: function(e) {
+                            checkObjectSelect: function (e) {
                                 if (0 != e.length && 0 != this.selectPoints.length)
                                     for (var t = [this.selectPoints[this.selectPoints.length - 2], this.selectPoints[this.selectPoints.length - 1]], r = 0; r < e.length; r++)
                                         if (this.selectLines.length < r + 1 && this.selectLines.push({
-                                                sel: !1,
-                                                mx0: 0,
-                                                my0: 0,
-                                                color: null
-                                            }), !this.selectLines[r].sel) {
+                                            sel: !1,
+                                            mx0: 0,
+                                            my0: 0,
+                                            color: null
+                                        }), !this.selectLines[r].sel) {
                                             var n = e[r],
                                                 h = n.x0,
                                                 a = n.y0,
@@ -4789,7 +4876,7 @@ globalThis["webpackJsonp"].push([
                                             }
                                         }
                             },
-                            setDrawPointsSelect: function() {
+                            setDrawPointsSelect: function () {
                                 var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0],
                                     t = this.drawPoints;
                                 if (0 != t.length) {
@@ -4803,41 +4890,41 @@ globalThis["webpackJsonp"].push([
                                     this.selectMode = !0
                                 }
                             },
-                            getRect: function(e) {
+                            getRect: function (e) {
                                 if (this.selectDistance = null, 0 == e.length) return null;
                                 if (this.selectLines.length != e.length) return null;
                                 for (var t = !1, r = {
-                                        left: 99999,
-                                        top: 99999,
-                                        right: -99999,
-                                        bottom: -99999
-                                    }, n = 0; n < e.length; n++)
+                                    left: 99999,
+                                    top: 99999,
+                                    right: -99999,
+                                    bottom: -99999
+                                }, n = 0; n < e.length; n++)
                                     if (this.selectLines[n].sel) {
                                         t = !0;
                                         var h = e[n];
                                         r = -1 == h.drawMode ? handDrawGeometryUtils.getLineRect(h, r) : 9999 == h.drawMode ? handDrawGeometryUtils.getTextRect(h, r) : handDrawGeometryUtils.getObjRect(h, r)
                                     } if (t) {
-                                    for (var a = (r.right - r.left) / 2 + r.left, i = (r.bottom - r.top) / 2 + r.top, c = 0; c < e.length; c++)
-                                        if (this.selectLines[c].sel) {
-                                            var o = e[c];
-                                            this.selectLines[c].mx0 = o.x0 - a, this.selectLines[c].my0 = o.y0 - i
-                                        } var s = {
-                                        left: r.left,
-                                        top: r.top,
-                                        width: r.right - r.left,
-                                        height: r.bottom - r.top,
-                                        mx: 0,
-                                        my: 0,
-                                        z: 1
-                                    };
-                                    return s
-                                }
+                                        for (var a = (r.right - r.left) / 2 + r.left, i = (r.bottom - r.top) / 2 + r.top, c = 0; c < e.length; c++)
+                                            if (this.selectLines[c].sel) {
+                                                var o = e[c];
+                                                this.selectLines[c].mx0 = o.x0 - a, this.selectLines[c].my0 = o.y0 - i
+                                            } var s = {
+                                                left: r.left,
+                                                top: r.top,
+                                                width: r.right - r.left,
+                                                height: r.bottom - r.top,
+                                                mx: 0,
+                                                my: 0,
+                                                z: 1
+                                            };
+                                        return s
+                                    }
                                 return null
                             },
-                            operateAciton: function(e) {
+                            operateAciton: function (e) {
                                 this.selectLines.length > 0 ? this.deleteObj() : this.clearDraw(null)
                             },
-                            deleteObj: function() {
+                            deleteObj: function () {
                                 this.addToHis();
                                 for (var t = this.drawPoints.length - 1; t >= 0; t--) {
                                     var r = this.selectLines.length > t && this.selectLines[t].sel & this.selectMode;
@@ -4845,30 +4932,30 @@ globalThis["webpackJsonp"].push([
                                 }
                                 this.resetSelectMode() || this.reDraw(this.drawPoints)
                             },
-                            clearDraw: function(e) {
+                            clearDraw: function (e) {
                                 handDrawFileManager.clearDrawPointsHis(), this.points = [], this.drawPoints = [], this.drawPointCount = 0, this.linePtsSendSn = 0;
                                 var t = uni.createCanvasContext("imgCanvas", this);
                                 t.draw();
                                 var r = uni.createCanvasContext("drawCanvas", this);
                                 r.draw(), this.resetSelectMode() || this.setCanvasSub()
                             },
-                            backDraw: function(t) {
+                            backDraw: function (t) {
                                 if (handDrawFileManager.getDrawPointsHisCount() <= 0) return this.resetSelectMode(), void this.clearDraw();
                                 var r = handDrawFileManager.popDrawPointsHis();
-                                e("log", "his", r, " at sub/pages/draw/draw.js:981"), this.drawPoints = r.data, 
-                                this.drawPointCount = handDrawGeometryUtils.getdrawPointsCnt(this.drawPoints), 
-                                this.resetSelectMode() || this.reDraw(this.drawPoints)
+                                e("log", "his", r, " at sub/pages/draw/draw.js:981"), this.drawPoints = r.data,
+                                    this.drawPointCount = handDrawGeometryUtils.getdrawPointsCnt(this.drawPoints),
+                                    this.resetSelectMode() || this.reDraw(this.drawPoints)
                             },
-                            reDraw: function(points) {
+                            reDraw: function (points) {
                                 var canvasContext = uni.createCanvasContext("drawCanvas", this);
                                 canvasContext.setLineWidth(1);
                                 var drawConfig = {
-                                        ctx: canvasContext,
-                                        w: this.drawCanvas.w,
-                                        h: this.drawCanvas.h,
-                                        draw_line_type: j,
-                                        colorSeg: this.colorSeg
-                                    },
+                                    ctx: canvasContext,
+                                    w: this.drawCanvas.w,
+                                    h: this.drawCanvas.h,
+                                    draw_line_type: j,
+                                    colorSeg: this.colorSeg
+                                },
                                     selectionState = {
                                         selectRect: this.selectRect,
                                         selectLines: this.selectLines,
@@ -4877,14 +4964,14 @@ globalThis["webpackJsonp"].push([
                                     drawResults = handDrawGeometryUtils.drawPs(points, drawConfig, selectionState);
                                 return canvasContext.draw(!0), this.selectMode || this.setCanvasSub(), drawResults
                             },
-                            btnColorChange: function(e) {
+                            btnColorChange: function (e) {
                                 var t = parseInt(e.currentTarget.dataset.tag);
                                 this.lineColor = t;
                                 for (var r = 0; r < this.selectLines.length; r++) this.selectLines[r].color = this.lineColor;
-                                this.selectLines.length > 0 && (this.selectRect.ang = this.selectRect.lastAng - this.selectRect.startAng + this.selectRect.ang, 
+                                this.selectLines.length > 0 && (this.selectRect.ang = this.selectRect.lastAng - this.selectRect.startAng + this.selectRect.ang,
                                     this.selectRect.startAng = this.selectRect.lastAng, this.reDraw(this.drawPoints))
                             },
-                            touchStart: function(e) {
+                            touchStart: function (e) {
                                 this.points = null, this.points = [], this.lastLinePts = [];
                                 var t = e.touches[0];
                                 this.lastPoint.x = t.x, this.lastPoint.y = t.y, this.lastPoint.time = 0;
@@ -4903,7 +4990,7 @@ globalThis["webpackJsonp"].push([
                                     time: (new Date).getTime()
                                 }), r.moveTo(this.lastPoint.x, this.lastPoint.y)
                             },
-                            touchMove: function(e) {
+                            touchMove: function (e) {
                                 var t = e.touches[0],
                                     r = {
                                         x: t.x,
@@ -4926,7 +5013,7 @@ globalThis["webpackJsonp"].push([
                                     }), this.points.push([this.lastPoint.x, this.lastPoint.y]), this.lineCtx.lineTo(this.lastPoint.x, this.lastPoint.y), this.lineCtx.stroke(), this.lineCtx.draw(!0), this.lineCtx.moveTo(this.lastPoint.x, this.lastPoint.y)
                                 }
                             },
-                            sendLinePts: function(t) {
+                            sendLinePts: function (t) {
                                 var r = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
                                 if (1 != this.sendLineMode) return !0;
                                 if (t.length > 0 && (r || (new Date).getTime() - t[0].time > 50)) {
@@ -4947,14 +5034,14 @@ globalThis["webpackJsonp"].push([
                                 }
                                 return !1
                             },
-                            sendLineCmd: function(e, t) {
+                            sendLineCmd: function (e, t) {
                                 var r = this,
                                     n = bleDeviceControlUtils.gosend(!1, e);
-                                return n && (this.linePtsSendSn = this.linePtsSendSn + 1), !t || n ? n : (setTimeout((function() {
+                                return n && (this.linePtsSendSn = this.linePtsSendSn + 1), !t || n ? n : (setTimeout((function () {
                                     r.sendLineCmd(e, t)
                                 }), 10), !1)
                             },
-                            touchEnd: function(t) {
+                            touchEnd: function (t) {
                                 this.addToHis(), this.sendLinePts(this.lastLinePts, !0);
                                 var r = uni.createCanvasContext("drawCanvas", this),
                                     n = handDrawGeometryUtils.covertPoints(this.points, this.lineColor, this.drawCanvas);
@@ -4968,20 +5055,20 @@ globalThis["webpackJsonp"].push([
                                 };
                                 handDrawGeometryUtils.drawLine(h, n), this.drawPoints.push(n), r.draw(!0)
                             },
-                            sendComplete: function(e, t) {
+                            sendComplete: function (e, t) {
                                 if (0 == e) {
                                     this.showSending = !0;
                                     var r = uni.createCanvasContext("progressCanvas", this);
                                     bleDeviceControlUtils.drawProgress(r, 300 * this.scUnit, t)
                                 } else this.showSending = !1, this.lastCompleteTime = (new Date).getTime()
                             },
-                            parmClose: function(e) {
+                            parmClose: function (e) {
                                 this.$refs.popup.close(), this.showCanvas = !0, this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("88")
                             },
-                            chClick: function(e) {
+                            chClick: function (e) {
                                 this.cnfIdx = e, this.refreshChDraw()
                             },
-                            drawChCanvas: function(e, t, r, n) {
+                            drawChCanvas: function (e, t, r, n) {
                                 var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : null,
                                     a = uni.createCanvasContext("chCanvas", this),
                                     i = e / 3;
@@ -5032,16 +5119,16 @@ globalThis["webpackJsonp"].push([
                                 }
                                 a.draw()
                             },
-                            addCnfValusAndSend: function(e) {
+                            addCnfValusAndSend: function (e) {
                                 var t = this.pisObj.cnfValus[this.cnfIdx] + Math.floor(e);
-                                t = t < 0 ? 0 : t, t = t > this.chDraw.max 
-                                    ? this.chDraw.max 
-                                    : t, this.pisObj.cnfValus[this.cnfIdx] != t 
-                                        && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), 
-                                        this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), 
+                                t = t < 0 ? 0 : t, t = t > this.chDraw.max
+                                    ? this.chDraw.max
+                                    : t, this.pisObj.cnfValus[this.cnfIdx] != t
+                                    && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t),
+                                        this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(),
                                         this.sendLastCmd("66"))
                             },
-                            callBackCh: function(e, t, r, n, h, a, i, c) {
+                            callBackCh: function (e, t, r, n, h, a, i, c) {
                                 if (this.cnfIdx in this.pisObjNote) {
                                     var o = 2 * this.scUnit,
                                         s = 10 * o;
@@ -5061,18 +5148,18 @@ globalThis["webpackJsonp"].push([
                                     e.stroke()
                                 }
                             },
-                            refreshChDraw: function() {
+                            refreshChDraw: function () {
                                 var e = this.pisObj.cnfValus[this.cnfIdx];
                                 this.drawChCanvas(this.chDraw.w, this.chDraw.h, this.chDraw.max, e, this.callBackCh)
                             },
-                            chTouchstart: function(e) {
+                            chTouchstart: function (e) {
                                 var t = e.touches[0];
                                 this.chBeginPoint = {
                                     x: t.x,
                                     y: t.y
                                 }, this.chEndPoint = null, this.lastRefresh = 0
                             },
-                            chTouchmove: function(e) {
+                            chTouchmove: function (e) {
                                 var t = e.touches[0];
                                 this.chEndPoint = {
                                     x: t.x,
@@ -5087,55 +5174,55 @@ globalThis["webpackJsonp"].push([
                                     }, this.addCnfValusAndSend(n)), this.lastRefresh = r
                                 }
                             },
-                            chTouchend: function(e) {
+                            chTouchend: function (e) {
                                 if (null == this.chEndPoint) {
                                     var t = this.chBeginPoint.y > this.chCanvas.h / 2 ? -1 : 1;
                                     this.addCnfValusAndSend(t)
                                 }
                                 this.chEndPoint = null
                             },
-                            slPointTimeChange: function(e) {
+                            slPointTimeChange: function (e) {
                                 var t = e.detail.value;
                                 this.pisObj.txPointTime = t, this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("88")
                             },
-                            parmReset: function(e) {
+                            parmReset: function (e) {
                                 this.$set(this.pisObj, "cnfValus", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd("66")
                             },
-                            drawDone: function(t) {
+                            drawDone: function (t) {
                                 if (!(this.drawPointCount <= 0)) {
                                     var r = (new Date).getTime();
                                     this.resetSelectMode(), e("log", "Send click time", r - this.lastCompleteTime, " at sub/pages/draw/draw.js:1355"),
-                                     r - this.lastCompleteTime > 300 
-                                        ? this.sendCmd() 
-                                        : e("log", "Send click too frequently", " at sub/pages/draw/draw.js:1357")
+                                        r - this.lastCompleteTime > 300
+                                            ? this.sendCmd()
+                                            : e("log", "Send click too frequently", " at sub/pages/draw/draw.js:1357")
                                 }
                             },
-                            parmSet: function(e) {
+                            parmSet: function (e) {
                                 this.showCanvas = !1, this.$refs.popup.open("bottom");
                                 var t = this,
                                     r = uni.createSelectorQuery().in(t);
-                                this.$nextTick((function() {
-                                    r.select("#chCanvas").boundingClientRect((function(e) {
+                                this.$nextTick((function () {
+                                    r.select("#chCanvas").boundingClientRect((function (e) {
                                         t.chCanvas.w = e.width, t.chCanvas.h = e.height;
                                         var r = .9 * t.chCanvas.h;
                                         t.chPer = r / 255, t.chDraw.w = t.chCanvas.w / 3, t.chDraw.h = r, t.refreshChDraw()
                                     })).exec()
                                 }))
                             },
-                            drawAddClick: function(t) {
+                            drawAddClick: function (t) {
                                 var r = this,
                                     n = [this.$t("\u53e6\u5b58\u6587\u4ef6"), this.$t("\u9009\u62e9\u6587\u4ef6")];
                                 this.currSelectedFile && n.push(this.$t("\u4fdd\u5b58\u6587\u4ef6")), uni.showActionSheet({
                                     itemList: n,
-                                    success: function(e) {
+                                    success: function (e) {
                                         0 == e.tapIndex && r.drawAddAddClick(), 1 == e.tapIndex && r.drawAddSelectClick(), 2 == e.tapIndex && r.drawAddSaveClick()
                                     },
-                                    fail: function(t) {
+                                    fail: function (t) {
                                         e("log", t.errMsg, " at sub/pages/draw/draw.js:1392")
                                     }
                                 })
                             },
-                            saveDrawPic: function(fileName) {
+                            saveDrawPic: function (fileName) {
                                 var r = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                                     n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : -1;
                                 e("log", "saveDrawPic", fileName, JSON.stringify(this.pisObj), " at sub/pages/draw/draw.js:1398");
@@ -5143,55 +5230,55 @@ globalThis["webpackJsonp"].push([
                                     i = handDrawGeometryUtils.reSizeDrawPoints(h.drawPoints, this.drawCanvas.w, this.drawCanvas.h),
                                     c = JSON.parse(JSON.stringify(h.pisObj));
                                 n >= 0 && (c.cnfValus[12] = n), handDrawFileManager.saveHandDrawImg(fileName, "", i, h.drawPointCount, c, h.features, r),
-                                r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = fileName)
+                                    r || (app.globalData.showModalTips(h.$t("\u4fdd\u5b58\u6210\u529f")), h.currSelectedFile = fileName)
                             },
-                            saveDeskTop: function() {
+                            saveDeskTop: function () {
                                 this.saveDrawPic("saveDeskTopFile_001", !0)
                             },
-                            restoreDeskTop: function() {
+                            restoreDeskTop: function () {
                                 var e = this.getDrawByName("saveDeskTopFile_001", !0);
                                 e && (this.needReDraw = !1, this.reDraw(this.drawPoints))
                             },
-                            picNameInputCancelClick: function(e) {
+                            picNameInputCancelClick: function (e) {
                                 this.showCanvas = !0, this.$refs.classNamePopup.close()
                             },
-                            picNameNewInput: function(e) {
+                            picNameNewInput: function (e) {
                                 this.drawAddFileName = e.detail.value
                             },
-                            picNameInputOkClick: function(e) {
+                            picNameInputOkClick: function (e) {
                                 var t = handDrawFileManager.combiFileName(this.handDrawClass[this.handDrawClassIdx], this.drawAddFileName);
                                 if ("" == t) uni.showModal({
                                     content: this.$t("\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a"),
                                     showCancel: !1,
-                                    success: function(e) {},
-                                    fail: function(e) {},
-                                    complete: function() {}
+                                    success: function (e) { },
+                                    fail: function (e) { },
+                                    complete: function () { }
                                 });
                                 else {
                                     var r = handDrawFileManager.getHandDrawImg(t);
                                     r ? uni.showModal({
                                         content: this.$t("\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u8bf7\u91cd\u65b0\u8f93\u5165"),
                                         showCancel: !1,
-                                        success: function(e) {},
-                                        fail: function(e) {}
+                                        success: function (e) { },
+                                        fail: function (e) { }
                                     }) : (this.saveDrawPic(t, !1, 3), this.picNameInputCancelClick(null))
                                 }
                             },
-                            checkAndAddImagFile: function(t) {
+                            checkAndAddImagFile: function (t) {
                                 var r = this;
                                 uni.showModal({
                                     title: this.$t("\u8bf7\u8f93\u5165\u6587\u4ef6\u540d"),
                                     placeholderText: t,
                                     editable: !0,
-                                    success: function(n) {
+                                    success: function (n) {
                                         if (n.confirm) {
                                             var h = "" == n.content ? t : n.content;
                                             if ("" == h) uni.showModal({
                                                 content: r.$t("\u6587\u4ef6\u540d\u4e0d\u80fd\u4e3a\u7a7a"),
                                                 showCancel: !1,
-                                                success: function(e) {},
-                                                fail: function(e) {},
-                                                complete: function() {
+                                                success: function (e) { },
+                                                fail: function (e) { },
+                                                complete: function () {
                                                     r.checkAndAddImagFile(t)
                                                 }
                                             });
@@ -5200,26 +5287,26 @@ globalThis["webpackJsonp"].push([
                                                 a ? uni.showModal({
                                                     content: r.$t("\u6587\u4ef6\u5df2\u5b58\u5728\uff0c\u662f\u5426\u7ee7\u7eed"),
                                                     showCancel: !0,
-                                                    success: function(e) {
+                                                    success: function (e) {
                                                         e.confirm ? r.saveDrawPic(h) : r.checkAndAddImagFile(t)
                                                     },
-                                                    fail: function(e) {}
+                                                    fail: function (e) { }
                                                 }) : r.saveDrawPic(h)
                                             }
                                         } else n.cancel && e("log", "\u7528\u6237\u70b9\u51fb\u53d6\u6d88", " at sub/pages/draw/draw.js:1501")
                                     }
                                 })
                             },
-                            drawAddAddClick: function() {
+                            drawAddAddClick: function () {
                                 if (0 != this.drawPointCount) {
                                     var e = handDrawFileManager.getHandDrawNames();
                                     e.count >= 50 ? app.globalData.showModalTips(this.$t("\u5df2\u8d85\u8fc7\u6700\u5927\u6587\u4ef6\u6570\u91cf ") + 50, !0) : e.noSpace ? app.globalData.showModalTips(this.$t("\u5b58\u50a8\u7a7a\u95f4\u4e0d\u8db3"), !0) : (this.handDrawClassName = handDrawFileManager.getHandDrawClassName(), this.$set(this, "handDrawClassIdx", 0), this.drawAddFileName = handDrawFileManager.getNewFileName(), this.showCanvas = !1, this.$refs.classNamePopup.open("center"))
                                 } else app.globalData.showModalTips(this.$t("\u8bf7\u5148\u7ed8\u5236\u56fe\u6848"))
                             },
-                            handDrawClassPickerChange: function(e) {
+                            handDrawClassPickerChange: function (e) {
                                 this.handDrawClassIdx = parseInt(e.detail.value)
                             },
-                            getDrawByName: function(e) {
+                            getDrawByName: function (e) {
                                 var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
                                     r = handDrawFileManager.getHandDrawImg(e, t);
                                 if (r) {
@@ -5232,72 +5319,72 @@ globalThis["webpackJsonp"].push([
                                 }
                                 return !1
                             },
-                            drawAddSaveClick: function() {
+                            drawAddSaveClick: function () {
                                 if (0 != this.drawPointCount) {
                                     var e = this;
                                     uni.showModal({
                                         content: e.$t("\u4fdd\u5b58\u6587\u4ef6") + this.currSelectedFile + "?",
                                         showCancel: !0,
-                                        success: function(t) {
+                                        success: function (t) {
                                             t.confirm && e.saveDrawPic(e.currSelectedFile)
                                         },
-                                        fail: function(e) {}
+                                        fail: function (e) { }
                                     })
                                 } else app.globalData.showModalTips(this.$t("\u8bf7\u5148\u7ed8\u5236\u56fe\u6848"))
                             },
-                            drawAddSelectClick: function() {
+                            drawAddSelectClick: function () {
                                 var t = this;
                                 uni.navigateTo({
                                     url: "/sub/pages/files/files",
                                     events: {
-                                        acceptDataFromOpenedPage: function(r) {
+                                        acceptDataFromOpenedPage: function (r) {
                                             e("log", "acceptDataFromOpenedPage", r, " at sub/pages/draw/draw.js:1580"), t.currSelectedFile = r.fileName, t.getDrawByName(r.fileName)
                                         }
                                     },
-                                    success: function(e) {
+                                    success: function (e) {
                                         e.eventChannel.emit("acceptDataFromOpenerPage", {
                                             callFrom: "draw"
                                         })
                                     },
-                                    fail: function(t) {
+                                    fail: function (t) {
                                         e("log", t, " at sub/pages/draw/draw.js:1589")
                                     }
                                 })
                             },
-                            tipsCheckboxChange: function(e) {
+                            tipsCheckboxChange: function (e) {
                                 var t = e.detail.value;
                                 this.showTips = !t.includes("tips"), app.globalData.saveTipsParm(this.showTips)
                             },
-                            tipOpen: function() {
+                            tipOpen: function () {
                                 this.showTips && (this.showCanvas = !1, this.$refs.tips.open("center"))
                             },
-                            tipsClose: function(e) {
+                            tipsClose: function (e) {
                                 this.$refs.tips.close(), this.showCanvas = !0
                             },
-                            onBtnSetTouchStart: function(e) {
+                            onBtnSetTouchStart: function (e) {
                                 this.startPosition.x = e.touches[0].clientX - this.position.x, this.startPosition.y = e.touches[0].clientY - this.position.y
                             },
-                            onBtnSetTouchMove: function(e) {
+                            onBtnSetTouchMove: function (e) {
                                 this.position.x = e.touches[0].clientX - this.startPosition.x, this.position.y = e.touches[0].clientY - this.startPosition.y
                             },
-                            onBtnSetTouchEnd: function() {},
-                            onBtnSetClick: function(e) {
+                            onBtnSetTouchEnd: function () { },
+                            onBtnSetClick: function (e) {
                                 uni.navigateTo({
                                     url: "/pages/subset/subset"
                                 })
                             },
-                            chooseImag: function(t) {
+                            chooseImag: function (t) {
                                 var r = this;
                                 this.resetSelectMode(), app.globalData.img_selecting = !0, uni.chooseImage({
                                     count: 1,
                                     sizeType: ["original", "compressed"],
                                     sourceType: ["album", "camera"],
-                                    success: function(e) {
+                                    success: function (e) {
                                         var t = e.tempFilePaths[0];
                                         uni.navigateTo({
                                             url: "/sub/pages/cover/cover",
                                             events: {
-                                                acceptDataFromOpenedPage: function(e) {
+                                                acceptDataFromOpenedPage: function (e) {
                                                     if (null != e) {
                                                         if (0 == e.mode && null != e.data) {
                                                             var t = uni.createCanvasContext("imgCanvas", r);
@@ -5318,12 +5405,12 @@ globalThis["webpackJsonp"].push([
                                                     }
                                                 }
                                             },
-                                            success: function(e) {
+                                            success: function (e) {
                                                 e.eventChannel.emit("acceptDataFromOpenerPage", t)
                                             }
                                         })
                                     },
-                                    complete: function(t) {
+                                    complete: function (t) {
                                         e("log", "app.globalData.img_selecting", app.globalData.img_selecting, " at sub/pages/draw/draw.js:1668"), app.globalData.img_selecting = !1
                                     }
                                 })
@@ -5334,9 +5421,9 @@ globalThis["webpackJsonp"].push([
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
 
-        "scenePatternEditorPageComponent ": function(e, t, r) {
+        "scenePatternEditorPageComponent ": function (e, t, r) {
             "use strict";
-            (function(e) {
+            (function (e) {
                 var n = r("esModuleInteropHelper");
                 Object.defineProperty(t, "__esModule", {
                     value: !0
@@ -5347,7 +5434,7 @@ globalThis["webpackJsonp"].push([
                     c = r("bleDeviceControlUtils "),
                     o = ["black", "red", "green", "blue", "yellow", "#00FFFF", "purple", "white"],
                     s = {
-                        data: function() {
+                        data: function () {
                             var e = a.globalData.getDeviceFeatures(),
                                 t = e.xyCnf ? 18 : 12;
                             return {
@@ -5593,16 +5680,16 @@ globalThis["webpackJsonp"].push([
                         },
                         computed: {
                             playTime: {
-                                get: function() {
+                                get: function () {
                                     return this.pisObj.playTime
                                 },
-                                set: function(e) {
+                                set: function (e) {
                                     var t = parseInt(e),
                                         r = this.pisObj.playTime;
                                     if (!(r > 25.5))
                                         if (this.$set(this.pisObj, "playTime", t), t > 25.5) {
                                             var n = this;
-                                            setTimeout((function() {
+                                            setTimeout((function () {
                                                 n.$set(n.pisObj, "playTime", r)
                                             }), 100)
                                         } else this.sendCmd()
@@ -5612,35 +5699,35 @@ globalThis["webpackJsonp"].push([
                         components: {
                             uniPopup: h.default
                         },
-                        onLoad: function(t) {
+                        onLoad: function (t) {
                             e("log", "onload", " at sub2/pages/pis/pis.js:133");
                             var r = this.getPicArray();
                             this.pisObjArray = r.getPicArrayInfo(), e("log", "pisObjArray", this.pisObjArray, " at sub2/pages/pis/pis.js:136"), this.initData();
                             var n = this,
                                 h = this.getOpenerEventChannel();
-                            h.on("acceptDataFromOpenerPage", (function(e) {
-                                n.pisObj = e.pis, n.pisIdx = e.idx, n.imgArrays = e.imgArrays, n.defaultPis = e.defaultPis, n.$nextTick((function() {
-                                    n.sendCmd(), setTimeout((function() {
+                            h.on("acceptDataFromOpenerPage", (function (e) {
+                                n.pisObj = e.pis, n.pisIdx = e.idx, n.imgArrays = e.imgArrays, n.defaultPis = e.defaultPis, n.$nextTick((function () {
+                                    n.sendCmd(), setTimeout((function () {
                                         var e = uni.createSelectorQuery().in(n);
-                                        e.select("#myCanvas").boundingClientRect((function(e) {
+                                        e.select("#myCanvas").boundingClientRect((function (e) {
                                             n.myCanvasSize.w = e.width, n.myCanvasSize.h = e.height, n.myCanvasDraw()
                                         })).exec(), n.initChCanvas(), n.startImageCount()
                                     }), 100)
                                 }))
                             }))
                         },
-                        onUnload: function() {
+                        onUnload: function () {
                             var e = this.getOpenerEventChannel();
                             e.emit("acceptDataFromOpenedPage", {
                                 pis: this.pisObj,
                                 imgArrays: this.imgArrays
                             })
                         },
-                        onReady: function() {},
-                        onShow: function() {},
-                        onHide: function() {},
+                        onReady: function () { },
+                        onShow: function () { },
+                        onHide: function () { },
                         methods: {
-                            getPicArray: function() {
+                            getPicArray: function () {
                                 if (this.features.ilda) {
                                     var e = r("lineShapes");
                                     return e
@@ -5648,7 +5735,7 @@ globalThis["webpackJsonp"].push([
                                 var t = r("shapePatternTemplates");
                                 return t
                             },
-                            sendCmd: function() {
+                            sendCmd: function () {
                                 var e = (new Date).getTime(),
                                     t = i.getPisCmdStr(this.pisIdx, this.pisObj, {
                                         features: this.features
@@ -5656,7 +5743,7 @@ globalThis["webpackJsonp"].push([
                                     r = c.gosend(!1, t);
                                 return r && (this.lastSendtime = e), r
                             },
-                            initData: function() {
+                            initData: function () {
                                 this.features.ilda && (this.pisObjNote[1] = [
                                     [25, this.$t("\u76f4\u7ebf\u7c7b\u56fe\u6848")],
                                     [25, this.$t("\u5706\u5f27\u7c7b\u56fe\u6848")],
@@ -5689,34 +5776,34 @@ globalThis["webpackJsonp"].push([
                                     [8, this.$t("\u989c\u8272\u6e10\u7ed8")]
                                 ])
                             },
-                            initChCanvas: function() {
+                            initChCanvas: function () {
                                 var e = this,
                                     t = uni.createSelectorQuery().in(e);
-                                t.select("#chCanvas").boundingClientRect((function(t) {
+                                t.select("#chCanvas").boundingClientRect((function (t) {
                                     if (e.chCanvas.w != t.width || e.chCanvas.h != t.height) {
                                         e.chCanvas.w = t.width, e.chCanvas.h = t.height;
                                         var r = .9 * e.chCanvas.h;
-                                        e.chPer = r / 255, e.chDraw.w = e.chCanvas.w / 3, e.chDraw.h = r, e.refreshChDraw(), setTimeout((function() {
+                                        e.chPer = r / 255, e.chDraw.w = e.chCanvas.w / 3, e.chDraw.h = r, e.refreshChDraw(), setTimeout((function () {
                                             e.initChCanvas()
                                         }), 100)
                                     }
                                 })).exec()
                             },
-                            startImageCount: function() {
+                            startImageCount: function () {
                                 var e = this;
-                                setInterval((function() {
+                                setInterval((function () {
                                     e.popupShow && 4 == e.pisSelectedGroup && (e.imageShowCount = e.imageShowCount + 1, e.imageShowCount >= 1e3 && (e.imageShowCount = 0))
                                 }), 400)
                             },
-                            refreshChDraw: function() {
+                            refreshChDraw: function () {
                                 var e = this.pisObj.cnfValus[this.cnfIdx];
                                 this.drawChCanvas(this.chDraw.w, this.chDraw.h, this.chDraw.max, e, this.callBackCh)
                             },
-                            lineTheta: function(e, t, r) {
+                            lineTheta: function (e, t, r) {
                                 var n = {
-                                        x: e[0] - t[0],
-                                        y: e[1] - t[1]
-                                    },
+                                    x: e[0] - t[0],
+                                    y: e[1] - t[1]
+                                },
                                     h = {
                                         x: r[0] - t[0],
                                         y: r[1] - t[1]
@@ -5727,7 +5814,7 @@ globalThis["webpackJsonp"].push([
                                     o = Math.acos(a / (i * c));
                                 return o
                             },
-                            myCanvasDraw: function() {
+                            myCanvasDraw: function () {
                                 if (this.popupShow) this.myCanvasClear();
                                 else {
                                     var e = this,
@@ -5751,33 +5838,33 @@ globalThis["webpackJsonp"].push([
                                         var d = i[h].arr[n];
                                         this.imageDrawOffset >= 0 && (d = i[h].arr[n + this.imageDrawOffset]);
                                         var b = c / 800 * .8;
-                                        this.drawObj(t, d, o, s, b), t.draw(), this.imageDrawOffset >= 0 && setTimeout((function() {
+                                        this.drawObj(t, d, o, s, b), t.draw(), this.imageDrawOffset >= 0 && setTimeout((function () {
                                             e.myCanvasDraw()
                                         }), 400)
                                     }
                                 }
                             },
-                            drawABtag: function(e, t, r, n, h) {
+                            drawABtag: function (e, t, r, n, h) {
                                 e.beginPath(), e.setFillStyle("red"), e.setStrokeStyle("red"), e.setFontSize(h), e.strokeText(t, r - e.measureText(t).width / 2, n + h / 3), e.stroke(), e.fill()
                             },
-                            sendLastCmd: function() {
+                            sendLastCmd: function () {
                                 var e = this;
-                                e.lastCmdTime <= e.lastSendtime || setTimeout((function() {
+                                e.lastCmdTime <= e.lastSendtime || setTimeout((function () {
                                     e.lastCmdTime <= e.lastSendtime || (e.sendCmd(), e.lastCmdTime > e.lastSendtime && e.sendLastCmd())
                                 }), 10)
                             },
-                            addCnfValusAndSend: function(e) {
+                            addCnfValusAndSend: function (e) {
                                 var t = this.pisObj.cnfValus[this.cnfIdx] + Math.floor(e);
                                 t = t < 0 ? 0 : t, t = t > this.chDraw.max ? this.chDraw.max : t, this.pisObj.cnfValus[this.cnfIdx] != t && (this.$set(this.pisObj.cnfValus, this.cnfIdx, t), this.refreshChDraw(), this.lastCmdTime = (new Date).getTime(), this.sendLastCmd(), 0 != this.cnfIdx && 1 != this.cnfIdx || this.myCanvasDraw())
                             },
-                            chTouchstart: function(e) {
+                            chTouchstart: function (e) {
                                 var t = e.touches[0];
                                 this.chBeginPoint = {
                                     x: t.x,
                                     y: t.y
                                 }, this.chEndPoint = null, this.lastRefresh = 0
                             },
-                            chTouchmove: function(e) {
+                            chTouchmove: function (e) {
                                 var t = e.touches[0];
                                 this.chEndPoint = {
                                     x: t.x,
@@ -5792,14 +5879,14 @@ globalThis["webpackJsonp"].push([
                                     }, this.addCnfValusAndSend(n)), this.lastRefresh = r
                                 }
                             },
-                            chTouchend: function(e) {
+                            chTouchend: function (e) {
                                 if (null == this.chEndPoint) {
                                     var t = this.chBeginPoint.y > this.chCanvas.h / 2 ? -1 : 1;
                                     this.addCnfValusAndSend(t)
                                 }
                                 this.chEndPoint = null
                             },
-                            callBackCh: function(e, t, r, n, h, a, i, c) {
+                            callBackCh: function (e, t, r, n, h, a, i, c) {
                                 if (this.cnfIdx in this.pisObjNote) {
                                     var o = 2 * this.scUnit,
                                         s = 10 * o,
@@ -5822,7 +5909,7 @@ globalThis["webpackJsonp"].push([
                                     e.stroke()
                                 }
                             },
-                            drawChCanvas: function(e, t, r, n) {
+                            drawChCanvas: function (e, t, r, n) {
                                 var h = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : null,
                                     a = uni.createCanvasContext("chCanvas", this),
                                     i = e / 3;
@@ -5873,10 +5960,10 @@ globalThis["webpackJsonp"].push([
                                 }
                                 a.draw()
                             },
-                            chClick: function(e) {
+                            chClick: function (e) {
                                 this.cnfIdx = e, this.refreshChDraw()
                             },
-                            drawObj: function(e, t, r, n, h) {
+                            drawObj: function (e, t, r, n, h) {
                                 e.beginPath();
                                 for (var a = 0; a < t.length; a++) {
                                     var i = [];
@@ -5895,15 +5982,15 @@ globalThis["webpackJsonp"].push([
                                 }
                                 e.fill()
                             },
-                            pisCanvasClear: function() {
+                            pisCanvasClear: function () {
                                 var e = uni.createCanvasContext("pisCanvas", this);
                                 e.draw()
                             },
-                            myCanvasClear: function() {
+                            myCanvasClear: function () {
                                 var e = uni.createCanvasContext("myCanvas", this);
                                 e.draw()
                             },
-                            createImg: function(t, r, n) {
+                            createImg: function (t, r, n) {
                                 if (this.pisSelectedGroup == t) {
                                     var h = this;
                                     if (0 == h.imgArrays.length)
@@ -5914,38 +6001,38 @@ globalThis["webpackJsonp"].push([
                                     if (this.popupShow)
                                         if (e("log", "group, idx, pisObjArray[group]", t, r, n[t], " at sub2/pages/pis/pis.js:643"), r >= n[t].arr.length || "" != this.imgArrays[t][this.imgArrays[t].length - 1]) h.showPisCanvas = !1;
                                         else if ("" == this.imgArrays[t][r]) {
-                                        this.loading = r;
-                                        var c = uni.createCanvasContext("pisCanvas", h);
-                                        c.rect(0, 0, 100, 100), c.setFillStyle("#1F2B38"), c.fill();
-                                        var o = n[t].arr[r];
-                                        this.drawObj(c, o, 50, 50, .1), c.draw(), this.$nextTick((function() {
-                                            uni.canvasToTempFilePath({
-                                                canvasId: "pisCanvas",
-                                                success: function(e) {
-                                                    var a = e.tempFilePath;
-                                                    h.generatedImage = a, h.$set(h.imgArrays[t], r, a), h.createImg(t, ++r, n)
-                                                },
-                                                fail: function(e) {}
-                                            })
-                                        }))
-                                    } else h.createImg(t, ++r, n)
+                                            this.loading = r;
+                                            var c = uni.createCanvasContext("pisCanvas", h);
+                                            c.rect(0, 0, 100, 100), c.setFillStyle("#1F2B38"), c.fill();
+                                            var o = n[t].arr[r];
+                                            this.drawObj(c, o, 50, 50, .1), c.draw(), this.$nextTick((function () {
+                                                uni.canvasToTempFilePath({
+                                                    canvasId: "pisCanvas",
+                                                    success: function (e) {
+                                                        var a = e.tempFilePath;
+                                                        h.generatedImage = a, h.$set(h.imgArrays[t], r, a), h.createImg(t, ++r, n)
+                                                    },
+                                                    fail: function (e) { }
+                                                })
+                                            }))
+                                        } else h.createImg(t, ++r, n)
                                 }
                             },
-                            pisCanvasDraw: function(e) {
+                            pisCanvasDraw: function (e) {
                                 this.showPisCanvas && this.createImg(this.pisSelectedGroup, 0, e)
                             },
-                            doPisCanvasDraw: function(e) {
+                            doPisCanvasDraw: function (e) {
                                 var t = this;
-                                setTimeout((function() {
+                                setTimeout((function () {
                                     var r = uni.createSelectorQuery().in(t);
-                                    r.select("#imageListView").boundingClientRect((function(r) {
-                                        null != r ? (t.imageListViewHeight = r.height - 30, setTimeout((function() {
+                                    r.select("#imageListView").boundingClientRect((function (r) {
+                                        null != r ? (t.imageListViewHeight = r.height - 30, setTimeout((function () {
                                             t.pisCanvasDraw(e)
                                         }), 10)) : t.doPisCanvasDraw(e)
                                     })).exec()
                                 }), 10)
                             },
-                            groupBtnClick: function(e) {
+                            groupBtnClick: function (e) {
                                 if (this.pisSelectedGroup != e) {
                                     this.pisSelectedGroup = e, this.pisSelectedIdx = -1, this.pisSelectedGroup == this.pisObj.cnfValus[1] && (this.pisSelectedIdx = this.pisObj.cnfValus[0]), this.showPisCanvas = this.checkIfShowPis(e);
                                     var t = this.getPicArray(),
@@ -5953,7 +6040,7 @@ globalThis["webpackJsonp"].push([
                                     this.doPisCanvasDraw(r)
                                 }
                             },
-                            checkIfShowPis: function(e) {
+                            checkIfShowPis: function (e) {
                                 if (5 == e || 6 == e) return !1;
                                 if (0 == this.imgArrays.length) return !0;
                                 if (0 == this.imgArrays[e].length) return !0;
@@ -5961,15 +6048,15 @@ globalThis["webpackJsonp"].push([
                                     if ("" == this.imgArrays[e][t]) return !0;
                                 return !1
                             },
-                            cancelBtnClick: function(e) {
+                            cancelBtnClick: function (e) {
                                 this.popupShow = !1, this.pisCanvasClear(), this.$refs.popup.close(), this.myCanvasDraw(), this.sendCmd()
                             },
-                            okBtnClick: function(e) {
+                            okBtnClick: function (e) {
                                 this.popupShow = !1, this.pisCanvasClear(), this.$refs.popup.close();
                                 var t = this.convertPicIdxTo255(this.pisSelectedGroup, this.pisSelectedIdx);
                                 this.$set(this.pisObj.cnfValus, 0, t.idx), this.$set(this.pisObj.cnfValus, 1, t.group), this.refreshChDraw(), this.myCanvasDraw(), this.sendCmd()
                             },
-                            convertPic255ToIdx: function(e, t) {
+                            convertPic255ToIdx: function (e, t) {
                                 var r = 0,
                                     n = 0;
                                 return this.features.ilda ? (r = Math.floor(e / 25), r > 9 && (r = 9), n = 0, 0 != r && 1 != r || (n = Math.floor(t / 4)), 2 != r && 3 != r || (n = Math.floor(t / 6)), 5 != r && 6 != r || (n = Math.floor(t / 5))) : (r = Math.floor(e / 25), n = 0, 0 != r && 1 != r && 5 != r && 6 != r || (n = Math.floor(t / 5)), 2 != r && 3 != r || (n = Math.floor(t / 10)), 4 == r && (n = t <= 99 ? Math.floor(t / 5) : t >= 120 && t <= 159 ? Math.floor((t - 120) / 5) + 70 : t >= 100 && t <= 104 ? 20 : t >= 105 && t <= 109 ? 22 : t >= 110 && t <= 114 ? 24 : t >= 115 && t <= 119 ? 30 : 77), 6 == r && n > 14 && (n = 14)), {
@@ -5977,7 +6064,7 @@ globalThis["webpackJsonp"].push([
                                     iidx: n
                                 }
                             },
-                            convertPicIdxTo255: function(e, t) {
+                            convertPicIdxTo255: function (e, t) {
                                 var r = 0,
                                     n = 0;
                                 return this.features.ilda ? (r = 25 * e, n = 0, 0 != e && 1 != e || (n = 4 * t), 2 != e && 3 != e || (n = 6 * t), 5 != e && 6 != e || (n = 5 * t)) : (r = 25 * e, n = 0, 0 != e && 1 != e && 5 != e && 6 != e || (n = 5 * t), 2 != e && 3 != e || (n = 10 * t), 4 == e && (n = t <= 19 ? 5 * t : t >= 70 && t <= 77 ? 5 * (t - 70) + 120 : 20 == t ? 100 : 22 == t ? 105 : 24 == t ? 110 : 30 == t ? 115 : 160)), {
@@ -5985,13 +6072,13 @@ globalThis["webpackJsonp"].push([
                                     idx: n
                                 }
                             },
-                            chResetClick: function(e) {
+                            chResetClick: function (e) {
                                 if (null != this.defaultPis) {
                                     for (var t = 0; t < this.defaultPis.cnfValus.length; t++) this.$set(this.pisObj.cnfValus, t, this.defaultPis.cnfValus[t]);
                                     this.refreshChDraw(), this.myCanvasDraw(), this.sendCmd()
                                 }
                             },
-                            myCanvasClick: function(e) {
+                            myCanvasClick: function (e) {
                                 this.popupShow = !0;
                                 var t = this.convertPic255ToIdx(this.pisObj.cnfValus[1], this.pisObj.cnfValus[0]);
                                 this.pisSelectedIdx = t.iidx, this.pisSelectedGroup = t.igroup, this.pisSelectedGroup >= this.pisObjArray.length && (this.pisSelectedGroup = 0, this.pisSelectedIdx = -1), this.showPisCanvas = this.checkIfShowPis(this.pisSelectedGroup), this.$refs.popup.open("bottom"), this.myCanvasClear();
@@ -5999,21 +6086,21 @@ globalThis["webpackJsonp"].push([
                                     n = r.picArray;
                                 this.doPisCanvasDraw(n)
                             },
-                            sendTmpCmd: function(e, t) {
+                            sendTmpCmd: function (e, t) {
                                 var r = [];
                                 Object.assign(r, this.pisObj.cnfValus);
                                 var n = this.convertPicIdxTo255(e, t);
                                 r[0] = n.idx, r[1] = n.group;
                                 var h = {
-                                        playTime: this.pisObj.playTime,
-                                        cnfValus: r
-                                    },
+                                    playTime: this.pisObj.playTime,
+                                    cnfValus: r
+                                },
                                     a = i.getPisCmdStr(this.pisIdx, h, {
                                         features: this.features
                                     });
                                 c.gosend(!0, a)
                             },
-                            imgClick: function(e) {
+                            imgClick: function (e) {
                                 this.pisSelectedIdx = e, this.sendTmpCmd(this.pisSelectedGroup, this.pisSelectedIdx)
                             }
                         }
@@ -6021,9 +6108,9 @@ globalThis["webpackJsonp"].push([
                 t.default = s
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
- 
-        "handDrawGeometryUtils" : function(e, t, r) {
-            (function(t) {
+
+        "handDrawGeometryUtils": function (e, t, r) {
+            (function (t) {
                 var spreadToArrayHelper = r("spreadToArrayHelper"),
                     handDrawFileManager = r("handDrawFileManager"),
                     fontGeometryUtils = r("fontGeometryUtils "),
@@ -6042,11 +6129,11 @@ globalThis["webpackJsonp"].push([
 
                 function rotatePointsAroundBoundingBoxCenter(e, t) {
                     for (var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], n = [], h = r ? 1 : -1, a = {
-                            left: 99999,
-                            top: 99999,
-                            right: -99999,
-                            bottom: -99999
-                        }, i = 0; i < e.length; i++) {
+                        left: 99999,
+                        top: 99999,
+                        right: -99999,
+                        bottom: -99999
+                    }, i = 0; i < e.length; i++) {
                         var o = [e[i][0], h * e[i][1]];
                         a.left = Math.min(a.left, o[0]), a.top = Math.min(a.top, o[1]), a.right = Math.max(a.right, o[0]), a.bottom = Math.max(a.bottom, o[1])
                     }
@@ -6081,11 +6168,11 @@ globalThis["webpackJsonp"].push([
 
                 function rotateAndOffsetGroupedPoints(e) {
                     for (var t = e.ps, r = e.x0, n = e.y0, h = e.ang, a = [], i = {
-                            left: 99999,
-                            top: 99999,
-                            right: -99999,
-                            bottom: -99999
-                        }, o = 0, s = 0; s < t.length; s++) {
+                        left: 99999,
+                        top: 99999,
+                        right: -99999,
+                        bottom: -99999
+                    }, o = 0, s = 0; s < t.length; s++) {
                         var p = t[s][1];
                         if (o != t[s][0]) {
                             o = t[s][0], i["w"] = (i.right - i.left) / 2 + i.left, i["h"] = (i.bottom - i.top) / 2 + i.top;
@@ -6186,7 +6273,7 @@ globalThis["webpackJsonp"].push([
 
                 function drawTransformedPolyline2(drawObject, index, width) {
 
-                        var a = rotatePointsAroundBoundingBoxCenter(drawObject.ps[index], drawObject.ang, !0),
+                    var a = rotatePointsAroundBoundingBoxCenter(drawObject.ps[index], drawObject.ang, !0),
                         s = drawObject.lineColor,
                         l = s >= 8 ? 1 : s,
                         p = s - 9,
@@ -6209,22 +6296,22 @@ globalThis["webpackJsonp"].push([
                 }
 
                 function drawAllTransformedPolylines(drawConfig, drawObject) {
-                    for (var shouldCollectResults = arguments.length > 2 && void 0 !== arguments[2] 
-                            && arguments[2], 
-                            useDashedLine = arguments.length > 3 && void 0 !== arguments[3] 
-                                && arguments[3], points = drawObject.ps, 
-                                accumulatedResults = [], i = 0; i < points.length; i++) {
+                    for (var shouldCollectResults = arguments.length > 2 && void 0 !== arguments[2]
+                        && arguments[2],
+                        useDashedLine = arguments.length > 3 && void 0 !== arguments[3]
+                            && arguments[3], points = drawObject.ps,
+                        accumulatedResults = [], i = 0; i < points.length; i++) {
                         var currentPolylineResult = drawTransformedPolyline(drawConfig, drawObject, i, shouldCollectResults, useDashedLine);
                         shouldCollectResults && (accumulatedResults = accumulatedResults.concat(currentPolylineResult))
                     }
                     return accumulatedResults
                 }
 
-                function drawAllTransformedPolylines2(drawObject, width ) {
-                    for (var  points = drawObject.ps, 
-                                accumulatedResults = [], i = 0; i < points.length; i++) {
+                function drawAllTransformedPolylines2(drawObject, width) {
+                    for (var points = drawObject.ps,
+                        accumulatedResults = [], i = 0; i < points.length; i++) {
                         var currentPolylineResult = drawTransformedPolyline2(drawObject, i, width);
-                         (accumulatedResults = accumulatedResults.concat(currentPolylineResult))
+                        (accumulatedResults = accumulatedResults.concat(currentPolylineResult))
                     }
                     return accumulatedResults
 
@@ -6470,7 +6557,7 @@ globalThis["webpackJsonp"].push([
                         name: "Purple-Yellow (16 segments)"
                     }],
                     getPointCount: getPointCount,
-                    getTextRect: function(e, t) {
+                    getTextRect: function (e, t) {
                         txXy = rotateAndOffsetGroupedPoints(e);
                         for (var r = 0; r < txXy.length; r++)
                             for (var n = txXy[r][1], h = 0; h < n.length; h++) {
@@ -6479,7 +6566,7 @@ globalThis["webpackJsonp"].push([
                             }
                         return t
                     },
-                    getLineRect: function(e, t) {
+                    getLineRect: function (e, t) {
                         for (var r = rotateGroupsOfPoints(e.ps, e.ang), n = 0; n < r.length; n++)
                             for (var h = r[n], a = 0; a < h.length; a++) {
                                 var i = [h[a][0] * e.z + e.x0, e.y0 + h[a][1] * e.z];
@@ -6487,7 +6574,7 @@ globalThis["webpackJsonp"].push([
                             }
                         return t
                     },
-                    getObjRect: function(e, t) {
+                    getObjRect: function (e, t) {
                         ps = rotatePointsAroundBoundingBoxCenter(e.ps, e.ang);
                         for (var r = 0; r < ps.length; r++) {
                             var n = [ps[r][0] * e.z + e.x0, e.y0 - ps[r][1] * e.z];
@@ -6495,7 +6582,7 @@ globalThis["webpackJsonp"].push([
                         }
                         return t
                     },
-                    checkObj: function(e, t, r, n, a) {
+                    checkObj: function (e, t, r, n, a) {
                         for (var i = 1; i < e.length; i++) {
                             var c = [e[i - 1][0] * n + t, r - e[i - 1][1] * n],
                                 o = [e[i][0] * n + t, r - e[i][1] * n],
@@ -6503,7 +6590,7 @@ globalThis["webpackJsonp"].push([
                             if (handDrawFileManager.lineCross(s, a)) return !0
                         }
                     },
-                    checkText: function(e, t, r, n, a) {
+                    checkText: function (e, t, r, n, a) {
                         for (var i = 0; i < e.length; i++)
                             for (var c = e[i][1], o = 1; o < c.length; o++) {
                                 var s = [c[o - 1].x * n + t, r - c[o - 1].y * n],
@@ -6512,7 +6599,7 @@ globalThis["webpackJsonp"].push([
                                 if (handDrawFileManager.lineCross(p, a)) return !0
                             }
                     },
-                    checkLine: function(e, t, r, n, a) {
+                    checkLine: function (e, t, r, n, a) {
                         for (var i = e, c = 0; c < i.length; c++)
                             for (var o = i[c], s = 1; s < o.length; s++) {
                                 var l = [o[s - 1][0] * n + t, o[s - 1][1] * n + r],
@@ -6522,13 +6609,13 @@ globalThis["webpackJsonp"].push([
                             }
                         return !1
                     },
-                    covertPoints: function(e, t, r) {
+                    covertPoints: function (e, t, r) {
                         for (var n = fontGeometryUtils.parseLines(e, r), h = {
-                                left: 99999,
-                                top: 99999,
-                                right: 0,
-                                bottom: 0
-                            }, i = 0; i < n.length; i++)
+                            left: 99999,
+                            top: 99999,
+                            right: 0,
+                            bottom: 0
+                        }, i = 0; i < n.length; i++)
                             for (var c = n[i], o = 0; o < c.length; o++) {
                                 var s = c[o];
                                 h.left = Math.min(h.left, s[0]), h.top = Math.min(h.top, s[1]), h.right = Math.max(h.right, s[0]), h.bottom = Math.max(h.bottom, s[1])
@@ -6544,11 +6631,11 @@ globalThis["webpackJsonp"].push([
                             lineColor: t
                         }
                     },
-                    lineTheta: function(e, t, r) {
+                    lineTheta: function (e, t, r) {
                         var n = {
-                                x: e[0] - t[0],
-                                y: e[1] - t[1]
-                            },
+                            x: e[0] - t[0],
+                            y: e[1] - t[1]
+                        },
                             h = {
                                 x: r[0] - t[0],
                                 y: r[1] - t[1]
@@ -6559,7 +6646,7 @@ globalThis["webpackJsonp"].push([
                             o = Math.acos(a / (i * c));
                         return o
                     },
-                    getTextLineSize: function(e, t) {
+                    getTextLineSize: function (e, t) {
                         for (var r = 0, n = 0, h = -1, a = 0; a < e.length; a++) {
                             var i = e[a];
                             h != i[0] && (t ? (r += i[2], n = i[3]) : (r = i[3], n += i[3]), h = i[0])
@@ -6569,14 +6656,14 @@ globalThis["webpackJsonp"].push([
                             h: n
                         }
                     },
-                    calcAngle: function(e, t, r, n) {
+                    calcAngle: function (e, t, r, n) {
                         var h = Math.atan2(t - n, e - r);
                         return h
                     },
                     calcAngXY: rotatePointAroundCenter,
                     calcObjAngXY: rotatePointsAroundBoundingBoxCenter,
                     calcLinesAngXY: rotateGroupsOfPoints,
-                    pointInRectangle: function(e, t, r, h, a, i) {
+                    pointInRectangle: function (e, t, r, h, a, i) {
                         var c = r.x,
                             o = h.x,
                             s = a.x,
@@ -6588,11 +6675,11 @@ globalThis["webpackJsonp"].push([
                         if (e >= c && e <= o && t >= p && t <= b) return !0;
                         if (e === c && t === p || e === o && t === d || e === s && t === b || e === l && t === g) return !0;
                         for (var j = 0, x = [
-                                [c, p, o, d],
-                                [o, d, s, b],
-                                [s, b, l, g],
-                                [l, g, c, p]
-                            ], V = 0; V < x.length; V++) {
+                            [c, p, o, d],
+                            [o, d, s, b],
+                            [s, b, l, g],
+                            [l, g, c, p]
+                        ], V = 0; V < x.length; V++) {
                             var f = spreadToArrayHelper(x[V], 4),
                                 F = f[0],
                                 k = f[1],
@@ -6605,7 +6692,7 @@ globalThis["webpackJsonp"].push([
                         }
                         return j % 2 === 1
                     },
-                    getSelectRectInfo: function(e) {
+                    getSelectRectInfo: function (e) {
                         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2,
                             r = getAdjustedRectangle(e, t),
                             n = r.left,
@@ -6629,26 +6716,26 @@ globalThis["webpackJsonp"].push([
                             };
                         return x
                     },
-                    getUiRectSize: function(e) {
+                    getUiRectSize: function (e) {
                         for (var t = [
-                                [e.p1.x, e.p1.y],
-                                [e.p2.x, e.p2.y],
-                                [e.p3.x, e.p3.y],
-                                [e.p4.x, e.p4.y]
-                            ], r = {
-                                left: 99999,
-                                top: 99999,
-                                right: -99999,
-                                bottom: -99999,
-                                width: 0,
-                                height: 0
-                            }, n = 0; n < t.length; n++) {
+                            [e.p1.x, e.p1.y],
+                            [e.p2.x, e.p2.y],
+                            [e.p3.x, e.p3.y],
+                            [e.p4.x, e.p4.y]
+                        ], r = {
+                            left: 99999,
+                            top: 99999,
+                            right: -99999,
+                            bottom: -99999,
+                            width: 0,
+                            height: 0
+                        }, n = 0; n < t.length; n++) {
                             var h = [t[n][0], t[n][1]];
                             r.left = Math.min(r.left, h[0]), r.top = Math.min(r.top, h[1]), r.right = Math.max(r.right, h[0]), r.bottom = Math.max(r.bottom, h[1])
                         }
                         return r.width = r.right - r.left, r.height = r.bottom - r.top, r
                     },
-                    getCenterCorss: function(e, t, r) {
+                    getCenterCorss: function (e, t, r) {
                         var n = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 20,
                             h = n / 2,
                             a = n / 5,
@@ -6684,41 +6771,41 @@ globalThis["webpackJsonp"].push([
                     drawText: drawTransformedText,
                     drawObj: drawTransformedObject,
                     drawLine: drawAllTransformedPolylines,
-                    drawPs: function(objectsToDraw , drawConfig , selectionState ) {
+                    drawPs: function (objectsToDraw, drawConfig, selectionState) {
                         var n = [],
-                            drawContext = drawConfig .ctx;
-                        drawContext.clearRect(0, 0, drawConfig .w, drawConfig .h);
-                        for (var a = [], i = 0; i < objectsToDraw .length; i++) {
-                            var o = objectsToDraw [i],
+                            drawContext = drawConfig.ctx;
+                        drawContext.clearRect(0, 0, drawConfig.w, drawConfig.h);
+                        for (var a = [], i = 0; i < objectsToDraw.length; i++) {
+                            var o = objectsToDraw[i],
                                 s = !1;
-                            if (selectionState  && (s = selectionState .selectLines.length > i && selectionState .selectLines[i].sel & selectionState .selectMode, s && null != selectionState .selectRect)) {
-                                var l = selectionState .selectRect.lastAng - selectionState .selectRect.startAng;
-                                1 != selectionState .selectRect.z ? (selectionState .selectLines[i].mx0 = selectionState .selectLines[i].mx0 * selectionState .selectRect.z, selectionState .selectLines[i].my0 = selectionState .selectLines[i].my0 * selectionState .selectRect.z, o.x0 = selectionState .selectLines[i].mx0 + selectionState .selectRect.x0, o.y0 = selectionState .selectLines[i].my0 + selectionState .selectRect.y0, l = selectionState .selectRect.lastAng - selectionState .selectRect.startAng + selectionState .selectRect.ang, o.z = o.z * selectionState .selectRect.z) : (o.x0 = o.x0 + selectionState .selectRect.mx + selectionState .selectRect.width * (selectionState .selectRect.z - 1) * .5, o.y0 = o.y0 + selectionState .selectRect.my + selectionState .selectRect.height * (selectionState .selectRect.z - 1) * .5), null != selectionState .selectLines[i].color && (o.lineColor = selectionState .selectLines[i].color);
-                                var p = rotatePointAroundCenter(l, selectionState .selectRect.x0, selectionState .selectRect.y0, o.x0, o.y0);
-                                o.x0 = p.x, o.y0 = p.y, o.ang = selectionState .selectRect.lastAng - selectionState .selectRect.startAng + o.ang
+                            if (selectionState && (s = selectionState.selectLines.length > i && selectionState.selectLines[i].sel & selectionState.selectMode, s && null != selectionState.selectRect)) {
+                                var l = selectionState.selectRect.lastAng - selectionState.selectRect.startAng;
+                                1 != selectionState.selectRect.z ? (selectionState.selectLines[i].mx0 = selectionState.selectLines[i].mx0 * selectionState.selectRect.z, selectionState.selectLines[i].my0 = selectionState.selectLines[i].my0 * selectionState.selectRect.z, o.x0 = selectionState.selectLines[i].mx0 + selectionState.selectRect.x0, o.y0 = selectionState.selectLines[i].my0 + selectionState.selectRect.y0, l = selectionState.selectRect.lastAng - selectionState.selectRect.startAng + selectionState.selectRect.ang, o.z = o.z * selectionState.selectRect.z) : (o.x0 = o.x0 + selectionState.selectRect.mx + selectionState.selectRect.width * (selectionState.selectRect.z - 1) * .5, o.y0 = o.y0 + selectionState.selectRect.my + selectionState.selectRect.height * (selectionState.selectRect.z - 1) * .5), null != selectionState.selectLines[i].color && (o.lineColor = selectionState.selectLines[i].color);
+                                var p = rotatePointAroundCenter(l, selectionState.selectRect.x0, selectionState.selectRect.y0, o.x0, o.y0);
+                                o.x0 = p.x, o.y0 = p.y, o.ang = selectionState.selectRect.lastAng - selectionState.selectRect.startAng + o.ang
                             }
-                            a = -1 == o.drawMode ? drawAllTransformedPolylines(drawConfig , o, !0, s) : 9999 == o.drawMode ? drawTransformedText(drawConfig , o, !0, s) : drawTransformedObject(drawConfig , o, !0, s), n = n.concat(a)
+                            a = -1 == o.drawMode ? drawAllTransformedPolylines(drawConfig, o, !0, s) : 9999 == o.drawMode ? drawTransformedText(drawConfig, o, !0, s) : drawTransformedObject(drawConfig, o, !0, s), n = n.concat(a)
                         }
-                        return selectionState  && null != selectionState .selectRect && (selectionState .selectRect.left = selectionState .selectRect.left + selectionState .selectRect.mx, selectionState .selectRect.top = selectionState .selectRect.top + selectionState .selectRect.my, selectionState .selectRect.width = selectionState .selectRect.width * selectionState .selectRect.z, selectionState .selectRect.height = selectionState .selectRect.height * selectionState .selectRect.z, selectionState .selectRect.z = 1, selectionState .selectRect.mx = 0, selectionState .selectRect.my = 0), n
+                        return selectionState && null != selectionState.selectRect && (selectionState.selectRect.left = selectionState.selectRect.left + selectionState.selectRect.mx, selectionState.selectRect.top = selectionState.selectRect.top + selectionState.selectRect.my, selectionState.selectRect.width = selectionState.selectRect.width * selectionState.selectRect.z, selectionState.selectRect.height = selectionState.selectRect.height * selectionState.selectRect.z, selectionState.selectRect.z = 1, selectionState.selectRect.mx = 0, selectionState.selectRect.my = 0), n
                     },
-                    drawPs2: function(objectsToDraw ,width) {
+                    drawPs2: function (objectsToDraw, width) {
                         var points = [];
-                        for (var currentDrawResult = [], i = 0; i < objectsToDraw .length; i++) {
-                            var drawObject = objectsToDraw [i];
-                            currentDrawResult = -1 == drawObject.drawMode 
-                                ? drawAllTransformedPolylines2(drawObject,width) 
-                                : 9999 == drawObject.drawMode 
-                                    ? drawTransformedText2(drawObject, width) 
-                                    : drawTransformedObject2(drawObject,width), 
-                                        points = points.concat(currentDrawResult)
+                        for (var currentDrawResult = [], i = 0; i < objectsToDraw.length; i++) {
+                            var drawObject = objectsToDraw[i];
+                            currentDrawResult = -1 == drawObject.drawMode
+                                ? drawAllTransformedPolylines2(drawObject, width)
+                                : 9999 == drawObject.drawMode
+                                    ? drawTransformedText2(drawObject, width)
+                                    : drawTransformedObject2(drawObject, width),
+                                points = points.concat(currentDrawResult)
                         }
                         return points
                     },
-                    getdrawPointsCnt: function(e) {
+                    getdrawPointsCnt: function (e) {
                         for (var t = 0, r = 0; r < e.length; r++) t += getPointCount(e[r].drawMode, e[r].ps);
                         return t
                     },
-                    reSizeDrawPoints: function(e, r, n) {
+                    reSizeDrawPoints: function (e, r, n) {
                         var h = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 300,
                             a = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : 300,
                             i = [];
@@ -6733,28 +6820,28 @@ globalThis["webpackJsonp"].push([
                 }
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
-  
-        "handDrawFileManager": function(t, r, n) {
-            (function(r) {
+
+        "handDrawFileManager": function (t, r, n) {
+            (function (r) {
                 var spreadToArrayHelper = n("spreadToArrayHelper");
 
                 function createIterator(e, t) {
                     var r = "undefined" !== typeof Symbol && e[Symbol.iterator] || e["@@iterator"];
                     if (!r) {
-                        if (Array.isArray(e) || (r = function(e, t) {
-                                if (!e) return;
-                                if ("string" === typeof e) return i(e, t);
-                                var r = Object.prototype.toString.call(e).slice(8, -1);
-                                "Object" === r && e.constructor && (r = e.constructor.name);
-                                if ("Map" === r || "Set" === r) return Array.from(e);
-                                if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return i(e, t)
-                            }(e)) || t && e && "number" === typeof e.length) {
+                        if (Array.isArray(e) || (r = function (e, t) {
+                            if (!e) return;
+                            if ("string" === typeof e) return i(e, t);
+                            var r = Object.prototype.toString.call(e).slice(8, -1);
+                            "Object" === r && e.constructor && (r = e.constructor.name);
+                            if ("Map" === r || "Set" === r) return Array.from(e);
+                            if ("Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return i(e, t)
+                        }(e)) || t && e && "number" === typeof e.length) {
                             r && (e = r);
                             var n = 0,
-                                h = function() {};
+                                h = function () { };
                             return {
                                 s: h,
-                                n: function() {
+                                n: function () {
                                     return n >= e.length ? {
                                         done: !0
                                     } : {
@@ -6762,7 +6849,7 @@ globalThis["webpackJsonp"].push([
                                         value: e[n++]
                                     }
                                 },
-                                e: function(e) {
+                                e: function (e) {
                                     throw e
                                 },
                                 f: h
@@ -6773,17 +6860,17 @@ globalThis["webpackJsonp"].push([
                     var a, c = !0,
                         o = !1;
                     return {
-                        s: function() {
+                        s: function () {
                             r = r.call(e)
                         },
-                        n: function() {
+                        n: function () {
                             var e = r.next();
                             return c = e.done, e
                         },
-                        e: function(e) {
+                        e: function (e) {
                             o = !0, a = e
                         },
-                        f: function() {
+                        f: function () {
                             try {
                                 c || null == r.return || r.return()
                             } finally {
@@ -6930,7 +7017,7 @@ globalThis["webpackJsonp"].push([
                 }
                 t.exports = {
                     handDrawClassFix: ["__ALL__", "__1__", "__2__", "__3__", "__4__", "__5__", "__6__", "__7__", "__8__", "__9__", "__10__"],
-                    savePlayListFileData: function(e, t) {
+                    savePlayListFileData: function (e, t) {
                         var r = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
                             n = {
                                 data: t
@@ -6939,7 +7026,7 @@ globalThis["webpackJsonp"].push([
                     },
                     getPlayListFileData: F,
                     getPlayListFileNames: k,
-                    getNewPlayListName: function() {
+                    getNewPlayListName: function () {
                         var e = new Date,
                             t = e.getFullYear(),
                             r = e.getMonth() + 1,
@@ -6953,10 +7040,10 @@ globalThis["webpackJsonp"].push([
                         }
                         return h
                     },
-                    deletePlayList: function(e) {
+                    deletePlayList: function (e) {
                         return j("playlistfiletag_", e)
                     },
-                    getIncludePlayList: function(e) {
+                    getIncludePlayList: function (e) {
                         var t = k();
                         r("log", "rs", JSON.stringify(t), " at utils/funCtrl.js:397");
                         var n, h = t.fileNames,
@@ -6991,7 +7078,7 @@ globalThis["webpackJsonp"].push([
                         return i
                     },
                     drawPointsHisCount: s,
-                    getFileClass: function(e) {
+                    getFileClass: function (e) {
                         var t, r = [],
                             n = createIterator(e);
                         try {
@@ -7006,24 +7093,24 @@ globalThis["webpackJsonp"].push([
                         } finally {
                             n.f()
                         }
-                        return r.sort((function(e, t) {
+                        return r.sort((function (e, t) {
                             return t.localeCompare(e)
                         })), r.unshift("__ALL__"), r
                     },
                     splitFileClass: f,
-                    combiFileName: function(e, t) {
+                    combiFileName: function (e, t) {
                         return "__ALL__" == e ? t : t + "_split_tag_" + e
                     },
-                    getDrawPointsHisCount: function() {
+                    getDrawPointsHisCount: function () {
                         return s
                     },
-                    updateHandDrawImgPlayTime: function(e, t) {
+                    updateHandDrawImgPlayTime: function (e, t) {
                         var r = p(e);
                         r.pisObj.cnfValus[12] = t, b(c, e, r, !1)
                     },
                     fileClassSplitTag: "_split_tag_",
                     handDrawTag: c,
-                    getTextFileNames: function() {
+                    getTextFileNames: function () {
                         var e = V("textfiletag_", !0),
                             t = {
                                 fileNames: e,
@@ -7032,22 +7119,22 @@ globalThis["webpackJsonp"].push([
                             };
                         return t
                     },
-                    getTextFileData: function(e) {
+                    getTextFileData: function (e) {
                         var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
                         return d("textfiletag_", e, t)
                     },
-                    separateValueAndUnit: function(e) {
+                    separateValueAndUnit: function (e) {
                         var t = {
-                                value: null,
-                                unit: null
-                            },
+                            value: null,
+                            unit: null
+                        },
                             r = e.match(/^(\d+)([a-zA-Z]+)?/);
                         return r && (t.value = parseInt(r[1]), t.unit = r[2] || ""), t
                     },
-                    reNameHandDrawImg: function(e, t) {
+                    reNameHandDrawImg: function (e, t) {
                         return g(c, e, t)
                     },
-                    pushDrawPointsHis: function(e) {
+                    pushDrawPointsHis: function (e) {
                         r("log", "pushDrawPointsHis", e, " at utils/funCtrl.js:276");
                         var t = "drawpointshistag_" + s,
                             n = {
@@ -7056,7 +7143,7 @@ globalThis["webpackJsonp"].push([
                             };
                         r("log", "fileKey", t, " at utils/funCtrl.js:280"), uni.setStorageSync(t.toLowerCase(), n), s += 1
                     },
-                    lineCross: function(e, t) {
+                    lineCross: function (e, t) {
                         function r(e, t, r, n) {
                             var h = (r[1] - e[1]) * (e[0] - t[0]) - (r[0] - e[0]) * (e[1] - t[1]),
                                 a = (n[1] - e[1]) * (e[0] - t[0]) - (n[0] - e[0]) * (e[1] - t[1]);
@@ -7070,10 +7157,10 @@ globalThis["webpackJsonp"].push([
                             s = c[1];
                         return !!r(a, i, o, s) && !!r(o, s, a, i)
                     },
-                    deleteHandDrawImg: function(e) {
+                    deleteHandDrawImg: function (e) {
                         return j(c, e)
                     },
-                    saveTextFileData: function(e, t, r) {
+                    saveTextFileData: function (e, t, r) {
                         var n = arguments.length > 3 && void 0 !== arguments[3] && arguments[3],
                             h = {
                                 data: t,
@@ -7081,16 +7168,16 @@ globalThis["webpackJsonp"].push([
                             };
                         return b("textfiletag_", e, h, n)
                     },
-                    getDistance: function(e) {
+                    getDistance: function (e) {
                         var t = e[1].x - e[0].x,
                             r = e[1].y - e[0].y;
                         return Math.sqrt(t * t + r * r)
                     },
                     getHandDrawImg: p,
-                    deleteTextFileData: function(e) {
+                    deleteTextFileData: function (e) {
                         return j("textfiletag_", e)
                     },
-                    getNewFileName: function() {
+                    getNewFileName: function () {
                         var e = !(arguments.length > 0 && void 0 !== arguments[0]) || arguments[0],
                             t = new Date,
                             r = t.getFullYear(),
@@ -7107,32 +7194,32 @@ globalThis["webpackJsonp"].push([
                         }
                         return a
                     },
-                    isImgFileExist: function(e, t) {
+                    isImgFileExist: function (e, t) {
                         if (!e) return r("log", "isImgFileExist picPath=", e, " at utils/funCtrl.js:88"), void t(!1);
                         uni.getImageInfo({
                             src: e,
-                            success: function(e) {
+                            success: function (e) {
                                 t(!0)
                             },
-                            fail: function(e) {
+                            fail: function (e) {
                                 t(!1)
                             }
                         })
                     },
-                    reNameTextFile: function(e, t) {
+                    reNameTextFile: function (e, t) {
                         return g("textfiletag_", e, t)
                     },
-                    popDrawPointsHis: function() {
+                    popDrawPointsHis: function () {
                         s--;
                         var t = "drawpointshistag_" + s;
                         r("log", "popDrawPointsHis", t, " at utils/funCtrl.js:288");
                         var n = uni.getStorageSync(t);
                         try {
                             uni.removeStorageSync(t)
-                        } catch (e) {}
+                        } catch (e) { }
                         return n
                     },
-                    saveHandDrawImg: function(e, t, r, n, h, a) {
+                    saveHandDrawImg: function (e, t, r, n, h, a) {
                         var i = arguments.length > 6 && void 0 !== arguments[6] && arguments[6],
                             o = {
                                 picPath: t,
@@ -7143,7 +7230,7 @@ globalThis["webpackJsonp"].push([
                             };
                         return b(c, e, o, i)
                     },
-                    getHandDrawNames: function() {
+                    getHandDrawNames: function () {
                         var e = V(c, !0),
                             t = {
                                 fileNames: e,
@@ -7152,7 +7239,7 @@ globalThis["webpackJsonp"].push([
                             };
                         return t
                     },
-                    clearDrawPointsHis: function() {
+                    clearDrawPointsHis: function () {
                         try {
                             s = 0;
                             var t = V("drawpointshistag_");
@@ -7180,7 +7267,7 @@ globalThis["webpackJsonp"].push([
                         }
                         return !1
                     },
-                    saveHandDrawClassName: function(t) {
+                    saveHandDrawClassName: function (t) {
                         try {
                             return uni.setStorageSync("handDrawFileClassTag_", t), !0
                         } catch (e) {
@@ -7188,7 +7275,7 @@ globalThis["webpackJsonp"].push([
                         }
                         return !1
                     },
-                    getHandDrawClassName: function() {
+                    getHandDrawClassName: function () {
                         var t = [];
                         try {
                             t = uni.getStorageSync("handDrawFileClassTag_")
@@ -7202,24 +7289,23 @@ globalThis["webpackJsonp"].push([
                 }
             }).call(this, n("enhancedConsoleLogger")["default"])
         },
-  
 
-        "arrayToArrayLikeHelper": function(e, t, r) {
+        "arrayToArrayLikeHelper": function (e, t, r) {
             var n = r("arrayLikeToArrayHelper");
-            e.exports = function(e) {
+            e.exports = function (e) {
                 if (Array.isArray(e)) return n(e)
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-        "b893": function(e, t) {
-            e.exports = function(e) {
+        "b893": function (e, t) {
+            e.exports = function (e) {
                 if ("undefined" !== typeof Symbol && null != e[Symbol.iterator] || null != e["@@iterator"]) return Array.from(e)
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-        "toConsumableArrayHelper": function(e, t, r) {
+        "toConsumableArrayHelper": function (e, t, r) {
             var n = r("arrayLikeToArrayHelper");
-            e.exports = function(e, t) {
+            e.exports = function (e, t) {
                 if (e) {
                     if ("string" === typeof e) return n(e, t);
                     var r = Object.prototype.toString.call(e).slice(8, -1);
@@ -7228,13 +7314,13 @@ globalThis["webpackJsonp"].push([
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
 
-        "nonIterableSpreadErrorHelper": function(e, t) {
-            e.exports = function() {
+        "nonIterableSpreadErrorHelper": function (e, t) {
+            e.exports = function () {
                 throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
             }, e.exports.__esModule = !0, e.exports["default"] = e.exports
         },
     },
-	[
+    [
         ["mainAppEntry", "app-config"]
     ]
 

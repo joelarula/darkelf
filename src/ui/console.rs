@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::collections::HashMap;
 use crate::model::{DisplayColor, DrawData, Point, ProjectItem, PisObject};
-
+use eframe::egui; 
 use tokio::sync::{Mutex, mpsc};
 
 use crate::model::{DeviceResponse, PlaybackMode};

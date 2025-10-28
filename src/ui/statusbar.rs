@@ -1,7 +1,8 @@
 use crate::ui::console::Console;
-use egui::*;
+use eframe::egui::*;
+use eframe::egui::containers::TopBottomPanel;
 
-pub fn show_status_bar(console: &Console, ctx: &egui::Context) {
+pub fn show_status_bar(console: &Console, ctx: &eframe::egui::Context) {
     TopBottomPanel::bottom("status_bar").show(ctx, |ui| {
         ui.horizontal(|ui| {
             let status_text = if console.device_connected {

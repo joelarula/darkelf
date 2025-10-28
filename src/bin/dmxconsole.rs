@@ -22,12 +22,13 @@ fn main() {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([400.0, 600.0])
             .with_min_inner_size([400.0, 600.0]),
+            
         ..Default::default()
     };
     let _ = eframe::run_native(
         fixture.name.as_str(),
         native_options,
-        Box::new(|_cc| Box::new(app)),
+        Box::new(|_cc| Ok::<Box<dyn eframe::App>, Box<dyn std::error::Error + Send + Sync>>(Box::new(app))),
     );
 }
 

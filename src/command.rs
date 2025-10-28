@@ -353,19 +353,14 @@ impl CommandGenerator {
     }
 
     pub fn get_query_cmd(random_verify: &[u8]) -> String {
-        // Create the middle section using the random bytes
         let middle = if random_verify.len() >= 4 {
             format!("{:02X}{:02X}{:02X}{:02X}", 
                 random_verify[0], random_verify[1], 
                 random_verify[2], random_verify[3])
         } else {
-            "00000000".to_string() // Default if not enough random bytes
-        };
-        
-        // Construct the full command: header + middle + footer (12 bytes total)
-        info!("Generating query command with random bytes: {:02X?}", random_verify);
+            "00000000".to_string() 
+        };      
         let cmd = format!("{}{}{}", HEADER, middle, FOOTER).to_uppercase();
-        info!("Generated command: {}", cmd);
         cmd
     }
 
