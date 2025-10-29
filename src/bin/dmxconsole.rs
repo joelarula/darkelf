@@ -3,9 +3,13 @@ use eframe::{egui};
 use std::sync::{Arc, Mutex};
 use darkelf::dmx::device::DmxDevice;
 use darkelf::dmx::model::Fixture;
+use egui::RichText;
+use egui_taffy::{TuiBuilderLogic, taffy, tid, tui};
 
 
 pub struct DmxApp {
+    pub dmx_ports: Vec<String>,
+    pub selected_port: Option<String>,
     pub device: Option<Arc<DmxDevice>>,
     pub status_message: Arc<Mutex<String>>,
     pub fixture: Fixture,
@@ -20,113 +24,214 @@ fn main() {
     let app = DmxApp::new(fixture.clone());
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([400.0, 600.0])
-            .with_min_inner_size([400.0, 600.0]),
+            .with_inner_size([500.0, 400.0])
+            .with_min_inner_size([500.0, 400.0]),
             
         ..Default::default()
     };
     let _ = eframe::run_native(
-        fixture.name.as_str(),
+        format!("DMX Console - {}", fixture.name).as_str(),
         native_options,
         Box::new(|_cc| Ok::<Box<dyn eframe::App>, Box<dyn std::error::Error + Send + Sync>>(Box::new(app))),
     );
 }
 
 impl DmxApp {
+    fn select_and_init_port(&mut self, idx: usize) {
+        if idx < self.dmx_ports.len() {
+            let new_port = self.dmx_ports[idx].clone();
+            if self.selected_port.as_ref() != Some(&new_port) {
+                self.selected_port = Some(new_port.clone());
+                // Initialize device on port selection
+                let dmx_channel = 1;
+                match DmxDevice::new(&new_port, dmx_channel, self.fixture.clone()) {
+                    Ok(dev) => {
+                        if dev.start().is_ok() {
+                            let mut status = self.status_message.lock().unwrap();
+                            *status = format!("Created and started DMX device on {} channel {}", new_port, dmx_channel);
+                            self.device = Some(Arc::new(dev));
+                        } else {
+                            let mut status = self.status_message.lock().unwrap();
+                            *status = "Failed to start DMX device".to_string();
+                            self.device = None;
+                        }
+                    }
+                    Err(e) => {
+                        let mut status = self.status_message.lock().unwrap();
+                        *status = format!("Failed to create DMX device: {}", e);
+                        self.device = None;
+                    }
+                }
+            }
+        }
+    }
     pub fn new(fixture: Fixture) -> Self {
         let status_message = Arc::new(Mutex::new(String::from("=== DMX Laser Device Setup ===")));
         let dmx_ports = darkelf::dmx::controller::scan_dmx_ports();
-        let port = "COM4";
-        let dmx_channel = 1;
-        let device = if dmx_ports.contains(&port.to_string()) {
-            match DmxDevice::new(port, dmx_channel, fixture.clone()) {
-                Ok(dev) => {
-                    if dev.start().is_ok() {
-                        let mut status = status_message.lock().unwrap();
-                        *status = format!("Created and started DMX device on {} channel {}", port, dmx_channel);
-                        Some(Arc::new(dev))
-                    } else {
-                        let mut status = status_message.lock().unwrap();
-                        *status = "Failed to start DMX device".to_string();
-                        None
-                    }
-                }
-                Err(e) => {
-                    let mut status = status_message.lock().unwrap();
-                    *status = format!("Failed to create DMX device: {}", e);
-                    None
-                }
-            }
-        } else {
-            let mut status = status_message.lock().unwrap();
-            *status = format!("{} not found in available DMX ports: {:?}", port, dmx_ports);
-            None
-        };
-        let status_message = Arc::new(Mutex::new(String::from("Ready")));
-        DmxApp {
-            device,
+        let mut app = DmxApp {
+            device: None,
             status_message,
             fixture,
+            dmx_ports,
+            selected_port: None,
+        };
+        if app.dmx_ports.len() == 1 {
+            app.select_and_init_port(0);
         }
+        app
     }
 }
 
 impl eframe::App for DmxApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        
         egui::TopBottomPanel::bottom("status_bar").show(ctx, |ui| {
             let status = self.status_message.lock().unwrap().clone();
             ui.label(format!("Status: {}", status));
         });
-        egui::CentralPanel::default().show(ctx, |ui| {
-            if let Some(device) = &self.device {
-                for (i, channel) in self.fixture.channels.iter().enumerate() {
-                    self.dmx_field_fixture(ui, channel, i + 1, device);
+        // DMX port dropdown above status bar
+        egui::TopBottomPanel::bottom("port_selector_bar").show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                ui.label("DMX Port:");
+                let mut selected_idx = self.selected_port.as_ref().and_then(|port| self.dmx_ports.iter().position(|p| p == port)).unwrap_or(0);
+                let response = egui::ComboBox::from_id_source("dmx_port_selector")
+                    .selected_text(self.selected_port.clone().unwrap_or_else(|| "Select port".to_string()))
+                    .show_ui(ui, |ui| {
+                        for (idx, port) in self.dmx_ports.iter().enumerate() {
+                            ui.selectable_value(&mut selected_idx, idx, port);
+                        }
+                    });
+                if self.dmx_ports.len() == 1 && self.selected_port.is_none() {
+                    // Auto-select if only one port
+                    self.selected_port = Some(self.dmx_ports[0].clone());
+                    let new_port = self.dmx_ports[0].clone();
+                    let dmx_channel = 1;
+                    match DmxDevice::new(&new_port, dmx_channel, self.fixture.clone()) {
+                        Ok(dev) => {
+                            if dev.start().is_ok() {
+                                let mut status = self.status_message.lock().unwrap();
+                                *status = format!("Created and started DMX device on {} channel {}", new_port, dmx_channel);
+                                self.device = Some(Arc::new(dev));
+                            } else {
+                                let mut status = self.status_message.lock().unwrap();
+                                *status = "Failed to start DMX device".to_string();
+                                self.device = None;
+                            }
+                        }
+                        Err(e) => {
+                            let mut status = self.status_message.lock().unwrap();
+                            *status = format!("Failed to create DMX device: {}", e);
+                            self.device = None;
+                        }
+                    }
+                } else if let Some(idx) = selected_idx.checked_sub(0) {
+                    self.select_and_init_port(idx);
                 }
-            }
+            });
+        });
+
+
+        let channels = &self.fixture.channels;
+        let mid = channels.len() / 2;
+        let (left, right) = channels.split_at(mid);
+        egui::CentralPanel::default().show(ctx, |ui| {
+            tui(ui, ui.id().with("channels_panel"))
+                .reserve_available_space()
+                .style(taffy::Style {
+                    flex_direction: taffy::FlexDirection::Row,
+                    gap: taffy::style_helpers::length(12.0),
+                    padding: taffy::style_helpers::length(12.0),
+                    ..Default::default()
+                })
+                .show(|tui| {
+                    // Organize channels in rows: left column
+                    tui.style(taffy::Style {
+                        flex_direction: taffy::FlexDirection::Column,
+                        gap: taffy::style_helpers::length(8.0),
+                        ..Default::default()
+                    }).add(|tui| {
+                        if let Some(device) = &self.device {
+                            for (i, channel) in left.iter().enumerate() {
+                                let label = &channel.name;
+                                let tooltip = channel.capabilities.iter().map(|cap| {
+                                    let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
+                                    let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
+                                    let desc = cap.description.as_deref().unwrap_or("");
+                                    format!("{}: {}\n{}", range, name, desc)
+                                }).collect::<Vec<_>>().join("\n\n");
+                                if let Some(mut value) = device.get_dmx_channel(i + 1) {
+                                    tui.style(taffy::Style {
+                                        flex_direction: taffy::FlexDirection::Row,
+                                        align_items: Some(taffy::AlignItems::Center),
+                                        gap: taffy::style_helpers::length(8.0),
+                                        ..Default::default()
+                                    }).add(|tui| {
+                                        tui.style(taffy::Style {
+                                            size: taffy::Size {
+                                                width: taffy::style_helpers::length(120.0),
+                                                height: taffy::style_helpers::auto(),
+                                            },
+                                            ..Default::default()
+                                        }).label(label);
+                                        let drag = egui::DragValue::new(&mut value)
+                                            .range(0..=255)
+                                            .speed(1.0)
+                                            .suffix("");
+                                        if tui.ui_add(drag).on_hover_text(tooltip).changed() {
+                                            device.set_dmx_channel(i + 1, value).ok();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    // Organize channels in rows: right column
+                    tui.style(taffy::Style {
+                        flex_direction: taffy::FlexDirection::Column,
+                        gap: taffy::style_helpers::length(8.0),
+                        ..Default::default()
+                    }).add(|tui| {
+                        if let Some(device) = &self.device {
+                            for (i, channel) in right.iter().enumerate() {
+                                let label = &channel.name;
+                                let tooltip = channel.capabilities.iter().map(|cap| {
+                                    let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
+                                    let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
+                                    let desc = cap.description.as_deref().unwrap_or("");
+                                    format!("{}: {}\n{}", range, name, desc)
+                                }).collect::<Vec<_>>().join("\n\n");
+                                if let Some(mut value) = device.get_dmx_channel(mid + i + 1) {
+                                    tui.style(taffy::Style {
+                                        flex_direction: taffy::FlexDirection::Row,
+                                        align_items: Some(taffy::AlignItems::Center),
+                                        gap: taffy::style_helpers::length(8.0),
+                                        ..Default::default()
+                                    }).add(|tui| {
+                                        tui.style(taffy::Style {
+                                            size: taffy::Size {
+                                                width: taffy::style_helpers::length(120.0),
+                                                height: taffy::style_helpers::auto(),
+                                            },
+                                            ..Default::default()
+                                        }).label(label);
+                                        let drag = egui::DragValue::new(&mut value)
+                                            .range(0..=255)
+                                            .speed(1.0)
+                                            .suffix("");
+                                        if tui.ui_add(drag).on_hover_text(tooltip).changed() {
+                                            device.set_dmx_channel(mid + i + 1, value).ok();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
         });
     }
 }
 
 impl DmxApp {
-        fn dmx_field_fixture(&self, ui: &mut egui::Ui, channel: &darkelf::dmx::model::Channel, rel_channel: usize, device: &Arc<DmxDevice>) {
-            let label = &channel.name;
-            // Compose tooltip from channel capabilities
-            let tooltip = channel.capabilities.iter().map(|cap| {
-                let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
-                let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
-                let desc = cap.description.as_deref().unwrap_or("");
-                format!("{}: {}\n{}", range, name, desc)
-            }).collect::<Vec<_>>().join("\n\n");
+    // dmx_field_fixture logic is now inlined in update
 
-            // Use device getter for channel value
-            if let Some(value) = device.get_dmx_channel(rel_channel) {
-                let mut value_str = value.to_string();
-                ui.horizontal(|ui| {
-                    ui.add_sized([100.0, 0.0], egui::Label::new(label));
-                    let text_response = ui.add_sized(
-                        [50.0, 0.0],
-                        egui::TextEdit::singleline(&mut value_str)
-                            .char_limit(3)
-                    );
-                    let mut slider_value = value;
-                    let slider = egui::Slider::new(&mut slider_value, 0..=255).step_by(1.0);
-                    let slider_response = ui.add_sized([100.0, 0.0], slider);
-                    let slider_response = slider_response.on_hover_text(tooltip);
-                    if slider_response.changed() {
-                        value_str = slider_value.to_string();
-                        device.set_dmx_channel(rel_channel, slider_value).ok();
-                    }
-                    if text_response.changed() {
-                        if let Ok(mut val) = value_str.parse::<i32>() {
-                            val = val.clamp(0, 255);
-                            device.set_dmx_channel(rel_channel, val as u8).ok();
-                        }
-                    }
-                });
-            }
-        }
-
-
-}
-
-
+    }
