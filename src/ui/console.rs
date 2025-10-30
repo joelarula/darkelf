@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use crate::model::{DisplayColor, DrawData, Point, ProjectItem, PisObject};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
+use log::info;
 use tokio::sync::{Mutex, mpsc};
 use windows::Devices::Enumeration::DeviceInformation;
 
@@ -39,6 +40,9 @@ pub struct Console {
     pub cached_config_text: String,
     pub cached_config_result: Option<Result<PisObject, String>>,
     pub text_command: String,
+    device_initialized: bool,
+    device_list: DeviceList,
+    device_info: Option<DeviceInformation>,
 }
 
 
@@ -99,6 +103,9 @@ impl Console {
                 cached_config_text: String::new(),
                 cached_config_result: None,
                 text_command: String::new(),
+                device_initialized: false,
+                device_list: DeviceList { devices: Vec::new(), selected_index: None },
+                device_info: None,
             }
         }
     }
@@ -147,13 +154,18 @@ impl eframe::App for Console {
                     DeviceMessage::DeviceName(name) => {
                         self.device_name = Some(name);
                     }
-                    DeviceMessage::DeviceStatus(status) => {
+                    DeviceMessage::ConnectionStatus(status) => {
                         self.device_connected = status;
-                        log::info!("Device connection status changed: {}", status);
                     }
-                    DeviceMessage::DeviceList(device_list) => todo!(),
-                    DeviceMessage::DeviceInfo(device_information) => todo!(),
-                    DeviceMessage::SetupStatus(_) => todo!(),
+                    DeviceMessage::DeviceList(device_list) => {
+                        self.device_list = device_list;
+                    }
+                    DeviceMessage::DeviceInfo(device_information) => {
+                        self.device_info = Some(device_information);
+                    }
+                    DeviceMessage::SetupStatus(status) => {
+                        self.device_initialized = status;
+                    }
                 }
             }
         }

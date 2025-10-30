@@ -19,7 +19,6 @@ impl BlueLaserDevice {
 
 
 
-    /// Create a new LaserDevice instance with initialized random check bytes and device controller
     pub fn new(device_controller: impl BlueController + 'static) -> Self {
         Self {
             random_check: Self::gen_random_check(),
@@ -34,6 +33,16 @@ impl BlueLaserDevice {
                 map
             },
         }
+    }
+
+    pub fn is_connected(&self) -> bool {
+        let controller = self.device_controller.lock().unwrap();
+        controller.is_connected()
+    }
+    
+    pub async fn connect(&mut self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let mut controller = self.device_controller.lock().unwrap();
+        controller.connect().await
     }
 
     pub async fn setup(&self) {
@@ -126,6 +135,7 @@ impl BlueLaserDevice {
     }
 
 pub async fn set_settings(&self, new_settings: SettingsData) {
+    info!("Setting new device settings: {:?}", new_settings);
     let cmd = CommandGenerator::get_setting_cmd(&new_settings);
     let mut controller = self.device_controller.lock().unwrap();
     if let Ok(_) = controller.send(&cmd).await {

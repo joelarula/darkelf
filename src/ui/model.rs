@@ -3,7 +3,7 @@ use windows::Devices::Enumeration::DeviceInformation;
 use crate::model::{DeviceResponse, PisObject, PlaybackMode, Point};
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct DeviceList {
     pub devices: Vec<windows::Devices::Enumeration::DeviceInformation>,
     pub selected_index: Option<usize>,
@@ -24,7 +24,7 @@ pub enum DeviceMessage {
     DeviceList(DeviceList),
     DeviceInfo(DeviceInformation),
     DeviceName(String),
-    DeviceStatus(bool),
+    ConnectionStatus(bool),
     SetupStatus(bool),
 }
 

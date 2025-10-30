@@ -25,7 +25,7 @@ use crate::blue::{self, BlueController};
 use crate::command::{HEADER, FOOTER};
 
 // BLE timing and packet constants
-const BLE_SEND_INTERVAL_MS: u64 = 10;
+const BLE_SEND_INTERVAL_MS: u64 = 20;
 const BLE_PACKET_SIZE: usize = 20;
 
 pub type Characteristic = GattCharacteristic;
