@@ -14,6 +14,7 @@ use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
 use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, PisObject};
+use windows::Win32::Foundation::ERROR_INVALID_FILTER_PROC;
 use std::fs;
 use std::path::Path;
 
@@ -55,11 +56,11 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     sleep(Duration::from_millis(500));
 
-    test_on_off(device).await;
+   // test_on_off(device).await;
     sleep(Duration::from_millis(500));
     test_settings(device).await;
     sleep(Duration::from_millis(500));
-    test_playback_command(device).await;
+    //test_playback_command(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_shapes(device).await;
@@ -76,6 +77,62 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     Ok(())
 }
+
+
+async fn test_settings(device: &mut BlueLaserDevice) {
+
+
+    device.set_playback_mode(PlaybackCommand::default(PlaybackMode::OutdoorPlayback)).await;
+    sleep(Duration::from_millis(5000));
+    let mut settings = device.get_setting();
+    if let Some(ref mut settings) = settings {
+        
+        // Loop through possible xy values (example: 0..=10)
+        for xy in 0..=10 {
+            settings.xy = xy;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(20));
+            info!("Command data: {:?}", device.get_setting());
+        }
+
+         settings.xy = 0; // Reset to default
+         device.set_settings(settings.clone()).await;
+
+         sleep(Duration::from_millis(500));
+        // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
+        settings.light = 1; // mono
+        device.set_settings(settings.clone()).await;
+        sleep(Duration::from_secs(3));
+
+        settings.light = 3; // back to RGB
+        device.set_settings(settings.clone()).await;
+        sleep(Duration::from_millis(500));
+
+        // Loop values[1] from 10 to 100
+        for v in 10..=55 {
+            settings.values[1] = v;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(20));
+            info!("Command data: {:?}", device.get_setting());
+        }
+
+        // Loop values[1] from 99 down to 50
+        for v in (55..100).rev() {
+            settings.values[1] = v;
+            device.set_settings(settings.clone()).await;
+            sleep(Duration::from_millis(20));
+            info!("Command data: {:?}", device.get_setting());
+        }
+
+        
+
+
+
+    
+    }
+}
+
+
 
 async fn test_boundaries(device: &mut BlueLaserDevice) {
 
@@ -209,51 +266,6 @@ async fn test_on_off(device: &mut BlueLaserDevice) {
         sleep(Duration::from_millis(500));
     }
 }
-
-async fn test_settings(device: &mut BlueLaserDevice) {
-
-    let mut settings = device.get_setting();
-    if let Some(ref mut settings) = settings {
-        
-        // Loop through possible xy values (example: 0..=10)
-        for xy in 0..=10 {
-            settings.xy = xy;
-            device.set_settings(settings.clone()).await;
-            sleep(Duration::from_millis(20));
-        }
-
-         settings.xy = 0; // Reset to default
-         device.set_settings(settings.clone()).await;
-
-         sleep(Duration::from_millis(500));
-        // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
-        settings.light = 1; // mono
-        device.set_settings(settings.clone()).await;
-        sleep(Duration::from_secs(3));
-
-        settings.light = 3; // back to RGB
-        device.set_settings(settings.clone()).await;
-        sleep(Duration::from_millis(500));
-
-        // Loop values[1] from 10 to 100
-        for v in 10..=55 {
-            settings.values[1] = v;
-            device.set_settings(settings.clone()).await;
-            sleep(Duration::from_millis(20));
-        }
-
-        // Loop values[1] from 99 down to 50
-        for v in (55..100).rev() {
-            settings.values[1] = v;
-            device.set_settings(settings.clone()).await;
-            sleep(Duration::from_millis(20));
-        }
-
-
-    
-    }
-}
-
 
 
 
