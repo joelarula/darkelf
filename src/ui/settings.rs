@@ -1,5 +1,5 @@
 use eframe::egui::*;
-use crate::ui::console::{Console, Light, Sign};
+use crate::ui::{self, console::{Console, Light, Sign}, model::{self, DeviceCommand}};
 
 pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
     TopBottomPanel::bottom("bottom_panel")
@@ -19,9 +19,9 @@ pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
                             let toggle_response = ui.toggle_value(&mut on_ui, toggle_label);
                             if toggle_response.changed() {
                                 if on_ui && console.device_connected {
-                                    let _ = console.command_sender.send(crate::ui::console::DeviceCommand::On(true));
+                                    let _ = console.command_sender.send(DeviceCommand::On(true));
                                 } else if !on_ui && console.device_connected {
-                                    let _ = console.command_sender.send(crate::ui::console::DeviceCommand::On(false));
+                                    let _ = console.command_sender.send(DeviceCommand::On(false));
                                 }
                             }
                         },
@@ -38,7 +38,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
                             let mut new_settings = state.settings.clone();
                             if new_settings.values.len() > 1 && console.device_connected {
                                 new_settings.values[1] = console.display_range as u16;
-                                let _ = console.command_sender.send(crate::ui::console::DeviceCommand::SetSettings(new_settings));
+                                let _ = console.command_sender.send(DeviceCommand::SetSettings(new_settings));
                             }
                         }
                     }
@@ -119,7 +119,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
                                 if let Some(ref state) = console.device_state {
                                     let mut new_settings = state.settings.clone();
                                     new_settings.light = if light_ui == Light::RGB { 3 } else { 1 };
-                                    let _ = console.command_sender.send(crate::ui::console::DeviceCommand::SetSettings(new_settings));
+                                    let _ = console.command_sender.send(DeviceCommand::SetSettings(new_settings));
                                 }
                             }
                         },

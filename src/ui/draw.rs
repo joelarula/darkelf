@@ -1,4 +1,4 @@
-use crate::{model::{Point, PisObject}, ui::console::Console};
+use crate::{model::{PisObject, Point}, ui::{self, console::Console, model::DeviceCommand}};
 use eframe::egui::*;
 
 fn parse_points_from_json(json_text: &str) -> (Result<Vec<Point>, serde_json::Error>, Option<String>) {
@@ -155,7 +155,7 @@ pub fn show_draw_ui(console: &mut Console, ctx:  &eframe::egui::Context) {
                         console.cached_config_result.as_ref()
                     ) {
                         log::info!("Sending draw commands with {} points", points.len());
-                        let _ = console.command_sender.send(crate::ui::console::DeviceCommand::Draw(points.clone(), draw_config.clone()));
+                        let _ = console.command_sender.send(DeviceCommand::Draw(points.clone(), draw_config.clone()));
                     }
                 }
                 

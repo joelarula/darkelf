@@ -15,8 +15,8 @@ A cross-platform DMX device control and channel editor UI for Laser light 8340 d
 
 ### Prerequisites
 - A supported DMX device
-- FTDI USB DMX Converter 
-- JSON fixture file  `laser_light_8340` in Open Fixture Format in `assets/fixtures/` ([see Open Fixture Library](https://open-fixture-library.org/)) anlog for UKING ZQ03268 LASER
+- FTDI USB DMX Converter - creates com port interface
+- JSON fixture file  `laser_light_8340` in Open Fixture Format in `assets/fixtures/laser_light_8340.json` ([see Open Fixture Library](https://open-fixture-library.org/)) analog for UKING ZQ03268 LASER
 
 
 

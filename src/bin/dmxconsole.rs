@@ -37,6 +37,40 @@ fn main() {
 }
 
 impl DmxApp {
+    fn render_channel_column(&self, tui: &mut egui_taffy::Tui, channels: &[darkelf::dmx::model::Channel], offset: usize, device: &Arc<DmxDevice>) {
+        for (i, channel) in channels.iter().enumerate() {
+            let label = &channel.name;
+            let tooltip = channel.capabilities.iter().map(|cap| {
+                let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
+                let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
+                let desc = cap.description.as_deref().unwrap_or("");
+                format!("{}: {}\n{}", range, name, desc)
+            }).collect::<Vec<_>>().join("\n\n");
+            if let Some(mut value) = device.get_dmx_channel(offset + i + 1) {
+                tui.style(taffy::Style {
+                    flex_direction: taffy::FlexDirection::Row,
+                    align_items: Some(taffy::AlignItems::Center),
+                    gap: taffy::style_helpers::length(8.0),
+                    ..Default::default()
+                }).add(|tui| {
+                    tui.style(taffy::Style {
+                        size: taffy::Size {
+                            width: taffy::style_helpers::length(120.0),
+                            height: taffy::style_helpers::auto(),
+                        },
+                        ..Default::default()
+                    }).label(label);
+                    let drag = egui::DragValue::new(&mut value)
+                        .range(0..=255)
+                        .speed(1.0)
+                        .suffix("");
+                    if tui.ui_add(drag).on_hover_text(tooltip).changed() {
+                        device.set_dmx_channel(offset + i + 1, value).ok();
+                    }
+                });
+            }
+        }
+    }
     fn select_and_init_port(&mut self, idx: usize) {
         if idx < self.dmx_ports.len() {
             let new_port = self.dmx_ports[idx].clone();
@@ -151,38 +185,7 @@ impl eframe::App for DmxApp {
                         ..Default::default()
                     }).add(|tui| {
                         if let Some(device) = &self.device {
-                            for (i, channel) in left.iter().enumerate() {
-                                let label = &channel.name;
-                                let tooltip = channel.capabilities.iter().map(|cap| {
-                                    let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
-                                    let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
-                                    let desc = cap.description.as_deref().unwrap_or("");
-                                    format!("{}: {}\n{}", range, name, desc)
-                                }).collect::<Vec<_>>().join("\n\n");
-                                if let Some(mut value) = device.get_dmx_channel(i + 1) {
-                                    tui.style(taffy::Style {
-                                        flex_direction: taffy::FlexDirection::Row,
-                                        align_items: Some(taffy::AlignItems::Center),
-                                        gap: taffy::style_helpers::length(8.0),
-                                        ..Default::default()
-                                    }).add(|tui| {
-                                        tui.style(taffy::Style {
-                                            size: taffy::Size {
-                                                width: taffy::style_helpers::length(120.0),
-                                                height: taffy::style_helpers::auto(),
-                                            },
-                                            ..Default::default()
-                                        }).label(label);
-                                        let drag = egui::DragValue::new(&mut value)
-                                            .range(0..=255)
-                                            .speed(1.0)
-                                            .suffix("");
-                                        if tui.ui_add(drag).on_hover_text(tooltip).changed() {
-                                            device.set_dmx_channel(i + 1, value).ok();
-                                        }
-                                    });
-                                }
-                            }
+                            self.render_channel_column(tui, left, 0, device);
                         }
                     });
                     // Organize channels in rows: right column
@@ -192,38 +195,7 @@ impl eframe::App for DmxApp {
                         ..Default::default()
                     }).add(|tui| {
                         if let Some(device) = &self.device {
-                            for (i, channel) in right.iter().enumerate() {
-                                let label = &channel.name;
-                                let tooltip = channel.capabilities.iter().map(|cap| {
-                                    let range = format!("{}-{}", cap.dmx_range[0], cap.dmx_range[1]);
-                                    let name = cap.menu_name.as_ref().unwrap_or(&cap.type_);
-                                    let desc = cap.description.as_deref().unwrap_or("");
-                                    format!("{}: {}\n{}", range, name, desc)
-                                }).collect::<Vec<_>>().join("\n\n");
-                                if let Some(mut value) = device.get_dmx_channel(mid + i + 1) {
-                                    tui.style(taffy::Style {
-                                        flex_direction: taffy::FlexDirection::Row,
-                                        align_items: Some(taffy::AlignItems::Center),
-                                        gap: taffy::style_helpers::length(8.0),
-                                        ..Default::default()
-                                    }).add(|tui| {
-                                        tui.style(taffy::Style {
-                                            size: taffy::Size {
-                                                width: taffy::style_helpers::length(120.0),
-                                                height: taffy::style_helpers::auto(),
-                                            },
-                                            ..Default::default()
-                                        }).label(label);
-                                        let drag = egui::DragValue::new(&mut value)
-                                            .range(0..=255)
-                                            .speed(1.0)
-                                            .suffix("");
-                                        if tui.ui_add(drag).on_hover_text(tooltip).changed() {
-                                            device.set_dmx_channel(mid + i + 1, value).ok();
-                                        }
-                                    });
-                                }
-                            }
+                            self.render_channel_column(tui, right, mid, device);
                         }
                     });
                 });

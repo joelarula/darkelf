@@ -1,19 +1,16 @@
 use std::sync::Arc;
 use std::collections::HashMap;
 use crate::model::{DisplayColor, DrawData, Point, ProjectItem, PisObject};
+use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
 use tokio::sync::{Mutex, mpsc};
+use windows::Devices::Enumeration::DeviceInformation;
 
 use crate::model::{DeviceResponse, PlaybackMode};
 
 use crate::ui::show_selector::show_selector_grid;
 use crate::ui::{buttons, playback_settings, settings, statusbar,draw}; 
 
-pub enum DeviceMessage {
-    DeviceResponse(DeviceResponse),
-    DeviceName(String),
-    DeviceStatus(bool),
-}
 
 pub struct Console {  
     pub channel: i32,
@@ -131,18 +128,6 @@ impl Default for Light {
 }
 
 
-#[derive(Clone, Debug)]
-pub enum DeviceCommand {
-    On(bool),
-    SetSettings(crate::model::SettingsData),
-    SetMode {
-        mode: PlaybackMode,
-        selected_shows: Option<Vec<u8>>,
-    },
-    Draw(Vec<Point>, PisObject),
-    SendText(String),
-}
-
 
 
 impl eframe::App for Console {
@@ -166,6 +151,9 @@ impl eframe::App for Console {
                         self.device_connected = status;
                         log::info!("Device connection status changed: {}", status);
                     }
+                    DeviceMessage::DeviceList(device_list) => todo!(),
+                    DeviceMessage::DeviceInfo(device_information) => todo!(),
+                    DeviceMessage::SetupStatus(_) => todo!(),
                 }
             }
         }

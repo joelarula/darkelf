@@ -1,113 +1,183 @@
+use std::sync::{Arc, Mutex as StdMutex};
 use anyhow::anyhow;
 use darkelf::bluedevice::BlueLaserDevice;
-use darkelf::ui::console::DeviceMessage;
+use darkelf::ui::model::DeviceList;
 use darkelf::winblue::WinBlueController;
 use darkelf::{
     model::DeviceResponse,
-    ui::console::{Console, DeviceCommand, Sign},
+    ui::console::{Console, Sign},
     util, winblue,
 };
 use eframe::egui;
 use log::{error, info};
+use serde::de;
 use std::env;
 use std::{sync::Arc, thread};
 use tokio::sync::{Mutex, mpsc};
 use windows::Devices::Enumeration::DeviceInformation;
 
 fn main() -> eframe::Result<()> {
+
     util::setup_logging();
     unsafe {
         env::set_var("RUST_LOG", "debug");
     }
 
-    let (ui_message_channel_outbound, ui_message_channel_incomming) =
+    let (devicesender, devicereceiver) =
         mpsc::unbounded_channel::<DeviceMessage>();
-    let (device_command_channel_outbound, mut device_command_incomming) =
+  
+    let (winsender, mut winreciever) =
         mpsc::unbounded_channel::<DeviceCommand>();
-    //let ui_tx_clone = ui_message_channel_outbound.clone();
+
+    let device_list = Arc::new(StdMutex::new(DeviceList::new()));
+    let device_list_clone = device_list.clone();
+
+    let controller: Arc<StdMutex<Option<BlueController>>> = Arc::new(StdMutex::new(None));
+    let controller_clone = controller.clone();
+
+    let device: Arc<StdMutex<Option<BlueLaserDevice>>> = Arc::new(StdMutex::new(None));
+    let device_clone = device.clone();
+
     thread::spawn(move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async move {
-            log::info!("Starting device thread");
+            
+            log::info!("Starting application thread");
+            loop {
 
-            let devices: Vec<DeviceInformation> = match winblue::scan_laser_devices().await {
-                Ok(devices) => devices,
-                Err(e) => {
-                    error!("Failed to scan for devices: {:?}", e);
-                    return;
-                }
-            };
+                let mut devlist = device_list_clone.lock().unwrap();
+                if devlist.devices.is_empty() {
 
-            if (!devices.is_empty()) {
-                let _ = ui_message_channel_outbound.send(DeviceMessage::DeviceName(
-                    devices[0].Name().unwrap_or_default().to_string(),
+                    match winblue::scan_laser_devices().await {
+                        Ok(devs) => {
+                            devlist.devices = devs;
+                            devlist.selected_index = if devlist.devices.is_empty() { None } else { Some(0) };
+                        },
+                        Err(e) => {
+                            error!("Failed to scan for devices: {:?}", e);
+                            devlist.devices.clear();
+                            devlist.selected_index = None;
+                        }
+
+                    }
+
+                }    
+                
+                let _ = devicesender.send(DeviceMessage::DeviceList(
+                    devlist.clone()
                 ));
 
-                let mut controller = match WinBlueController::new(devices.get(0)).await {
-                    Ok(ctrl) => ctrl,
-                    Err(e) => {
-                        error!("Failed to create WinBlueController: {:?}", e);
-                        return;
-                    }
-                };
+                             
+                if let Some(device_info) =  devlist.selected_device().cloned() {
+                        
+                        let _ = devicesender.send(DeviceMessage::DeviceInfo(
+                            device_info.clone(),
+                        ));
 
-                if let Err(e) = controller
-                    .connect()
-                    .await
-                    .map_err(|e| anyhow!(e.to_string()))
-                {
-                    error!("Failed to connect: {:?}", e);
-                    return;
-                }
+                         let mut controller = controller_clone.lock().unwrap();
 
-                let _ = ui_message_channel_outbound
-                    .send(DeviceMessage::DeviceStatus(controller.is_connected()));
+                        if controller.is_none() {
 
-                if controller.is_connected() {
-                    let mut device: BlueLaserDevice = BlueLaserDevice::new(controller);
+                            *controller = match BlueController::new(Some(&device_info)).await {
+                                Ok(ctrl) => Some(ctrl),
+                                Err(e) => {
+                                    error!("Failed to create WinBlueController: {:?}", e);
+                                    None
+                                }
+                            };
+                        }
 
-                    device.setup().await;
+                        if let Some(controller) = controller.as_mut(){
 
-                    loop {
-                        // Handle incoming commands (non-blocking)
-                        if let Ok(cmd) = device_command_incomming.try_recv() {
-                            match cmd {
-                                DeviceCommand::SetSettings(settings) => {
-                                    device.set_settings(settings).await;
+
+                            if !controller.is_connected() {
+
+                                if let Err(e) = controller
+                                .connect()
+                                .await
+                                .map_err(|e| anyhow!(e.to_string())){
+                                    error!("Failed to connect: {:?}", e);
                                 }
-                                DeviceCommand::On(on) => {
-                                    if (on) {
-                                        device.on().await;
-                                    } else {
-                                        device.off().await;
-                                    }
-                                }
-                                DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
-                                  //  device.set_playback_mode(playback_mode, selected_shows).await;
-                                }
-                                DeviceCommand::Draw(points, draw_config) => {
-                                    device.draw(points, draw_config).await;
-                                }
-                                DeviceCommand::SendText(text) => {
-                                    log::info!("Received text command: {}", text);
-                                    // You can add specific text command handling here
-                                    // For now, just log the command
-                                }
+
                             }
-                        }
 
-                        let response_opt = device.get_device_response();
-                        if let Some(response) = response_opt {
-                            let _ = ui_message_channel_outbound
-                                .send(DeviceMessage::DeviceResponse(response));
-                        }
+                            let _ = devicesender
+                                .send(DeviceMessage::DeviceStatus(controller.is_connected()));
 
-                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                            if controller.is_connected() {
+
+
+                                let mut device = device_clone.lock().unwrap();
+                                if device.is_none() {
+                                     *device = Some(BlueLaserDevice::new(controller));
+                                }
+                                
+                                
+                                if let Some(device) = device.as_mut() {
+
+                                    if device.is_initialized() == false {
+                                         device.setup().await;
+                                    }
+
+                                    let _ = devicesender
+                                            .send(DeviceMessage::SetupStatus(device.is_initialized()));
+
+                                    if(device.is_initialized()) {
+
+                                        if let Ok(cmd) = winreciever.try_recv() {
+                                            match cmd {
+                                                
+                                                DeviceCommand::SetSettings(settings) => {
+                                                    device.set_settings(settings).await;
+                                                }
+                                                
+                                                DeviceCommand::On(on) => {
+                                                    if on {
+                                                        device.on().await;
+                                                    } else {
+                                                        device.off().await;
+                                                    }
+                                                }
+                                                
+                                                DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
+                                                     device.set_playback_mode(playback_mode).await;
+                                                }
+                                                
+                                                DeviceCommand::Draw(points, draw_config) => {
+                                                    device.draw(points, draw_config).await;
+                                                }
+                                                
+                                                DeviceCommand::SendText(text) => {
+                                                    log::info!("Received text command: {}", text);
+                                                }
+                                            }
+                                        }
+                                    }
+                        
+                                    let response_opt = device.get_device_response();
+                                    if let Some(response) = response_opt {
+                                        let _ = devicesender
+                                            .send(DeviceMessage::DeviceResponse(response));
+                                    }
+                        
+
+
+                                }
+
+                        }
                     }
                 }
+                            
+                tokio::time::sleep(std::time::Duration::from_millis(50)).await;
             }
-        });
+        
+        
     });
+});
+   
+
+
+
 
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -121,9 +191,11 @@ fn main() -> eframe::Result<()> {
         options,
         Box::new(|_cc| {
             Ok(Box::new(Console::new(
-                Arc::new(Mutex::new(ui_message_channel_incomming)),
-                device_command_channel_outbound,
+                Arc::new(Mutex::new(devicereceiver)),
+                winsender,
             )))
         }),
     )
 }
+
+

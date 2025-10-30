@@ -72,6 +72,10 @@ impl BlueLaserDevice {
         }
     }
 
+    pub fn is_initialized(&self) -> bool {
+        self.device_info.lock().unwrap().is_some()
+    }
+
     pub async fn on(&self) {
         info!("LaserDevice: turning on");
         let mut controller = self.device_controller.lock().unwrap();

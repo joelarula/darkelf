@@ -1,4 +1,4 @@
-use crate::ui::console::Console;
+use crate::ui::{console::Console, model};
 use eframe::egui::*;
 
 pub fn show_text_ui(console: &mut Console, ctx: &eframe::egui::Context) {
@@ -64,7 +64,7 @@ fn send_text_command(console: &mut Console) {
         log::info!("Sending text command: {}", console.text_command);
         
         // Send the text command (you can modify this to send the appropriate command type)
-        let _ = console.command_sender.send(crate::ui::console::DeviceCommand::SendText(console.text_command.clone()));
+        let _ = console.command_sender.send(model::DeviceCommand::SendText(console.text_command.clone()));
         
         // Clear the text field after sending
         console.text_command.clear();
