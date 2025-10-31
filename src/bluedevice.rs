@@ -3,7 +3,7 @@ use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, Playbac
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
-use crate::model::{ DeviceResponse, SettingsData};
+use crate::model::{ DeviceResponse, DeviceSettings};
 use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
@@ -96,12 +96,9 @@ impl BlueLaserDevice {
         if let Err(e) = controller.send(POWER_ON_CMD).await {
             error!("Failed to send ON command: {:?}", e);
         }
-        // Update device_info to reflect device is on
-        if let Ok(mut info) = self.device_info.lock() {
-            if let Some(ref mut resp) = *info {
-                if let Some(ref mut dev_info) = resp.device_info {
-                    dev_info.device_on = true;
-                }
+        if let Ok(mut info_lock) = self.device_info.lock() {
+            if let Some(ref mut device_data) = *info_lock {
+                device_data.device_info.device_on = true;              
             }
         }
     }
@@ -113,40 +110,38 @@ impl BlueLaserDevice {
             error!("Cannot turn off - device not connected");
             return;
         }
-        // Send power off command
+
         if let Err(e) = controller.send(POWER_OFF_CMD).await {
             error!("Failed to send OFF command: {:?}", e);
         }
-        // Update device_info to reflect device is off
-        if let Ok(mut info) = self.device_info.lock() {
-            if let Some(ref mut resp) = *info {
-                if let Some(ref mut dev_info) = resp.device_info {
-                    dev_info.device_on = false;
-                }
+
+        if let Ok(mut info_lock) = self.device_info.lock() {
+            if let Some(ref mut device_data) = *info_lock {
+                device_data.device_info.device_on = false;              
             }
         }
     }
 
     /// Get a copy of the current device settings
-    pub fn get_setting(&self) -> Option<SettingsData> {
+    pub fn get_setting(&self) -> Option<DeviceSettings> {
         self.device_info.lock().unwrap()
             .as_ref()
             .map(|resp| resp.settings.clone())
     }
 
-pub async fn set_settings(&self, new_settings: SettingsData) {
-    info!("Setting new device settings: {:?}", new_settings);
-    let cmd = CommandGenerator::get_setting_cmd(&new_settings);
-    let mut controller = self.device_controller.lock().unwrap();
-    if let Ok(_) = controller.send(&cmd).await {
-        let mut info_lock = self.device_info.lock().unwrap();
-        if let Some(ref mut response) = *info_lock {
-            response.settings = new_settings;
+    pub async fn set_settings(&self, new_settings: DeviceSettings) {
+        info!("Setting new device settings: {:?}", new_settings);
+        let cmd = CommandGenerator::get_setting_cmd(&new_settings);
+        let mut controller = self.device_controller.lock().unwrap();
+        if let Ok(_) = controller.send(&cmd).await {
+            let mut info_lock = self.device_info.lock().unwrap();
+            if let Some(ref mut response) = *info_lock {
+                response.settings = new_settings;
+            }
+        } else {
+            error!("Failed to send settings command");
         }
-    } else {
-        error!("Failed to send settings command");
     }
-}
 
     pub async fn draw(&self, points: Vec<Point>, config: PisObject) {
        let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
@@ -165,7 +160,7 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
                 // Update main_data in device_info
                 let mut info_lock = self.device_info.lock().unwrap();
                 if let Some(ref mut resp) = *info_lock {
-                    resp.main_data.current_mode = command_clone.mode as u8;
+                    resp.main_data.device_mode = command_clone.mode as u8;
                 }
             } else {
                 error!("Failed to send playback mode command");
@@ -209,11 +204,13 @@ pub async fn set_settings(&self, new_settings: SettingsData) {
 
     /// Get the current device power state
     pub fn is_on(&self) -> bool {
-        self.device_info.lock().unwrap()
-            .as_ref()
-            .and_then(|resp| resp.device_info.as_ref())
-            .map(|info| info.device_on)
-            .unwrap_or(false)
+
+        if let Ok(info_lock) = self.device_info.lock() {
+            if let Some(ref device_data) = *info_lock {
+                return device_data.device_info.device_on;              
+            }
+        }
+        false
     }
 
     /// Get a copy of the entire device response
@@ -279,11 +276,11 @@ impl LaserDevice for BlueLaserDevice {
         self.off().await
     }
     
-    fn get_settings(&self) -> Option<SettingsData> {
+    fn get_settings(&self) -> Option<DeviceSettings> {
         self.get_setting()
     }
     
-    async fn set_settings(&self, new_settings: SettingsData) {
+    async fn set_settings(&self, new_settings: DeviceSettings) {
         self.set_settings(new_settings).await
     }
     

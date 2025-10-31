@@ -19,15 +19,13 @@ pub fn show_status_bar(console: &Console, ctx: &eframe::egui::Context) {
             }
             if console.device_connected {
                 if let Some(ref state) = console.device_state {
-                    let (device_type, version, user_type) = if let Some(ref info) = state.device_info {
-                        (
-                            info.device_type.clone(),
-                            info.version.clone(),
-                            info.user_type.clone(),
-                        )
-                    } else {
-                        ("".to_string(), "".to_string(), "".to_string())
-                    };
+                    let (device_type, version, user_type)  =
+                    (
+                        state.device_info.device_type.clone(),
+                        state.device_info.version.clone(),
+                        state.device_info.user_type.clone(),
+                    );
+          
                     ui.separator();
                     ui.label(format!("Type: {} | Version: {} | User: {}", device_type, version, user_type));
                 }

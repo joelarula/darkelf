@@ -41,7 +41,8 @@ pub struct FeatureConfig {
 
 #[derive(Debug, Clone, Default)]
 pub struct MainCommandData {
-    pub current_mode: u8,
+    pub device_mode: u8,
+    pub audio_trigger_mode: u8,
     pub text_color: u8,
     pub text_size: u8, // text size 10 - 100
     pub run_speed: u8, // speed 0 - 100
@@ -54,36 +55,42 @@ pub struct MainCommandData {
 }
 
 #[derive(Debug, Clone)]
-pub struct SettingsData {
-    pub values: [u16; 5],  // [channel, display_range, r, g, b]
-    pub channel: u8,       // DMX 
-    pub dmx: u8,           // 0 or 1
+pub struct DeviceSettings {
+    pub proto : u8,        // Protocol value
+    pub display_range : u8,        // Projection angle 10 - 100. unit todo
+    pub red_beam : u8,     // Red beam 0 ~ 255
+    pub green_beam : u8,   // Green beam 0 ~ 255
+    pub blue_beam : u8,    // Blue beam 0 ~ 255
+    pub dmx_channel: u8,   // DMX  channel
     pub xy: u8,            // Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+ (0-7)
-    pub light: u8,         // 1=single, 2=dual, 3=full rgb
-    pub cfg: u8,           // 0=ttl, 255=analog
+    pub beams: u8,         // 1=single, 2=dual, 3=full rgb
+    pub ttl_or_analog: u8, // 0=ttl, 255=analog
 }
 
 
 #[derive(Debug, Clone)]
 pub struct DeviceResponse {
+    pub settings: DeviceSettings,
     pub main_data: MainCommandData,
-    pub settings: SettingsData,
+    pub device_info: DeviceInfo, 
     pub features: Vec<FeatureConfig>,
-    pub device_info: Option<DeviceInfo>,
     pub prj_data: Option<ProjectData>,
     pub pis_obj: Option<PisObject>,
 }
 
 
-impl Default for SettingsData {
+impl Default for DeviceSettings {
     fn default() -> Self {
         Self {
-            values: [1, 10, 255, 255, 255], // [channel, display_range, r, g, b]
-            channel: 0,  // DMX channel
-            dmx: 0,     // Default to TTL mode
-            xy: 0,      // Default to normal X+Y+
-            light: 3,   // Default to full mode
-            cfg: 0,     // Default to TTL
+            dmx_channel: 1,  
+            xy: 0,     
+            beams: 3,   
+            ttl_or_analog: 0,
+            proto: 0,
+            display_range: 10,
+            red_beam: 255,
+            green_beam: 255,
+            blue_beam: 255,     
         }
     }
 }

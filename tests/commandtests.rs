@@ -1,6 +1,6 @@
 use std::env;
 use log::info;
-use darkelf::{command::CommandGenerator, model::SettingsData, util};
+use darkelf::{command::CommandGenerator, model::DeviceSettings, util};
 
 #[test]
 fn test_check_received_data() {
@@ -67,30 +67,83 @@ fn test_parse_device_response() {
         .expect("Should successfully parse device response");
 
     // Verify main command data
-    assert_eq!(response.main_data.current_mode, 6, "Current mode should be 6");
+    assert_eq!(response.main_data.device_mode, 6, "Current mode should be 6");
     assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
     assert_eq!(response.main_data.text_size, 58, "Text size should be 58");
     assert_eq!(response.main_data.run_speed, 21, "Run speed should be 21");
     assert_eq!(response.main_data.text_distance, 64, "Text distance should be 64");
 
     // Verify settings data
-    assert_eq!(response.settings.values[0], 1, "Channel value (values[0]) should be 1");  // Channel starts at 1 (range 1-512)
-    assert_eq!(response.settings.values[1], 48, "Display range (values[1]) should be 48 (hex 0x30)");  // Display range from command
-    assert_eq!(response.settings.values[2], 255, "R value (values[2]) should be 255");  // Position 6, Red
-    assert_eq!(response.settings.values[3], 255, "G value (values[3]) should be 255");  // Position 7, Green
-    assert_eq!(response.settings.values[4], 255, "B value (values[4]) should be 255");  // Position 8, Blue
+    assert_eq!(response.settings.dmx_channel, 0, "Channel value (dmx_channel) should be 0");  // Channel starts at 1 (range 1-512)
+    assert_eq!(response.settings.display_range, 48, "Display range (display_range) should be 48 (hex 0x30)");  // Display range from command
+    assert_eq!(response.settings.red_beam, 100, "R value (red_beam) should be 100");  // Position 6, Red
+    assert_eq!(response.settings.green_beam, 100, "G value (green_beam) should be 100");  // Position 7, Green
+    assert_eq!(response.settings.blue_beam, 100, "B value (blue_beam) should be 100");  // Position 8, Blue
     assert_eq!(response.settings.xy, 0, "XY config should be 0");
-    assert_eq!(response.settings.light, 3, "Light mode should be 3");
-    assert_eq!(response.settings.cfg, 0, "Config should be 0");
+    assert_eq!(response.settings.beams, 3, "Light mode should be 3");
+    assert_eq!(response.settings.ttl_or_analog, 0, "Config should be 0");
 
 
     // Verify device info
-    let device_info = response.device_info.expect("Device info should be present");
-    assert!(device_info.device_on, "Device should be on");
-    assert_eq!(device_info.device_type, "02", "Device type should be '02'");
-    assert_eq!(device_info.version, "00", "Version should be '00'");
-    assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
+    assert!(response.device_info.device_on, "Device should be on");
+    assert_eq!(response.device_info.device_type, "02", "Device type should be '02'");
+    assert_eq!(response.device_info.version, "00", "Version should be '00'");
+    assert_eq!(response.device_info.user_type, "FF", "User type should be 'FF'");
+
 }
+
+
+
+
+#[test]
+fn test_parse_device_info() {
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+
+   let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+   let main_command = CommandGenerator::parse_device_info(&test1);
+   let main_command = main_command.unwrap();
+   info!("Parsed device info   : {:?}", main_command);
+
+}
+
+
+
+#[test]
+fn test_parse_main_command() {
+
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+
+   let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+   let main_command = CommandGenerator::parse_main_command(&test1);
+   let main_command = main_command.unwrap();
+   info!("Parsed main command   : {:?}", main_command);
+
+
+}
+
+
+#[test]
+fn test_parse_pis_command() {
+
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+
+   let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+   let pis_command = CommandGenerator::parse_pis_command(&test1);
+   let pis_command = pis_command.unwrap();
+   info!("Parsed pis  command   : {:?}", pis_command);
+
+
+}
+
 
 
 #[test]
@@ -101,20 +154,33 @@ fn test_parse_settings_data() {
         env::set_var("RUST_LOG", "debug");
     }
    
+   //const SETTINGS_CMD_HEADER: &str = "00010203";
+   //const SETTINGS_CMD_FOOTER: &str = "000000000004050607";
+   //let test =  SETTINGS_CMD_HEADER.to_string() + "0001003000646464030000" + SETTINGS_CMD_FOOTER;
+   
+   let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+   let settings1 = CommandGenerator::parse_settings_command(&test1);
+   let settings1 = settings1.unwrap();
+   info!("Parsed settings1   : {:?}", settings1);
+
 
     let test2 = "000102030001003707FFFFFF010000000000000004050607";
 
     let settings = CommandGenerator::parse_settings_command(test2);
+    let settings = settings.unwrap();
 
     let test3 = CommandGenerator::get_setting_cmd(&settings);
 
-    let expected_settings = SettingsData {
-        values: [1, 55, 255, 255, 255],
-        channel: 0,
-        dmx: 0,
+    let expected_settings = DeviceSettings {
+        dmx_channel: 0,
         xy: 7,
-        light: 1,
-        cfg: 0
+        beams: 1,
+        ttl_or_analog: 0,
+        proto: 1,
+        display_range: 55,
+        red_beam: 255,
+        green_beam: 255,
+        blue_beam: 255,
     };
 
     let test4 = CommandGenerator::get_setting_cmd(&expected_settings);
@@ -122,7 +188,6 @@ fn test_parse_settings_data() {
    
     info!("Example settings  : {:?}", expected_settings);
     info!("Example command   : {}", test4);
-
     info!("Parsed settings   : {:?}", settings);
     info!("Parse command     : {}", test2);
     info!("Generated command : {}", test3);

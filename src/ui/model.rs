@@ -32,7 +32,7 @@ pub enum DeviceMessage {
 #[derive(Clone, Debug)]
 pub enum DeviceCommand {
     On(bool),
-    SetSettings(crate::model::SettingsData),
+    SetSettings(crate::model::DeviceSettings),
     SetMode {
         mode: PlaybackMode,
         selected_shows: Option<Vec<u8>>,

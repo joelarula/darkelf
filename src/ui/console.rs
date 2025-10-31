@@ -176,17 +176,13 @@ impl eframe::App for Console {
                 self.parse_xy_map(&xy_val);
             }
             if let Some(device_state_ref) = self.device_state.as_ref() {
-                self.on = device_state_ref
-                    .device_info
-                    .as_ref()
-                    .map(|info| info.device_on)
-                    .unwrap_or(false);
-
+                self.on = device_state_ref.device_info.device_on;
+               
                 self.display_range = device_state_ref
                     .settings
-                    .values[1] as i32;
+                    .display_range  as i32;
 
-                self.light = if device_state_ref.settings.light == 1 {
+                self.light = if device_state_ref.settings.beams == 1 {
                     Light::Mono
                 } else {
                     Light::RGB

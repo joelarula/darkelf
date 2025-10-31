@@ -100,17 +100,17 @@ async fn test_settings(device: &mut BlueLaserDevice) {
 
          sleep(Duration::from_millis(500));
         // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
-        settings.light = 1; // mono
+        settings.beams = 1; // mono
         device.set_settings(settings.clone()).await;
         sleep(Duration::from_secs(3));
 
-        settings.light = 3; // back to RGB
+        settings.beams = 3; // back to RGB
         device.set_settings(settings.clone()).await;
         sleep(Duration::from_millis(500));
 
-        // Loop values[1] from 10 to 100
+        // Loop display_range from 10 to 100
         for v in 10..=55 {
-            settings.values[1] = v;
+            settings.display_range = v;
             device.set_settings(settings.clone()).await;
             sleep(Duration::from_millis(20));
             info!("Command data: {:?}", device.get_setting());
@@ -118,7 +118,7 @@ async fn test_settings(device: &mut BlueLaserDevice) {
 
         // Loop values[1] from 99 down to 50
         for v in (55..100).rev() {
-            settings.values[1] = v;
+            settings.display_range = v;
             device.set_settings(settings.clone()).await;
             sleep(Duration::from_millis(20));
             info!("Command data: {:?}", device.get_setting());

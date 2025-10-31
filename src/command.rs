@@ -2,7 +2,7 @@ use crate::{draw::DrawUtils, model::{EncodedCommandData, Point, PolyPoint, Proje
 use log::{debug, info};
 use tokio::time::Timeout;
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, SettingsData};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, DeviceSettings};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -26,12 +26,10 @@ pub struct CommandGenerator;
 
 impl CommandGenerator {
 
-    // Core conversion utilities
     pub fn ab2hex(bytes: &[u8]) -> String {
         debug!("ab2hex called with bytes: {:?}", bytes);
         String::new()
     }
-
 
     pub fn ab2str(bytes: &[u8]) -> String {
         debug!("ab2str called with bytes: {:?}", bytes);
@@ -73,7 +71,25 @@ impl CommandGenerator {
         format!("{:0width$x}", rounded_value, width = width)
     }
 
-    /// Get command value between patterns, matching JavaScript implementation
+        fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+        if value < min || value > max {
+            default
+        } else {
+            value
+        }
+    }
+   
+    fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
+        let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
+        let end = start + 2 * len;
+        if end <= data.len() {
+            //info!("Extracted hex value from {}..{}: {}", start, end, &data[start..end]);
+            u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
+        } else {
+            0
+        }
+    }
+
     pub fn get_cmd_value(start: &str, end: &str, input: &str) -> Option<String> {
         debug!("get_cmd_value called with start: {}, end: {}", start, end);
         
@@ -89,126 +105,118 @@ impl CommandGenerator {
         None
     }
 
-    pub fn get_setting_cmd(settings: &SettingsData) -> String {
-
-        let channel_hex = Self::to_fixed_width_hex(settings.values[0], 4); 
-        let ch_hex = Self::to_fixed_width_hex(settings.channel as u16, 2);
-        let display_hex = Self::to_fixed_width_hex(settings.values[1], 2); 
-        let xy_hex = Self::to_fixed_width_hex(settings.xy as u16, 2);
-        
-        let (r_hex, g_hex, b_hex) =
-        (
-            Self::to_fixed_width_hex(settings.values[2], 2),
-            Self::to_fixed_width_hex(settings.values[3], 2),
-            Self::to_fixed_width_hex(settings.values[4], 2)
-        );
-
-        let light_hex = Self::to_fixed_width_hex(settings.light as u16, 2);
-        let cfg_hex = Self::to_fixed_width_hex(settings.cfg as u16, 2);
-        let lang_hex = Self::to_fixed_width_hex(0, 2); 
+    pub fn get_setting_cmd(settings: &DeviceSettings) -> String {
 
         format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}", 
             SETTINGS_CMD_HEADER,
-            channel_hex,  
-            ch_hex,       
-            display_hex,  
-            xy_hex,     
-            r_hex,      
-            g_hex,       
-            b_hex,       
-            light_hex,   
-            cfg_hex,     
-            lang_hex,    
+            Self::to_fixed_width_hex(settings.proto, 4),  
+            Self::to_fixed_width_hex(settings.dmx_channel as u16, 2),       
+            Self::to_fixed_width_hex(settings.display_range as u16, 2),  
+            Self::to_fixed_width_hex(settings.xy as u16, 2),     
+            Self::to_fixed_width_hex(settings.red_beam, 2),      
+            Self::to_fixed_width_hex(settings.green_beam, 2),       
+            Self::to_fixed_width_hex(settings.blue_beam, 2),       
+            Self::to_fixed_width_hex(settings.beams as u16, 2),   
+            Self::to_fixed_width_hex(settings.ttl_or_analog as u16, 2),     
+            Self::to_fixed_width_hex(0, 2),    
             SETTINGS_CMD_FOOTER
         ).to_uppercase()
     }
     
 
-    /// Helper function to extract and clamp numeric values
-    fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
-        if value < min || value > max {
-            default
-        } else {
-            value
-        }
-    }
-   
-    /// Extract hex value from a position in command data, matching JavaScript behavior
-    fn extract_hex_value(pos: usize, len: usize, data: &str) -> u16 {
-        let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
-        let end = start + 2 * len;
-        if end <= data.len() {
-
-            info!("Extracted hex value from {}..{}: {}", start, end, &data[start..end]);
-            u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
-        } else {
-            0
-        }
-    }
 
     /// Parse the main command section
-    fn parse_main_command(cmd: &str) -> Option<MainCommandData> {
+    pub fn parse_main_command(cmd_data: &str) -> Option<MainCommandData> {
+
+        let cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, cmd_data)?;
+        info!("Parsing main command: {} {}", cmd, cmd.len());
+
+
+        // PisObject extraction from main_cmd
+      
+        //let mut cnf_valus_vec = Vec::new();
+       
+        //for i in 0..13 {
+        //    cnf_valus_vec.push(Self::clamp_value(Self::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
+        //}
+
+
+        //        let mut prj_item = std::collections::HashMap::new();
+        // Use keys [2, 3, 5, 6] for project items
+        //let prj_keys = [2, 3, 5, 6];
+        //let mut project_item_start_index = 17;
+        //for &key in prj_keys.iter() {
+        //    let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &main_cmd), 0, 255, 0) as u8;
+        //    let mut prj_selected = vec![0u16; 4];
+        //    prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &main_cmd);
+        //    prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &main_cmd);
+        //    prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &main_cmd);
+        //    prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &main_cmd);
+        //    prj_item.insert(key, ProjectItem { py_mode, prj_selected });
+        //    project_item_start_index += 9;
+        //}
+
+
+
+  //let sound_val = Self::extract_hex_value(3, 1, &main_cmd) as u8;
+  //let tx_point_time = Self::clamp_value(Self::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
+
         Some(MainCommandData {
-            current_mode: Self::clamp_value(Self::extract_hex_value(1, 1, cmd) as u8, 0, 12, 0),
-            text_color: Self::clamp_value(Self::extract_hex_value(3, 1, cmd) as u8, 0, 9, 0),
-            text_size: {
-                let raw = Self::extract_hex_value(4, 1, cmd);
-                Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 10, 100, 60)
-            },
-            run_speed: {
-                let raw = Self::extract_hex_value(6, 1, cmd);
-                Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 0, 255, 128)
-            },
-            text_distance: {
-                let raw = Self::extract_hex_value(8, 1, cmd);
-                Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 10, 100, 60)
-            },
-            audio_mode: Self::clamp_value(Self::extract_hex_value(9, 1, cmd) as u8, 0, 255, 0),
-            sound_value: {
-                let raw = Self::extract_hex_value(10, 1, cmd);
-                Self::clamp_value((raw as f32 / 255.0 * 100.0) as u8, 0, 255, 0)
-            },
-            text_point_time: Self::clamp_value(Self::extract_hex_value(15, 1, cmd) as u8, 0, 100, 50),
-            draw_point_time: Self::clamp_value(Self::extract_hex_value(16, 1, cmd) as u8, 0, 100, 50),
-            run_direction: Self::clamp_value(Self::extract_hex_value(17, 1, cmd) as u8, 0, 255, 0),
+            device_mode: Self::clamp_value(Self::extract_hex_value(1, 1, &cmd) as u8, 0, 12, 0),
+            audio_trigger_mode: Self::clamp_value(Self::extract_hex_value(2, 1, &cmd) as u8, 0, 12, 0),
+            text_color: Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0),
+            text_size: Self::clamp_value((Self::extract_hex_value(4, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 10, 100, 60),
+            run_speed:  Self::clamp_value((Self::extract_hex_value(6, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 0, 255, 128),
+            text_distance:  Self::clamp_value((Self::extract_hex_value(8, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 10, 100, 60),
+            audio_mode: Self::clamp_value(Self::extract_hex_value(9, 1, &cmd) as u8, 0, 255, 0),
+            sound_value:  Self::clamp_value((Self::extract_hex_value(10, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 0, 255, 0),         
+            text_point_time: Self::clamp_value(Self::extract_hex_value(15, 1, &cmd) as u8, 0, 100, 50),
+            draw_point_time: Self::clamp_value(Self::extract_hex_value(16, 1, &cmd) as u8, 0, 100, 50),
+            run_direction: Self::clamp_value(Self::extract_hex_value(17, 1, &cmd) as u8, 0, 255, 0),
         })
     }
 
-    /// Parse the settings command section
-    pub fn parse_settings_command(cmd_data: &str) -> SettingsData {
+    pub fn parse_settings_command(cmd_data: &str) -> Option<DeviceSettings> {
 
-        let cmd = cmd_data[SETTINGS_CMD_HEADER.len() .. cmd_data.len() - SETTINGS_CMD_FOOTER.len()].to_string();
+        let cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, cmd_data)?;
+        if cmd.len() == 22 {
 
-        let channel_val = Self::clamp_value(Self::extract_hex_value(1, 2, &cmd), 1, 512, 1) as u16;
-        let channel = Self::extract_hex_value(3, 1, &cmd) as u8;
+            let proto = Self::clamp_value(Self::extract_hex_value(1, 2, &cmd), 1, 512, 1) as u8;
+            let channel = Self::extract_hex_value(3, 1, &cmd) as u8;
+            let display_range = Self::clamp_value(Self::extract_hex_value(4, 1, &cmd), 10, 100, 10) as u8;
+            let xy = Self::clamp_value(Self::extract_hex_value(5, 1, &cmd), 0, 7, 0) as u8;
+            let r_val = Self::clamp_value(Self::extract_hex_value(6, 1, &cmd), 0, 255, 255) as u8;
+            let g_val = Self::clamp_value(Self::extract_hex_value(7, 1, &cmd), 0, 255, 255) as u8;
+            let b_val = Self::clamp_value(Self::extract_hex_value(8, 1, &cmd), 0, 255, 255) as u8;
+            let beams = Self::clamp_value(Self::extract_hex_value(9, 1, &cmd), 1, 3, 3) as u8;
+            let ttl_analog = Self::clamp_value(Self::extract_hex_value(10, 1, &cmd), 0, 255, 0) as u8;
 
-        let display_val = Self::clamp_value(Self::extract_hex_value(4, 1, &cmd), 10, 100, 10) as u8;
-        info!("Display value extracted: {}", display_val);
-
-        let xy = Self::clamp_value(Self::extract_hex_value(5, 1, &cmd), 0, 7, 0) as u8;
-        let mut r_val = Self::clamp_value(Self::extract_hex_value(6, 1, &cmd), 0, 255, 255) as u8;
-        let mut g_val = Self::clamp_value(Self::extract_hex_value(7, 1, &cmd), 0, 255, 255) as u8;
-        let mut b_val = Self::clamp_value(Self::extract_hex_value(8, 1, &cmd), 0, 255, 255) as u8;
-        let light = Self::clamp_value(Self::extract_hex_value(9, 1, &cmd), 1, 3, 3) as u8;
-        let cfg = Self::clamp_value(Self::extract_hex_value(10, 1, &cmd), 0, 255, 0) as u8;
-
-        SettingsData {
-            values: [channel_val, display_val as u16, r_val as u16, g_val as u16, b_val as u16],
-            channel,
-            dmx: 0, // Default 0
-            xy,
-            light,
-            cfg
+            Some(DeviceSettings {
+                    proto,
+                    display_range,
+                    red_beam : r_val,
+                    green_beam : g_val,
+                    blue_beam : b_val,
+                    dmx_channel: channel,   
+                    xy,
+                    beams,
+                    ttl_or_analog: ttl_analog
+            })
+        
+        } else {
+           None
         }
+
     }
 
     /// Parses a complete device response into structured data
     pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
+        
         // Parse main and settings command sections
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
-        
-        let settings_cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, data)?;
+
+
 
         // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
         // This assumes project item info is encoded in main_cmd or another section
@@ -229,52 +237,19 @@ impl CommandGenerator {
         }
 
         // Example: parse PublicData from main_cmd
+        
         let rd_mode = Self::extract_hex_value(2, 1, &main_cmd) as u8;
         let sound_val = Self::extract_hex_value(3, 1, &main_cmd) as u8;
         let public = crate::model::PublicData { rd_mode, sound_val };
-
         let prj_data = crate::model::ProjectData { public, prj_item };
 
-        // PisObject extraction from main_cmd
-        let tx_point_time = Self::clamp_value(Self::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
-        let mut cnf_valus_vec = Vec::new();
-       
-        for i in 0..13 {
-            cnf_valus_vec.push(Self::clamp_value(Self::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
-        }
-       
-        let mut cnf_valus_arr = [0u32; 13];
-       
-       for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
-            cnf_valus_arr[i] = *val;
-        }
-
-        let mut pis_obj = PisObject {
-            tx_point_time: tx_point_time as u32,
-            cnf_valus: cnf_valus_arr,
-        };
-
-        // If draw config section exists, update PisObject fields from draw config data
-        if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
-            for i in 0..15 {
-                let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd) as u32, 0, 255, 0);
-                if i < pis_obj.cnf_valus.len() {
-                    pis_obj.cnf_valus[i] = value;
-                }
-                if i == 14 {
-                    pis_obj.tx_point_time = value;
-                }
-            }
-        }
-
         let mut response = DeviceResponse {
-            main_data: Self::parse_main_command(&main_cmd)?,
-            settings: Self::parse_settings_command(&settings_cmd),
+            main_data: Self::parse_main_command(&data)?,
+            settings: Self::parse_settings_command(&data)?,
+            device_info: Self::parse_device_info(&data)?,
             features: Vec::new(),
-
-            device_info: None,
             prj_data: Some(prj_data),
-            pis_obj: Some(pis_obj),
+            pis_obj:  Self::parse_pis_command(&data),
         };
 
         // Parse features section
@@ -321,29 +296,76 @@ impl CommandGenerator {
             }
         }
 
-        // Extract device info from end of data (FF000200E4E5E6E7)
-        // Find footer pattern and extract 8 bytes before it
-        if let Some(footer_idx) = data.rfind("E4E5E6E7") {
-            let info_start = footer_idx - 8;
-            let device_info_str = &data[info_start..footer_idx];
-            info!("Device info extracted: {}", device_info_str);
 
-            // Expected format: FF000200
-            let _device_status = &device_info_str[..2];
-            let _version = &device_info_str[2..4];
-            let _device_type = &device_info_str[4..6];
 
-            // Create device info with known values
-            response.device_info = Some(DeviceInfo {
-                device_on: true,               // Status FF = device on
-                device_type: "02".to_string(), // Type = 02
-                version: "00".to_string(),     // Version = 00
-                user_type: "FF".to_string()    // User type must be FF
-            });
-        }
 
         Some(response)
     }
+
+
+    pub fn parse_pis_command(data: &str) -> Option<PisObject> {
+
+        let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
+        info!("Parsing main command: {} {}", main_cmd, main_cmd.len());
+
+        let tx_point_time = CommandGenerator::clamp_value(CommandGenerator::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
+        let mut cnf_valus_vec = Vec::new();
+        for i in 0..13 {
+            cnf_valus_vec.push(CommandGenerator::clamp_value(CommandGenerator::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
+        }
+        let mut cnf_valus_arr = [0u32; 13];
+        for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
+            cnf_valus_arr[i] = *val;
+        }
+
+        let mut pis_obj = PisObject {
+            tx_point_time: tx_point_time as u32,
+            cnf_valus: cnf_valus_arr,
+        };
+
+        // If draw config section exists, update PisObject fields from draw config data
+        if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
+            for i in 0..15 {
+                let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd) as u32, 0, 255, 0);
+                if i < pis_obj.cnf_valus.len() {
+                    pis_obj.cnf_valus[i] = value;
+                }
+                if i == 14 {
+                    pis_obj.tx_point_time = value;
+                }
+            }
+        }
+
+
+
+        Some(pis_obj)
+    }
+
+    pub fn parse_device_info(data: &str) -> Option<DeviceInfo> {
+        // Find footer pattern and extract 8 bytes before it
+        if let Some(footer_idx) = data.rfind("E4E5E6E7") {
+            if footer_idx >= 8 {
+                let info_start = footer_idx - 8;
+                let device_info_str = &data[info_start..footer_idx];
+                info!("Device info extracted: {}", device_info_str);
+
+                // Expected format: FF000200
+                let device_status = &device_info_str[..2];
+                let version = &device_info_str[2..4];
+                let device_type = &device_info_str[4..6];
+
+                // Create device info with known values
+                return Some(DeviceInfo {
+                    device_on: true,               // Status FF = device on
+                    device_type: device_type.to_string(),
+                    version: version.to_string(),
+                    user_type: device_status.to_string(), // User type from status
+                });
+            }
+        }
+        None
+    }
+
 
     pub fn get_query_cmd(random_verify: &[u8]) -> String {
         let middle = if random_verify.len() >= 4 {

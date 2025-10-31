@@ -36,8 +36,8 @@ pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
                     if slider_response.changed() {
                         if let Some(ref state) = console.device_state {
                             let mut new_settings = state.settings.clone();
-                            if new_settings.values.len() > 1 && console.device_connected {
-                                new_settings.values[1] = console.display_range as u16;
+                            if console.device_connected {
+                                new_settings.display_range = console.display_range as u8;
                                 let _ = console.command_sender.send(DeviceCommand::SetSettings(new_settings));
                             }
                         }
@@ -118,7 +118,7 @@ pub fn show_settings_panel(console: &mut Console, ctx: &eframe::egui::Context) {
                             if rgb_response.changed() && console.device_connected {
                                 if let Some(ref state) = console.device_state {
                                     let mut new_settings = state.settings.clone();
-                                    new_settings.light = if light_ui == Light::RGB { 3 } else { 1 };
+                                    new_settings.beams = if light_ui == Light::RGB { 3 } else { 1 };
                                     let _ = console.command_sender.send(DeviceCommand::SetSettings(new_settings));
                                 }
                             }

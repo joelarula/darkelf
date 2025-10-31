@@ -1,4 +1,4 @@
-use crate::model::{PisObject, PlaybackCommand, Point, SettingsData};
+use crate::model::{PisObject, PlaybackCommand, Point, DeviceSettings};
 
 pub trait LaserDevice {
 
@@ -8,9 +8,9 @@ pub trait LaserDevice {
     
     async fn off(&self);
     
-    fn get_settings(&self) -> Option<SettingsData>;
+    fn get_settings(&self) -> Option<DeviceSettings>;
     
-    async fn set_settings(&self, new_settings: SettingsData);
+    async fn set_settings(&self, new_settings: DeviceSettings);
     
     async fn draw(&self, points: Vec<Point>, config: PisObject);
     
