@@ -114,8 +114,7 @@ fn test_parse_settings_data() {
         dmx: 0,
         xy: 7,
         light: 1,
-        cfg: 0,
-        lang: String::from("en"),
+        cfg: 0
     };
 
     let test4 = CommandGenerator::get_setting_cmd(&expected_settings);

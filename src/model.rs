@@ -61,7 +61,6 @@ pub struct SettingsData {
     pub xy: u8,            // Normal: X+Y+ X+Y- X-Y- X-Y+ Interchange: X+Y+ X+Y- X-Y- X-Y+ (0-7)
     pub light: u8,         // 1=single, 2=dual, 3=full rgb
     pub cfg: u8,           // 0=ttl, 255=analog
-    pub lang: String,      // Language setting
 }
 
 
@@ -85,7 +84,6 @@ impl Default for SettingsData {
             xy: 0,      // Default to normal X+Y+
             light: 3,   // Default to full mode
             cfg: 0,     // Default to TTL
-            lang: "en".to_string(), // Default to English
         }
     }
 }
