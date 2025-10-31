@@ -1,6 +1,6 @@
 use std::env;
 use log::info;
-use darkelf::{command::CommandGenerator, util};
+use darkelf::{command::CommandGenerator, model::SettingsData, util};
 
 #[test]
 fn test_check_received_data() {
@@ -92,3 +92,44 @@ fn test_parse_device_response() {
     assert_eq!(device_info.user_type, "FF", "User type should be 'FF'");
 }
 
+
+#[test]
+fn test_parse_settings_data() {
+
+    util::setup_logging();
+    unsafe {
+        env::set_var("RUST_LOG", "debug");
+    }
+   
+
+    let test2 = "000102030001003707FFFFFF010000000000000004050607";
+
+    let settings = CommandGenerator::parse_settings_command(test2);
+
+    let test3 = CommandGenerator::get_setting_cmd(&settings);
+
+    let expected_settings = SettingsData {
+        values: [1, 55, 255, 255, 255],
+        channel: 0,
+        dmx: 0,
+        xy: 7,
+        light: 1,
+        cfg: 0,
+        lang: String::from("en"),
+    };
+
+    let test4 = CommandGenerator::get_setting_cmd(&expected_settings);
+
+   
+    info!("Example settings  : {:?}", expected_settings);
+    info!("Example command   : {}", test4);
+
+    info!("Parsed settings   : {:?}", settings);
+    info!("Parse command     : {}", test2);
+    info!("Generated command : {}", test3);
+   
+
+    assert_eq!(test2,test4,"Generated command should match original");
+    assert_eq!(test2,test3,"Generated command should match original");
+
+}

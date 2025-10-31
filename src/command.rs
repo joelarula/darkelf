@@ -13,7 +13,7 @@ pub const POWER_OFF_CMD: &str = "B0B1B2B300B4B5B6B7";
 const MAIN_CMD_HEADER: &str = "C0C1C2C3";
 const MAIN_CMD_FOOTER: &str = "C4C5C6C7";
 const SETTINGS_CMD_HEADER: &str = "00010203";
-const SETTINGS_CMD_FOOTER: &str = "04050607";
+const SETTINGS_CMD_FOOTER: &str = "000000000004050607";
 const FEATURES_CMD_HEADER: &str = "D0D1D2D3";
 const FEATURES_CMD_FOOTER: &str = "D4D5D6D7";
 const DRAW_CMD_HEADER: &str = "F0F1F2F3";
@@ -90,6 +90,25 @@ impl CommandGenerator {
     }
 
     pub fn get_setting_cmd(settings: &SettingsData) -> String {
+
+
+                    //getSettingCmd: function (settingData) {
+                    //    var channel = toFixedWidthHex(settingData.valArr[0]),
+                    //        channelSetting = toFixedWidthHex(settingData.ch, 2),
+                    //        displayValue = toFixedWidthHex(settingData.valArr[1], 2),
+                    //        xy = toFixedWidthHex(settingData.xy, 2),
+                    //        redValue = toFixedWidthHex(settingData.valArr[2], 2),
+                    //        greenValue = toFixedWidthHex(settingData.valArr[3], 2),
+                    //        blueValue = toFixedWidthHex(settingData.valArr[4], 2),
+                    //        lightMode = toFixedWidthHex(settingData.light, 2),
+                    //        ttlAnalog = toFixedWidthHex(settingData.cfg, 2);
+                    //    0 == settingData.cfg && (redValue = "FF", greenValue = "FF", blueValue = "FF");
+                    //    var lang = toFixedWidthHex(settingData.lang, 2),
+                    //        command = "00010203" + channel + channelSetting + displayValue + xy + redValue + greenValue + blueValue + lightMode + ttlAnalog + lang + "000000000004050607";
+                    //    return command.toUpperCase()
+                    //},
+
+
         // Convert values to hex strings matching JavaScript's toFixedWidthHex
         let channel_hex = Self::to_fixed_width_hex(settings.values[0], 4); // valArr[0] - 2 bytes
         let ch_hex = Self::to_fixed_width_hex(settings.channel as u16, 2);
@@ -144,6 +163,8 @@ impl CommandGenerator {
         let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
         let end = start + 2 * len;
         if end <= data.len() {
+
+            info!("Extracted hex value from {}..{}: {}", start, end, &data[start..end]);
             u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
         } else {
             0
@@ -179,18 +200,36 @@ impl CommandGenerator {
     }
 
     /// Parse the settings command section
-    fn parse_settings_command(cmd: &str) -> SettingsData {
-        
+    pub fn parse_settings_command(cmd_data: &str) -> SettingsData {
+
+        let cmd = cmd_data[SETTINGS_CMD_HEADER.len() .. cmd_data.len() - SETTINGS_CMD_FOOTER.len()].to_string();
+
+                 //     var settingCommandData = deviceCommandUtils.getCmdValue("00010203", "04050607", deviceResponseData);
+                 //       appStateManager.globalData.cmd.settingData.valArr[0] = clampOrDefault(extractHexValue(1, 2, settingCommandData), 1, 512, 1),
+                 //           appStateManager.globalData.cmd.settingData.ch = extractHexValue(3, 1, settingCommandData),
+                //            appStateManager.globalData.cmd.settingData.valArr[1] = clampOrDefault(extractHexValue(4, 1, settingCommandData), 10, 100, 10),
+               //             appStateManager.globalData.cmd.settingData.xy = clampOrDefault(extractHexValue(5, 1, settingCommandData), 0, 7, 0),
+               //             appStateManager.globalData.cmd.settingData.valArr[2] = clampOrDefault(extractHexValue(6, 1, settingCommandData), 0, 255, 255),
+             ///               appStateManager.globalData.cmd.settingData.valArr[3] = clampOrDefault(extractHexValue(7, 1, settingCommandData), 0, 255, 255),
+             //               appStateManager.globalData.cmd.settingData.valArr[4] = clampOrDefault(extractHexValue(8, 1, settingCommandData), 0, 255, 255),
+             //               appStateManager.globalData.cmd.settingData.light = clampOrDefault(extractHexValue(9, 1, settingCommandData), 1, 3, 3),
+             //               appStateManager.globalData.cmd.settingData.cfg = clampOrDefault(extractHexValue(10, 1, settingCommandData), 0, 255, 0);
+
+info!("parse_settings_command called with cmd: {}", cmd);
+
         // Extract and clamp values as per JavaScript logic
-        let channel_val = Self::clamp_value(Self::extract_hex_value(1, 2, cmd), 1, 512, 1) as u16;
-        let channel = Self::extract_hex_value(3, 1, cmd) as u8;
-        let display_val = Self::clamp_value(Self::extract_hex_value(4, 1, cmd), 10, 100, 10) as u8;
-        let xy = Self::clamp_value(Self::extract_hex_value(5, 1, cmd), 0, 7, 0) as u8;
-        let mut r_val = Self::clamp_value(Self::extract_hex_value(6, 1, cmd), 0, 255, 255) as u8;
-        let mut g_val = Self::clamp_value(Self::extract_hex_value(7, 1, cmd), 0, 255, 255) as u8;
-        let mut b_val = Self::clamp_value(Self::extract_hex_value(8, 1, cmd), 0, 255, 255) as u8;
-        let light = Self::clamp_value(Self::extract_hex_value(9, 1, cmd), 1, 3, 3) as u8;
-        let cfg = Self::clamp_value(Self::extract_hex_value(10, 1, cmd), 0, 255, 0) as u8;
+    let channel_val = Self::clamp_value(Self::extract_hex_value(1, 2, &cmd), 1, 512, 1) as u16;
+    let channel = Self::extract_hex_value(3, 1, &cmd) as u8;
+
+    let display_val = Self::clamp_value(Self::extract_hex_value(4, 1, &cmd), 10, 100, 10) as u8;
+    info!("Display value extracted: {}", display_val);
+
+    let xy = Self::clamp_value(Self::extract_hex_value(5, 1, &cmd), 0, 7, 0) as u8;
+    let mut r_val = Self::clamp_value(Self::extract_hex_value(7, 1, &cmd), 0, 255, 255) as u8;
+    let mut g_val = Self::clamp_value(Self::extract_hex_value(8, 1, &cmd), 0, 255, 255) as u8;
+    let mut b_val = Self::clamp_value(Self::extract_hex_value(9, 1, &cmd), 0, 255, 255) as u8;
+    let light = Self::clamp_value(Self::extract_hex_value(9, 1, &cmd), 1, 3, 3) as u8;
+    let cfg = Self::clamp_value(Self::extract_hex_value(10, 1, &cmd), 0, 255, 0) as u8;
 
         // If cfg == 0, force RGB to 255 (as in JS logic)
         if cfg == 0 {

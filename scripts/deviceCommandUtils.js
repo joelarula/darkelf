@@ -229,6 +229,26 @@ function testDrawCommandUtil(data,exportsObj, handDrawGeometryUtils) {
 
 }
 
+
+function testSettingsCommand(exports) {
+   
+  const exampleSettings = {
+    dmx: 0,         // DMX address or mode
+    ch: 0,          // Channel
+    xy: 7,          // XY mode or value
+    light: 1,       // Light mode
+    cfg: 0,         // Configuration flags
+    lang: 0,        // Language (0 = default, e.g. "en")
+    valArr: [1, 55, 255, 255, 255] // Array of values (custom per device)
+  };
+
+  const result = exports.getSettingCmd(exampleSettings);
+  console.log('Result of SettingsCommand:', result);
+ 
+}
+
+
+
 function testTextCommand(exports,textLineVectorizer,fontGeometryUtils,codePointAt) {
 
 //const fs = require('fs');
@@ -515,7 +535,9 @@ if (targetModule && typeof targetModule === 'function') {
 
 
 
-  testTextCommand(exported,textLineVectorizer.exports,fontGeometryUtils.exports,codePointAt);
+  //testTextCommand(exported,textLineVectorizer.exports,fontGeometryUtils.exports,codePointAt);
+
+  testSettingsCommand(exported);
 
 } else {
   console.error('Module not found or not a function:', moduleName);
