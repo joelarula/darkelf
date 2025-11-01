@@ -2,7 +2,7 @@ use crate::{command, draw::DrawUtils, model::{EncodedCommandData, Point, PolyPoi
 use log::{debug, info};
 use tokio::time::Timeout;
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, PlaybackCommand};
+use crate::model::{CommandConfig, DeviceInfo, DeviceState, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, PlaybackCommand};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -160,9 +160,9 @@ impl CommandGenerator {
     }
     
     /// Parses a complete device response into structured data
-    pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
+    pub fn parse_device_response(data: &str) -> Option<DeviceState> {
         
-        let response = DeviceResponse {
+        let response = DeviceState {
             main_data: Self::parse_main_command(&data)?,
             settings: Self::parse_settings_command(&data)?,
             device_info: Self::parse_device_info(&data)?,

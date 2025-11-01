@@ -3,7 +3,7 @@ use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, Playbac
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
-use crate::model::{ DeviceResponse, DeviceSettings};
+use crate::model::{ DeviceState, DeviceSettings};
 use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
@@ -11,7 +11,7 @@ use crate::blue::BlueController;
 pub struct BlueLaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
-	device_info: Arc<Mutex<Option<DeviceResponse>>>,
+	device_info: Arc<Mutex<Option<DeviceState>>>,
     playback_items: std::collections::HashMap<u8, Playback>,
 }
 
@@ -230,7 +230,7 @@ impl BlueLaserDevice {
     }
 
     /// Get a copy of the entire device response
-    pub fn get_device_response(&self) -> Option<DeviceResponse> {
+    pub fn get_device_response(&self) -> Option<DeviceState> {
         self.device_info.try_lock().unwrap()
             .as_ref()
             .map(|resp| resp.clone())
@@ -254,13 +254,13 @@ fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandC
             audio_trigger_mode: if command.audio_mode.unwrap_or(main.audio_mode != 0) { 1 } else { 0 },
             sound_sensitivity: command.audio_sensitivity.unwrap_or(main.sound_value),
         };
-        prj_data.playback_items = self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect();
+        prj_data.playback_items = self.playback_items.iter().map(|(&k, v)| (k as u8, v.clone())).collect();
 
 
         if let Some(selected) = &command.selected_shows {
       
             prj_data.playback_items.insert(
-                command.mode as i32,
+                command.mode as u8,
                 Playback {
                     playback_mode: if command.tick_playback.unwrap_or(false) { 128 } else { 0 },
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected),

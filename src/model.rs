@@ -41,7 +41,7 @@ impl TryFrom<u8> for DeviceMode {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,Default)]
 pub struct DeviceInfo {
     pub device_on: bool,
     pub device_type: String,
@@ -49,7 +49,7 @@ pub struct DeviceInfo {
     pub user_type: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,Default)]
 pub struct FeatureConfig {
     pub play_time: f32,
     pub config_values: Vec<u8>,
@@ -90,8 +90,8 @@ pub struct DeviceSettings {
 }
 
 
-#[derive(Debug, Clone)]
-pub struct DeviceResponse {
+#[derive(Debug, Clone,Default)]
+pub struct DeviceState {
     pub settings: DeviceSettings,
     pub main_data: MainCommandData,
     pub device_info: DeviceInfo, 
@@ -262,7 +262,7 @@ pub struct TextData {
 #[derive(Debug, Clone,Default)]
 pub struct PlaybackData {
     pub audio_config: AudioConfig,
-    pub playback_items: HashMap<i32, Playback>,
+    pub playback_items: HashMap<u8, Playback>,
 }
 
 #[derive(Debug, Clone,Default)]

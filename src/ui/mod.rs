@@ -1,4 +1,4 @@
-pub mod console;
+pub mod app;
 pub mod settings;
 pub mod buttons;
 pub mod statusbar;

@@ -1,6 +1,7 @@
 use windows::Devices::Enumeration::DeviceInformation;
-
-use crate::model::{DeviceResponse, PisObject, DeviceMode, Point};
+use crate::model::DeviceSettings;
+use crate::model::MainCommandData;
+use crate::model::{DeviceState, PisObject, DeviceMode, Point};
 
 
 #[derive(Clone, Debug)]
@@ -20,10 +21,9 @@ impl DeviceList {
 }
 
 pub enum DeviceMessage {
-    DeviceResponse(DeviceResponse),
+    DeviceResponse(DeviceState),
     DeviceList(DeviceList),
     DeviceInfo(DeviceInformation),
-    DeviceName(String),
     ConnectionStatus(bool),
     SetupStatus(bool),
 }
@@ -32,7 +32,8 @@ pub enum DeviceMessage {
 #[derive(Clone, Debug)]
 pub enum DeviceCommand {
     On(bool),
-    SetSettings(crate::model::DeviceSettings),
+    SetSettings(DeviceSettings),
+    SetMainCommand(MainCommandData),
     SetMode {
         mode: DeviceMode,
         selected_shows: Option<Vec<u8>>,

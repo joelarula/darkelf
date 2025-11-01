@@ -1,15 +1,14 @@
 use std::sync::{Arc, Mutex as StdMutex};
 use anyhow::anyhow;
-use darkelf::blue::BlueController;
 use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::model::PlaybackCommand;
 use darkelf::ui::model::{DeviceList, DeviceMessage,DeviceCommand};
 use darkelf::winblue::WinBlueController;
 use darkelf::{
-    ui::console::{Console},
+    ui::app::{App},
     util, winblue,
 };
-use eframe::egui::*;
+
 use log::{error, info};
 use std::env;
 use std::{thread};
@@ -18,9 +17,6 @@ use tokio::sync::{Mutex, mpsc};
 fn main() -> eframe::Result<()> {
 
     util::setup_logging();
-    unsafe {
-        env::set_var("RUST_LOG", "debug");
-    }
 
     let (devicesender, devicereceiver) =
         mpsc::unbounded_channel::<DeviceMessage>();
@@ -124,11 +120,15 @@ fn main() -> eframe::Result<()> {
                                             device.off().await;
                                         }
                                     }
-                                                
+
+                                   DeviceCommand::SetMainCommand(command ) => {
+                                        device.set_main_command(command).await;
+                                    }   
+
                                     DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
                                         device.set_playback_mode(PlaybackCommand::default(playback_mode)).await;
                                     }
-                                                
+
                                     DeviceCommand::Draw(points, draw_config) => {
                                         device.draw(points, draw_config).await;
                                     }
@@ -175,7 +175,7 @@ fn main() -> eframe::Result<()> {
         "DarkElf",
         options,
         Box::new(|_cc| {
-            Ok(Box::new(Console::new(
+            Ok(Box::new(App::new(
                 Arc::new(Mutex::new(devicereceiver)),
                 winsender,
             )))

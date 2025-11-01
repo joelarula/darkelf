@@ -1,19 +1,21 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DisplayColor, DrawData, Point, Playback, PisObject};
+use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, PisObject, Playback, Point};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
 use log::info;
 use tokio::sync::{Mutex, mpsc};
 use windows::Devices::Enumeration::DeviceInformation;
 
-use crate::model::{DeviceResponse, DeviceMode};
+use crate::model::{DeviceState, DeviceMode};
 
 use crate::ui::show_selector::show_selector_grid;
 use crate::ui::{buttons, playback_settings, settings, statusbar,draw}; 
 
 
-pub struct Console {  
+pub struct App {  
+    pub laser_device_info: DeviceInfo,
+    pub settings : DeviceSettings,
     pub channel: i32,
     pub display_range: i32,
     pub light: Light,
@@ -26,9 +28,9 @@ pub struct Console {
     pub playback_speed: u8,
     pub sound_sensitivity: u8,
     pub audio_mode: u8,
-    pub device_connected: bool,
+    pub ble_device_connected: bool,
     pub device_name: Option<String>,
-    pub device_state: Option<DeviceResponse>,
+    pub device_state: Option<DeviceState>,
     incomming_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
     /// Maps playback mode/item to ProjectItem (py_mode, prj_selected)
@@ -40,13 +42,13 @@ pub struct Console {
     pub cached_config_text: String,
     pub cached_config_result: Option<Result<PisObject, String>>,
     pub text_command: String,
-    device_initialized: bool,
-    device_list: DeviceList,
-    device_info: Option<DeviceInformation>,
+    pub laser_device_initialized: bool,
+    pub device_list: DeviceList,
+    pub ble_device_info: Option<DeviceInformation>,
 }
 
 
-impl Console {
+impl App {
 
         pub fn new(device_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,device_command: mpsc::UnboundedSender<DeviceCommand>) -> Self {
             let mut playback_selections = HashMap::new();
@@ -61,6 +63,8 @@ impl Console {
                 playback_selections.insert(key, Playback { playback_mode: 128, selected_plays: vec![0u16; 4] });
             }
             Self {
+                laser_device_info: DeviceInfo::default(),
+                settings : DeviceSettings::default(),
                 channel: 1,
                 display_range: 50,
                 sound_sensitivity: 128,
@@ -73,7 +77,7 @@ impl Console {
                 mode: DeviceMode::RandomPlayback,
                 color: DisplayColor::RGB,
                 audio_mode: 0,
-                device_connected: false,
+                ble_device_connected: false,
                 device_name: None,
                 device_state: None,
                 incomming_channel: device_channel,
@@ -103,9 +107,9 @@ impl Console {
                 cached_config_text: String::new(),
                 cached_config_result: None,
                 text_command: String::new(),
-                device_initialized: false,
+                laser_device_initialized: false,
                 device_list: DeviceList { devices: Vec::new(), selected_index: None },
-                device_info: None,
+                ble_device_info: None,
             }
         }
     }
@@ -137,10 +141,10 @@ impl Default for Light {
 
 
 
-impl eframe::App for Console {
+impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
 
-        let mut device_response: Option<DeviceResponse> = None;
+        let mut device_response: Option<DeviceState> = None;
         let mut xy: Option<u8> = None;
         if let Ok(mut rx) = self.incomming_channel.try_lock() {
             while let Ok(msg) = rx.try_recv() {
@@ -151,26 +155,29 @@ impl eframe::App for Console {
                         device_response = Some(resp);
                         break; // Only process one DeviceResponse per update
                     }
-                    DeviceMessage::DeviceName(name) => {
-                        self.device_name = Some(name);
-                    }
+
                     DeviceMessage::ConnectionStatus(status) => {
-                        self.device_connected = status;
+                        self.ble_device_connected = status;
                     }
                     DeviceMessage::DeviceList(device_list) => {
                         self.device_list = device_list;
                     }
                     DeviceMessage::DeviceInfo(device_information) => {
-                        self.device_info = Some(device_information);
+                        self.ble_device_info = Some(device_information);
                     }
                     DeviceMessage::SetupStatus(status) => {
-                        self.device_initialized = status;
+                        self.laser_device_initialized = status;
                     }
                 }
             }
         }
 
         if let Some(device_state) = device_response {
+            
+            self.laser_device_info = device_state.device_info.clone();
+            self.settings = device_state.settings.clone();
+            //
+
             self.device_state = Some(device_state.clone());
             if let Some(xy_val) = xy {
                 self.parse_xy_map(&xy_val);
@@ -199,20 +206,19 @@ impl eframe::App for Console {
             }
         }
 
-
         buttons::show_mode_buttons(self, ctx);
         statusbar::show_status_bar(self, ctx);
         settings::show_settings_panel(self, ctx);
         
         if matches!(
             self.mode,
-            DeviceMode::LineGeometryPlayback
+            DeviceMode::RandomPlayback 
+                | DeviceMode::LineGeometryPlayback
                 | DeviceMode::AnimationPlayback
                 | DeviceMode::ChristmasPlayback
                 | DeviceMode::OutdoorPlayback
         ){
             playback_settings::show_playback_settings_ui(ctx);
-
 
             // Central panel (fills the remaining space)
             egui::CentralPanel::default().show(ctx, |ui| {
@@ -240,7 +246,7 @@ impl eframe::App for Console {
 }
 
 
-impl Console {
+impl App {
    
     pub fn set_playback(&mut self, mode: DeviceMode, selected_shows: Option<Vec<u8>>) {
         self.mode = mode;
@@ -276,7 +282,7 @@ impl Console {
         if let Some(device_state) = &self.device_state {
             let mut new_settings = device_state.settings.clone();
             new_settings.xy = self.calc_xy_value();
-            let _ = self.command_sender.send(crate::ui::console::DeviceCommand::SetSettings(new_settings));
+            let _ = self.command_sender.send(crate::ui::app::DeviceCommand::SetSettings(new_settings));
         }
     }
 }

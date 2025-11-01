@@ -1,4 +1,4 @@
-use crate::{model::{PisObject, Point}, ui::{self, console::Console, model::DeviceCommand}};
+use crate::{model::{PisObject, Point}, ui::{self, app::App, model::DeviceCommand}};
 use eframe::egui::*;
 
 fn parse_points_from_json(json_text: &str) -> (Result<Vec<Point>, serde_json::Error>, Option<String>) {
@@ -21,7 +21,7 @@ fn parse_config_from_json(json_text: &str) -> (Result<PisObject, serde_json::Err
     }
 }
 
-pub fn show_draw_ui(console: &mut Console, ctx:  &eframe::egui::Context) {
+pub fn show_draw_ui(console: &mut App, ctx:  &eframe::egui::Context) {
 
     
     egui::CentralPanel::default().show(ctx, |ui| {

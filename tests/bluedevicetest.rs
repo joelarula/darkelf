@@ -3,9 +3,9 @@ use std::env;
 use std::thread::sleep;
 use std::time::Duration;
 
-use darkelf::blue::BlueController as _;
+
 use darkelf::draw::DrawUtils;
-use darkelf::model::{CommandConfig, DeviceResponse, MainCommandData, PlaybackCommand, DeviceMode, PlaybackData, Playback, AudioConfig, TextData};
+use darkelf::model::{CommandConfig, DeviceState, PlaybackCommand, DeviceMode, PlaybackData, Playback, AudioConfig, TextData};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
@@ -14,7 +14,6 @@ use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
 use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, PisObject};
-use windows::Win32::Foundation::ERROR_INVALID_FILTER_PROC;
 use std::fs;
 use std::path::Path;
 
@@ -53,19 +52,22 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     
     device.setup().await;
     sleep(Duration::from_millis(500));
-    let response_b: DeviceResponse = device.get_device_response().unwrap();
-    info!("Device response after on: {:?}", response_b);
-
-
     device.on().await;
+
+    let response_b: DeviceState = device.get_device_response().unwrap();
+    info!("Device response after on: {:?}", response_b);
 
     sleep(Duration::from_millis(500));
 
-    //test_on_off(device).await;
-    //sleep(Duration::from_millis(500));
-    //test_settings(device).await;
-    //sleep(Duration::from_millis(500));
-    //test_playback_command(device).await;
+    test_on_off(device).await;
+    sleep(Duration::from_millis(500));
+    test_settings(device).await;
+    
+    sleep(Duration::from_millis(500));
+    test_playback_command(device).await;
+
+    sleep(Duration::from_millis(500));
+    test_show_playback(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_shapes(device).await;
@@ -74,8 +76,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //test_show_drawings(device).await;
 
 
-    //sleep(Duration::from_millis(500));
-    //test_show_playback(device).await;
+
 
 
     Ok(())
@@ -84,10 +85,10 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
 async fn test_settings(device: &mut BlueLaserDevice) {
 
-
-    device.set_playback_mode(PlaybackCommand::default(DeviceMode::OutdoorPlayback)).await;
-    sleep(Duration::from_millis(5000));
+    
     let mut settings = device.get_setting();
+    info!("Initial settings: {:?}", settings);
+    
     if let Some(ref mut settings) = settings {
         
         // Loop through possible xy values (example: 0..=10)
@@ -95,13 +96,12 @@ async fn test_settings(device: &mut BlueLaserDevice) {
             settings.xy = xy;
             device.set_settings(settings.clone()).await;
             sleep(Duration::from_millis(20));
-            info!("Command data: {:?}", device.get_setting());
         }
 
-         settings.xy = 0; // Reset to default
-         device.set_settings(settings.clone()).await;
+        settings.xy = 0; // Reset to default
+        device.set_settings(settings.clone()).await;
 
-         sleep(Duration::from_millis(500));
+        sleep(Duration::from_millis(500));
         // Toggle light mode: mono (1) -> RGB (3), sleeping 2 seconds between
         settings.beams = 1; // mono
         device.set_settings(settings.clone()).await;
@@ -127,10 +127,8 @@ async fn test_settings(device: &mut BlueLaserDevice) {
             info!("Command data: {:?}", device.get_setting());
         }
 
-        let response: DeviceResponse = device.get_device_response().unwrap();
+        let response: DeviceState = device.get_device_response().unwrap();
         info!("Device response after settings: {:?}", response);
-
-
 
     
     }
@@ -138,23 +136,29 @@ async fn test_settings(device: &mut BlueLaserDevice) {
 
 async fn test_show_playback(device: &mut BlueLaserDevice) {
 
+    device.set_playback_mode(PlaybackCommand::default(DeviceMode::LineGeometryPlayback)).await;
     
-    for ix in 0..=49 {
-        let mut selected_shows = vec![0u8; 50];
-        selected_shows[ix] = 1; // Select show at index ix
-        // TODO: Add playback test logic for each ix value
-        let cmd: PlaybackCommand = PlaybackCommand {
-            mode: DeviceMode::LineGeometryPlayback,
-            selected_shows: Some(selected_shows),
-            audio_mode: Some(false),
-            audio_sensitivity: Some(100),
-            playback_speed: Some(10),
-            color: None, // Add appropriate value if needed, e.g. Some(0)
-            tick_playback: None, // Add appropriate value if needed, e.g. Some(false)
-        };
-        device.set_playback_mode(cmd).await;
-        sleep(Duration::from_secs(5));
-    }
+    if let Some(mut cmd) = device.get_command_data() {
+        for ix in 0..=49 {
+            let mut selected_shows = vec![0u8; 50];
+            selected_shows[ix] = 1; // Select show at index ix
+            
+            cmd.run_speed = 255;
+            cmd.playback.audio_config.audio_trigger_mode = 0; 
+            cmd.playback.audio_config.sound_sensitivity = 125;
+
+            cmd.playback.playback_items.insert(
+                DeviceMode::LineGeometryPlayback as u8,
+                Playback {
+                    playback_mode: 0,
+                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                },
+            );
+
+            device.set_main_command(cmd.clone()).await;
+            sleep(Duration::from_secs(5));
+        }   
+    }   
    
 }
 
@@ -175,11 +179,16 @@ async fn test_playback_command(device: &mut BlueLaserDevice) {
     for mode in playback_modes.iter() {
 
         info!("Set playback mode: {:?}", mode);
-        device.set_playback_mode( PlaybackCommand::default(*mode)).await;
-        sleep(Duration::from_secs(3));
+        if let Some(mut cmd) = device.get_command_data() {
+            cmd.device_mode = *mode;
+            device.set_main_command(cmd).await;
+            sleep(Duration::from_secs(3));
+        }
+        
     }
 
-    device.set_playback_mode(PlaybackCommand::default(DeviceMode::RandomPlayback)).await;
+
+
 }
 
 
@@ -263,7 +272,7 @@ async fn test_on_off(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> 
         info!("Turning device off");
         device.off().await;
 
-        let response: DeviceResponse = device.get_device_response().unwrap();
+        let response: DeviceState = device.get_device_response().unwrap();
         info!("Device response after off: {:?}", response);
 
         sleep(Duration::from_millis(500));
@@ -271,7 +280,7 @@ async fn test_on_off(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> 
         device.on().await;
         sleep(Duration::from_millis(500));
         
-        let response_b: DeviceResponse = device.get_device_response().unwrap();
+        let response_b: DeviceState = device.get_device_response().unwrap();
         info!("Device response after on: {:?}", response_b);
     }
     Ok(())

@@ -1,8 +1,8 @@
-use crate::{model::DeviceMode, ui::console::Console};
+use crate::{model::DeviceMode, ui::app::App};
 use eframe::egui::*;
 use crate::model;
 
-pub fn show_mode_buttons(console: &mut Console, ctx: &eframe::egui::Context) {
+pub fn show_mode_buttons(console: &mut App, ctx: &eframe::egui::Context) {
     TopBottomPanel::top("top_panel").show(ctx, | ui| {
         ui.horizontal(|ui| {
              mode_toggle(ui, console, DeviceMode::Dmx, "DMX");
@@ -18,11 +18,11 @@ pub fn show_mode_buttons(console: &mut Console, ctx: &eframe::egui::Context) {
     });
 }
 
-fn handle_mode_change(console: &mut Console, mode: DeviceMode) {
+fn handle_mode_change(console: &mut App, mode: DeviceMode) {
     console.set_playback(mode, None);
 }
 
-fn mode_toggle(ui: &mut egui::Ui, console: &mut Console, mode: DeviceMode, label: &str) {
+fn mode_toggle(ui: &mut egui::Ui, console: &mut App, mode: DeviceMode, label: &str) {
     let mut is_selected = console.mode == mode;
     if ui.toggle_value(&mut is_selected, label).changed() && is_selected {
         handle_mode_change(console, mode);

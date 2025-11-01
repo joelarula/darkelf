@@ -1,9 +1,9 @@
 /// Shows a grid of 10x5 on/off buttons labeled 1-50.
-use crate::ui::console::Console;
+use crate::ui::app::App;
 use crate::command::CommandGenerator;
 use egui::{Grid, Button};
 
-pub fn show_selector_grid(ui: &mut egui::Ui, console: &mut Console) {
+pub fn show_selector_grid(ui: &mut egui::Ui, console: &mut App) {
     let mode_key = console.mode as u8;
     ui.horizontal(|ui| {
         if let Some(item) = console.playback_selections.get_mut(&mode_key) {

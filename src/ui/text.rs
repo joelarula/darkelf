@@ -1,27 +1,27 @@
-use crate::ui::{console::Console, model};
+use crate::ui::{app::App, model};
 use eframe::egui::*;
 
-pub fn show_text_ui(console: &mut Console, ctx: &eframe::egui::Context) {
+pub fn show_text_ui(console: &mut App, ctx: &eframe::egui::Context) {
     egui::CentralPanel::default().show(ctx, |ui| {
         ui.vertical_centered(|ui| {
             ui.add_space(50.0);
             
             // Title
-            ui.heading("Send Text Command");
+            ui.heading("Display Text Message");
             ui.add_space(30.0);
             
             // Prominent text field
             ui.horizontal(|ui| {
                 ui.add_space(20.0);
                 ui.vertical(|ui| {
-                    ui.label("Enter command:");
+                    ui.label("Enter message:");
                     ui.add_space(10.0);
                     
                     // Large text input field
                     let text_edit = egui::TextEdit::singleline(&mut console.text_command)
                         .desired_width(ui.available_width() - 40.0)
                         .font(egui::TextStyle::Heading)
-                        .hint_text("Type your command here...");
+                        .hint_text("Type your message here...");
                     
                     let text_response = ui.add(text_edit);
                     
@@ -51,15 +51,15 @@ pub fn show_text_ui(console: &mut Console, ctx: &eframe::egui::Context) {
             
             // Status message
             if button_enabled {
-                ui.small("Press Enter or click Send to execute the command");
+                ui.small("Press Enter or click Send to execute the message");
             } else {
-                ui.colored_label(egui::Color32::GRAY, "Enter a command to enable the Send button");
+                ui.colored_label(egui::Color32::GRAY, "Enter a message to enable the Send button");
             }
         });
     });
 }
 
-fn send_text_command(console: &mut Console) {
+fn send_text_command(console: &mut App) {
     if !console.text_command.trim().is_empty() {
         log::info!("Sending text command: {}", console.text_command);
         
