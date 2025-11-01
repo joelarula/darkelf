@@ -1,6 +1,6 @@
 use windows::Devices::Enumeration::DeviceInformation;
 
-use crate::model::{DeviceResponse, PisObject, PlaybackMode, Point};
+use crate::model::{DeviceResponse, PisObject, DeviceMode, Point};
 
 
 #[derive(Clone, Debug)]
@@ -34,7 +34,7 @@ pub enum DeviceCommand {
     On(bool),
     SetSettings(crate::model::DeviceSettings),
     SetMode {
-        mode: PlaybackMode,
+        mode: DeviceMode,
         selected_shows: Option<Vec<u8>>,
     },
     Draw(Vec<Point>, PisObject),

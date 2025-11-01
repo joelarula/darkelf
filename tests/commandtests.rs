@@ -1,6 +1,7 @@
 use std::env;
+use bluest::Device;
 use log::info;
-use darkelf::{command::CommandGenerator, model::DeviceSettings, util};
+use darkelf::{command::CommandGenerator, model::{DeviceMode, DeviceSettings, Playback}, util};
 
 use std::sync::Once;
 static INIT: Once = Once::new();
@@ -71,11 +72,11 @@ fn test_parse_device_response() {
         .expect("Should successfully parse device response");
 
     // Verify main command data
-    assert_eq!(response.main_data.device_mode, 6, "Current mode should be 6");
-    assert_eq!(response.main_data.text_color, 9, "Text color should be 9");
-    assert_eq!(response.main_data.text_size, 58, "Text size should be 58");
-    assert_eq!(response.main_data.run_speed, 21, "Run speed should be 21");
-    assert_eq!(response.main_data.text_distance, 64, "Text distance should be 64");
+    assert_eq!(response.main_data.device_mode, DeviceMode::try_from(6).unwrap(), "Current mode should be 6");
+    assert_eq!(response.main_data.color, 9, "Text color should be 9");
+    assert_eq!(response.main_data.text_size_x, 148, "Text size should be 148");
+    assert_eq!(response.main_data.run_speed, 56, "Run speed should be 56");
+    assert_eq!(response.main_data.text_distance, 165, "Text distance should be 165");
 
     // Verify settings data
     assert_eq!(response.settings.dmx_channel, 0, "Channel value (dmx_channel) should be 0");  // Channel starts at 1 (range 1-512)
@@ -117,11 +118,23 @@ fn test_parse_main_command() {
 
     init_logger();
 
-   let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
-   let main_command = CommandGenerator::parse_main_command(&test1);
+   //let test1 = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
+   let test2 = "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C3060002BABA5454C100A800000000003700FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030011002300646464030000000000000004050607D0D1D2D38300B5190000000000002959005E003200FFD23250000000000000000000003200FF000050000000000000000000003200FF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D78049B92700000200E4E5E6E7";
+   info!("Test command   : {:?}", test2);
+   let main_command = CommandGenerator::parse_main_command(&test2);
    let main_command = main_command.unwrap();
-   info!("Parsed main command   : {:?}", main_command);
+   info!("Example main command   : {:?}", main_command);
 
+   // Test packing and unpacking
+   let example1 ="C0C1C2C3060002BABA5454C100A800000000003700FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
+   //let example = "C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
+   info!("Example main command   : {:?}", example1);
+   let packed = CommandGenerator::pack_main_command(&main_command);
+   let test_command = CommandGenerator::parse_main_command(&packed);
+   info!("Parsed main command   : {:?}", test_command);
+   info!("Packed main command   : {:?}", packed);
+   assert_eq!(packed, example1, "Packed command should match example");
+ 
 
 }
 
@@ -140,12 +153,12 @@ fn test_parse_pis_command() {
 }
 
 #[test]
-fn test_parse_prj_command() {
+fn test_parse_playback_command() {
 
     init_logger();
 
    let test1 =   "E0E1E2E3B0B1B2B3FFB4B5B6B7C0C1C2C306000994943838A5007000000000512E80FFFFFFFFFFFFFFFF80000000000000000080FFFFFFFFFFFFFFFF80FFFFFFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7000102030001003000646464030000000000000004050607D0D1D2D38100F52000000000000000000000003200FFD4D5D6D7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000D4D5D6D7887F4282FF000200E4E5E6E7";
-   let prj_command = CommandGenerator::parse_prj_command(&test1);
+   let prj_command = CommandGenerator::parse_playback_command(&test1);
    let prj_command = prj_command.unwrap();
    info!("Parsed prj  command   : {:?}", prj_command);
 
@@ -209,4 +222,46 @@ fn test_parse_settings_data() {
     assert_eq!(test2,test4,"Generated command should match original");
     assert_eq!(test2,test3,"Generated command should match original");
 
+}
+
+#[test]
+fn test_prj_selected_bit_conversion() {
+        // Create a ProjectItem with prj_selected = vec![255, 255, 255, 255]
+        let item = Playback { playback_mode: 128, selected_plays: vec![255, 255, 255, 255] };
+
+    // Unpack to bits
+    let bits = CommandGenerator::unpack_project_item_bits(&item);
+    // Should be 64 bits, each 255 is 8 ones then 8 zeros
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+    info!("bits: {:?}", bits);
+    for chunk in bits.chunks(16) {
+        let expected: Vec<u8> = vec![1; 8].into_iter().chain(vec![0; 8].into_iter()).collect();
+        assert_eq!(chunk, expected.as_slice(), "Each chunk should be 8 ones then 8 zeros for 255");
+    }
+
+    // Pack back to prj_selected
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    assert_eq!(packed, vec![255, 255, 255, 255], "Packed prj_selected should match original");
+}
+
+#[test]
+fn test_pack_bits_to_prj_selected_50_selected() {
+    // Create a bit vector with 50 selected buttons (first 50 bits set to 1, rest 14 bits set to 0)
+    let mut bits = vec![1u8; 50];
+    bits.extend(vec![0u8; 14]); // total 64 bits
+    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
+
+    // Pack bits into prj_selected Vec<u8>
+    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    info!("Packed prj_selected for 50 selected: {:?}", packed);
+    // Print each packed value in hex for clarity
+    for (i, val) in packed.iter().enumerate() {
+        info!("packed[{}] = 0x{:04X}", i, val);
+    }
+
+    // Unpack back to bits and check first 50 are 1, rest are 0
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
+    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
+    assert_eq!(&unpacked[..50], vec![1u8; 50].as_slice(), "First 50 bits should be 1");
+    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
 }

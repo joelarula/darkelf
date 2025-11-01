@@ -1,5 +1,5 @@
 use crate::device::LaserDevice;
-use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, PlaybackCommand, Point, ProjectData, ProjectItem, PublicData, TextData};
+use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, PlaybackCommand, Point, PlaybackData, Playback, AudioConfig, TextData};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -12,7 +12,7 @@ pub struct BlueLaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
 	device_info: Arc<Mutex<Option<DeviceResponse>>>,
-    playback_items: std::collections::HashMap<u8, ProjectItem>,
+    playback_items: std::collections::HashMap<u8, Playback>,
 }
 
 impl BlueLaserDevice {
@@ -26,10 +26,10 @@ impl BlueLaserDevice {
             device_info: Arc::new(Mutex::new(None)),
             playback_items: {
             let mut map = std::collections::HashMap::new();
-                map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
-                map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
-                map.insert(5, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
-                map.insert(6, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
+                map.insert(2, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
+                map.insert(3, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
+                map.insert(5, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
+                map.insert(6, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
                 map
             },
         }
@@ -46,7 +46,7 @@ impl BlueLaserDevice {
     }
 
     pub async fn setup(&self) {
-        debug!("LaserDevice: setup");
+        debug!("Device: setup");
         {
             // Clone Arc fields for the callback
             let device_info = self.device_info.clone();
@@ -70,7 +70,7 @@ impl BlueLaserDevice {
                     info!("Invalid or unverified device response");
                 }
             }));
-            // Lock is released here when controller goes out of scope
+ 
         }
         
         let cmd = CommandGenerator::get_query_cmd(&self.random_check);
@@ -143,12 +143,28 @@ impl BlueLaserDevice {
         }
     }
 
+    pub async fn set_main_command(&self, command: MainCommandData) {
+        info!("Setting main command: {:?}", command);
+        let cmd = CommandGenerator::pack_main_command(&command);
+        let mut controller = self.device_controller.lock().unwrap();
+        if let Ok(_) = controller.send(&cmd).await {
+            let mut info_lock = self.device_info.lock().unwrap();
+            if let Some(ref mut response) = *info_lock {
+                response.main_data = command;
+            }
+        } else {
+            error!("Failed to send main command");
+        }
+    }
+
     pub async fn draw(&self, points: Vec<Point>, config: PisObject) {
        let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
 
     }
+
+
 
     /// Set the playback mode on the device
     pub async fn set_playback_mode(&self, command: PlaybackCommand) {
@@ -160,7 +176,7 @@ impl BlueLaserDevice {
                 // Update main_data in device_info
                 let mut info_lock = self.device_info.lock().unwrap();
                 if let Some(ref mut resp) = *info_lock {
-                    resp.main_data.device_mode = command_clone.mode as u8;
+                    resp.main_data.device_mode = command_clone.mode;
                 }
             } else {
                 error!("Failed to send playback mode command");
@@ -226,28 +242,28 @@ fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandC
     if let Some(resp) = self.get_device_response() {
         let main = resp.main_data.clone();
         let text_data = TextData {
-            tx_color: command.color.unwrap_or(main.text_color), 
-            tx_size: main.text_size,
+            tx_color: command.color.unwrap_or(main.color), 
+            tx_size: main.text_size_x,
             run_speed: command.playback_speed.unwrap_or(main.run_speed),
             tx_dist: main.text_distance,
             tx_point_time: main.text_point_time,
             run_dir: main.run_direction,
         };
-        let mut prj_data = resp.prj_data.clone().unwrap_or_else(|| ProjectData {
-            public: PublicData {
-                rd_mode: if command.audio_mode.unwrap_or(main.audio_mode != 0) { 1 } else { 0 },
-                sound_val: command.audio_sensitivity.unwrap_or(main.sound_value),
-            },
-            prj_item: self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect(),
-        });
+        let mut prj_data = resp.main_data.playback.clone();
+        prj_data.audio_config = AudioConfig {
+            audio_trigger_mode: if command.audio_mode.unwrap_or(main.audio_mode != 0) { 1 } else { 0 },
+            sound_sensitivity: command.audio_sensitivity.unwrap_or(main.sound_value),
+        };
+        prj_data.playback_items = self.playback_items.iter().map(|(&k, v)| (k as i32, v.clone())).collect();
+
 
         if let Some(selected) = &command.selected_shows {
       
-            prj_data.prj_item.insert(
+            prj_data.playback_items.insert(
                 command.mode as i32,
-                ProjectItem {
-                    py_mode: if command.tick_playback.unwrap_or(false) { 128 } else { 0 },
-                    prj_selected: CommandGenerator::pack_bits_to_prj_selected(&selected),
+                Playback {
+                    playback_mode: if command.tick_playback.unwrap_or(false) { 128 } else { 0 },
+                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected),
                 },
             );
         }

@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use darkelf::blue::BlueController as _;
 use darkelf::draw::DrawUtils;
-use darkelf::model::{CommandConfig, MainCommandData, PlaybackCommand, PlaybackMode, ProjectData, ProjectItem, PublicData, TextData};
+use darkelf::model::{CommandConfig, DeviceResponse, MainCommandData, PlaybackCommand, DeviceMode, PlaybackData, Playback, AudioConfig, TextData};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
@@ -52,14 +52,19 @@ async fn test_laser_device() -> Result<(), anyhow::Error> {
 async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> {
     
     device.setup().await;
+    sleep(Duration::from_millis(500));
+    let response_b: DeviceResponse = device.get_device_response().unwrap();
+    info!("Device response after on: {:?}", response_b);
+
+
     device.on().await;
 
     sleep(Duration::from_millis(500));
 
-   // test_on_off(device).await;
-    sleep(Duration::from_millis(500));
-    test_settings(device).await;
-    sleep(Duration::from_millis(500));
+    //test_on_off(device).await;
+    //sleep(Duration::from_millis(500));
+    //test_settings(device).await;
+    //sleep(Duration::from_millis(500));
     //test_playback_command(device).await;
 
     //sleep(Duration::from_millis(500));
@@ -68,8 +73,6 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //sleep(Duration::from_millis(500));
     //test_show_drawings(device).await;
 
-    //sleep(Duration::from_millis(500));
-    //test_boundaries(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_show_playback(device).await;
@@ -82,7 +85,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 async fn test_settings(device: &mut BlueLaserDevice) {
 
 
-    device.set_playback_mode(PlaybackCommand::default(PlaybackMode::OutdoorPlayback)).await;
+    device.set_playback_mode(PlaybackCommand::default(DeviceMode::OutdoorPlayback)).await;
     sleep(Duration::from_millis(5000));
     let mut settings = device.get_setting();
     if let Some(ref mut settings) = settings {
@@ -124,7 +127,8 @@ async fn test_settings(device: &mut BlueLaserDevice) {
             info!("Command data: {:?}", device.get_setting());
         }
 
-        
+        let response: DeviceResponse = device.get_device_response().unwrap();
+        info!("Device response after settings: {:?}", response);
 
 
 
@@ -132,11 +136,52 @@ async fn test_settings(device: &mut BlueLaserDevice) {
     }
 }
 
+async fn test_show_playback(device: &mut BlueLaserDevice) {
 
-
-async fn test_boundaries(device: &mut BlueLaserDevice) {
-
+    
+    for ix in 0..=49 {
+        let mut selected_shows = vec![0u8; 50];
+        selected_shows[ix] = 1; // Select show at index ix
+        // TODO: Add playback test logic for each ix value
+        let cmd: PlaybackCommand = PlaybackCommand {
+            mode: DeviceMode::LineGeometryPlayback,
+            selected_shows: Some(selected_shows),
+            audio_mode: Some(false),
+            audio_sensitivity: Some(100),
+            playback_speed: Some(10),
+            color: None, // Add appropriate value if needed, e.g. Some(0)
+            tick_playback: None, // Add appropriate value if needed, e.g. Some(false)
+        };
+        device.set_playback_mode(cmd).await;
+        sleep(Duration::from_secs(5));
+    }
+   
 }
+
+async fn test_playback_command(device: &mut BlueLaserDevice) {
+ 
+    let playback_modes = [
+        DeviceMode::Dmx,
+        DeviceMode::RandomPlayback,
+        DeviceMode::LineGeometryPlayback,
+        DeviceMode::AnimationPlayback,
+        DeviceMode::TextPlayback,
+        DeviceMode::ChristmasPlayback,
+        DeviceMode::OutdoorPlayback,
+        DeviceMode::Program,
+        DeviceMode::Draw
+    ];
+    
+    for mode in playback_modes.iter() {
+
+        info!("Set playback mode: {:?}", mode);
+        device.set_playback_mode( PlaybackCommand::default(*mode)).await;
+        sleep(Duration::from_secs(3));
+    }
+
+    device.set_playback_mode(PlaybackCommand::default(DeviceMode::RandomPlayback)).await;
+}
+
 
 async fn test_shapes(device: &mut BlueLaserDevice) {
 
@@ -211,60 +256,25 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
 
     }
 
-async fn test_show_playback(device: &mut BlueLaserDevice) {
 
-    
-    for ix in 0..=49 {
-        let mut selected_shows = vec![0u8; 50];
-        selected_shows[ix] = 1; // Select show at index ix
-        // TODO: Add playback test logic for each ix value
-        let cmd: PlaybackCommand = PlaybackCommand {
-            mode: PlaybackMode::LineGeometryPlayback,
-            selected_shows: Some(selected_shows),
-            audio_mode: Some(false),
-            audio_sensitivity: Some(100),
-            playback_speed: Some(10),
-            color: None, // Add appropriate value if needed, e.g. Some(0)
-            tick_playback: None, // Add appropriate value if needed, e.g. Some(false)
-        };
-        device.set_playback_mode(cmd).await;
-        sleep(Duration::from_secs(5));
-    }
-   
-}
 
-async fn test_playback_command(device: &mut BlueLaserDevice) {
- 
-    let playback_modes = [
-        PlaybackMode::Dmx,
-        PlaybackMode::RandomPlayback,
-        PlaybackMode::LineGeometryPlayback,
-        PlaybackMode::AnimationPlayback,
-        PlaybackMode::TextPlayback,
-        PlaybackMode::ChristmasPlayback,
-        PlaybackMode::OutdoorPlayback,
-        PlaybackMode::Program,
-        PlaybackMode::Draw
-    ];
-    for mode in playback_modes.iter() {
-
-        info!("Set playback mode: {:?}", mode);
-        device.set_playback_mode( PlaybackCommand::default(*mode)).await;
-        sleep(Duration::from_secs(3));
-    }
-
-    device.set_playback_mode(PlaybackCommand::default(PlaybackMode::RandomPlayback)).await;
-}
-
-async fn test_on_off(device: &mut BlueLaserDevice) {
+async fn test_on_off(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> {
     for _ in 0..3 {
         info!("Turning device off");
         device.off().await;
+
+        let response: DeviceResponse = device.get_device_response().unwrap();
+        info!("Device response after off: {:?}", response);
+
         sleep(Duration::from_millis(500));
         info!("Turning device on");
         device.on().await;
         sleep(Duration::from_millis(500));
+        
+        let response_b: DeviceResponse = device.get_device_response().unwrap();
+        info!("Device response after on: {:?}", response_b);
     }
+    Ok(())
 }
 
 
@@ -288,17 +298,17 @@ let command_config = CommandConfig {
         run_dir: 1,
         tx_point_time: 10,
     },
-    prj_data: ProjectData {
-        public: PublicData {
-            rd_mode: 1, // audio trigger mode
-            sound_val: 77, // sound sensitivity
+    prj_data: PlaybackData {
+        audio_config: AudioConfig {
+            audio_trigger_mode: 1, // audio trigger mode
+            sound_sensitivity: 77, // sound sensitivity
         },
-        prj_item: {
+        playback_items: {
             let mut map = std::collections::HashMap::new();
-            map.insert(2, ProjectItem { py_mode: 128, prj_selected: vec![21845, 21845, 21845, 1] });
-            map.insert(3, ProjectItem { py_mode: 128, prj_selected: vec![1, 0, 0, 2] });
-            map.insert(5, ProjectItem { py_mode: 128, prj_selected: vec![0, 0, 0, 0] });
-            map.insert(6, ProjectItem { py_mode: 128, prj_selected: vec![65535, 65535, 65535, 3] });
+            map.insert(2, Playback { playback_mode: 128, selected_plays: vec![21845, 21845, 21845, 1] });
+            map.insert(3, Playback { playback_mode: 128, selected_plays: vec![1, 0, 0, 2] });
+            map.insert(5, Playback { playback_mode: 128, selected_plays: vec![0, 0, 0, 0] });
+            map.insert(6, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
             map
         },
     },
@@ -312,47 +322,7 @@ let command_config = CommandConfig {
     assert_eq!(cmd_str, test_str2, "Composed command string should match expected");
 }
 
-#[test]
-fn test_prj_selected_bit_conversion() {
-        // Create a ProjectItem with prj_selected = vec![255, 255, 255, 255]
-        let item = ProjectItem { py_mode: 128, prj_selected: vec![255, 255, 255, 255] };
 
-    // Unpack to bits
-    let bits = CommandGenerator::unpack_project_item_bits(&item);
-    // Should be 64 bits, each 255 is 8 ones then 8 zeros
-    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
-    info!("bits: {:?}", bits);
-    for chunk in bits.chunks(16) {
-        let expected: Vec<u8> = vec![1; 8].into_iter().chain(vec![0; 8].into_iter()).collect();
-        assert_eq!(chunk, expected.as_slice(), "Each chunk should be 8 ones then 8 zeros for 255");
-    }
-
-    // Pack back to prj_selected
-    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
-    assert_eq!(packed, vec![255, 255, 255, 255], "Packed prj_selected should match original");
-}
-
-#[test]
-fn test_pack_bits_to_prj_selected_50_selected() {
-    // Create a bit vector with 50 selected buttons (first 50 bits set to 1, rest 14 bits set to 0)
-    let mut bits = vec![1u8; 50];
-    bits.extend(vec![0u8; 14]); // total 64 bits
-    assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
-
-    // Pack bits into prj_selected Vec<u8>
-    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
-    info!("Packed prj_selected for 50 selected: {:?}", packed);
-    // Print each packed value in hex for clarity
-    for (i, val) in packed.iter().enumerate() {
-        info!("packed[{}] = 0x{:04X}", i, val);
-    }
-
-    // Unpack back to bits and check first 50 are 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
-    assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
-    assert_eq!(&unpacked[..50], vec![1u8; 50].as_slice(), "First 50 bits should be 1");
-    assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
-}
 
 #[test]
 fn test_pack_bits_to_prj_selected_first_last_50() {
@@ -372,7 +342,7 @@ fn test_pack_bits_to_prj_selected_first_last_50() {
     }
 
     // Unpack back to bits and check
-    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     assert_eq!(unpacked[0], 1, "First bit should be 1");
     assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
@@ -399,7 +369,7 @@ fn test_pack_bits_to_prj_selected_every_second_1() {
     }
 
     // Unpack back to bits and check every second bit is 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&ProjectItem { py_mode: 128, prj_selected: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     for i in 0..50 {
         assert_eq!(unpacked[i], if i % 2 == 0 { 1 } else { 0 }, "Bit {} should be {}", i, if i % 2 == 0 { 1 } else { 0 });

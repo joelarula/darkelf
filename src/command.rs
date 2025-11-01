@@ -1,8 +1,8 @@
-use crate::{draw::DrawUtils, model::{EncodedCommandData, Point, PolyPoint, ProjectItem}};
+use crate::{command, draw::DrawUtils, model::{EncodedCommandData, Point, PolyPoint, Playback}};
 use log::{debug, info};
 use tokio::time::Timeout;
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, DeviceSettings, ProjectData};
+use crate::model::{CommandConfig, DeviceInfo, DeviceResponse, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, PlaybackCommand};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -162,12 +162,11 @@ impl CommandGenerator {
     /// Parses a complete device response into structured data
     pub fn parse_device_response(data: &str) -> Option<DeviceResponse> {
         
-        let mut response = DeviceResponse {
+        let response = DeviceResponse {
             main_data: Self::parse_main_command(&data)?,
             settings: Self::parse_settings_command(&data)?,
             device_info: Self::parse_device_info(&data)?,
             features: Self::parse_features(&data)?,
-            prj_data: Self::parse_prj_command(&data),
             pis_obj:  Self::parse_pis_command(&data),
         };
 
@@ -181,18 +180,26 @@ impl CommandGenerator {
         let cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, cmd_data)?;
         info!("Parsing main command: {} {}", cmd, cmd.len());
 
+        info!("Main command: {} {} {}", MAIN_CMD_HEADER, cmd, MAIN_CMD_FOOTER);
+
+        let value = Self::clamp_value(Self::extract_hex_value(1, 1, &cmd) as u8, 0, 12, 0);
+        let device_mode: DeviceMode = DeviceMode::try_from(value).unwrap();
+
         Some(MainCommandData {
-            device_mode: Self::clamp_value(Self::extract_hex_value(1, 1, &cmd) as u8, 0, 12, 0),
-            audio_trigger_mode: Self::clamp_value(Self::extract_hex_value(2, 1, &cmd) as u8, 0, 12, 0),
-            text_color: Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0),
-            text_size: Self::clamp_value((Self::extract_hex_value(4, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 10, 100, 60),
-            run_speed:  Self::clamp_value((Self::extract_hex_value(6, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 0, 255, 128),
-            text_distance:  Self::clamp_value((Self::extract_hex_value(8, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 10, 100, 60),
+            device_mode: device_mode ,
+            audio_trigger_mode: Self::clamp_value(Self::extract_hex_value(2, 1, &cmd) as u8, 0, 9, 0),
+            color: Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0),
+            text_size_x: Self::clamp_value(Self::extract_hex_value(4, 1, &cmd) as u8 , 0, 255, 125),
+            text_size_y: Self::clamp_value(Self::extract_hex_value(5, 1, &cmd) as u8 , 0, 255, 125),
+            run_speed:  Self::clamp_value(Self::extract_hex_value(6, 1, &cmd) as u8 , 0, 255, 128),
+            filler:  Self::clamp_value(Self::extract_hex_value(7, 1, &cmd) as u8 , 0, 255, 128),
+            text_distance:  Self::clamp_value(Self::extract_hex_value(8, 1, &cmd) as u8, 0, 255, 125),
             audio_mode: Self::clamp_value(Self::extract_hex_value(9, 1, &cmd) as u8, 0, 255, 0),
-            sound_value:  Self::clamp_value((Self::extract_hex_value(10, 1, &cmd) as f32 / 255.0 * 100.0) as u8, 0, 255, 0),         
+            sound_value:  Self::clamp_value(Self::extract_hex_value(10, 1, &cmd) as u8, 0, 255, 0),         
             text_point_time: Self::clamp_value(Self::extract_hex_value(15, 1, &cmd) as u8, 0, 100, 50),
             draw_point_time: Self::clamp_value(Self::extract_hex_value(16, 1, &cmd) as u8, 0, 100, 50),
             run_direction: Self::clamp_value(Self::extract_hex_value(17, 1, &cmd) as u8, 0, 255, 0),
+            playback: Self::parse_playback_command(&cmd)?,
         })
     }
 
@@ -241,13 +248,14 @@ impl CommandGenerator {
     }
 
 
-    pub fn parse_prj_command(data: &str) -> Option<ProjectData> {
-       let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
-        info!("Parsing main command: {} {}", main_cmd, main_cmd.len());
-       
-        let rd_mode = Self::extract_hex_value(2, 1, &main_cmd) as u8;
-        let sound_val = Self::extract_hex_value(3, 1, &main_cmd) as u8;
-        let public = crate::model::PublicData { rd_mode, sound_val };
+    pub fn parse_playback_command(playback_cmd: &str) -> Option<PlaybackData> {
+ 
+        info!("Parsing playback command: {} {}", playback_cmd, playback_cmd.len());
+
+        let audio_trigger_mode = Self::extract_hex_value(9, 1, &playback_cmd) as u8;
+        let sound_sensitivity =  Self::clamp_value(Self::extract_hex_value(10, 1, &playback_cmd) as u8, 0, 255, 0);        
+            
+        let public = crate::model::AudioConfig { audio_trigger_mode, sound_sensitivity };
         
         // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
         // This assumes project item info is encoded in main_cmd or another section
@@ -257,17 +265,17 @@ impl CommandGenerator {
         let prj_keys = [2, 3, 5, 6];
         let mut project_item_start_index = 17;
         for &key in prj_keys.iter() {
-            let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &main_cmd), 0, 255, 0) as u8;
+            let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &playback_cmd), 0, 255, 0) as u8;
             let mut prj_selected = vec![0u16; 4];
-            prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &main_cmd);
-            prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &main_cmd);
-            prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &main_cmd);
-            prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &main_cmd);
-            prj_item.insert(key, ProjectItem { py_mode, prj_selected });
+            prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &playback_cmd);
+            prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &playback_cmd);
+            prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &playback_cmd);
+            prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &playback_cmd);
+            prj_item.insert(key, Playback { playback_mode: py_mode, selected_plays: prj_selected });
             project_item_start_index += 9;
         }
 
-        let prj_data = ProjectData { public, prj_item };
+        let prj_data = PlaybackData { audio_config: public, playback_items: prj_item };
 
         Some(prj_data)
 
@@ -312,7 +320,7 @@ impl CommandGenerator {
 
     pub fn parse_device_info(data: &str) -> Option<DeviceInfo> {
         // Find footer pattern and extract 8 bytes before it
-        if let Some(footer_idx) = data.rfind("E4E5E6E7") {
+        if let Some(footer_idx) = data.rfind(FOOTER) {
             if footer_idx >= 8 {
                 let info_start = footer_idx - 8;
                 let device_info_str = &data[info_start..footer_idx];
@@ -348,7 +356,72 @@ impl CommandGenerator {
         cmd
     }
 
-    
+    pub fn pack_main_command(command: &MainCommandData) -> String {
+      
+        let cur_mode_hex = Self::to_fixed_width_hex(command.device_mode as u8, 2);
+        let reserved_hex = Self::to_fixed_width_hex(0, 2);
+        let audio_trigger_mode_hex = Self::to_fixed_width_hex(command.audio_trigger_mode as u8, 2);
+        let color_hex = Self::to_fixed_width_hex(command.color as u8, 2);
+        let tx_size_scaled_x = Self::to_fixed_width_hex(command.text_size_x as u8, 2);
+        let tx_size_scaled_y = Self::to_fixed_width_hex(command.text_size_y as u8, 2);
+        let run_speed_hex = Self::to_fixed_width_hex(command.run_speed, 2);
+        let filler_hex = Self::to_fixed_width_hex(command.filler, 2);
+        let tx_dist_scaled_hex = Self::to_fixed_width_hex(command.text_distance, 2);
+        let sound_sensitivity_hex = Self::to_fixed_width_hex(command.sound_value  as u8, 2);
+        let text_point_time_hex: String = Self::to_fixed_width_hex(command.text_point_time, 2);
+        let draw_point_time_hex: String = Self::to_fixed_width_hex(command.draw_point_time, 2);
+        let run_direction = Self::to_fixed_width_hex(command.run_direction, 2);
+
+        let mut playback_selection_hex = String::new();
+        let show_keys = [2, 3, 5, 6];
+        for &key in show_keys.iter() {
+            let playback = command.playback.playback_items.get(&key).cloned().unwrap_or_else(|| Playback {
+                playback_mode: 128,
+                selected_plays: vec![0; 4],
+            });
+            let play_back_mode = if playback.playback_mode == 0 { 0 } else { 128 };
+            let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
+            let mut show_selected_hex = String::new();
+            for &val in playback.selected_plays.iter().rev() {
+                show_selected_hex.push_str(&Self::to_fixed_width_hex(val, 4));
+            }
+            playback_selection_hex.push_str(&format!("{}{}", play_back_mode_hex, show_selected_hex));
+        }
+
+        // Q: padding (JS logic: run_direction + padding = 44 bytes)
+        let mut padding = String::new();
+        let run_direction_bytes = run_direction.len() / 2;
+        if run_direction_bytes < 44 {
+            padding = "00".repeat(44 - run_direction_bytes);
+        }
+
+        let filler = "00000000".to_string();
+
+        let command = format!(
+            "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
+            MAIN_CMD_HEADER,         
+            cur_mode_hex,            
+            reserved_hex,            
+            color_hex,               
+            tx_size_scaled_x,    
+            tx_size_scaled_y,   
+            run_speed_hex,    
+            filler_hex,                   
+            tx_dist_scaled_hex,      
+            audio_trigger_mode_hex,  
+            sound_sensitivity_hex,   
+            filler,  
+            text_point_time_hex,        
+            draw_point_time_hex,               
+            playback_selection_hex,                      
+            run_direction,           
+            padding,               
+            MAIN_CMD_FOOTER         
+        );
+        command.to_uppercase()
+
+    }
+
     // Configuration commands
     pub fn get_cmd_str(config: &CommandConfig) -> String {
     
@@ -363,7 +436,7 @@ impl CommandGenerator {
         let l = "00".to_string();
         let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
         let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
-        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.public.rd_mode, 2);
+        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.audio_config.audio_trigger_mode, 2);
         // let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
         // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
 
@@ -389,14 +462,14 @@ impl CommandGenerator {
         let mut f = String::new();
         let prj_keys = [2, 3, 5, 6];
         for &key in prj_keys.iter() {
-            let project_item = config.prj_data.prj_item.get(&key).cloned().unwrap_or_else(|| ProjectItem {
-                py_mode: 128,
-                prj_selected: vec![0; 4],
+            let project_item = config.prj_data.playback_items.get(&key).cloned().unwrap_or_else(|| Playback {
+                playback_mode: 128,
+                selected_plays: vec![0; 4],
             });
-            let play_back_mode = if project_item.py_mode == 0 { 0 } else { 128 };
+            let play_back_mode = if project_item.playback_mode == 0 { 0 } else { 128 };
             let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
             let mut prj_selected_hex = String::new();
-            for &val in project_item.prj_selected.iter().rev() {
+            for &val in project_item.selected_plays.iter().rev() {
                 prj_selected_hex.push_str(&Self::to_fixed_width_hex(val, 4));
             }
             f.push_str(&format!("{}{}", play_back_mode_hex, prj_selected_hex));
@@ -418,7 +491,7 @@ impl CommandGenerator {
         }
 
         // Compose command using header/footer constants, matching JS order
-        let sound_sensitivity_hex = Self::to_fixed_width_hex(((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8, 2);
+        let sound_sensitivity_hex = Self::to_fixed_width_hex(((config.prj_data.audio_config.sound_sensitivity as f64) / 100.0 * 255.0).round() as u8, 2);
         let command = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
             MAIN_CMD_HEADER,         // header
@@ -604,9 +677,9 @@ impl CommandGenerator {
 
 
     /// Unpacks prj_selected from ProjectItem into a flat Vec<u8> of bits (0/1), matching JS getCkValues
-    pub fn unpack_project_item_bits(project_item: &crate::model::ProjectItem) -> Vec<u8> {
-        let mut bits = Vec::with_capacity(project_item.prj_selected.len() * 16);
-        for &n in &project_item.prj_selected {
+    pub fn unpack_project_item_bits(project_item: &crate::model::Playback) -> Vec<u8> {
+        let mut bits = Vec::with_capacity(project_item.selected_plays.len() * 16);
+        for &n in &project_item.selected_plays {
             for h in 0..16 {
                 let a = ((n >> h) & 1) as u8;
                 bits.push(a);

@@ -1,4 +1,4 @@
-
+use std::convert::TryFrom;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
@@ -7,9 +7,10 @@ use serde::{Deserialize, Serialize};
 pub const MAX_DRAW_POINT_COUNT: usize = 800;
 
 /// Represents the available show/playback modes for the device.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PlaybackMode {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash,Default)]
+pub enum DeviceMode {
     Dmx = 0,
+    #[default]
     RandomPlayback = 1,
     LineGeometryPlayback = 2,
     AnimationPlayback = 3,
@@ -18,9 +19,27 @@ pub enum PlaybackMode {
     OutdoorPlayback = 6,
     Program = 7,
     Draw = 8,
-   // Playlist = 9,
+    Playlist = 9,
 }
 
+
+impl TryFrom<u8> for DeviceMode {
+    type Error = ();
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(DeviceMode::Dmx),
+            1 => Ok(DeviceMode::RandomPlayback),
+            2 => Ok(DeviceMode::LineGeometryPlayback),
+            3 => Ok(DeviceMode::AnimationPlayback),
+            4 => Ok(DeviceMode::TextPlayback),
+            5 => Ok(DeviceMode::ChristmasPlayback),
+            6 => Ok(DeviceMode::OutdoorPlayback),
+            7 => Ok(DeviceMode::Program),
+            8 => Ok(DeviceMode::Draw),
+            _ => Ok(DeviceMode::RandomPlayback), // fallback to default
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct DeviceInfo {
@@ -41,17 +60,20 @@ pub struct FeatureConfig {
 
 #[derive(Debug, Clone, Default)]
 pub struct MainCommandData {
-    pub device_mode: u8,
+    pub device_mode: DeviceMode,
     pub audio_trigger_mode: u8,
-    pub text_color: u8,
-    pub text_size: u8, // text size 10 - 100
+    pub color: u8, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
+    pub text_size_x: u8, // text size x 10 - 100
+    pub text_size_y: u8, // text size y 10 - 100
     pub run_speed: u8, // speed 0 - 100
+    pub filler: u8, // extra byte filler
     pub text_distance: u8, // text distance 10 - 100
     pub audio_mode: u8,
     pub sound_value: u8,
     pub text_point_time: u8,
     pub draw_point_time: u8,
     pub run_direction: u8,
+    pub playback: PlaybackData,
 }
 
 #[derive(Debug, Clone)]
@@ -74,7 +96,6 @@ pub struct DeviceResponse {
     pub main_data: MainCommandData,
     pub device_info: DeviceInfo, 
     pub features: Vec<FeatureConfig>,
-    pub prj_data: Option<ProjectData>,
     pub pis_obj: Option<PisObject>,
 }
 
@@ -87,7 +108,7 @@ impl Default for DeviceSettings {
             beams: 3,   
             ttl_or_analog: 0,
             proto: 0,
-            display_range: 10,
+            display_range: 45,
             red_beam: 255,
             green_beam: 255,
             blue_beam: 255,     
@@ -97,8 +118,8 @@ impl Default for DeviceSettings {
 
 #[derive(Debug, Clone)]
 pub struct PlaybackCommand {
-    pub mode: PlaybackMode,
-    pub color: Option<u8>,
+    pub mode: DeviceMode,
+    pub color: Option<u8>, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
     pub audio_mode: Option<bool>,
     pub audio_sensitivity: Option<u8>,
     pub playback_speed: Option<u8>,
@@ -107,7 +128,7 @@ pub struct PlaybackCommand {
 }
 
 impl PlaybackCommand {
-    pub fn default(mode: PlaybackMode) -> Self {
+    pub fn default(mode: DeviceMode) -> Self {
         PlaybackCommand {
             mode,
             color: Some(DisplayColor::RGB as u8 ),
@@ -225,7 +246,7 @@ pub struct ProjectParams {
 pub struct CommandConfig {
     pub cur_mode: u8,
     pub text_data: TextData,
-    pub prj_data: ProjectData,
+    pub prj_data: PlaybackData,
 }
 
 #[derive(Debug)]
@@ -238,22 +259,22 @@ pub struct TextData {
     pub run_dir: u8,
 }
 
-#[derive(Debug, Clone)]
-pub struct ProjectData {
-    pub public: PublicData,
-    pub prj_item: HashMap<i32, ProjectItem>,
+#[derive(Debug, Clone,Default)]
+pub struct PlaybackData {
+    pub audio_config: AudioConfig,
+    pub playback_items: HashMap<i32, Playback>,
+}
+
+#[derive(Debug, Clone,Default)]
+pub struct AudioConfig {
+    pub audio_trigger_mode: u8, // audio trigger mode
+    pub sound_sensitivity: u8, // sound sensitivity
 }
 
 #[derive(Debug, Clone)]
-pub struct PublicData {
-    pub rd_mode: u8, // audio trigger mode
-    pub sound_val: u8, // sound sensitivity
-}
-
-#[derive(Debug, Clone)]
-pub struct ProjectItem {
-    pub py_mode: u8, //  playBackMode  0 : 128;
-    pub prj_selected: Vec<u16>, // selected shows
+pub struct Playback {
+    pub playback_mode: u8, //  playBackMode  0 : 128;
+    pub selected_plays: Vec<u16>, // selected shows
 }
 
 

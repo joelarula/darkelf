@@ -1,13 +1,13 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DisplayColor, DrawData, Point, ProjectItem, PisObject};
+use crate::model::{DisplayColor, DrawData, Point, Playback, PisObject};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
 use log::info;
 use tokio::sync::{Mutex, mpsc};
 use windows::Devices::Enumeration::DeviceInformation;
 
-use crate::model::{DeviceResponse, PlaybackMode};
+use crate::model::{DeviceResponse, DeviceMode};
 
 use crate::ui::show_selector::show_selector_grid;
 use crate::ui::{buttons, playback_settings, settings, statusbar,draw}; 
@@ -21,7 +21,7 @@ pub struct Console {
     pub x_sign: Sign,
     pub y_sign: Sign,
     pub on: bool,
-    pub mode: PlaybackMode,
+    pub mode: DeviceMode,
     pub color: DisplayColor,
     pub playback_speed: u8,
     pub sound_sensitivity: u8,
@@ -32,7 +32,7 @@ pub struct Console {
     incomming_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
     /// Maps playback mode/item to ProjectItem (py_mode, prj_selected)
-    pub playback_selections: HashMap<u8, ProjectItem>, // key: playback mode/item, value: ProjectItem
+    pub playback_selections: HashMap<u8, Playback>, // key: playback mode/item, value: ProjectItem
     pub draw_data: String,
     pub draw_config_data: String,
     pub cached_draw_text: String,
@@ -51,14 +51,14 @@ impl Console {
         pub fn new(device_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,device_command: mpsc::UnboundedSender<DeviceCommand>) -> Self {
             let mut playback_selections = HashMap::new();
             // Initialize with required playback modes, all bits 0
-            use crate::model::PlaybackMode;
+            use crate::model::DeviceMode;
             for key in [
-                PlaybackMode::LineGeometryPlayback as u8,
-                PlaybackMode::AnimationPlayback as u8,
-                PlaybackMode::ChristmasPlayback as u8,
-                PlaybackMode::OutdoorPlayback as u8,
+                DeviceMode::LineGeometryPlayback as u8,
+                DeviceMode::AnimationPlayback as u8,
+                DeviceMode::ChristmasPlayback as u8,
+                DeviceMode::OutdoorPlayback as u8,
             ] {
-                playback_selections.insert(key, ProjectItem { py_mode: 128, prj_selected: vec![0u16; 4] });
+                playback_selections.insert(key, Playback { playback_mode: 128, selected_plays: vec![0u16; 4] });
             }
             Self {
                 channel: 1,
@@ -70,7 +70,7 @@ impl Console {
                 x_sign: Sign::Plus,
                 y_sign: Sign::Plus,
                 on: false,
-                mode: PlaybackMode::RandomPlayback,
+                mode: DeviceMode::RandomPlayback,
                 color: DisplayColor::RGB,
                 audio_mode: 0,
                 device_connected: false,
@@ -188,15 +188,14 @@ impl eframe::App for Console {
                     Light::RGB
                 };
 
-                // Update playback_selections from prj_data
-                if let Some(prj_data) = device_state_ref.prj_data.as_ref() {
-                    for (&mode, item) in prj_data.prj_item.iter() {
+     
+                for (&mode, item) in device_state_ref.main_data.playback.playback_items.iter() {
                         self.playback_selections.insert(
                             mode as u8,
                             item.clone(),
                         );
-                    }
                 }
+                
             }
         }
 
@@ -207,10 +206,10 @@ impl eframe::App for Console {
         
         if matches!(
             self.mode,
-            PlaybackMode::LineGeometryPlayback
-                | PlaybackMode::AnimationPlayback
-                | PlaybackMode::ChristmasPlayback
-                | PlaybackMode::OutdoorPlayback
+            DeviceMode::LineGeometryPlayback
+                | DeviceMode::AnimationPlayback
+                | DeviceMode::ChristmasPlayback
+                | DeviceMode::OutdoorPlayback
         ){
             playback_settings::show_playback_settings_ui(ctx);
 
@@ -222,15 +221,15 @@ impl eframe::App for Console {
 
         }
         
-        if matches!(self.mode,PlaybackMode::Draw){
+        if matches!(self.mode,DeviceMode::Draw){
             draw::show_draw_ui(self,ctx);
         }
 
-        if matches!(self.mode,PlaybackMode::TextPlayback){
+        if matches!(self.mode,DeviceMode::TextPlayback){
             crate::ui::text::show_text_ui(self,ctx);
         }
 
-        if matches!(self.mode,PlaybackMode::RandomPlayback){
+        if matches!(self.mode,DeviceMode::RandomPlayback){
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.label("Random Playback!");
             });
@@ -243,7 +242,7 @@ impl eframe::App for Console {
 
 impl Console {
    
-    pub fn set_playback(&mut self, mode: PlaybackMode, selected_shows: Option<Vec<u8>>) {
+    pub fn set_playback(&mut self, mode: DeviceMode, selected_shows: Option<Vec<u8>>) {
         self.mode = mode;
         let _ = self.command_sender.send(DeviceCommand::SetMode { mode, selected_shows });
     }
