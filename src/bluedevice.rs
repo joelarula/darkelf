@@ -1,5 +1,5 @@
 use crate::device::LaserDevice;
-use crate::model::{ MainCommandData, PisObject, Point};
+use crate::model::{ MainCommandData, DrawCommandData, Point};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -148,7 +148,7 @@ impl BlueLaserDevice {
         }
     }
 
-    pub async fn draw(&self, points: Vec<Point>, config: PisObject) {
+    pub async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
        let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
@@ -212,7 +212,7 @@ impl LaserDevice for BlueLaserDevice {
         self.set_settings(new_settings).await
     }
     
-    async fn draw(&self, points: Vec<Point>, config: PisObject) {
+    async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
         self.draw(points, config).await
     }
     

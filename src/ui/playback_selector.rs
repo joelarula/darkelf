@@ -100,6 +100,7 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
                             let mut command = app.command_data.clone();
                             if let Some(item) = command.playback.playback_items.get_mut(&mode_key) {
                                 item.selected_plays = CommandGenerator::pack_bits_to_prj_selected(&bits);
+                                item.selected_play = (idx + 1) as u16;
 	                            let _ = app.command_sender.send(DeviceCommand::SetMainCommand(command));
                             }
                             

@@ -13,7 +13,7 @@ use darkelf::command::CommandGenerator;
 use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
-use darkelf::model::{DrawData, DrawMode, DrawPoints, Point, PisObject};
+use darkelf::model::{LegacyDrawData, DrawMode, DrawPoints, Point, DrawCommandData};
 use std::fs;
 use std::path::Path;
 
@@ -104,6 +104,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
+                    selected_play: 8,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -120,6 +121,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
+                    selected_play: 45,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -137,6 +139,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
+                    selected_play: 43,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -241,6 +244,7 @@ async fn test_show_playback(device: &mut BlueLaserDevice) {
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
                     playback_mode: PlaybackMode::LoopPlay,
+                    selected_play: (ix + 1) as u16,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
             );
@@ -294,7 +298,7 @@ async fn test_shapes(device: &mut BlueLaserDevice) {
     info!("Loaded {} shape arrays from JSON", point_arrays.len());
     
     // Create default PisObject for command generation
-    let draw_config = PisObject {
+    let draw_config = DrawCommandData {
         cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         tx_point_time: 55,
     };
@@ -397,7 +401,7 @@ fn test_pack_bits_to_prj_selected_first_last_50() {
     }
 
     // Unpack back to bits and check
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     assert_eq!(unpacked[0], 1, "First bit should be 1");
     assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
@@ -424,7 +428,7 @@ fn test_pack_bits_to_prj_selected_every_second_1() {
     }
 
     // Unpack back to bits and check every second bit is 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     for i in 0..50 {
         assert_eq!(unpacked[i], if i % 2 == 0 { 1 } else { 0 }, "Bit {} should be {}", i, if i % 2 == 0 { 1 } else { 0 });
@@ -739,7 +743,7 @@ fn test_point_array_shapes_command_generation() {
     info!("Loaded {} shape arrays from JSON", point_arrays.len());
     
     // Create default PisObject for command generation
-    let draw_config = PisObject {
+    let draw_config = DrawCommandData {
         cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         tx_point_time: 55,
     };
@@ -775,7 +779,7 @@ fn test_point_array_shapes_command_generation() {
 }
 
 
-fn load_draw_data(filename: &str) -> Result<DrawData, anyhow::Error> {
+fn load_draw_data(filename: &str) -> Result<LegacyDrawData, anyhow::Error> {
 
     let json_filename =  filename.to_string();
     let json_path = Path::new(&json_filename);
@@ -785,7 +789,7 @@ fn load_draw_data(filename: &str) -> Result<DrawData, anyhow::Error> {
         .ok_or_else(|| anyhow!("JSON should have 'data' field"))?
         .clone();
     
-    let draw_data: DrawData = serde_json::from_value(draw_data_json)?;
+    let draw_data: LegacyDrawData = serde_json::from_value(draw_data_json)?;
 
     Ok(draw_data)
 }

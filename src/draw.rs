@@ -1,6 +1,6 @@
 use crate::command::CommandGenerator;
 use crate::model::{
-    DrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
+    LegacyDrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
 };
 use std::collections::HashMap;
 use ttf_parser::Face;
@@ -384,7 +384,7 @@ impl DrawUtils {
         builder.commands
     }
 
-    pub fn prepare_draw_data(draw_data: &DrawData, width: f64) -> Vec<Point> {
+    pub fn prepare_draw_data(draw_data: &LegacyDrawData, width: f64) -> Vec<Point> {
         let mut points = Vec::new();
 
         for draw_object in &draw_data.draw_points {

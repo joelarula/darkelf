@@ -1,7 +1,7 @@
 use crate::{draw::DrawUtils, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
 use log::{debug, info};
 
-use crate::model::{DeviceInfo, DeviceState, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
+use crate::model::{DeviceInfo, DeviceState, FeatureConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -265,7 +265,7 @@ impl CommandGenerator {
             prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &playback_cmd);
             prj_selected[1] = Self::extract_hex_value(project_item_start_index + 5, 2, &playback_cmd);
             prj_selected[0] = Self::extract_hex_value(project_item_start_index + 7, 2, &playback_cmd);
-            prj_item.insert(key, Playback { playback_mode: py_mode, selected_plays: prj_selected });
+            prj_item.insert(key, Playback { playback_mode: py_mode, selected_plays: prj_selected, selected_play: 1 });
             project_item_start_index += 9;
         }
 
@@ -275,7 +275,7 @@ impl CommandGenerator {
 
     }
 
-    pub fn parse_pis_command(data: &str) -> Option<PisObject> {
+    pub fn parse_pis_command(data: &str) -> Option<DrawCommandData> {
 
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
         info!("Parsing main command: {} {}", main_cmd, main_cmd.len());
@@ -290,7 +290,7 @@ impl CommandGenerator {
             cnf_valus_arr[i] = *val;
         }
 
-        let mut pis_obj = PisObject {
+        let mut pis_obj = DrawCommandData {
             tx_point_time: tx_point_time as u32,
             cnf_valus: cnf_valus_arr,
         };
@@ -371,9 +371,14 @@ impl CommandGenerator {
         for &key in show_keys.iter() {
             let playback = command.playback.playback_items.get(&key).cloned().unwrap_or_else(|| Playback {
                 playback_mode: PlaybackMode::TickPlay,
+                selected_play: 1,
                 selected_plays: vec![0; 4],
             });
-            let play_back_mode = if playback.playback_mode == PlaybackMode::LoopPlay { 0 } else { 128 };
+            let mut play_back_mode = if playback.playback_mode == PlaybackMode::LoopPlay { 0 } else { 128 };
+            if play_back_mode == 128 {
+                let _play_back_mode_shifted = play_back_mode | playback.selected_play as u8;
+            }
+
             let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
             let mut show_selected_hex = String::new();
             for &val in playback.selected_plays.iter().rev() {
@@ -416,12 +421,13 @@ impl CommandGenerator {
 
     }
 
-    pub fn get_draw_cmd_str(points: &[Point], config: &PisObject) -> String {
+    pub fn get_draw_cmd_str(points: &[Point], config: &DrawCommandData) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
-        Self::draw_point_str_to_cmd(&encoded_draw_cmd)
+        let command_str = format!("{}{}{}", DRAW_CMD_HEADER, encoded_draw_cmd, DRAW_CMD_FOOTER);
+        command_str.to_uppercase()
     }
 
-    pub fn encode_draw_point_command(points: &[Point], config: &PisObject, ) -> String {
+    pub fn encode_draw_point_command(points: &[Point], config: &DrawCommandData, ) -> String {
         let point_time = "00";  // Default point time
         let mut config_str = String::new();
         let mut points_str = String::new();
@@ -471,12 +477,6 @@ impl CommandGenerator {
     }
 
 
-    /// Convert draw point string to command format with headers and footers
-    pub fn draw_point_str_to_cmd(point_string: &str) -> String {
-        let command_str = format!("{}{}{}", DRAW_CMD_HEADER, point_string, DRAW_CMD_FOOTER);
-       
-        command_str.to_uppercase()
-    }
 
 
     /// Verifies the received data against the random verification bytes sent in the query.

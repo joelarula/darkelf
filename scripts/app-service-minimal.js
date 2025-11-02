@@ -1347,7 +1347,10 @@ globalThis["webpackJsonp"].push([
                                     pointType = 3;
                                 }
                             }
-                            encodedPoints += toFixedWidthHex(point[0].toFixed()) + toFixedWidthHex(point[1].toFixed()) + toFixedWidthHex(combineNibbles(point[2], pointType), 2);
+                            encodedPoints
+                            += toFixedWidthHex(point[0].toFixed()) 
+                            + toFixedWidthHex(point[1].toFixed()) 
+                            + toFixedWidthHex(combineNibbles(point[2], pointType), 2);
                         }
                         encodedPoints = configHeader + toFixedWidthHex(points.length) + encodedPoints;
                     } else {
@@ -1607,7 +1610,8 @@ globalThis["webpackJsonp"].push([
                             var projectItem = projectItems[projectIdx];
                             var playbackMode = projectItem.pyMode == 0 ? 0 : 128;
                             if (playbackMode != 0 && featureParams != null && featureParams.hasOwnProperty("prjParm") && featureParams.prjParm.prjIndex == projectIdx) {
-                                if (projectIdx == 3 && getFeatureValue(featureParams, "animationFix") && [2, 4, 11, 13, 19].includes(featureParams.prjParm.selIndex)) {
+                                if (projectIdx == 3 && getFeatureValue(featureParams, "animationFix") 
+                                    && [2, 4, 11, 13, 19].includes(featureParams.prjParm.selIndex)) {
                                     playbackMode |= 50 - featureParams.prjParm.selIndex;
                                 } else {
                                     playbackMode |= featureParams.prjParm.selIndex;
@@ -1633,7 +1637,21 @@ globalThis["webpackJsonp"].push([
                         for (var padIdx = runDirectionLen; padIdx < 44; padIdx++) {
                             paddingHex += "00";
                         }
-                        var command = "c0c1c2c3" + curModeHex + reservedHex + colorHex + textSizeHex + textSizeHex2 + runSpeedHex + reservedZeroHex + textDistanceHex + audioTriggerModeHex + soundSensitivityHex + colorGroupHex + playbackHex + runDirectionHex + paddingHex + "c4c5c6c7";
+                        var command = "c0c1c2c3" 
+                            + curModeHex 
+                            + reservedHex 
+                            + colorHex 
+                            + textSizeHex 
+                            + textSizeHex2 
+                            + runSpeedHex 
+                            + reservedZeroHex 
+                            + textDistanceHex 
+                            + audioTriggerModeHex 
+                            + soundSensitivityHex 
+                            + colorGroupHex 
+                            + playbackHex 
+                            + runDirectionHex 
+                            + paddingHex + "c4c5c6c7";
                         return command.toUpperCase();
                     },
 

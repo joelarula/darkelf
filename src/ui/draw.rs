@@ -1,27 +1,10 @@
-use crate::{model::{PisObject, Point}, ui::{self, app::App, model::DeviceCommand}};
+use crate::{model::{DrawCommandData, Point,DrawData}, ui::{self, app::App, model::DeviceCommand}};
 use eframe::egui::*;
 
-fn parse_points_from_json(json_text: &str) -> (Result<Vec<Point>, serde_json::Error>, Option<String>) {
-    match serde_json::from_str::<Vec<Point>>(json_text) {
-        Ok(points) => (Ok(points), None),
-        Err(e) => {
-            let error_msg = format!("JSON parsing failed: {}", e);
-            (Err(e), Some(error_msg))
-        },
-    }
-}
 
-fn parse_config_from_json(json_text: &str) -> (Result<PisObject, serde_json::Error>, Option<String>) {
-    match serde_json::from_str::<PisObject>(json_text) {
-        Ok(config) => (Ok(config), None),
-        Err(e) => {
-            let error_msg = format!("Config JSON parsing failed: {}", e);
-            (Err(e), Some(error_msg))
-        },
-    }
-}
 
-pub fn show_draw_ui(console: &mut App, ctx:  &eframe::egui::Context) {
+
+pub fn show_draw_ui(app: &mut App, ctx:  &eframe::egui::Context) {
 
     
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -41,103 +24,116 @@ pub fn show_draw_ui(console: &mut App, ctx:  &eframe::egui::Context) {
                         ui.heading("Draw Points");
                     });
                     header.col(|ui| {
-                        ui.heading("Draw Config");
+                        ui.heading("Draw Preview");
                     });
                 })
                 .body(|mut body| {
                     body.row(available_height - 20.0, |mut row| { // Reduce row height slightly for spacing
                         // Left side - Draw Commands (2/3 width)
                         row.col(|ui| {
-                            let mut text = console.draw_data.clone();
+                            let mut text = app.draw_data.clone();
                             ui.add_sized(
                                 [ui.available_width(), available_height - 20.0],
                                 egui::TextEdit::multiline(&mut text)
                                     .hint_text("Enter your drawing data here..")
                             );
-                            console.draw_data = text;
+                            app.draw_data = text;
                         });
                         
-                        // Right side - Draw Config (1/3 width)
                         row.col(|ui| {
-                            let mut config_text = console.draw_config_data.clone();
-                            ui.add_sized(
-                                [ui.available_width(), available_height - 20.0],
-                                egui::TextEdit::multiline(&mut config_text)
-                                    .hint_text("Enter draw config here..")
+
+
+
+                            // Painter with footer showing mouse coordinates
+                            let (rect, response) = ui.allocate_exact_size(
+                                egui::Vec2::new(405.0, 405.0),
+                                egui::Sense::hover()
                             );
-                            console.draw_config_data = config_text;
+                            let painter = ui.painter();
+                            painter.rect_filled(rect, 0.0, egui::Color32::BLACK);
+                            painter.rect_stroke(rect, 0.0, egui::Stroke::new(2.0, egui::Color32::BLACK), egui::StrokeKind::Outside);
+
+                            // Show mouse coordinates relative to painter
+                            use std::time::{Instant, Duration};
+                            static mut LAST_SEND: Option<Instant> = None;
+                            if let Some(pos) = response.hover_pos() {
+                                let rel_x = pos.x - rect.left();
+                                let rel_y = pos.y - rect.top();
+                                // Translate to 800x800 system with origin at center
+                                let virt_x = rel_x * 800.0 / 405.0 - 400.0;
+                                let virt_y = 400.0 - rel_y * 800.0 / 405.0;
+                                ui.label(format!("Cursor (800x800): ({:.1}, {:.1})", virt_x, virt_y));
+
+                                // Send draw command with cross at mouse coordinates every 100ms
+                                let now = Instant::now();
+                                let should_send = unsafe {
+                                    match LAST_SEND {
+                                        Some(last) => now.duration_since(last) > Duration::from_millis(100),
+                                        None => true,
+                                    }
+                                };
+                                if should_send {
+                                    // Build cross shape at (virt_x, virt_y) with correct types
+                                    let cross_size = 40.0;
+                                    let points = vec![
+                                        Point { x: (virt_x - cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
+                                        Point { x: (virt_x + cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
+                                        Point { x: virt_x as f64, y: (virt_y - cross_size) as f64, color: 9, pen_state: 1u8 },
+                                        Point { x: virt_x as f64, y: (virt_y + cross_size) as f64, color: 9, pen_state: 1u8 },
+                                    ];
+
+                                    
+                                    let draw_data = DrawData { points, config: app.cached_points_result.as_ref().map_or(DrawCommandData::default(), |d| d.config.clone()) };
+                                    let _ = app.command_sender.send(DeviceCommand::Draw(draw_data.points.clone(), draw_data.config.clone()));
+                                    unsafe { LAST_SEND = Some(now); }
+                                }
+                            } else {
+                                ui.label("Cursor: (not over painter)");
+                            }
+                            
                         });
                     });
                 });
             
-            ui.add_space(20.0); // Increased spacing after table
+            ui.add_space(20.0); 
             
-            // Cache points parsing
-            let text = console.draw_data.clone();
-            if text != console.cached_draw_text {
-                console.cached_draw_text = text.clone();
+        
+            let text = app.draw_data.clone();
+            if text != app.cached_draw_text {
+                app.cached_draw_text = text.clone();
                 if !text.is_empty() {
-                    let (result, _) = parse_points_from_json(&text);
-                    console.cached_points_result = Some(result.map_err(|e| e.to_string()));
+                    let (result, error_msg) = parse_points_from_json(&text);
+                    if let Ok(result) = result {
+                        app.cached_points_result = Some(result);
+                        app.cached_error_result = None;
+                    }
+                    if let Some(err) = error_msg {
+                        app.cached_error_result = Some(err);
+                    }
                 } else {
-                    console.cached_points_result = Some(Ok(Vec::new()));
+                    app.cached_points_result = Some(DrawData{ points: Vec::new(), config: DrawCommandData::default() });
                 }
             }
             
-            // Cache config parsing
-            let config_text = console.draw_config_data.clone();
-            if config_text != console.cached_config_text {
-                console.cached_config_text = config_text.clone();
-                if !config_text.is_empty() {
-                    let (result, _) = parse_config_from_json(&config_text);
-                    console.cached_config_result = Some(result.map_err(|e| e.to_string()));
-                } else {
-                    // Use default PisObject when config is empty
-                    console.cached_config_result = Some(Ok(PisObject {
-                        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-                        tx_point_time: 55,
-                    }));
-                }
-            }
-            
-            // Show error messages if JSON parsing failed
             let mut has_errors = false;
-            if let Some(ref cached_result) = console.cached_points_result {
-                if let Err(error) = cached_result {
-                    ui.colored_label(egui::Color32::RED, format!("Points Error: {}", error));
-                    has_errors = true;
-                }
+            if let Some(ref error) = app.cached_error_result {
+                ui.colored_label(egui::Color32::RED, format!("Points data Error: {}", error));
+                has_errors = true;
             }
-            if let Some(ref cached_result) = console.cached_config_result {
-                if let Err(error) = cached_result {
-                    ui.colored_label(egui::Color32::RED, format!("Config Error: {}", error));
-                    has_errors = true;
-                }
-            }
+
             if has_errors {
                 ui.add_space(5.0);
             }
-            
-            // Prominent send button at the bottom
+
             ui.with_layout(egui::Layout::bottom_up(egui::Align::Center), |ui| {
-                // Check if we have valid points with length > 0
-                let has_valid_points = if let Some(ref cached_result) = console.cached_points_result {
-                    match cached_result {
-                        Ok(points) => !points.is_empty(),
-                        Err(_) => false,
-                    }
+             
+                let has_valid_points = if let Some(ref cached_result) = app.cached_points_result {
+                    !cached_result.points.is_empty()
                 } else {
                     false
                 };
                 
-                // Check if we have valid config
-                let has_valid_config = if let Some(ref cached_result) = console.cached_config_result {
-                    matches!(cached_result, Ok(_))
-                } else {
-                    false
-                };
-                
-                let can_send = has_valid_points && has_valid_config;
+                let can_send = has_valid_points;
                 
                 let mut send_button = egui::Button::new("Draw")
                     .min_size(egui::vec2(200.0, 40.0));
@@ -150,20 +146,15 @@ pub fn show_draw_ui(console: &mut App, ctx:  &eframe::egui::Context) {
                 let button_response = ui.add_enabled(can_send, send_button);
                 
                 if button_response.clicked() && can_send {
-                    if let (Some(Ok(points)), Some(Ok(draw_config))) = (
-                        console.cached_points_result.as_ref(),
-                        console.cached_config_result.as_ref()
-                    ) {
-                        log::info!("Sending draw commands with {} points", points.len());
-                        let _ = console.command_sender.send(DeviceCommand::Draw(points.clone(), draw_config.clone()));
+                    if let Some(draw_data) = &app.cached_points_result {
+                        log::info!("Sending draw commands with config {:?} {:?} points", draw_data.config, draw_data.points);
+                        let _ = app.command_sender.send(DeviceCommand::Draw(draw_data.points.clone(), draw_data.config.clone()));
                     }
                 }
                 
                 ui.add_space(5.0);
-                if can_send {
+                if !can_send {
                     ui.small("Points: [{\"x\": 0.0, \"y\": 0.0, \"color\": 0, \"pen_state\": 1}, ...] | Config: {\"cnf_valus\": [0,0,0,0,0,0,0,0,0,0,0,0,3], \"tx_point_time\": 55}");
-                } else if !has_valid_points && !has_valid_config {
-                    ui.colored_label(egui::Color32::GRAY, "Enter valid JSON for both points and config to enable Draw button");
                 } else if !has_valid_points {
                     ui.colored_label(egui::Color32::GRAY, "Enter valid points JSON to enable Draw button");
                 } else {
@@ -172,4 +163,25 @@ pub fn show_draw_ui(console: &mut App, ctx:  &eframe::egui::Context) {
             });
         });
     });
+}
+
+
+fn parse_points_from_json(json_text: &str) -> (Result<DrawData, serde_json::Error>, Option<String>) {
+    match serde_json::from_str::<DrawData>(json_text) {
+        Ok(points) => (Ok(points), None),
+        Err(e) => {
+            let error_msg = format!("JSON parsing failed: {}", e);
+            (Err(e), Some(error_msg))
+        },
+    }
+}
+
+fn parse_config_from_json(json_text: &str) -> (Result<DrawCommandData, serde_json::Error>, Option<String>) {
+    match serde_json::from_str::<DrawCommandData>(json_text) {
+        Ok(config) => (Ok(config), None),
+        Err(e) => {
+            let error_msg = format!("Config JSON parsing failed: {}", e);
+            (Err(e), Some(error_msg))
+        },
+    }
 }

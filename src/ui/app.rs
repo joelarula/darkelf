@@ -1,8 +1,9 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, MainCommandData, PisObject, Playback, PlaybackMode, Point};
+use crate::model::{DeviceInfo, DeviceSettings, DrawData, MainCommandData, DrawCommandData, Playback, PlaybackMode, Point};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
+use egui::Mesh;
 use log::info;
 use tokio::sync::{Mutex, mpsc};
 use windows::Devices::Enumeration::DeviceInformation;
@@ -28,11 +29,10 @@ pub struct App {
 
 
     pub draw_data: String,
-    pub draw_config_data: String,
     pub cached_draw_text: String,
-    pub cached_points_result: Option<Result<Vec<Point>, String>>,
-    pub cached_config_text: String,
-    pub cached_config_result: Option<Result<PisObject, String>>,
+    pub cached_points_result: Option<DrawData>,
+    pub cached_error_result: Option<String>,
+    pub mesh: Option<Mesh>,
     pub text_command: String,
     pub laser_device_initialized: bool,
     pub device_list: DeviceList,
@@ -51,43 +51,22 @@ impl App {
                 DeviceMode::ChristmasPlayback as u8,
                 DeviceMode::OutdoorPlayback as u8,
             ] {
-                playback_selections.insert(key, Playback { playback_mode: PlaybackMode::LoopPlay, selected_plays: vec![0u16; 4] });
+                playback_selections.insert(key, Playback { playback_mode: PlaybackMode::LoopPlay, selected_plays: vec![0u16; 4], selected_play: 1 });
             }
             Self {
                 device_info: DeviceInfo::default(),
                 settings : DeviceSettings::default(),
                 command_data: MainCommandData::default(),
-
-
                 on: false,
                 mode: DeviceMode::RandomPlayback,
-
                 ble_device_connected: false,
                 incomming_channel: device_channel,
                 command_sender: device_command,
                 draw_data: String::new(),
-                draw_config_data: r#"{
-    "txPointTime": 55,
-    "cnfValus": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        3
-    ]
-}"#.to_string(),
                 cached_draw_text: String::new(),
                 cached_points_result: None,
-                cached_config_text: String::new(),
-                cached_config_result: None,
+                cached_error_result: None,
+                mesh: None,
                 text_command: String::new(),
                 laser_device_initialized: false,
                 device_list: DeviceList { devices: Vec::new(), selected_index: None },

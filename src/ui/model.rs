@@ -1,7 +1,7 @@
 use crate::model::DeviceInfo;
 use crate::model::DeviceSettings;
 use crate::model::MainCommandData;
-use crate::model::{PisObject, Point};
+use crate::model::{DrawCommandData, Point};
 
 
 #[derive(Clone, Debug)]
@@ -36,6 +36,6 @@ pub enum DeviceCommand {
     On(bool),
     SetSettings(DeviceSettings),
     SetMainCommand(MainCommandData),
-    Draw(Vec<Point>, PisObject),
+    Draw(Vec<Point>, DrawCommandData),
     SendText(String),
 }

@@ -1,4 +1,5 @@
-use std::convert::TryFrom;
+
+use std::{convert::TryFrom, fmt::Display};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
@@ -77,7 +78,7 @@ pub struct MainCommandData {
 #[derive(Debug, Clone,PartialEq)]
 pub struct DeviceSettings {
     pub proto : u8,        // Protocol value
-    pub display_range : u8,        // Projection angle 10 - 100. unit todo
+    pub display_range : u8,  // Projection angle 10 - 100. 6.86 - 61.92 aproxim
     pub red_beam : u8,     // Red beam 0 ~ 255
     pub green_beam : u8,   // Green beam 0 ~ 255
     pub blue_beam : u8,    // Blue beam 0 ~ 255
@@ -94,7 +95,7 @@ pub struct DeviceState {
     pub main_data: MainCommandData,
     pub device_info: DeviceInfo, 
     pub features: Vec<FeatureConfig>,
-    pub pis_obj: Option<PisObject>,
+    pub pis_obj: Option<DrawCommandData>,
 }
 
 
@@ -208,24 +209,26 @@ pub struct PlaybackData {
 #[derive(Debug, Clone,PartialEq)]
 pub struct Playback {
     pub playback_mode: PlaybackMode,
+    pub selected_play: u16,
     pub selected_plays: Vec<u16>,
 }
 
 
 
+
 // cnf_valus[12] playback time configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PisObject {
+pub struct DrawCommandData {
     #[serde(rename = "txPointTime")]
     pub tx_point_time: u32,
     #[serde(rename = "cnfValus")]
     pub cnf_valus: [u32; 13],
 }
 
-impl Default for PisObject {
+impl Default for DrawCommandData {
     fn default() -> Self {
         Self {
-            tx_point_time: 50,
+            tx_point_time: 55,
             cnf_valus: [0; 13],
         }
     }
@@ -749,24 +752,28 @@ impl Default for DrawItem {
     }
 }
 
-
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DrawData {
+    pub points: Vec<Point>,
+    pub config: DrawCommandData,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LegacyDrawData {
 
     #[serde(rename = "drawPoints")]
     pub draw_points: Vec<DrawItem>,
-    
+     
     #[serde(rename = "pisObj")]
-    pub pis_obj: PisObject,
+    pub pis_obj: DrawCommandData,
     
 }
 
-impl DrawData {
+impl LegacyDrawData {
     pub fn new() -> Self {
         Self {
             draw_points: Vec::new(),
-            pis_obj: PisObject::default(),
+            pis_obj: DrawCommandData::default(),
         }
     }
     
@@ -775,7 +782,7 @@ impl DrawData {
     }
 }
 
-impl Default for DrawData {
+impl Default for LegacyDrawData {
     fn default() -> Self {
         Self::new()
     }
