@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, MainCommandData, PisObject, Playback, Point};
+use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, MainCommandData, PisObject, Playback, PlaybackMode, Point};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
 use log::info;
@@ -9,7 +9,7 @@ use windows::Devices::Enumeration::DeviceInformation;
 
 use crate::model::{DeviceState, DeviceMode};
 
-use crate::ui::show_selector::show_selector_grid;
+use crate::ui::playback_selector::show_selector_grid;
 use crate::ui::{buttons, dmx, draw, playback_settings, settings, statusbar}; 
 
 
@@ -18,25 +18,15 @@ pub struct App {
     pub settings : DeviceSettings,
     pub command_data: MainCommandData,
 
-    pub display_range: i32,
-
-    pub x_y_interchange: bool,
-    pub x_sign: Sign,
-    pub y_sign: Sign,
     pub on: bool,
     pub mode: DeviceMode,
 
-    pub color: DisplayColor,
-    pub playback_speed: u8,
-    pub sound_sensitivity: u8,
-    pub audio_mode: u8,
     pub ble_device_connected: bool,
-    pub device_name: Option<String>,
-    pub device_state: Option<DeviceState>,
+
     incomming_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,
     pub(crate) command_sender: mpsc::UnboundedSender<DeviceCommand>,
-    /// Maps playback mode/item to ProjectItem (py_mode, prj_selected)
-    pub playback_selections: HashMap<u8, Playback>, // key: playback mode/item, value: ProjectItem
+
+
     pub draw_data: String,
     pub draw_config_data: String,
     pub cached_draw_text: String,
@@ -61,29 +51,20 @@ impl App {
                 DeviceMode::ChristmasPlayback as u8,
                 DeviceMode::OutdoorPlayback as u8,
             ] {
-                playback_selections.insert(key, Playback { playback_mode: 128, selected_plays: vec![0u16; 4] });
+                playback_selections.insert(key, Playback { playback_mode: PlaybackMode::LoopPlay, selected_plays: vec![0u16; 4] });
             }
             Self {
                 device_info: DeviceInfo::default(),
                 settings : DeviceSettings::default(),
                 command_data: MainCommandData::default(),
 
-                display_range: 50,
-                sound_sensitivity: 128,
-                playback_speed: 50,
-                x_y_interchange: false,
-                x_sign: Sign::Plus,
-                y_sign: Sign::Plus,
+
                 on: false,
                 mode: DeviceMode::RandomPlayback,
-                color: DisplayColor::RGB,
-                audio_mode: 0,
+
                 ble_device_connected: false,
-                device_name: None,
-                device_state: None,
                 incomming_channel: device_channel,
                 command_sender: device_command,
-                playback_selections,
                 draw_data: String::new(),
                 draw_config_data: r#"{
     "txPointTime": 55,
@@ -144,14 +125,6 @@ impl Default for Beam {
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
 
-       // let mut info: Option<DeviceInfo> = None;
-      //  let mut command_data: Option<MainCommandData> = None;
-       // let mut device_settings: Option<DeviceSettings> = None;
-        
-        //let mut xy: Option<u8> = None;
-
-        let mut settings_updated = false;
-
         if let Ok(mut rx) = self.incomming_channel.try_lock() {
             while let Ok(msg) = rx.try_recv() {
                 match msg {
@@ -169,7 +142,6 @@ impl eframe::App for App {
                     }
                     DeviceMessage::DeviceSettings(device_settings) => {
                         self.settings = device_settings;
-                        settings_updated = true;
                     },
                     DeviceMessage::DeviceCommand(main_command_data) => {
                         self.command_data = main_command_data;
@@ -177,45 +149,6 @@ impl eframe::App for App {
                 }
             }
         }
-
-        if settings_updated {
-            self.prepare_xy_map();
-        }
-        
-
-       // if let Some(device_state) = device_response {
-            
-           // self.device_info = device_state.device_info.clone();
-           // self.settings = device_state.settings.clone();
-            //
-
-            //self.device_state = Some(device_state.clone());
-            //if let Some(xy_val) = xy {
-            //    self.parse_xy_map(&xy_val);
-            //}
-            //if let Some(device_state_ref) = self.device_state.as_ref() {
-               // self.on = device_state_ref.device_info.device_on;
-               
-               // self.display_range = device_state_ref
-               //     .settings
-               //     .display_range  as i32;
-
-               // self.light = if device_state_ref.settings.beams == 1 {
-               //     Light::Mono
-               // } else {
-               //     Light::RGB
-               // };
-
-     
-               // for (&mode, item) in device_state_ref.main_data.playback.playback_items.iter() {
-               //         self.playback_selections.insert(
-               //             mode as u8,
-               //             item.clone(),
-               //         );
-               // }
-                
-            //}
-        //}
 
         buttons::show_mode_buttons(self, ctx);
         statusbar::show_status_bar(self, ctx);
@@ -254,43 +187,5 @@ impl eframe::App for App {
             });
         }
 
-    }
-}
-
-
-impl App {
-   
-    
-    pub fn prepare_xy_map(&mut self)  {
-        // Map: 0-3 normal, 4-7 interchange
-        self.x_y_interchange = self.settings.xy >= 4;
-        let idx = self.settings.xy   % 4;
-        // Order: 0: X+Y+, 1: X+Y-, 2: X-Y-, 3: X-Y+
-        self.x_sign = if idx == 0 || idx == 1 { Sign::Plus } else { Sign::Minus };
-        self.y_sign = if idx == 0 || idx == 3 { Sign::Plus } else { Sign::Minus };
-    }
-
-        /// Calculates xy value from UI widget states (inverse of parse_xy_map)
-    pub fn calc_xy_value(&self) -> u8 {
-        // Map: 0-3 normal, 4-7 interchange
-        let base = if self.x_y_interchange { 4 } else { 0 };
-        // Order: 0: X+Y+, 1: X+Y-, 2: X-Y-, 3: X-Y+
-        let idx = match (self.x_sign, self.y_sign) {
-            (Sign::Plus, Sign::Plus) => 0,
-            (Sign::Plus, Sign::Minus) => 1,
-            (Sign::Minus, Sign::Minus) => 2,
-            (Sign::Minus, Sign::Plus) => 3,
-        };
-        base + idx
-    }
-
-
-    // Helper function to send SetSettings with updated xy value
-    pub fn send_xy_settings(&mut self) {
-        if let Some(device_state) = &self.device_state {
-            let mut new_settings = device_state.settings.clone();
-            new_settings.xy = self.calc_xy_value();
-            let _ = self.command_sender.send(crate::ui::app::DeviceCommand::SetSettings(new_settings));
-        }
     }
 }

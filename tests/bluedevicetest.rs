@@ -59,15 +59,17 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     sleep(Duration::from_millis(500));
 
-    test_on_off(device).await;
-    sleep(Duration::from_millis(500));
-    test_settings(device).await;
-    
-    sleep(Duration::from_millis(500));
-    test_playback_command(device).await;
+     test_tick_playback_command(device).await;
 
-    sleep(Duration::from_millis(500));
-    test_show_playback(device).await;
+    //test_on_off(device).await;
+    //sleep(Duration::from_millis(500));
+    //test_settings(device).await;
+    
+    ///sleep(Duration::from_millis(500));
+    //test_playback_command(device).await;
+
+    //sleep(Duration::from_millis(500));
+    //test_show_playback(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_shapes(device).await;
@@ -82,6 +84,92 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     Ok(())
 }
 
+
+
+async fn test_tick_playback_command(device: &mut BlueLaserDevice) { 
+
+    device.set_playback_mode(PlaybackCommand::default(DeviceMode::LineGeometryPlayback)).await;
+    sleep(Duration::from_secs(5));
+
+
+      if let Some(mut cmd) = device.get_command_data() {
+        let mut selected_shows = vec![0u8; 50];
+        selected_shows[8] = 1; // Select show at index 45
+
+        cmd.run_speed = 255;
+           // cmd.playback.audio_config.audio_trigger_mode = 0; 
+           // cmd.playback.audio_config.sound_sensitivity = 125;
+
+        cmd.playback.playback_items.insert(
+                DeviceMode::LineGeometryPlayback as u8,
+                Playback {
+                    playback_mode: 128,
+                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                },
+        );
+
+        device.set_main_command(cmd.clone()).await;
+
+        selected_shows[44] = 1; // Select show at index 45
+
+           cmd.run_speed = 125;
+           // cmd.playback.audio_config.audio_trigger_mode = 0; 
+           // cmd.playback.audio_config.sound_sensitivity = 125;
+
+        cmd.playback.playback_items.insert(
+                DeviceMode::LineGeometryPlayback as u8,
+                Playback {
+                    playback_mode: 128,
+                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                },
+        );
+
+        device.set_main_command(cmd.clone()).await;
+
+
+        selected_shows[42] = 1; // Select show at index 45
+
+           // cmd.run_speed = 255;
+           // cmd.playback.audio_config.audio_trigger_mode = 0; 
+           // cmd.playback.audio_config.sound_sensitivity = 125;
+
+        cmd.playback.playback_items.insert(
+                DeviceMode::LineGeometryPlayback as u8,
+                Playback {
+                    playback_mode: 128,
+                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                },
+        );
+
+        device.set_main_command(cmd.clone()).await;
+
+        
+
+    }
+}   
+
+async fn test_peed(device: &mut BlueLaserDevice) {
+    if let Some(mut cmd) = device.get_command_data() {
+         // Ramp run_speed up
+         for speed in (1..=255).step_by(10) {
+             cmd.run_speed = speed;
+             device.set_main_command(cmd.clone()).await;
+             info!("Ramping up run_speed: {}", speed);
+             sleep(Duration::from_millis(200));
+         }
+
+         // Ramp run_speed down
+         for speed in (1..=255).rev().step_by(10) {
+             cmd.run_speed = speed;
+             device.set_main_command(cmd.clone()).await;
+             info!("Ramping down run_speed: {}", speed);
+             sleep(Duration::from_millis(200));
+         }
+
+         sleep(Duration::from_millis(5000));
+    }
+
+}
 
 async fn test_settings(device: &mut BlueLaserDevice) {
 
@@ -308,10 +396,6 @@ let command_config = CommandConfig {
         tx_point_time: 10,
     },
     prj_data: PlaybackData {
-        audio_config: AudioConfig {
-            audio_trigger_mode: 1, // audio trigger mode
-            sound_sensitivity: 77, // sound sensitivity
-        },
         playback_items: {
             let mut map = std::collections::HashMap::new();
             map.insert(2, Playback { playback_mode: 128, selected_plays: vec![21845, 21845, 21845, 1] });

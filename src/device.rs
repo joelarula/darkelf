@@ -1,4 +1,4 @@
-use crate::model::{PisObject, PlaybackCommand, Point, DeviceSettings};
+use crate::model::{DeviceSettings, MainCommandData, PisObject,Point};
 
 pub trait LaserDevice {
 
@@ -8,14 +8,17 @@ pub trait LaserDevice {
     
     async fn off(&self);
     
+    fn is_on(&self) -> bool;
+
     fn get_settings(&self) -> Option<DeviceSettings>;
-    
+
+    fn get_command_data(&self) -> Option<MainCommandData>;
+
     async fn set_settings(&self, new_settings: DeviceSettings);
     
+    async fn set_main_command(&self, command: MainCommandData);
+
     async fn draw(&self, points: Vec<Point>, config: PisObject);
     
-    async fn set_playback_mode(&self, command: PlaybackCommand);
-    
-    fn is_on(&self) -> bool;
 
 }

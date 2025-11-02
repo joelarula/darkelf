@@ -1,8 +1,7 @@
-use crate::{command, draw::DrawUtils, model::{EncodedCommandData, Point, PolyPoint, Playback}};
+use crate::{draw::DrawUtils, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
 use log::{debug, info};
-use tokio::time::Timeout;
 
-use crate::model::{CommandConfig, DeviceInfo, DeviceState, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, PlaybackCommand};
+use crate::model::{DeviceInfo, DeviceState, FeatureConfig, MainCommandData, PisObject, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -188,7 +187,7 @@ impl CommandGenerator {
         Some(MainCommandData {
             device_mode: device_mode ,
             audio_trigger_mode: Self::clamp_value(Self::extract_hex_value(2, 1, &cmd) as u8, 0, 9, 0),
-            color: Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0),
+            color: DisplayColor::try_from(Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0)).unwrap(),
             text_size_x: Self::clamp_value(Self::extract_hex_value(4, 1, &cmd) as u8 , 0, 255, 125),
             text_size_y: Self::clamp_value(Self::extract_hex_value(5, 1, &cmd) as u8 , 0, 255, 125),
             run_speed:  Self::clamp_value(Self::extract_hex_value(6, 1, &cmd) as u8 , 0, 255, 128),
@@ -251,12 +250,7 @@ impl CommandGenerator {
     pub fn parse_playback_command(playback_cmd: &str) -> Option<PlaybackData> {
  
         info!("Parsing playback command: {} {}", playback_cmd, playback_cmd.len());
-
-        let audio_trigger_mode = Self::extract_hex_value(9, 1, &playback_cmd) as u8;
-        let sound_sensitivity =  Self::clamp_value(Self::extract_hex_value(10, 1, &playback_cmd) as u8, 0, 255, 0);        
-            
-        let public = crate::model::AudioConfig { audio_trigger_mode, sound_sensitivity };
-        
+      
         // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
         // This assumes project item info is encoded in main_cmd or another section
         // You may need to adjust parsing logic to match your protocol
@@ -265,7 +259,7 @@ impl CommandGenerator {
         let prj_keys = [2, 3, 5, 6];
         let mut project_item_start_index = 17;
         for &key in prj_keys.iter() {
-            let py_mode = Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &playback_cmd), 0, 255, 0) as u8;
+            let py_mode = PlaybackMode::try_from(Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &playback_cmd), 0, 255, 0) as u8).unwrap();
             let mut prj_selected = vec![0u16; 4];
             prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &playback_cmd);
             prj_selected[2] = Self::extract_hex_value(project_item_start_index + 3, 2, &playback_cmd);
@@ -275,7 +269,7 @@ impl CommandGenerator {
             project_item_start_index += 9;
         }
 
-        let prj_data = PlaybackData { audio_config: public, playback_items: prj_item };
+        let prj_data = PlaybackData { playback_items: prj_item };
 
         Some(prj_data)
 
@@ -376,10 +370,10 @@ impl CommandGenerator {
         let show_keys = [2, 3, 5, 6];
         for &key in show_keys.iter() {
             let playback = command.playback.playback_items.get(&key).cloned().unwrap_or_else(|| Playback {
-                playback_mode: 128,
+                playback_mode: PlaybackMode::TickPlay,
                 selected_plays: vec![0; 4],
             });
-            let play_back_mode = if playback.playback_mode == 0 { 0 } else { 128 };
+            let play_back_mode = if playback.playback_mode == PlaybackMode::LoopPlay { 0 } else { 128 };
             let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
             let mut show_selected_hex = String::new();
             for &val in playback.selected_plays.iter().rev() {
@@ -421,99 +415,6 @@ impl CommandGenerator {
         command.to_uppercase()
 
     }
-
-    // Configuration commands
-    pub fn get_cmd_str(config: &CommandConfig) -> String {
-    
-        let cur_mode_hex = Self::to_fixed_width_hex(config.cur_mode, 2);
-        let reserved_hex = Self::to_fixed_width_hex(0, 2);
-        let color_hex = Self::to_fixed_width_hex(config.text_data.tx_color, 2);
-        let tx_size_scaled = ((config.text_data.tx_size as f64) / 100.0 * 255.0).round() as u8;
-        let tx_size_scaled_a_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-        let tx_size_scaled_b_hex = Self::to_fixed_width_hex(tx_size_scaled, 2);
-        let run_speed_scaled = ((config.text_data.run_speed as f64) / 100.0 * 255.0).round() as u8;
-        let run_speed_hex = Self::to_fixed_width_hex(run_speed_scaled, 2);
-        let l = "00".to_string();
-        let tx_dist_scaled = ((config.text_data.tx_dist as f64) / 100.0 * 255.0).round() as u8;
-        let tx_dist_scaled_hex = Self::to_fixed_width_hex(tx_dist_scaled, 2);
-        let audio_trigger_mode_hex = Self::to_fixed_width_hex(config.prj_data.audio_config.audio_trigger_mode, 2);
-        // let sound_sensitivity_scaled = ((config.prj_data.public.sound_val as f64) / 100.0 * 255.0).round() as u8;
-        // let sound_sensitivity_hex = Self::to_fixed_width_hex(sound_sensitivity_scaled, 2);
-
-        // x: group color segment
-    let x = "ffffffff0000".to_string();
-        //if let Some(features) = features {
-        //    x.clear();
-        //    if let Some(group_list) = &features.group_list {
-         //       for group in group_list {
-        //            x += &Self::to_fixed_width_hex(group.color, 2);
-        //        }
-        //    }
-        //    x += "ffffffff";
-        //    x = x.chars().take(8).collect();
-            //if Self::get_feature_value(features, "textStopTime").unwrap_or(false) {
-            //    x += &Self::to_fixed_width_hex(config.text_data.tx_point_time, 2);
-            //}
-        //    x += "0000";
-        //    x = x.chars().take(12).collect();
-        //}
-
-        // f: project items (ordered by protocol: TimelinePlayback, AnimationPlayback, ChristmasBroadcast, OutdoorPlayback)
-        let mut f = String::new();
-        let prj_keys = [2, 3, 5, 6];
-        for &key in prj_keys.iter() {
-            let project_item = config.prj_data.playback_items.get(&key).cloned().unwrap_or_else(|| Playback {
-                playback_mode: 128,
-                selected_plays: vec![0; 4],
-            });
-            let play_back_mode = if project_item.playback_mode == 0 { 0 } else { 128 };
-            let play_back_mode_hex = Self::to_fixed_width_hex(play_back_mode, 2);
-            let mut prj_selected_hex = String::new();
-            for &val in project_item.selected_plays.iter().rev() {
-                prj_selected_hex.push_str(&Self::to_fixed_width_hex(val, 4));
-            }
-            f.push_str(&format!("{}{}", play_back_mode_hex, prj_selected_hex));
-        }
-
-        // z: run direction if arbPlay
-        let run_direction = String::new();
-        //if let Some(features) = features {
-        //    if Self::get_feature_value(features, "arbPlay").unwrap_or(false) {
-        //        run_direction += &Self::to_fixed_width_hex(config.text_data.run_dir, 2);
-        //    }
-        //}
-
-        // Q: padding (JS logic: run_direction + padding = 44 bytes)
-        let mut padding = String::new();
-        let run_direction_bytes = run_direction.len() / 2;
-        if run_direction_bytes < 44 {
-            padding = "00".repeat(44 - run_direction_bytes);
-        }
-
-        // Compose command using header/footer constants, matching JS order
-        let sound_sensitivity_hex = Self::to_fixed_width_hex(((config.prj_data.audio_config.sound_sensitivity as f64) / 100.0 * 255.0).round() as u8, 2);
-        let command = format!(
-            "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
-            MAIN_CMD_HEADER,         // header
-            cur_mode_hex,            // curMode
-            reserved_hex,            // reserved
-            color_hex,               // color
-            tx_size_scaled_a_hex,    // txSizeA
-            tx_size_scaled_b_hex,    // txSizeB
-            run_speed_hex,           // runSpeed
-            l,                      // l
-            tx_dist_scaled_hex,      // txDist
-            audio_trigger_mode_hex,  // audioTriggerMode
-            sound_sensitivity_hex,   // soundSensitivity
-            x,                      // x (group color segment)
-            f,                      // f (project items)
-            run_direction,           // runDirection
-            padding,                 // padding
-            MAIN_CMD_FOOTER         // footer
-        );
-        command.to_uppercase()
-    }
-
 
     pub fn get_draw_cmd_str(points: &[Point], config: &PisObject) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);

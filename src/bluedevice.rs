@@ -1,5 +1,5 @@
 use crate::device::LaserDevice;
-use crate::model::{CommandConfig,  DrawData, MainCommandData, PisObject, PlaybackCommand, Point, PlaybackData, Playback, AudioConfig, TextData};
+use crate::model::{ MainCommandData, PisObject, Point};
 use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
@@ -12,7 +12,6 @@ pub struct BlueLaserDevice {
     random_check: Vec<u8>,
     device_controller: Arc<Mutex<dyn BlueController>>,
 	device_info: Arc<Mutex<Option<DeviceState>>>,
-    playback_items: std::collections::HashMap<u8, Playback>,
 }
 
 impl BlueLaserDevice {
@@ -24,14 +23,6 @@ impl BlueLaserDevice {
             random_check: Self::gen_random_check(),
             device_controller: Arc::new(Mutex::new(device_controller)),
             device_info: Arc::new(Mutex::new(None)),
-            playback_items: {
-            let mut map = std::collections::HashMap::new();
-                map.insert(2, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
-                map.insert(3, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
-                map.insert(5, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
-                map.insert(6, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
-                map
-            },
         }
     }
 
@@ -164,29 +155,6 @@ impl BlueLaserDevice {
 
     }
 
-
-
-    /// Set the playback mode on the device
-    pub async fn set_playback_mode(&self, command: PlaybackCommand) {
-        let command_clone = command.clone();
-        if let Some(command_config) = self.command_config_from_main(&command) {
-            let cmd = CommandGenerator::get_cmd_str(&command_config);
-            let mut controller = self.device_controller.lock().unwrap();
-            if let Ok(_) = controller.send(&cmd).await {
-                // Update main_data in device_info
-                let mut info_lock = self.device_info.lock().unwrap();
-                if let Some(ref mut resp) = *info_lock {
-                    resp.main_data.device_mode = command_clone.mode;
-                }
-            } else {
-                error!("Failed to send playback mode command");
-            }
-        } else {
-            error!("Failed to generate command config for playback mode");
-        }
-    }
-
-
         /// Get a copy of the current main command data
     pub fn get_command_data(&self) -> Option<MainCommandData> {
         self.device_info.lock().unwrap()
@@ -194,22 +162,6 @@ impl BlueLaserDevice {
             .map(|resp| resp.main_data.clone())
     }
 
-
-    
-    /// Set the main command data and send the corresponding command to the device
-    pub async fn set_command_data(&self, command_data: CommandConfig) {
-        let mut info_lock = self.device_info.lock().unwrap();
-        if let Some(ref mut response) = *info_lock {
-
-          //  response.main_data = command_data.main_data;
-            let cmd = CommandGenerator::get_cmd_str(&command_data);
-            // Send the command to the device
-            let mut controller = self.device_controller.lock().unwrap();
-            if let Err(e) = controller.send(&cmd).await {
-                error!("Failed to send main command: {:?}", e);
-            }
-        }
-    }
 
     /// Generate random verification bytes
     fn gen_random_check() -> Vec<u8> {
@@ -236,46 +188,6 @@ impl BlueLaserDevice {
             .map(|resp| resp.clone())
     }
 
-
-    /// Converts a MainCommandData to a CommandConfig with default prj_item
-fn command_config_from_main(&self, command: &PlaybackCommand) -> Option<CommandConfig> {
-    if let Some(resp) = self.get_device_response() {
-        let main = resp.main_data.clone();
-        let text_data = TextData {
-            tx_color: command.color.unwrap_or(main.color), 
-            tx_size: main.text_size_x,
-            run_speed: command.playback_speed.unwrap_or(main.run_speed),
-            tx_dist: main.text_distance,
-            tx_point_time: main.text_point_time,
-            run_dir: main.run_direction,
-        };
-        let mut prj_data = resp.main_data.playback.clone();
-        prj_data.audio_config = AudioConfig {
-            audio_trigger_mode: if command.audio_mode.unwrap_or(main.audio_mode != 0) { 1 } else { 0 },
-            sound_sensitivity: command.audio_sensitivity.unwrap_or(main.sound_value),
-        };
-        prj_data.playback_items = self.playback_items.iter().map(|(&k, v)| (k as u8, v.clone())).collect();
-
-
-        if let Some(selected) = &command.selected_shows {
-      
-            prj_data.playback_items.insert(
-                command.mode as u8,
-                Playback {
-                    playback_mode: if command.tick_playback.unwrap_or(false) { 128 } else { 0 },
-                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected),
-                },
-            );
-        }
-        Some(CommandConfig {
-            cur_mode: command.mode as u8,
-            text_data,
-            prj_data,
-        })
-    } else {
-        None
-    }
-    }
 
 }
 
@@ -304,12 +216,16 @@ impl LaserDevice for BlueLaserDevice {
         self.draw(points, config).await
     }
     
-    async fn set_playback_mode(&self, command: PlaybackCommand) {
-        self.set_playback_mode(command).await
-    }
-    
     fn is_on(&self) -> bool {
         self.is_on()
+    }
+    
+    async fn set_main_command(&self, command: MainCommandData) {
+        self.set_main_command(command).await
+    }
+    
+    fn get_command_data(&self) -> Option<MainCommandData> {
+        self.get_command_data()
     }
     
 

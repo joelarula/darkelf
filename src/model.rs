@@ -60,7 +60,7 @@ pub struct FeatureConfig {
 pub struct MainCommandData {
     pub device_mode: DeviceMode,
     pub audio_trigger_mode: u8,
-    pub color: u8, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
+    pub color: DisplayColor, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
     pub text_size_x: u8, // text size x 10 - 100
     pub text_size_y: u8, // text size y 10 - 100
     pub run_speed: u8, // speed 0 - 100
@@ -113,32 +113,6 @@ impl Default for DeviceSettings {
         }
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct PlaybackCommand {
-    pub mode: DeviceMode,
-    pub color: Option<u8>, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
-    pub audio_mode: Option<bool>,
-    pub audio_sensitivity: Option<u8>,
-    pub playback_speed: Option<u8>,
-    pub tick_playback: Option<bool>,
-    pub selected_shows: Option<Vec<u8>>,
-}
-
-impl PlaybackCommand {
-    pub fn default(mode: DeviceMode) -> Self {
-        PlaybackCommand {
-            mode,
-            color: Some(DisplayColor::RGB as u8 ),
-            audio_mode: None,
-            audio_sensitivity: None,
-            playback_speed: None,
-            tick_playback: None,
-            selected_shows: None,
-        }
-    }
-}
-
 
 // Data structures needed by the trait methods
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -226,26 +200,6 @@ impl Point {
 }
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ColorGroup {
-    pub color: u8,
-}
-
-
-#[derive(Debug)]
-pub struct ProjectParams {
-    pub prj_index: i32,
-    pub sel_index: i32,
-}
-
-
-
-#[derive(Debug)]
-pub struct CommandConfig {
-    pub cur_mode: u8,
-    pub text_data: TextData,
-    pub prj_data: PlaybackData,
-}
 
 #[derive(Debug)]
 pub struct TextData {
@@ -259,20 +213,14 @@ pub struct TextData {
 
 #[derive(Debug, Clone,Default,PartialEq)]
 pub struct PlaybackData {
-    pub audio_config: AudioConfig,
     pub playback_items: HashMap<u8, Playback>,
 }
 
-#[derive(Debug, Clone,Default,PartialEq)]
-pub struct AudioConfig {
-    pub audio_trigger_mode: u8, // audio trigger mode
-    pub sound_sensitivity: u8, // sound sensitivity
-}
 
 #[derive(Debug, Clone,PartialEq)]
 pub struct Playback {
-    pub playback_mode: u8, //  playBackMode  0 : 128;
-    pub selected_plays: Vec<u16>, // selected shows
+    pub playback_mode: PlaybackMode,
+    pub selected_plays: Vec<u16>,
 }
 
 
@@ -296,8 +244,7 @@ impl Default for PisObject {
 }
 
 
-/// Represents a color option from the colorDisplayOrder array.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq,Default)]
 pub enum DisplayColor {
     Red = 1,
     Yellow = 4,
@@ -307,8 +254,28 @@ pub enum DisplayColor {
     Purple = 6,
     White = 7,
     Jump = 8,
+    #[default]
     RGB = 9,
 }
+
+impl TryFrom<u8> for DisplayColor {
+    type Error = ();
+    fn try_from(val: u8) -> Result<Self, Self::Error> {
+        match val {
+            1 => Ok(DisplayColor::Red),
+            2 => Ok(DisplayColor::Green),
+            3 => Ok(DisplayColor::Blue),
+            4 => Ok(DisplayColor::Yellow),
+            5 => Ok(DisplayColor::Cyan),
+            6 => Ok(DisplayColor::Purple),
+            7 => Ok(DisplayColor::White),
+            8 => Ok(DisplayColor::Jump),
+            9 => Ok(DisplayColor::RGB),
+            _ => Err(()),
+        }
+    }
+}
+
 
 impl DisplayColor {
     pub fn from_u8(val: u8) -> Option<Self> {
@@ -330,6 +297,25 @@ impl DisplayColor {
         *self as u8
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq,Default)]
+pub enum PlaybackMode {
+    #[default]
+    LoopPlay = 0,
+    TickPlay = 128
+}
+
+impl std::convert::TryFrom<u8> for PlaybackMode {
+    type Error = ();
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(PlaybackMode::LoopPlay),
+            128 => Ok(PlaybackMode::TickPlay),
+            _ => Err(()),
+        }
+    }
+}
+
 
 impl DisplayColor {
     /// Returns the display name for the color.

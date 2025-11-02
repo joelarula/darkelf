@@ -3,7 +3,7 @@ pub mod settings;
 pub mod buttons;
 pub mod statusbar;
 pub mod playback_settings;
-pub mod show_selector;
+pub mod playback_selector;
 pub mod draw;
 pub mod text;
 pub mod model;

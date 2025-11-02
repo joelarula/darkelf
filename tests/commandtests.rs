@@ -1,7 +1,7 @@
 use std::env;
 use bluest::Device;
 use log::info;
-use darkelf::{command::CommandGenerator, model::{DeviceMode, DeviceSettings, Playback}, util};
+use darkelf::{command::CommandGenerator, model::{DeviceMode, DeviceSettings, DisplayColor, Playback}, util};
 
 use std::sync::Once;
 static INIT: Once = Once::new();
@@ -73,7 +73,7 @@ fn test_parse_device_response() {
 
     // Verify main command data
     assert_eq!(response.main_data.device_mode, DeviceMode::try_from(6).unwrap(), "Current mode should be 6");
-    assert_eq!(response.main_data.color, 9, "Text color should be 9");
+    assert_eq!(response.main_data.color, DisplayColor::try_from(9).unwrap(), "Text color should be 9");
     assert_eq!(response.main_data.text_size_x, 148, "Text size should be 148");
     assert_eq!(response.main_data.run_speed, 56, "Run speed should be 56");
     assert_eq!(response.main_data.text_distance, 165, "Text distance should be 165");
