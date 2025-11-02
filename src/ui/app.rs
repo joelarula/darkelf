@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, PisObject, Playback, Point};
+use crate::model::{DeviceInfo, DeviceSettings, DisplayColor, DrawData, MainCommandData, PisObject, Playback, Point};
 use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
 use eframe::egui; 
 use log::info;
@@ -10,20 +10,22 @@ use windows::Devices::Enumeration::DeviceInformation;
 use crate::model::{DeviceState, DeviceMode};
 
 use crate::ui::show_selector::show_selector_grid;
-use crate::ui::{buttons, playback_settings, settings, statusbar,draw}; 
+use crate::ui::{buttons, dmx, draw, playback_settings, settings, statusbar}; 
 
 
 pub struct App {  
-    pub laser_device_info: DeviceInfo,
+    pub device_info: DeviceInfo,
     pub settings : DeviceSettings,
-    pub channel: i32,
+    pub command_data: MainCommandData,
+
     pub display_range: i32,
-    pub light: Light,
+
     pub x_y_interchange: bool,
     pub x_sign: Sign,
     pub y_sign: Sign,
     pub on: bool,
     pub mode: DeviceMode,
+
     pub color: DisplayColor,
     pub playback_speed: u8,
     pub sound_sensitivity: u8,
@@ -44,7 +46,6 @@ pub struct App {
     pub text_command: String,
     pub laser_device_initialized: bool,
     pub device_list: DeviceList,
-    pub ble_device_info: Option<DeviceInformation>,
 }
 
 
@@ -63,13 +64,13 @@ impl App {
                 playback_selections.insert(key, Playback { playback_mode: 128, selected_plays: vec![0u16; 4] });
             }
             Self {
-                laser_device_info: DeviceInfo::default(),
+                device_info: DeviceInfo::default(),
                 settings : DeviceSettings::default(),
-                channel: 1,
+                command_data: MainCommandData::default(),
+
                 display_range: 50,
                 sound_sensitivity: 128,
                 playback_speed: 50,
-                light: Light::Mono,
                 x_y_interchange: false,
                 x_sign: Sign::Plus,
                 y_sign: Sign::Plus,
@@ -109,7 +110,6 @@ impl App {
                 text_command: String::new(),
                 laser_device_initialized: false,
                 device_list: DeviceList { devices: Vec::new(), selected_index: None },
-                ble_device_info: None,
             }
         }
     }
@@ -127,14 +127,14 @@ impl Default for Sign {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum Light {
+pub enum Beam {
     Mono,
     RGB,
 }
 
-impl Default for Light {
+impl Default for Beam {
     fn default() -> Self {
-        Light::Mono
+        Beam::Mono
     }
 }
 
@@ -144,72 +144,87 @@ impl Default for Light {
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
 
-        let mut device_response: Option<DeviceState> = None;
-        let mut xy: Option<u8> = None;
+       // let mut info: Option<DeviceInfo> = None;
+      //  let mut command_data: Option<MainCommandData> = None;
+       // let mut device_settings: Option<DeviceSettings> = None;
+        
+        //let mut xy: Option<u8> = None;
+
+        let mut settings_updated = false;
+
         if let Ok(mut rx) = self.incomming_channel.try_lock() {
             while let Ok(msg) = rx.try_recv() {
                 match msg {
-                    DeviceMessage::DeviceResponse(resp) => {
-                        // Extract xy value before moving resp
-                        xy = Some(resp.settings.xy);
-                        device_response = Some(resp);
-                        break; // Only process one DeviceResponse per update
-                    }
-
                     DeviceMessage::ConnectionStatus(status) => {
                         self.ble_device_connected = status;
                     }
                     DeviceMessage::DeviceList(device_list) => {
                         self.device_list = device_list;
                     }
-                    DeviceMessage::DeviceInfo(device_information) => {
-                        self.ble_device_info = Some(device_information);
-                    }
                     DeviceMessage::SetupStatus(status) => {
                         self.laser_device_initialized = status;
                     }
+                    DeviceMessage::DeviceInfo(info) => {
+                        self.device_info = info;
+                    }
+                    DeviceMessage::DeviceSettings(device_settings) => {
+                        self.settings = device_settings;
+                        settings_updated = true;
+                    },
+                    DeviceMessage::DeviceCommand(main_command_data) => {
+                        self.command_data = main_command_data;
+                    }
                 }
             }
         }
 
-        if let Some(device_state) = device_response {
+        if settings_updated {
+            self.prepare_xy_map();
+        }
+        
+
+       // if let Some(device_state) = device_response {
             
-            self.laser_device_info = device_state.device_info.clone();
-            self.settings = device_state.settings.clone();
+           // self.device_info = device_state.device_info.clone();
+           // self.settings = device_state.settings.clone();
             //
 
-            self.device_state = Some(device_state.clone());
-            if let Some(xy_val) = xy {
-                self.parse_xy_map(&xy_val);
-            }
-            if let Some(device_state_ref) = self.device_state.as_ref() {
-                self.on = device_state_ref.device_info.device_on;
+            //self.device_state = Some(device_state.clone());
+            //if let Some(xy_val) = xy {
+            //    self.parse_xy_map(&xy_val);
+            //}
+            //if let Some(device_state_ref) = self.device_state.as_ref() {
+               // self.on = device_state_ref.device_info.device_on;
                
-                self.display_range = device_state_ref
-                    .settings
-                    .display_range  as i32;
+               // self.display_range = device_state_ref
+               //     .settings
+               //     .display_range  as i32;
 
-                self.light = if device_state_ref.settings.beams == 1 {
-                    Light::Mono
-                } else {
-                    Light::RGB
-                };
+               // self.light = if device_state_ref.settings.beams == 1 {
+               //     Light::Mono
+               // } else {
+               //     Light::RGB
+               // };
 
      
-                for (&mode, item) in device_state_ref.main_data.playback.playback_items.iter() {
-                        self.playback_selections.insert(
-                            mode as u8,
-                            item.clone(),
-                        );
-                }
+               // for (&mode, item) in device_state_ref.main_data.playback.playback_items.iter() {
+               //         self.playback_selections.insert(
+               //             mode as u8,
+               //             item.clone(),
+               //         );
+               // }
                 
-            }
-        }
+            //}
+        //}
 
         buttons::show_mode_buttons(self, ctx);
         statusbar::show_status_bar(self, ctx);
         settings::show_settings_panel(self, ctx);
         
+        if matches!(self.mode,DeviceMode::Dmx){
+            dmx::show_dmx(self,ctx);
+        }
+
         if matches!(
             self.mode,
             DeviceMode::RandomPlayback 
@@ -218,9 +233,7 @@ impl eframe::App for App {
                 | DeviceMode::ChristmasPlayback
                 | DeviceMode::OutdoorPlayback
         ){
-            playback_settings::show_playback_settings_ui(ctx);
-
-            // Central panel (fills the remaining space)
+            playback_settings::show_playback_settings_ui(self, ctx);
             egui::CentralPanel::default().show(ctx, |ui| {
                 show_selector_grid(ui, self);
             });
@@ -241,22 +254,17 @@ impl eframe::App for App {
             });
         }
 
-
     }
 }
 
 
 impl App {
    
-    pub fn set_playback(&mut self, mode: DeviceMode, selected_shows: Option<Vec<u8>>) {
-        self.mode = mode;
-        let _ = self.command_sender.send(DeviceCommand::SetMode { mode, selected_shows });
-    }
     
-    pub fn parse_xy_map(&mut self, xy_map: &u8)  {
+    pub fn prepare_xy_map(&mut self)  {
         // Map: 0-3 normal, 4-7 interchange
-        self.x_y_interchange = *xy_map >= 4;
-        let idx = *xy_map % 4;
+        self.x_y_interchange = self.settings.xy >= 4;
+        let idx = self.settings.xy   % 4;
         // Order: 0: X+Y+, 1: X+Y-, 2: X-Y-, 3: X-Y+
         self.x_sign = if idx == 0 || idx == 1 { Sign::Plus } else { Sign::Minus };
         self.y_sign = if idx == 0 || idx == 3 { Sign::Plus } else { Sign::Minus };

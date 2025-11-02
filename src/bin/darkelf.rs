@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex as StdMutex};
 use anyhow::anyhow;
 use darkelf::bluedevice::BlueLaserDevice;
-use darkelf::model::PlaybackCommand;
+use darkelf::model::{DeviceInfo, DeviceSettings, MainCommandData};
 use darkelf::ui::model::{DeviceList, DeviceMessage,DeviceCommand};
 use darkelf::winblue::WinBlueController;
 use darkelf::{
@@ -9,8 +9,7 @@ use darkelf::{
     util, winblue,
 };
 
-use log::{error, info};
-use std::env;
+use log::{error};
 use std::{thread};
 use tokio::sync::{Mutex, mpsc};
 
@@ -35,6 +34,13 @@ fn main() -> eframe::Result<()> {
         rt.block_on(async move {
             
             log::info!("Starting application thread");
+            
+            let mut device_info: DeviceInfo = DeviceInfo::default();
+            
+            let mut device_settings: DeviceSettings = DeviceSettings::default();
+            
+            let mut device_command: MainCommandData = MainCommandData::default();
+
             loop {
 
                 let mut devlist = device_list_clone.lock().unwrap();
@@ -58,19 +64,14 @@ fn main() -> eframe::Result<()> {
                 let _ = devicesender.send(DeviceMessage::DeviceList(
                     devlist.clone()
                 ));
-
-                             
-                if let Some(device_info) =  devlist.selected_device().cloned() {
+                           
+                if let Some(ble_device_info) =  devlist.selected_device().cloned() {
                         
-                    let _ = devicesender.send(DeviceMessage::DeviceInfo(
-                        device_info.clone(),
-                    ));
-
                     let mut device = device_clone.lock().unwrap();
                     if device.is_none() {
                             
 
-                        let mut controller = match WinBlueController::new(Some(&device_info)).await {
+                        let controller = match WinBlueController::new(Some(&ble_device_info)).await {
                             Ok(ctrl) => Some(ctrl),
                             Err(e) => {
                                 error!("Failed to create WinBlueController: {:?}", e);
@@ -121,13 +122,9 @@ fn main() -> eframe::Result<()> {
                                         }
                                     }
 
-                                   DeviceCommand::SetMainCommand(command ) => {
+                                    DeviceCommand::SetMainCommand(command ) => {
                                         device.set_main_command(command).await;
                                     }   
-
-                                    DeviceCommand::SetMode { mode: playback_mode, selected_shows } => {
-                                        device.set_playback_mode(PlaybackCommand::default(playback_mode)).await;
-                                    }
 
                                     DeviceCommand::Draw(points, draw_config) => {
                                         device.draw(points, draw_config).await;
@@ -141,13 +138,28 @@ fn main() -> eframe::Result<()> {
                                     
                             }
 
-                            let response_opt = device.get_device_response();
-                            if let Some(response) = response_opt {
-                                let _ = devicesender
-                                    .send(DeviceMessage::DeviceResponse(response));
+                            let device_state = device.get_device_response();
+                            if let Some(device_state) = device_state {
+                                
+                                if device_state.device_info != device_info {
+                                    let _ = devicesender
+                                        .send(DeviceMessage::DeviceInfo(device_state.device_info.clone()));
+                                    device_info = device_state.device_info;
+                                }
+
+                                if device_state.settings != device_settings {
+                                    let _ = devicesender
+                                        .send(DeviceMessage::DeviceSettings(device_state.settings.clone()));
+                                    device_settings = device_state.settings;
+                                }
+                                if device_state.main_data != device_command {
+                                    let _ = devicesender
+                                        .send(DeviceMessage::DeviceCommand(device_state.main_data.clone()));
+                                    device_command = device_state.main_data;
+                                }
+
                             }
                         
-
                         }
                     }
                                               

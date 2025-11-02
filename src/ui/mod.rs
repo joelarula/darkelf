@@ -7,3 +7,4 @@ pub mod show_selector;
 pub mod draw;
 pub mod text;
 pub mod model;
+pub mod dmx;

@@ -22,7 +22,7 @@ pub fn show_status_bar(app: &App, ctx: &eframe::egui::Context) {
                 ui.label(init_text);
                 ui.separator();
 
-                if let Some(ref device_info) = app.ble_device_info {
+                if let Some(ref device_info) = app.device_list.selected_device() {
                     ui.label(format!("Device: {:?}", device_info.Name()));
                 }
                 ui.separator();
@@ -30,9 +30,9 @@ pub fn show_status_bar(app: &App, ctx: &eframe::egui::Context) {
                     ui.separator();
                     ui.label(format!(
                         "Type: {} | Version: {} | User: {}",
-                        app.laser_device_info.device_type,
-                        app.laser_device_info.version,
-                        app.laser_device_info.user_type
+                        app.device_info.device_type,
+                        app.device_info.version,
+                        app.device_info.user_type
                     ));
                 }
             }

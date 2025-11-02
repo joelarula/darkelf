@@ -2,8 +2,6 @@ use std::convert::TryFrom;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
-
-
 pub const MAX_DRAW_POINT_COUNT: usize = 800;
 
 /// Represents the available show/playback modes for the device.
@@ -41,7 +39,7 @@ impl TryFrom<u8> for DeviceMode {
     }
 }
 
-#[derive(Debug, Clone,Default)]
+#[derive(Debug, Clone,Default,PartialEq)]
 pub struct DeviceInfo {
     pub device_on: bool,
     pub device_type: String,
@@ -58,7 +56,7 @@ pub struct FeatureConfig {
 
 
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default,PartialEq)]
 pub struct MainCommandData {
     pub device_mode: DeviceMode,
     pub audio_trigger_mode: u8,
@@ -76,7 +74,7 @@ pub struct MainCommandData {
     pub playback: PlaybackData,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub struct DeviceSettings {
     pub proto : u8,        // Protocol value
     pub display_range : u8,        // Projection angle 10 - 100. unit todo
@@ -259,19 +257,19 @@ pub struct TextData {
     pub run_dir: u8,
 }
 
-#[derive(Debug, Clone,Default)]
+#[derive(Debug, Clone,Default,PartialEq)]
 pub struct PlaybackData {
     pub audio_config: AudioConfig,
     pub playback_items: HashMap<u8, Playback>,
 }
 
-#[derive(Debug, Clone,Default)]
+#[derive(Debug, Clone,Default,PartialEq)]
 pub struct AudioConfig {
     pub audio_trigger_mode: u8, // audio trigger mode
     pub sound_sensitivity: u8, // sound sensitivity
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub struct Playback {
     pub playback_mode: u8, //  playBackMode  0 : 128;
     pub selected_plays: Vec<u16>, // selected shows
