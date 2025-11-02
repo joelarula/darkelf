@@ -5,7 +5,7 @@ use std::time::Duration;
 
 
 use darkelf::draw::DrawUtils;
-use darkelf::model::{CommandConfig, DeviceState, PlaybackCommand, DeviceMode, PlaybackData, Playback, AudioConfig, TextData};
+use darkelf::model::{DeviceMode, DeviceState, Playback, PlaybackMode};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
@@ -88,11 +88,11 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
 async fn test_tick_playback_command(device: &mut BlueLaserDevice) { 
 
-    device.set_playback_mode(PlaybackCommand::default(DeviceMode::LineGeometryPlayback)).await;
-    sleep(Duration::from_secs(5));
-
-
       if let Some(mut cmd) = device.get_command_data() {
+
+        cmd.device_mode = DeviceMode::LineGeometryPlayback;
+        device.set_main_command(cmd.clone()).await; 
+
         let mut selected_shows = vec![0u8; 50];
         selected_shows[8] = 1; // Select show at index 45
 
@@ -103,7 +103,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
         cmd.playback.playback_items.insert(
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
-                    playback_mode: 128,
+                    playback_mode: PlaybackMode::TickPlay,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -119,7 +119,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
         cmd.playback.playback_items.insert(
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
-                    playback_mode: 128,
+                    playback_mode: PlaybackMode::TickPlay,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -136,7 +136,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
         cmd.playback.playback_items.insert(
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
-                    playback_mode: 128,
+                    playback_mode: PlaybackMode::TickPlay,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
@@ -224,21 +224,23 @@ async fn test_settings(device: &mut BlueLaserDevice) {
 
 async fn test_show_playback(device: &mut BlueLaserDevice) {
 
-    device.set_playback_mode(PlaybackCommand::default(DeviceMode::LineGeometryPlayback)).await;
-    
     if let Some(mut cmd) = device.get_command_data() {
+
+        cmd.device_mode = DeviceMode::LineGeometryPlayback;
+        device.set_main_command(cmd.clone()).await; 
+    
+        sleep(Duration::from_secs(5));
+   
         for ix in 0..=49 {
             let mut selected_shows = vec![0u8; 50];
             selected_shows[ix] = 1; // Select show at index ix
             
             cmd.run_speed = 255;
-            cmd.playback.audio_config.audio_trigger_mode = 0; 
-            cmd.playback.audio_config.sound_sensitivity = 125;
 
             cmd.playback.playback_items.insert(
                 DeviceMode::LineGeometryPlayback as u8,
                 Playback {
-                    playback_mode: 0,
+                    playback_mode: PlaybackMode::LoopPlay,
                     selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
                 },
             );
@@ -376,46 +378,6 @@ async fn test_on_off(device: &mut BlueLaserDevice) -> Result<(), anyhow::Error> 
 
 
 
-#[test]
-fn test_compose_main_command() {
-   
-    util::setup_logging();
-    unsafe {
-        env::set_var("RUST_LOG", "debug");
-    }
-
-// Example object:
-let command_config = CommandConfig {
-    cur_mode: 6,
-    text_data: TextData {
-        tx_color: 5, // color
-        tx_size: 50,
-        run_speed: 50, // speed
-        tx_dist: 50,
-        run_dir: 1,
-        tx_point_time: 10,
-    },
-    prj_data: PlaybackData {
-        playback_items: {
-            let mut map = std::collections::HashMap::new();
-            map.insert(2, Playback { playback_mode: 128, selected_plays: vec![21845, 21845, 21845, 1] });
-            map.insert(3, Playback { playback_mode: 128, selected_plays: vec![1, 0, 0, 2] });
-            map.insert(5, Playback { playback_mode: 128, selected_plays: vec![0, 0, 0, 0] });
-            map.insert(6, Playback { playback_mode: 128, selected_plays: vec![65535, 65535, 65535, 3] });
-            map
-        },
-    },
-};
-
-    let cmd_str = CommandGenerator::get_cmd_str(&command_config);
-    info!("Composed command string: {}", cmd_str);
-
-
-    let test_str2 = "C0C1C2C3060005808080008001C4FFFFFFFF0000800001555555555555800002000000000001800000000000000000800003FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000C4C5C6C7";
-    assert_eq!(cmd_str, test_str2, "Composed command string should match expected");
-}
-
-
 
 #[test]
 fn test_pack_bits_to_prj_selected_first_last_50() {
@@ -435,7 +397,7 @@ fn test_pack_bits_to_prj_selected_first_last_50() {
     }
 
     // Unpack back to bits and check
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone() });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     assert_eq!(unpacked[0], 1, "First bit should be 1");
     assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
@@ -462,7 +424,7 @@ fn test_pack_bits_to_prj_selected_every_second_1() {
     }
 
     // Unpack back to bits and check every second bit is 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone() });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     for i in 0..50 {
         assert_eq!(unpacked[i], if i % 2 == 0 { 1 } else { 0 }, "Bit {} should be {}", i, if i % 2 == 0 { 1 } else { 0 });

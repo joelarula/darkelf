@@ -199,18 +199,6 @@ impl Point {
 
 }
 
-
-
-#[derive(Debug)]
-pub struct TextData {
-    pub tx_color: u8,
-    pub tx_size: u8,
-    pub run_speed: u8,
-    pub tx_dist: u8,
-    pub tx_point_time: u8,
-    pub run_dir: u8,
-}
-
 #[derive(Debug, Clone,Default,PartialEq)]
 pub struct PlaybackData {
     pub playback_items: HashMap<u8, Playback>,

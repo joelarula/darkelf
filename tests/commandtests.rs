@@ -1,7 +1,7 @@
 use std::env;
 use bluest::Device;
 use log::info;
-use darkelf::{command::CommandGenerator, model::{DeviceMode, DeviceSettings, DisplayColor, Playback}, util};
+use darkelf::{command::CommandGenerator, model::{DeviceMode, DeviceSettings, DisplayColor, Playback, PlaybackMode}, util};
 
 use std::sync::Once;
 static INIT: Once = Once::new();
@@ -227,7 +227,7 @@ fn test_parse_settings_data() {
 #[test]
 fn test_prj_selected_bit_conversion() {
         // Create a ProjectItem with prj_selected = vec![255, 255, 255, 255]
-        let item = Playback { playback_mode: 128, selected_plays: vec![255, 255, 255, 255] };
+        let item = Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: vec![255, 255, 255, 255] };
 
     // Unpack to bits
     let bits = CommandGenerator::unpack_project_item_bits(&item);
@@ -260,7 +260,7 @@ fn test_pack_bits_to_prj_selected_50_selected() {
     }
 
     // Unpack back to bits and check first 50 are 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: 128, selected_plays: packed.clone() });
+    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone() });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     assert_eq!(&unpacked[..50], vec![1u8; 50].as_slice(), "First 50 bits should be 1");
     assert_eq!(&unpacked[50..], vec![0u8; 14].as_slice(), "Last 14 bits should be 0");
