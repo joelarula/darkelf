@@ -1,4 +1,4 @@
-use crate::command::CommandGenerator;
+use crate::blueprotocol::BlueProtocol;
 use crate::model::{
     LegacyDrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
 };

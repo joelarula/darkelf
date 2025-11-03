@@ -4,7 +4,7 @@ use log::{debug, info, error};
 use std::sync::{Arc, Mutex};
 use rand;
 use crate::model::{ DeviceState, DeviceSettings};
-use crate::command::{CommandGenerator, POWER_ON_CMD, POWER_OFF_CMD};
+use crate::blueprotocol::{BlueProtocol, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::BlueController;
 
 
@@ -47,10 +47,10 @@ impl BlueLaserDevice {
             controller.set_receiver_callback(Box::new(move |data| {
                 info!("Received data: {}", data);
                 // First verify response using random check
-                let (success, _) = CommandGenerator::check_received_data(&data, &random_check);
+                let (success, _) = BlueProtocol::check_received_data(&data, &random_check);
                 if success {
                     // Then parse full device response
-                    if let Some(response) = CommandGenerator::parse_device_response(&data) {
+                    if let Some(response) = BlueProtocol::extract_device_response(&data) {
                         info!("DeviceResponse: {:#?}", response);
                         if let Ok(mut info) = device_info.lock() {
                             *info = Some(response);
@@ -64,7 +64,7 @@ impl BlueLaserDevice {
  
         }
         
-        let cmd = CommandGenerator::get_query_cmd(&self.random_check);
+        let cmd = BlueProtocol::pack_query_cmd(&self.random_check);
         debug!("get_query_cmd: {}", cmd);        
         let mut controller = self.device_controller.lock().unwrap();
         if let Err(e) = controller.send(&cmd).await {
@@ -122,7 +122,7 @@ impl BlueLaserDevice {
 
     pub async fn set_settings(&self, new_settings: DeviceSettings) {
         info!("Setting new device settings: {:?}", new_settings);
-        let cmd = CommandGenerator::get_setting_cmd(&new_settings);
+        let cmd = BlueProtocol::pack_setting_cmd(&new_settings);
         let mut controller = self.device_controller.lock().unwrap();
         if let Ok(_) = controller.send(&cmd).await {
             let mut info_lock = self.device_info.lock().unwrap();
@@ -136,7 +136,7 @@ impl BlueLaserDevice {
 
     pub async fn set_main_command(&self, command: MainCommandData) {
         info!("Setting main command: {:?}", command);
-        let cmd = CommandGenerator::pack_main_command(&command);
+        let cmd = BlueProtocol::pack_main_command(&command);
         let mut controller = self.device_controller.lock().unwrap();
         if let Ok(_) = controller.send(&cmd).await {
             let mut info_lock = self.device_info.lock().unwrap();
@@ -149,7 +149,7 @@ impl BlueLaserDevice {
     }
 
     pub async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
-       let cmd = CommandGenerator::get_draw_cmd_str(&points, &config);
+       let cmd = BlueProtocol::pack_draw_cmd_str(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
 

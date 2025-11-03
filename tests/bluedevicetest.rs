@@ -9,7 +9,7 @@ use darkelf::model::{DeviceMode, DeviceState, Playback, PlaybackMode};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
-use darkelf::command::CommandGenerator;
+use darkelf::blueprotocol::BlueProtocol;
 use anyhow::{anyhow, Ok};
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
@@ -105,7 +105,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
                     selected_play: 8,
-                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                    selected_plays: BlueProtocol::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
 
@@ -122,7 +122,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
                     selected_play: 45,
-                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                    selected_plays: BlueProtocol::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
 
@@ -140,7 +140,7 @@ async fn test_tick_playback_command(device: &mut BlueLaserDevice) {
                 Playback {
                     playback_mode: PlaybackMode::TickPlay,
                     selected_play: 43,
-                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                    selected_plays: BlueProtocol::pack_bits_to_prj_selected(&selected_shows),
                 },
         );
 
@@ -245,7 +245,7 @@ async fn test_show_playback(device: &mut BlueLaserDevice) {
                 Playback {
                     playback_mode: PlaybackMode::LoopPlay,
                     selected_play: (ix + 1) as u16,
-                    selected_plays: CommandGenerator::pack_bits_to_prj_selected(&selected_shows),
+                    selected_plays: BlueProtocol::pack_bits_to_prj_selected(&selected_shows),
                 },
             );
 
@@ -394,14 +394,14 @@ fn test_pack_bits_to_prj_selected_first_last_50() {
     assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
 
     // Pack bits into prj_selected Vec<u8>
-    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    let packed = BlueProtocol::pack_bits_to_prj_selected(&bits);
     info!("Packed prj_selected for first and last of 50 set: {:?}", packed);
     for (i, val) in packed.iter().enumerate() {
         info!("packed[{}] = 0x{:04X}", i, val);
     }
 
     // Unpack back to bits and check
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
+    let unpacked = BlueProtocol::extract_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     assert_eq!(unpacked[0], 1, "First bit should be 1");
     assert_eq!(unpacked[49], 1, "Last bit of 50 should be 1");
@@ -421,14 +421,14 @@ fn test_pack_bits_to_prj_selected_every_second_1() {
     assert_eq!(bits.len(), 64, "Bit vector should have 64 elements");
 
     // Pack bits into prj_selected Vec<u8>
-    let packed = CommandGenerator::pack_bits_to_prj_selected(&bits);
+    let packed = BlueProtocol::pack_bits_to_prj_selected(&bits);
     info!("Packed prj_selected for every second bit set: {:?}", packed);
     for (i, val) in packed.iter().enumerate() {
         info!("packed[{}] = 0x{:04X}", i, val);
     }
 
     // Unpack back to bits and check every second bit is 1, rest are 0
-    let unpacked = CommandGenerator::unpack_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
+    let unpacked = BlueProtocol::extract_project_item_bits(&Playback { playback_mode: PlaybackMode::TickPlay, selected_plays: packed.clone(), selected_play: 1 });
     assert_eq!(unpacked.len(), 64, "Unpacked bit vector should have 64 elements");
     for i in 0..50 {
         assert_eq!(unpacked[i], if i % 2 == 0 { 1 } else { 0 }, "Bit {} should be {}", i, if i % 2 == 0 { 1 } else { 0 });
@@ -555,7 +555,7 @@ fn test_draw_data() {
     let expected_command = "F0F1F2F300000000000000000000000000003700002A80A500C602804E00C670000800C670005E00C67000CA00C670010B00C671010B007040010B001940010B803D40010B809340010B80E94100B580E950005E80E950000880E950806480E95080A580E95180A580936080A5803D6080A500196080A500706080A500C663004A80E702005180E770005880E770005F80E770006780E770006C80E771006C80EE40006C80F440006C80FB40006C810240006C8109410066810950005F8109500058810950004F810950004A810951004A810260004A80FB60004A80F460004A80EE60004A80E763F4F5F6F7";
     
     // Generate the command string
-    let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config);
+    let command_string = BlueProtocol::pack_draw_cmd_str(&prepared_points, &draw_config);
     info!("Generated command string: {}", command_string);
 
     // Verify exact match with expected command
@@ -702,7 +702,7 @@ fn test_draw_data_polylines() {
     info!("Using all {} points for command generation", prepared_points.len());
     
     // Generate the command string
-    let command_string = CommandGenerator::get_draw_cmd_str(&prepared_points, &draw_config);
+    let command_string = BlueProtocol::pack_draw_cmd_str(&prepared_points, &draw_config);
     info!("Generated command string: {}", command_string);
     
     // Expected command string for polylines test data
@@ -771,7 +771,7 @@ fn test_point_array_shapes_command_generation() {
         
         
         // Generate command string for this shape
-        let command_string = darkelf::command::CommandGenerator::get_draw_cmd_str(&draw_points, &draw_config);
+        let command_string = darkelf::blueprotocol::BlueProtocol::pack_draw_cmd_str(&draw_points, &draw_config);
         info!("Generated command: {} ", command_string);
         
     }

@@ -22,7 +22,7 @@ use tokio::time::{Instant, sleep};
 use log::{info, error, debug};
 
 use crate::blue::{self, BlueController};
-use crate::command::{HEADER, FOOTER};
+use crate::blueprotocol::{HEADER, FOOTER};
 
 // BLE timing and packet constants
 const BLE_SEND_INTERVAL_MS: u64 = 20;

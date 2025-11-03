@@ -2,7 +2,7 @@ use crate::model::PlaybackMode;
 use crate::ui::app;
 /// Shows a grid of 10x5 on/off buttons labeled 1-50.
 use crate::ui::{app::App, model::DeviceCommand};
-use crate::command::CommandGenerator;
+use crate::blueprotocol::BlueProtocol;
 use egui::{Grid, Button};
 use log::info;
 
@@ -35,14 +35,14 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
                   }
             }
 
-            let mut bits = CommandGenerator::unpack_project_item_bits(item);
+            let mut bits = BlueProtocol::extract_project_item_bits(item);
             let buttons_enabled = item.playback_mode != PlaybackMode::LoopPlay;
             if ui.button("Select All").clicked() && buttons_enabled {
                 for v in bits.iter_mut() { *v = 1; }
 
                   let mut command = app.command_data.clone();
                   if let Some(item) = command.playback.playback_items.get_mut(&mode_key) {
-                    item.selected_plays = CommandGenerator::pack_bits_to_prj_selected(&bits);
+                    item.selected_plays = BlueProtocol::pack_bits_to_prj_selected(&bits);
 	                let _ = app.command_sender.send(DeviceCommand::SetMainCommand(command));
                   }
 
@@ -53,7 +53,7 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
 
                 let mut command = app.command_data.clone();
                 if let Some(item) = command.playback.playback_items.get_mut(&mode_key) {
-                    item.selected_plays = CommandGenerator::pack_bits_to_prj_selected(&bits);
+                    item.selected_plays = BlueProtocol::pack_bits_to_prj_selected(&bits);
 	                let _ = app.command_sender.send(DeviceCommand::SetMainCommand(command));
                 }
             }
@@ -62,7 +62,7 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
 
                 let mut command = app.command_data.clone();
                   if let Some(item) = command.playback.playback_items.get_mut(&mode_key) {
-                    item.selected_plays = CommandGenerator::pack_bits_to_prj_selected(&bits);
+                    item.selected_plays = BlueProtocol::pack_bits_to_prj_selected(&bits);
 	                let _ = app.command_sender.send(DeviceCommand::SetMainCommand(command));
                 }
             }
@@ -80,7 +80,7 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
             let mut btn_count = 0;
 
             if let Some(item) = app.command_data.playback.playback_items.get(&mode_key) {
-                let mut bits = CommandGenerator::unpack_project_item_bits(item);
+                let mut bits = BlueProtocol::extract_project_item_bits(item);
                 let buttons_enabled = item.playback_mode != PlaybackMode::LoopPlay ;
                 for _row in 0..5 {
                     for _col in 0..10 {
@@ -99,7 +99,7 @@ pub fn show_selector_grid(ui: &mut egui::Ui, mut app: &mut App) {
                             
                             let mut command = app.command_data.clone();
                             if let Some(item) = command.playback.playback_items.get_mut(&mode_key) {
-                                item.selected_plays = CommandGenerator::pack_bits_to_prj_selected(&bits);
+                                item.selected_plays = BlueProtocol::pack_bits_to_prj_selected(&bits);
                                 item.selected_play = (idx + 1) as u16;
 	                            let _ = app.command_sender.send(DeviceCommand::SetMainCommand(command));
                             }

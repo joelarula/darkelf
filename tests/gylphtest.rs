@@ -1,6 +1,6 @@
 
 use darkelf::draw::DrawUtils;
-use darkelf::command::CommandGenerator;
+use darkelf::blueprotocol::BlueProtocol;
 use darkelf::model::EncodedCommandData;
 use ttf_parser::Face;
 
@@ -34,7 +34,7 @@ fn test_glyphs() {
     std::fs::write("segment_points.json", segment_pointsJson).unwrap();
     println!("Wrote text_data to segment_points.json");
 
-    let  data: EncodedCommandData = CommandGenerator::encode_layout_to_command_data(
+    let  data: EncodedCommandData = BlueProtocol::encode_layout_to_command_data(
         &simplified_shapes,
         5.0,
     ).unwrap();
@@ -57,7 +57,7 @@ fn test_glyphs() {
     assert_eq!(verify_cmd_b, data.cmd);
 
 
-    let cmd_text = CommandGenerator::get_xys_cmd(&simplified_shapes, 5.0);
+    let cmd_text = BlueProtocol::pack_xys_cmd(&simplified_shapes, 5.0);
 
     // Fine-grained protocol assertions
     // These indices are based on the expected command format and field lengths

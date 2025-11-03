@@ -52,6 +52,23 @@ pub struct DeviceInfo {
 pub struct FeatureConfig {
     pub play_time: f32,
     pub config_values: Vec<u8>,
+
+    
+}
+
+#[derive(Debug, Clone,Default)]
+pub struct DeviceFeatures{
+    pub text_stop_time: bool,
+    pub text_decimal_time: bool,
+    pub display_type: u8,
+    pub show_outdoor_tips: bool,
+    pub xy_cnf: bool,
+    pub arb_play: bool,
+    pub ilda: bool,
+    pub ttl_an: bool,
+    pub pics_play: bool,
+    pub text_up_down: bool,
+    pub animation_fix: bool
 }
 
 
@@ -94,8 +111,9 @@ pub struct DeviceState {
     pub settings: DeviceSettings,
     pub main_data: MainCommandData,
     pub device_info: DeviceInfo, 
-    pub features: Vec<FeatureConfig>,
-    pub pis_obj: Option<DrawCommandData>,
+    pub features: DeviceFeatures,
+    pub features_config: Vec<FeatureConfig>,
+    pub draw_data: Option<DrawCommandData>,
 }
 
 
@@ -212,6 +230,7 @@ pub struct Playback {
     pub selected_play: u16,
     pub selected_plays: Vec<u16>,
 }
+
 
 
 

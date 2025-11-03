@@ -1,7 +1,7 @@
 use crate::{draw::DrawUtils, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
 use log::{debug, info};
 
-use crate::model::{DeviceInfo, DeviceState, FeatureConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
+use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,FeatureConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -21,26 +21,11 @@ pub const XYS_CMD_HEADER: &str = "A0A1A2A3";
 pub const XYS_CMD_FOOTER: &str = "A4A5A6A7";
 
 
-pub struct CommandGenerator;
+pub struct BlueProtocol;
 
-impl CommandGenerator {
+impl BlueProtocol {
 
-    pub fn ab2hex(bytes: &[u8]) -> String {
-        debug!("ab2hex called with bytes: {:?}", bytes);
-        String::new()
-    }
-
-    pub fn ab2str(bytes: &[u8]) -> String {
-        debug!("ab2str called with bytes: {:?}", bytes);
-        String::new()
-    }
-
-    pub fn string_to_bytes(s: &str) -> Vec<u8> {
-        debug!("string_to_bytes called with s: {}", s);
-        Vec::new()
-    }
    pub fn to_fixed_width_hex<T: std::fmt::UpperHex>(value: T, width: usize) -> String {
-        debug!("to_fixed_width_hex called with width: {}", width);
         format!("{:0width$X}", value, width = width)
     }
 
@@ -51,10 +36,6 @@ impl CommandGenerator {
         (high & 0x0F) << 4 | (low & 0x0F)
     }
 
-    pub fn pad_hex_string_to_byte_length(hex: &str, byte_len: usize, pad: &str) -> String {
-        debug!("pad_hex_string_to_byte_length called with hex: {}, byte_len: {}, pad: {}", hex, byte_len, pad);
-        String::new()
-    }
 
     pub fn to_fixed_width_hex_float(value: f64, width: usize) -> String {
         // Round the value to nearest integer
@@ -70,7 +51,7 @@ impl CommandGenerator {
         format!("{:0width$x}", rounded_value, width = width)
     }
 
-        fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+    fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
         if value < min || value > max {
             default
         } else {
@@ -104,7 +85,7 @@ impl CommandGenerator {
         None
     }
 
-    pub fn parse_settings_command(cmd_data: &str) -> Option<DeviceSettings> {
+    pub fn extract_settings_command(cmd_data: &str) -> Option<DeviceSettings> {
 
         let cmd = Self::get_cmd_value(SETTINGS_CMD_HEADER, SETTINGS_CMD_FOOTER, cmd_data)?;
         if cmd.len() == 22 {
@@ -139,7 +120,7 @@ impl CommandGenerator {
 
 
 
-    pub fn get_setting_cmd(settings: &DeviceSettings) -> String {
+    pub fn pack_setting_cmd(settings: &DeviceSettings) -> String {
 
         format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}", 
@@ -159,22 +140,23 @@ impl CommandGenerator {
     }
     
     /// Parses a complete device response into structured data
-    pub fn parse_device_response(data: &str) -> Option<DeviceState> {
+    pub fn extract_device_response(data: &str) -> Option<DeviceState> {
         
         let response = DeviceState {
-            main_data: Self::parse_main_command(&data)?,
-            settings: Self::parse_settings_command(&data)?,
-            device_info: Self::parse_device_info(&data)?,
-            features: Self::parse_features(&data)?,
-            pis_obj:  Self::parse_pis_command(&data),
+            main_data: Self::extract_main_command(&data)?,
+            settings: Self::extract_settings_command(&data)?,
+            device_info: Self::extract_device_info(&data)?,
+            features: Self::extract_features(&data)?,
+            features_config: Self::extract_features_config(&data)?,
+            draw_data:  Self::extract_draw_command(&data),
         };
 
 
         Some(response)
     }
 
-    /// Parse the main command section
-    pub fn parse_main_command(cmd_data: &str) -> Option<MainCommandData> {
+
+    pub fn extract_main_command(cmd_data: &str) -> Option<MainCommandData> {
 
         let cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, cmd_data)?;
         info!("Parsing main command: {} {}", cmd, cmd.len());
@@ -198,14 +180,76 @@ impl CommandGenerator {
             text_point_time: Self::clamp_value(Self::extract_hex_value(15, 1, &cmd) as u8, 0, 100, 50),
             draw_point_time: Self::clamp_value(Self::extract_hex_value(16, 1, &cmd) as u8, 0, 100, 50),
             run_direction: Self::clamp_value(Self::extract_hex_value(17, 1, &cmd) as u8, 0, 255, 0),
-            playback: Self::parse_playback_command(&cmd)?,
+            playback: Self::extract_playback_command(&cmd)?,
         })
     }
 
 
 
+    pub fn extract_features(data: &str) -> Option<DeviceFeatures> {
+        if let Some(device_info) = Self::extract_device_info(data) {
+            let device_type = device_info.device_type.parse::<u8>().unwrap_or(0);
+            let version = device_info.version.parse::<u8>().unwrap_or(0);
 
-    pub fn parse_features(data: &str) -> Option<Vec<FeatureConfig>> {
+            let mut features = DeviceFeatures {
+                text_stop_time: false,
+                text_decimal_time: false,
+                display_type: device_type,
+                show_outdoor_tips: false,
+                xy_cnf: false,
+                arb_play: false,
+                ilda: false,
+                ttl_an: false,
+                pics_play: false,
+                text_up_down: false,
+                animation_fix: false
+            };
+
+            if (device_type == 1 && version >= 1)
+                || (device_type == 0 && version >= 2)
+                || (device_type >= 2)
+            {
+                features.text_stop_time = true;
+                features.text_decimal_time = true;
+            }
+
+            if (device_type == 1 && version >= 2) || (device_type > 1) {
+                features.show_outdoor_tips = true;
+            }
+
+            if device_type == 2 {
+                features.xy_cnf = true;
+            }
+
+            if device_type == 1 || device_type == 2 {
+                features.ilda = true;
+                features.ttl_an = true;
+            }
+
+            if device_type >= 2 || version >= 3 {
+                features.arb_play = true;
+            }
+
+            if device_type >= 3 || version >= 4 {
+                features.text_up_down = true;
+            }
+
+            if device_type >= 3 || version >= 5 {
+                features.pics_play = true;
+            }
+
+            if device_type == 1 {
+                features.animation_fix = true;
+            }
+
+            return Some(features);
+        }
+        None
+    }
+
+
+
+    pub fn extract_features_config(data: &str) -> Option<Vec<FeatureConfig>> {
         let mut features = Vec::new();
 
 
@@ -247,7 +291,7 @@ impl CommandGenerator {
     }
 
 
-    pub fn parse_playback_command(playback_cmd: &str) -> Option<PlaybackData> {
+    pub fn extract_playback_command(playback_cmd: &str) -> Option<PlaybackData> {
  
         info!("Parsing playback command: {} {}", playback_cmd, playback_cmd.len());
       
@@ -259,6 +303,7 @@ impl CommandGenerator {
         let prj_keys = [2, 3, 5, 6];
         let mut project_item_start_index = 17;
         for &key in prj_keys.iter() {
+            info!("Extract playback mode {}: {}", key, Self::extract_hex_value(project_item_start_index, 1, &playback_cmd));
             let py_mode = PlaybackMode::try_from(Self::clamp_value(Self::extract_hex_value(project_item_start_index, 1, &playback_cmd), 0, 255, 0) as u8).unwrap();
             let mut prj_selected = vec![0u16; 4];
             prj_selected[3] = Self::extract_hex_value(project_item_start_index + 1, 2, &playback_cmd);
@@ -275,15 +320,15 @@ impl CommandGenerator {
 
     }
 
-    pub fn parse_pis_command(data: &str) -> Option<DrawCommandData> {
+    pub fn extract_draw_command(data: &str) -> Option<DrawCommandData> {
 
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
         info!("Parsing main command: {} {}", main_cmd, main_cmd.len());
 
-        let tx_point_time = CommandGenerator::clamp_value(CommandGenerator::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
+        let tx_point_time = BlueProtocol::clamp_value(BlueProtocol::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
         let mut cnf_valus_vec = Vec::new();
         for i in 0..13 {
-            cnf_valus_vec.push(CommandGenerator::clamp_value(CommandGenerator::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
+            cnf_valus_vec.push(BlueProtocol::clamp_value(BlueProtocol::extract_hex_value(18 + i, 1, &main_cmd) as u8, 0, 255, 0) as u32);
         }
         let mut cnf_valus_arr = [0u32; 13];
         for (i, val) in cnf_valus_vec.iter().enumerate().take(13) {
@@ -312,7 +357,7 @@ impl CommandGenerator {
         Some(pis_obj)
     }
 
-    pub fn parse_device_info(data: &str) -> Option<DeviceInfo> {
+    pub fn extract_device_info(data: &str) -> Option<DeviceInfo> {
         // Find footer pattern and extract 8 bytes before it
         if let Some(footer_idx) = data.rfind(FOOTER) {
             if footer_idx >= 8 {
@@ -338,7 +383,7 @@ impl CommandGenerator {
     }
 
 
-    pub fn get_query_cmd(random_verify: &[u8]) -> String {
+    pub fn pack_query_cmd(random_verify: &[u8]) -> String {
         let middle = if random_verify.len() >= 4 {
             format!("{:02X}{:02X}{:02X}{:02X}", 
                 random_verify[0], random_verify[1], 
@@ -421,7 +466,7 @@ impl CommandGenerator {
 
     }
 
-    pub fn get_draw_cmd_str(points: &[Point], config: &DrawCommandData) -> String {
+    pub fn pack_draw_cmd_str(points: &[Point], config: &DrawCommandData) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
         let command_str = format!("{}{}{}", DRAW_CMD_HEADER, encoded_draw_cmd, DRAW_CMD_FOOTER);
         command_str.to_uppercase()
@@ -578,7 +623,7 @@ impl CommandGenerator {
 
 
     /// Unpacks prj_selected from ProjectItem into a flat Vec<u8> of bits (0/1), matching JS getCkValues
-    pub fn unpack_project_item_bits(project_item: &crate::model::Playback) -> Vec<u8> {
+    pub fn extract_project_item_bits(project_item: &crate::model::Playback) -> Vec<u8> {
         let mut bits = Vec::with_capacity(project_item.selected_plays.len() * 16);
         for &n in &project_item.selected_plays {
             for h in 0..16 {
@@ -606,7 +651,7 @@ impl CommandGenerator {
 
 
 
-pub fn get_xys_cmd(
+pub fn pack_xys_cmd(
     segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
     time: f32,
 ) -> String {
@@ -617,11 +662,11 @@ pub fn get_xys_cmd(
         let result_cmd = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}",
             XYS_CMD_HEADER,
-            CommandGenerator::to_fixed_width_hex(encoded_command_data.cnt, 4), 
-            CommandGenerator::to_fixed_width_hex(encoded_command_data.char_count, 2), 
+            BlueProtocol::to_fixed_width_hex(encoded_command_data.cnt, 4), 
+            BlueProtocol::to_fixed_width_hex(encoded_command_data.char_count, 2), 
             encoded_command_data.cmd,
-            CommandGenerator::to_fixed_width_hex(1, 2), 
-            CommandGenerator::to_fixed_width_hex(encoded_command_data.char_count, 2), 
+            BlueProtocol::to_fixed_width_hex(1, 2), 
+            BlueProtocol::to_fixed_width_hex(encoded_command_data.char_count, 2), 
             encoded_command_data.char_width_cmd,
             encoded_command_data.char_point_cmd,
             encoded_command_data.se1,
@@ -650,14 +695,14 @@ pub fn get_xys_cmd(
         let mut prev_index = -1;
         let mut command = String::new();
         let mut b = String::new();
-        let ver = Self::to_fixed_width_hex_b(a, 2);
+        let ver = Self::to_fixed_width_hex(a, 2);
         let mut char_point_cmd = String::new();
         let mut char_width_cmd = String::new();
         let v = 8;
         let scaling_factor = 0.5;
         let mut f = v;
         let mut segment_point_count = 0;
-        let mut time = Self::to_fixed_width_hex_b(segment_time.floor() as i32, 2);
+        let mut time = Self::to_fixed_width_hex(segment_time.floor() as i32, 2);
       
         if v >= 8 {
             f = 0;
@@ -719,23 +764,23 @@ pub fn get_xys_cmd(
             if prev_index != seg.0 as i32 {
                 prev_index = seg.0 as i32;
                 if counter2 > 0 {
-                    char_point_cmd += &Self::to_fixed_width_hex_b(segment_point_count as i32, 2);
+                    char_point_cmd += &Self::to_fixed_width_hex(segment_point_count as i32, 2);
                     println!(
                         "[Rust] char_point_cmd append: seg {} count {} -> {}",
                         counter2 - 1,
                         segment_point_count,
-                        Self::to_fixed_width_hex_b(segment_point_count as i32, 2)
+                        Self::to_fixed_width_hex(segment_point_count as i32, 2)
                     );
                     segment_point_count = 0;
                 }
                 counter2 += 1;
                 let width = (seg.2 * scaling_factor).round() as i32;
-                char_width_cmd += &Self::to_fixed_width_hex_b(width, 2);
+                char_width_cmd += &Self::to_fixed_width_hex(width, 2);
                 println!(
                     "[Rust] char_width_cmd append: seg {} width {} -> {}",
                     counter2 - 1,
                     width,
-                    Self::to_fixed_width_hex_b(width, 2)
+                    Self::to_fixed_width_hex(width, 2)
                 );
                 if v >= 8 && seg.1.len() > 1 {
                     f += 1;
@@ -762,10 +807,10 @@ pub fn get_xys_cmd(
                 if segment_points.len() == 1 {
                     point_type = point.z as u8;
                 }
-                let combined = CommandGenerator::combine_nibbles_b(segment_index, point_type);
-                let x_hex = CommandGenerator::to_fixed_width_hex_float(x_screen as f64, 4);
-                let y_hex = CommandGenerator::to_fixed_width_hex_float(y_screen as f64, 4);
-                let combined_hex = CommandGenerator::to_fixed_width_hex_b(combined as i32, 2);
+                let combined = BlueProtocol::combine_nibbles(segment_index, point_type);
+                let x_hex = BlueProtocol::to_fixed_width_hex_float(x_screen as f64, 4);
+                let y_hex = BlueProtocol::to_fixed_width_hex_float(y_screen as f64, 4);
+                let combined_hex = BlueProtocol::to_fixed_width_hex(combined as i32, 2);
                 // Print packed hex for each point for parity comparison
                 println!("[Rust] Packed point: seg={} idx={} x={:.3} y={:.3} z={} segIdx={} type={} -> {}{}{}", seg.0, index, x_screen, y_screen, point.z, segment_index, point_type, x_hex, y_hex, combined_hex);
                 command += &x_hex;
@@ -773,12 +818,12 @@ pub fn get_xys_cmd(
                 command += &combined_hex;
             }
         }
-        char_point_cmd += &Self::to_fixed_width_hex_b(segment_point_count as i32, 2);
+        char_point_cmd += &Self::to_fixed_width_hex(segment_point_count as i32, 2);
         println!(
             "[Rust] char_point_cmd final append: seg {} count {} -> {}",
             counter2 - 1,
             segment_point_count,
-            Self::to_fixed_width_hex_b(segment_point_count as i32, 2)
+            Self::to_fixed_width_hex(segment_point_count as i32, 2)
         );
         // Print all packed fields for parity analysis
         println!("[Rust] encode_layout_to_command_data packed fields:");
@@ -811,20 +856,6 @@ pub fn get_xys_cmd(
         }
     }
 
-
-
-pub fn combine_nibbles_b(a: u8, b: u8) -> u8 {
-    ((a & 0x0F) << 4) | (b & 0x0F)
-}
-
-pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
-    let clamped = if width == 2 {
-        val.max(0).min(255) as u32
-    } else {
-        val as u32
-    };
-    format!("{:0width$X}", clamped, width = width)
-}
 
 
 

@@ -2213,6 +2213,7 @@ globalThis["webpackJsonp"].push([
                             }
                             appStateManager.globalData.cmd.pgsData.pisList = featureConfigList
                         }
+                        
                         var drawConfigData = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", deviceResponseData);
                         if ("" != drawConfigData)
                             for (var drawConfigObject = appStateManager.globalData.cmd.drawData.pisObj, configIndex = 0; configIndex < 15; configIndex++) {
