@@ -882,30 +882,12 @@ impl DrawUtils {
         println!("[Rust] split_into_segments_by_sum_limit result: {:?}", split_horizontal_segments);
         let mut segment_start_hex = String::new();
         let mut segment_count_hex = String::new();
-        // Pad to 24 hex chars (12 segments) by prepending zeros
-        while segment_start_hex.len() < 24 {
-            segment_start_hex = format!("00{}", segment_start_hex);
-        }
-        while segment_count_hex.len() < 24 {
-            segment_count_hex = format!("00{}", segment_count_hex);
-        }
-        // Append start/count of the last two splits from split_horizontal_segments
-        let splits_len = split_horizontal_segments.len();
-        if splits_len >= 2 {
-            let (start1, count1) = split_horizontal_segments[splits_len - 2];
-            let (start2, count2) = split_horizontal_segments[splits_len - 1];
-            segment_start_hex += &Self::to_fixed_width_hex_b(start1 as i32, 2);
-            segment_start_hex += &Self::to_fixed_width_hex_b(start2 as i32, 2);
-            segment_count_hex += &Self::to_fixed_width_hex_b(count1 as i32, 2);
-            segment_count_hex += &Self::to_fixed_width_hex_b(count2 as i32, 2);
-            println!("[Rust] segmentStartHex append: last two splits {} {} -> {} {}", start1, start2, Self::to_fixed_width_hex_b(start1 as i32, 2), Self::to_fixed_width_hex_b(start2 as i32, 2));
-            println!("[Rust] segmentCountHex append: last two splits {} {} -> {} {}", count1, count2, Self::to_fixed_width_hex_b(count1 as i32, 2), Self::to_fixed_width_hex_b(count2 as i32, 2));
-        } else if splits_len == 1 {
-            let (start, count) = split_horizontal_segments[0];
-            segment_start_hex += &Self::to_fixed_width_hex_b(start as i32, 2);
-            segment_count_hex += &Self::to_fixed_width_hex_b(count as i32, 2);
-            println!("[Rust] segmentStartHex append: single split {} -> {}", start, Self::to_fixed_width_hex_b(start as i32, 2));
-            println!("[Rust] segmentCountHex append: single split {} -> {}", count, Self::to_fixed_width_hex_b(count as i32, 2));
+        // Append start/count for ALL splits from split_horizontal_segments (matching JS logic)
+        for (start, count) in split_horizontal_segments.iter() {
+            segment_start_hex += &Self::to_fixed_width_hex_b(*start as i32, 2);
+            segment_count_hex += &Self::to_fixed_width_hex_b(*count as i32, 2);
+            println!("[Rust] segmentStartHex append: split {} -> {}", start, Self::to_fixed_width_hex_b(*start as i32, 2));
+            println!("[Rust] segmentCountHex append: split {} -> {}", count, Self::to_fixed_width_hex_b(*count as i32, 2));
         }
         println!("[Rust] generateSegmentedLayoutData : {:?} {} {} {}", out.clone(), segment_start_hex, segment_count_hex, -0.5 * total_segment_width);
     println!("[Rust] FINAL segmentStartHex: {} (len {})", segment_start_hex, segment_start_hex.len());
@@ -1030,33 +1012,46 @@ impl DrawUtils {
 pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usize, usize)> {
     println!("[split_into_segments_by_sum_limit] input: {:?}, limit: {}", numbers, limit);
     let mut result = Vec::new();
-    let mut start = 0;
-    let mut count = 0;
-    let mut sum = 0.0;
-    for (i, &num) in numbers.iter().enumerate() {
-        println!("  i={}, num={:.8}, sum={:.8}, sum+num={:.8}", i, num, sum, sum+num);
-        if sum + num > limit {
-            // Finish current group
-            if count > 0 {
-                result.push((start, count));
-                println!("    -> group: start={}, count={}, sum={:.8}", start, count, sum);
-            }
-            // Start new group
-            start = i;
-            count = 1;
-            sum = num;
-            println!("    -> new group: start={}, count={}, sum={:.8}", start, count, sum);
+    let mut current_sum = 0.0;
+    let mut segment_start_idx = 0;
+    let mut segment_size = 0;
+    
+    // Match JS algorithm: push a range on EVERY iteration, creating cumulative overlapping groups
+    for (number_idx, &num) in numbers.iter().enumerate() {
+        println!("  i={}, num={:.8}, current_sum={:.8}, sum+num={:.8}", number_idx, num, current_sum, current_sum + num);
+        
+        if current_sum + num <= limit {
+            segment_size += 1;
+            result.push((segment_start_idx, segment_size));
+            current_sum += num;
+            println!("    -> add to group: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
         } else {
-            count += 1;
-            sum += num;
-            println!("    -> add to group: start={}, count={}, sum={:.8}", start, count, sum);
+            // Need to adjust the window by removing segments from the start
+            let mut temp_sum = current_sum;
+            loop {
+                if temp_sum <= limit {
+                    segment_size += 1;
+                    result.push((segment_start_idx, segment_size));
+                    current_sum = temp_sum + num;
+                    println!("    -> add after adjustment: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
+                    break;
+                }
+                if temp_sum > limit && temp_sum - numbers[segment_start_idx] < limit {
+                    segment_size += 1;
+                    result.push((segment_start_idx, segment_size));
+                    current_sum += num;
+                    println!("    -> add at limit boundary: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
+                    break;
+                }
+                temp_sum -= numbers[segment_start_idx];
+                current_sum -= numbers[segment_start_idx];
+                segment_start_idx += 1;
+                segment_size -= 1;
+                println!("    -> slide window: new start={}, size={}, current_sum={:.8}", segment_start_idx, segment_size, current_sum);
+            }
         }
     }
-    // Push last group
-    if count > 0 {
-        result.push((start, count));
-        println!("    -> final group: start={}, count={}, sum={:.8}", start, count, sum);
-    }
+    
     println!("[split_into_segments_by_sum_limit] output: {:?}", result);
     result
 }
@@ -1067,7 +1062,7 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
         } else {
             val as u32
         };
-        format!("{:0width$X}", clamped, width = width)
+        format!("{:0width$x}", clamped, width = width)
     }
 
 

@@ -1369,7 +1369,10 @@ globalThis["webpackJsonp"].push([
                         ? config.picsPlay
                             ? "f0f1f200" + pointString + "f4f5f6f7"
                             : "f0f1f2f3" + pointString + "f4f5f6f7"
-                        : "f0f1f2" + toFixedWidthHex(headerSuffix, 2) + pointString + "f4f5f6f7", commandStr.toUpperCase()
+                        : "f0f1f2" 
+                        + toFixedWidthHex(headerSuffix, 2) 
+                        + pointString 
+                        + "f4f5f6f7", commandStr.toUpperCase()
                 }
 
                 e.exports = {
@@ -2213,7 +2216,7 @@ globalThis["webpackJsonp"].push([
                             }
                             appStateManager.globalData.cmd.pgsData.pisList = featureConfigList
                         }
-                        
+
                         var drawConfigData = deviceCommandUtils.getCmdValue("F0F1F2F3", "F4F5F6F7", deviceResponseData);
                         if ("" != drawConfigData)
                             for (var drawConfigObject = appStateManager.globalData.cmd.drawData.pisObj, configIndex = 0; configIndex < 15; configIndex++) {

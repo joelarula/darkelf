@@ -535,9 +535,9 @@ if (targetModule && typeof targetModule === 'function') {
 
 
 
-  //testTextCommand(exported,textLineVectorizer.exports,fontGeometryUtils.exports,codePointAt);
+  testTextCommand(exported,textLineVectorizer.exports,fontGeometryUtils.exports,codePointAt);
 
-  testSettingsCommand(exported);
+  //testSettingsCommand(exported);
 
 } else {
   console.error('Module not found or not a function:', moduleName);

@@ -9,7 +9,7 @@ use darkelf::{
     util, winblue,
 };
 
-use log::{error};
+use log::{error, info};
 use std::{thread};
 use tokio::sync::{Mutex, mpsc};
 
@@ -98,6 +98,7 @@ fn main() -> eframe::Result<()> {
                             .send(DeviceMessage:: ConnectionStatus(device.is_connected()));
 
                         if !device.is_initialized() {
+                            info!("Setting up device...");
                             device.setup().await;
                         }
 
