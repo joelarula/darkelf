@@ -40,4 +40,11 @@ ttf-parser = "0.25.1"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0"
 
+# MCP (Model Context Protocol) dependencies
+rmcp = { version = "0.8.5", features = ["macros", "server"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+schemars = "1.0"
+tokio-util = "0.7"
+
 
