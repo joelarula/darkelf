@@ -18,7 +18,7 @@ fn test_glyphs() {
     let face = Face::from_slice(&ttf_bytes, 0).unwrap();
 
 
-    let text_data = DrawUtils::get_text_lines(&face, "ABC", None, None);
+    let text_data = DrawUtils::get_text_lines(&face, "ABC");
 
     let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
 

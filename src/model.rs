@@ -321,7 +321,7 @@ impl std::convert::TryFrom<u8> for PlaybackMode {
         match value {
             0 => Ok(PlaybackMode::LoopPlay),
             128 => Ok(PlaybackMode::TickPlay),
-            _ => Err(()),
+            _ => Ok(PlaybackMode::TickPlay),
         }
     }
 }

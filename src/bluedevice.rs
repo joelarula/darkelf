@@ -1,6 +1,8 @@
 use crate::device::LaserDevice;
-use crate::model::{ MainCommandData, DrawCommandData, Point};
+use crate::draw::DrawUtils;
+use crate::model::{ DrawCommandData, EncodedCommandData, MainCommandData, Point};
 use log::{debug, info, error};
+use ttf_parser::Face;
 use std::sync::{Arc, Mutex};
 use rand;
 use crate::model::{ DeviceState, DeviceSettings};
@@ -155,6 +157,25 @@ impl BlueLaserDevice {
 
     }
 
+    pub async fn text(&self, text: String) {
+
+        //let fontName = "Roboto-Bold.ttf";
+        let font_name = "laser.regular.ttf";
+        let ttf_bytes = std::fs::read(format!("assets/fonts/{}", font_name)).unwrap();
+        let face = Face::from_slice(&ttf_bytes, 0).unwrap();
+
+        let text_data = DrawUtils::get_text_lines(&face, &text);
+        let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
+
+        let  data: EncodedCommandData = BlueProtocol::encode_layout_to_command_data( &simplified_shapes,  5.0).unwrap();
+
+        let cmd_text = BlueProtocol::pack_xys_cmd(&simplified_shapes, 5.0);
+
+        let mut controller = self.device_controller.lock().unwrap();
+        let _ = controller.send(&cmd_text).await;
+
+    }
+
         /// Get a copy of the current main command data
     pub fn get_command_data(&self) -> Option<MainCommandData> {
         self.device_info.lock().unwrap()
@@ -214,6 +235,10 @@ impl LaserDevice for BlueLaserDevice {
     
     async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
         self.draw(points, config).await
+    }
+
+    async fn text(&self, text: String) {
+        self.text(text).await
     }
     
     fn is_on(&self) -> bool {

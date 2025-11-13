@@ -593,7 +593,7 @@ impl DrawUtils {
         Vec::new()
     }
 
-    /// Rust implementation of JavaScript rotatePointsAroundBoundingBoxCenter
+
     fn rotate_points_around_bounding_box_center(
         points: &[DrawPoint],
         angle: f64,
@@ -603,8 +603,6 @@ impl DrawUtils {
         }
 
         let mut rotated_points = Vec::new();
-
-        // Calculate bounding box
         let mut left = f64::MAX;
         let mut top = f64::MAX;
         let mut right = f64::MIN;
@@ -612,27 +610,26 @@ impl DrawUtils {
 
         for point in points {
             let x = point.x;
-            let y = -point.y; // JavaScript uses -point.y for bounding box calculation
+            let y = -point.y; 
             left = left.min(x);
             top = top.min(y);
             right = right.max(x);
             bottom = bottom.max(y);
         }
 
-        // Calculate center of bounding box
-        let center_x = (right - left) / 2.0 + left; // (a.right - a.left) / 2 + a.left
-        let center_y = (bottom - top) / 2.0 + top; // (a.bottom - a.top) / 2 + a.top
+        let center_x = (right - left) / 2.0 + left; 
+        let center_y = (bottom - top) / 2.0 + top; 
 
-        // Rotate each point around the center
+
         for point in points {
             let x = point.x;
-            let y = -point.y; // JavaScript uses -point.y
+            let y = -point.y; 
 
             let rotated = Self::rotate_point_around_center(angle, center_x, center_y, x, y);
 
             rotated_points.push(DrawPoint::new(
-                rotated.0,  // rotated x
-                -rotated.1, // -rotated y (flip back)
+                rotated.0,  
+                -rotated.1, 
                 point.color,
                 point.pen_state,
             ));
@@ -641,7 +638,7 @@ impl DrawUtils {
         rotated_points
     }
 
-    /// Rust implementation of JavaScript rotatePointAroundCenter
+
     fn rotate_point_around_center(
         angle: f64,
         center_x: f64,
@@ -649,13 +646,11 @@ impl DrawUtils {
         point_x: f64,
         point_y: f64,
     ) -> (f64, f64) {
-        // JavaScript: function rotatePointAroundCenter(e, t, r, n, h)
-        // var a = n - t, i = h - r
+
         let a = point_x - center_x;
         let i = point_y - center_y;
 
-        // c = t + (a * Math.cos(e) - i * Math.sin(e))
-        // o = r + (a * Math.sin(e) + i * Math.cos(e))
+
         let c = center_x + (a * angle.cos() - i * angle.sin());
         let o = center_y + (a * angle.sin() + i * angle.cos());
 
@@ -765,18 +760,13 @@ impl DrawUtils {
     }
 
     pub fn get_text_lines(
-        loaded_font: &Face, // your font type
-        text: &str,
-        number_of_segments: Option<usize>,
-        generate_mirror_lines: Option<bool>,
+        loaded_font: &Face, 
+        text: &str
     ) -> Vec<PolylineData> {
-        let num_segments = number_of_segments.unwrap_or(5);
-        let mirror_lines = generate_mirror_lines.unwrap_or(false);
-        let font_size = 400.0;
+        let num_segments = 5;
         let input_text = text.to_string();
         let mut lines = Vec::new();
 
-        // Reference height to normalize to (from JS output, e.g. 316.666...)
         let reference_height = 316.66667_f32;
         for letter in input_text.chars() {
             // Get glyph id for the letter
@@ -840,7 +830,6 @@ impl DrawUtils {
         lines
     }
 
-     /// Generate segmented layout data matching the JS generateSegmentedLayoutData behavior
     pub fn generate_segmented_layout_data(
         segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
         scaling_factor: f32,
@@ -853,7 +842,6 @@ impl DrawUtils {
         let mut total_segment_width: f32 = 0.0;
         let mut total_segment_height: f32 = 0.0;
 
-        // Collect widths/heights for real segments (unique indices)
         for seg in segments.iter() {
             let seg_id = seg.0 as i32;
             if n != seg_id {
@@ -862,36 +850,26 @@ impl DrawUtils {
                 total_segment_width += seg.2;
                 segment_heights.push(seg.3 * scaling_factor);
                 total_segment_height += seg.3;
-                println!("[Rust] Segment {}: index={}, width={} (scaled={}), height={} (scaled={})", segment_widths.len()-1, seg_id, seg.2, seg.2 * scaling_factor, seg.3, seg.3 * scaling_factor);
-            }
+           }
         }
 
         let mut out = segments.clone();
         let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
 
-        // ...existing code...
-        // JS: pack se1/se2 as concatenated 2-digit hex for each split segment start/count
-        // Build segment widths array for protocol metadata: pad to 12 segments with filler width 100.0
         let mut protocol_segment_widths: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
         while protocol_segment_widths.len() < 12 {
             protocol_segment_widths.push(100.0);
         }
+
         let split_horizontal_segments = Self::split_into_segments_by_sum_limit(&protocol_segment_widths, 800.0);
-        println!("[Rust] generateSegmentedLayoutData segmentWidths: {:?}", segment_widths);
-        println!("[Rust] generateSegmentedLayoutData segmentHeights: {:?}", segment_heights);
-        println!("[Rust] split_into_segments_by_sum_limit result: {:?}", split_horizontal_segments);
         let mut segment_start_hex = String::new();
         let mut segment_count_hex = String::new();
-        // Append start/count for ALL splits from split_horizontal_segments (matching JS logic)
+
         for (start, count) in split_horizontal_segments.iter() {
             segment_start_hex += &Self::to_fixed_width_hex_b(*start as i32, 2);
             segment_count_hex += &Self::to_fixed_width_hex_b(*count as i32, 2);
-            println!("[Rust] segmentStartHex append: split {} -> {}", start, Self::to_fixed_width_hex_b(*start as i32, 2));
-            println!("[Rust] segmentCountHex append: split {} -> {}", count, Self::to_fixed_width_hex_b(*count as i32, 2));
         }
-        println!("[Rust] generateSegmentedLayoutData : {:?} {} {} {}", out.clone(), segment_start_hex, segment_count_hex, -0.5 * total_segment_width);
-    println!("[Rust] FINAL segmentStartHex: {} (len {})", segment_start_hex, segment_start_hex.len());
-    println!("[Rust] FINAL segmentCountHex: {} (len {})", segment_count_hex, segment_count_hex.len());
+
     if mode == 127 {
             // ...existing code for vertical mode...
             let mut d = 0.0;
@@ -935,11 +913,7 @@ impl DrawUtils {
                 let count = group.1.len();
                 group_point_counts.push(count);
             }
-            println!("[generate_segmented_layout_data] mode=127 (vertical)");
-            println!("  segment_heights: {:?}", segment_heights);
-            println!("  se1 (js): {} (len {})", segment_start_hex, segment_start_hex.len());
-            println!("  se2 (js): {} (len {})", segment_count_hex, segment_count_hex.len());
-            println!("  x_offset: {}", x_offset);
+
             (out, grouped_segments, segment_start_hex, segment_count_hex, x_offset, group_point_counts, segment_heights)
         } else {
             // ...existing code for horizontal mode...
@@ -990,27 +964,15 @@ impl DrawUtils {
             while h.len() < 24 {
                 h = format!("00{}", h);
             }
-            println!("[generate_segmented_layout_data] mode={} (horizontal)", mode);
-            println!("  segment_widths: {:?}", segment_widths);
-            println!("  se1 (js): {} (len {})", n_str, n_str.len());
-            println!("  se2 (js): {} (len {})", h, h.len());
-            println!("  x_offset: {}", x_offset);
+
             (out, grouped_segments, n_str, h, x_offset, group_point_counts, segment_widths)
         }
     }
 
-    /// Helper function to extract and clamp numeric values
-    fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
-        if value < min || value > max {
-            default
-        } else {
-            value
-        }
-    }
 
 
 pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usize, usize)> {
-    println!("[split_into_segments_by_sum_limit] input: {:?}, limit: {}", numbers, limit);
+
     let mut result = Vec::new();
     let mut current_sum = 0.0;
     let mut segment_start_idx = 0;
@@ -1018,13 +980,11 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
     
     // Match JS algorithm: push a range on EVERY iteration, creating cumulative overlapping groups
     for (number_idx, &num) in numbers.iter().enumerate() {
-        println!("  i={}, num={:.8}, current_sum={:.8}, sum+num={:.8}", number_idx, num, current_sum, current_sum + num);
-        
+     
         if current_sum + num <= limit {
             segment_size += 1;
             result.push((segment_start_idx, segment_size));
             current_sum += num;
-            println!("    -> add to group: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
         } else {
             // Need to adjust the window by removing segments from the start
             let mut temp_sum = current_sum;
@@ -1033,26 +993,22 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
                     segment_size += 1;
                     result.push((segment_start_idx, segment_size));
                     current_sum = temp_sum + num;
-                    println!("    -> add after adjustment: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
                     break;
                 }
                 if temp_sum > limit && temp_sum - numbers[segment_start_idx] < limit {
                     segment_size += 1;
                     result.push((segment_start_idx, segment_size));
                     current_sum += num;
-                    println!("    -> add at limit boundary: start={}, size={}, sum={:.8}", segment_start_idx, segment_size, current_sum);
                     break;
                 }
                 temp_sum -= numbers[segment_start_idx];
                 current_sum -= numbers[segment_start_idx];
                 segment_start_idx += 1;
                 segment_size -= 1;
-                println!("    -> slide window: new start={}, size={}, current_sum={:.8}", segment_start_idx, segment_size, current_sum);
-            }
+           }
         }
     }
     
-    println!("[split_into_segments_by_sum_limit] output: {:?}", result);
     result
 }
 
@@ -1064,8 +1020,6 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
         };
         format!("{:0width$x}", clamped, width = width)
     }
-
-
 
 
 

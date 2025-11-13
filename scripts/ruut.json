@@ -1,7 +1,4 @@
 {
-    "type": "object",
-    "data": {
-        "picPath": "_doc/uniapp_temp_1760185475968/canvas/17602138871960.png",
         "drawPoints": [
             {
                 "ps": [
@@ -294,19 +291,7 @@
                 0,
                 3
             ]
-        },
-        "features": {
-            "textStopTime": true,
-            "textDecimalTime": true,
-            "displayType": "00",
-            "showOutDoorTips": false,
-            "xyCnf": false,
-            "arbPlay": false,
-            "ilda": false,
-            "ttlAn": false,
-            "picsPlay": false,
-            "textUpDown": false,
-            "animationFix": false
         }
-    }
+        
+    
 }
