@@ -43,6 +43,7 @@ impl SvgValue {
     }
 }
 
+
 fn traverse(element: &Element, depth: usize) {
     let indent = "  ".repeat(depth);
     print!("{}<{}", indent, element.get_name());
@@ -57,14 +58,14 @@ fn traverse(element: &Element, depth: usize) {
         println!(">");
         for child in element.get_children() {
             // Try to downcast to Element
-            if let Some(child_element) = child.clone().downcast_ref::<Element>() {
-                traverse(child_element, depth + 1);
-            } else if let Some(text_node) = child.clone().downcast_ref::<svg::node::Text>() {
-                let t = text_node.text().trim();
-                if !t.is_empty() {
-                    println!("{}{}", "  ".repeat(depth + 1), t);
-                }
-            }
+           // if let Some(child_element) = child.clone().downcast_ref::<Element>() {
+           //     traverse(child_element, depth + 1);
+           // } else if let Some(text_node) = child.clone().downcast_ref::<svg::node::Text>() {
+           //     let t = text_node.text().trim();
+           //     if !t.is_empty() {
+           //         println!("{}{}", "  ".repeat(depth + 1), t);
+           //     }
+           // }
         }
         println!("</{}>", element.get_name());
     }
@@ -134,11 +135,11 @@ fn test_line_shape() {
         .add(path);
 
     // Process all <path> elements in the SVG document
-    for node in document.iter() {
-        if let Some(root) = node.clone().downcast_ref::<Element>() {
-            traverse(root, 0);
-        }
-    }
+    //for node in document.iter() {
+    //    if let Some(root) = node.clone().downcast_ref::<Element>() {
+    //        traverse(root, 0);
+    //    }
+    //}
 
 
 

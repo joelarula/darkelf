@@ -64,23 +64,23 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //test_settings(device).await;
     
     ///sleep(Duration::from_millis(500));
-    test_playback_command(device).await;
+    //test_playback_command(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_show_playback(device).await;
     //sleep(Duration::from_millis(500));
     //test_tick_playback_command(device).await;
 
-    test_shapes(device).await;
+    //test_shapes(device).await;
 
     sleep(Duration::from_millis(500));
     
-   //test_show_drawings(device).await;
+    test_show_drawings(device).await;
     
 
     sleep(Duration::from_millis(500));
     
-    test_show_text(device).await;
+   // test_show_text(device).await;
 
 
 
@@ -373,6 +373,7 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
 
     let filenames: Vec<String>   = vec![
         "scripts/kaksjoont.json".to_string(),
+        "scripts/ufo.json".to_string(),
         "scripts/lill.json".to_string(),
         "scripts/ruut.json".to_string(),
         
