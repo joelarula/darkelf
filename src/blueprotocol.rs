@@ -439,7 +439,26 @@ impl BlueProtocol {
             padding = "00".repeat(44 - run_direction_bytes);
         }
 
-        let filler = "00000000".to_string();
+        //let filler = "00000000".to_string();
+
+        let mut color_group_hex = String::from("ffffffff0000");
+        color_group_hex.clear();
+    //if let Some(group_list) = feature_params.group_list.as_ref() {
+        //for group_color in group_color_list {
+        color_group_hex.push_str(&Self::to_fixed_width_hex(2.0 as u32, 2));
+      //  }
+    //}
+    color_group_hex.push_str("ffffffff");
+    color_group_hex.truncate(8); // Only keep first 8 hex chars
+
+    //if get_feature_value(feature_params, "textStopTime") {
+    //    color_group_hex.push_str(&to_fixed_width_hex(command_config.text_data.tx_point_time as u32, 2));
+    //}
+    //color_group_hex.push_str("0000");
+    //color_group_hex.truncate(12); // Only keep first 12 hex chars
+
+
+
 
         let command = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
@@ -454,7 +473,7 @@ impl BlueProtocol {
             tx_dist_scaled_hex,      
             audio_trigger_mode_hex,  
             sound_sensitivity_hex,   
-            filler,  
+            color_group_hex, //filler  
             text_point_time_hex,        
             draw_point_time_hex,               
             playback_selection_hex,                      
@@ -825,20 +844,7 @@ pub fn pack_xys_cmd(
             segment_point_count,
             Self::to_fixed_width_hex(segment_point_count as i32, 2)
         );
-        // Print all packed fields for parity analysis
-        println!("[Rust] encode_layout_to_command_data packed fields:");
-        println!("  cnt: {}", counter);
-        println!("  charCount: {}", counter2);
-        println!("  cmd: {}", command);
-        println!("  charWidthCmd: {}", char_width_cmd);
-        println!("  charPointCmd: {}", char_point_cmd);
-        println!("  se1: {}", se1);
-        println!("  se2: {}", se2);
-        println!("  ver: {}", ver);
-        println!("  time: {}", time);
-        if test {
-            println!("Text coordinates (drawing software format): {}", b);
-        }
+
         if counter == 0 {
             None
         } else {

@@ -19,8 +19,6 @@ use darkelf::model::{ Point, DrawCommandData};
 use std::fs;
 
 
-
-
 #[tokio::main]
 #[test]
 async fn test_laser_device() -> Result<(), anyhow::Error> {
@@ -64,7 +62,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //test_settings(device).await;
     
     ///sleep(Duration::from_millis(500));
-    //test_playback_command(device).await;
+   // test_playback_command(device).await;
 
     //sleep(Duration::from_millis(500));
     //test_show_playback(device).await;
@@ -75,13 +73,12 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     sleep(Duration::from_millis(500));
     
-    test_show_drawings(device).await;
+//    test_show_drawings(device).await;
     
 
     sleep(Duration::from_millis(500));
     
-   // test_show_text(device).await;
-
+    test_show_text(device).await;
 
 
     Ok(())
@@ -95,13 +92,16 @@ async fn test_show_text(device: &mut BlueLaserDevice) {
 
         cmd.device_mode = DeviceMode::TextPlayback;
         cmd.text_distance = 50;
+        cmd.run_speed = 50;
+        cmd.text_point_time = 10;
+        cmd.draw_point_time = 10;
 
         device.set_main_command(cmd.clone()).await; 
 
         sleep(Duration::from_secs(2));
 
         info!("Sending text draw command");
-        device.text("ABC".to_string()).await;
+        device.text("AIAS SADAS SAIA".to_string()).await;
 
         sleep(Duration::from_millis(5000));
     }
