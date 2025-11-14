@@ -77,7 +77,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     sleep(Duration::from_millis(500));
     
-    test_show_drawings(device).await;
+   // test_show_drawings(device).await;
 
     sleep(Duration::from_millis(500));
     
@@ -88,6 +88,96 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
 
 async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
+
+
+   let mode = DeviceMode::Draw;
+    info!("Set playback mode: {:?}", mode);
+    if let Some(mut cmd) = device.get_command_data() {
+        cmd.device_mode = mode;
+        device.set_main_command(cmd).await;
+        sleep(Duration::from_secs(3));
+    }
+    
+    let draw_config = DrawCommandData {
+        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        tx_point_time: 5,
+    };
+    
+    let mut draw_points: Vec<Point> = Vec::new();
+    //let mut values: Vec<i32> = (-400..400).step_by(40).collect();
+ 
+    //for (idx, i) in values.iter().enumerate() {
+        
+     //   let c = match *i {
+     //       -400..=-361 => 0,
+     //       -360..=-241 => 1,
+     //       -240..=-121 => 4,
+     //       -120..=-41  => 2,
+     //       -40..=39    => 5,
+     //       40..=159    => 6,
+     //       160..=279   => 3,
+     //       280..=400   => 7,
+     //       _           => 1,
+    //    };
+
+     //   let mut b = if *i == -400 { 1 } else { 0 };
+     //   let mut d = if *i == 400 { 1 } else { 0 };
+     //   let mut pen_state = b + d;
+
+
+    //    if *i > 0 {
+    //        draw_points.push(Point::new(0 as f64, *i as f64, c, pen_state));
+    //    } else {
+    //        draw_points.push(Point::new(*i as f64, 0 as f64, c, pen_state));
+    //    }
+    //}
+    
+
+
+
+
+
+
+    // Add hardcoded points to draw_points
+    draw_points.push(Point::new(-403.0, 0.0, 0, 1));
+
+    draw_points.push(Point::new(-336.0, 0.0, 1, 0));
+    draw_points.push(Point::new(-269.0, 0.0, 1, 0));
+    draw_points.push(Point::new(-202.0, 0.0, 1, 0));
+    draw_points.push(Point::new(-134.0, 0.0, 1, 0));
+    draw_points.push(Point::new(-67.0, 0.0, 1, 0));
+    
+   // draw_points.push(Point::new(0.0, 0.0, 1, 1));
+
+    draw_points.push(Point::new(67.0, 0.0, 2, 0));
+    draw_points.push(Point::new(134.0, 0.0, 2, 0));
+    draw_points.push(Point::new(202.0, 0.0, 2, 0));
+    draw_points.push(Point::new(269.0, 0.0, 2, 0));
+    draw_points.push(Point::new(336.0, 0.0, 2, 0));
+
+    draw_points.push(Point::new(403.0, 0.0, 2, 1));
+    
+    draw_points.push(Point::new(0.0, 403.0, 0, 1));
+    
+    draw_points.push(Point::new(0.0, 336.0, 6, 0));
+    draw_points.push(Point::new(0.0, 269.0, 6, 0));
+    draw_points.push(Point::new(0.0, 202.0, 6, 0));
+    draw_points.push(Point::new(0.0, 134.0, 6, 0));
+    draw_points.push(Point::new(0.0, 67.0, 6, 0));
+    
+    //draw_points.push(Point::new(0.0, 0.0, 6, 1));
+    
+    draw_points.push(Point::new(0.0, -67.0, 7, 0));
+    draw_points.push(Point::new(0.0, -134.0, 7, 0));
+    draw_points.push(Point::new(0.0, -202.0, 7, 0));
+    draw_points.push(Point::new(0.0, -269.0, 7, 0));
+    draw_points.push(Point::new(0.0, -336.0, 7, 0));
+    
+    //draw_points.push(Point::new(0.0, -403.0, 7, 1));
+
+    device.draw(draw_points, draw_config.clone()).await;
+    sleep(Duration::from_millis(500));
+
 
 }
 
