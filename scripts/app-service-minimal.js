@@ -1712,6 +1712,7 @@ globalThis["webpackJsonp"].push([
                         var fullCommand = "d0d1d2d3" + packedHex + "d4d5d6d7";
                         return fullCommand.toUpperCase();
                     },
+                    
                     getPisListCmdStr: function (segmentList) {
                         for (
                             var featureParams = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
@@ -6108,21 +6109,19 @@ globalThis["webpackJsonp"].push([
                                     n = r.picArray;
                                 this.doPisCanvasDraw(n)
                             },
-                            sendTmpCmd: function (selectedGroup, selectedIndex) {
-                                var cnfValusCopy = [];
-                                Object.assign(cnfValusCopy, this.pisObj.cnfValus);
-                                var picIdxTo255 = this.convertPicIdxTo255(selectedGroup, selectedIndex);
-                                cnfValusCopy[0] = picIdxTo255.idx;
-                                cnfValusCopy[1] = picIdxTo255.group;
-                                var pisObjForCmd = {
+                            sendTmpCmd: function (e, t) {
+                                var r = [];
+                                Object.assign(r, this.pisObj.cnfValus);
+                                var n = this.convertPicIdxTo255(e, t);
+                                r[0] = n.idx, r[1] = n.group;
+                                var h = {
                                     playTime: this.pisObj.playTime,
-                                    cnfValus: cnfValusCopy
-                                };
-                                var commandString = i.getPisCmdStr(this.pisIdx, pisObjForCmd, {
-                                    features: this.features
-                                });
-                                c.gosend(true, commandString);
-                            }
+                                    cnfValus: r
+                                },
+                                    a = i.getPisCmdStr(this.pisIdx, h, {
+                                        features: this.features
+                                    });
+                                c.gosend(!0, a)
                             },
                             imgClick: function (e) {
                                 this.pisSelectedIdx = e, this.sendTmpCmd(this.pisSelectedGroup, this.pisSelectedIdx)

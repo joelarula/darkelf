@@ -1,8 +1,5 @@
-        "shapePatternTemplates": function(e, t) {
-            var r = [{
-                label: "Straight Line",
-                arr: [
-                    [
+ [
+    [
                         [-400, 0, 0, 1],
                         [-392, 0, 7],
                         [-383, 0, 7],
@@ -2124,11 +2121,8 @@
                         [350, 300, 2, 1],
                         [350, 400, 7, 1],
                         [450, 400, 7, 1]
-                    ]
-                ]
-            }, {
-                label: "Arc",
-                arr: [
+                    ],
+
                     [
                         [0, 400, 0, 1],
                         [28, 399, 1, 0],
@@ -7116,11 +7110,8 @@
                         [-130, 75, 6, 1],
                         [-75, 130, 0, 1],
                         [-75, 130, 6, 1]
-                    ]
-                ]
-            }, {
-                label: "Highlight",
-                arr: [
+                    ],
+
                     [
                         [-399, 0, 0, 1],
                         [-399, 0, 7, 29],
@@ -8191,11 +8182,8 @@
                         [300, 160, 7, 20],
                         [400, 80, 5, 1],
                         [400, 80, 7, 20]
-                    ]
-                ]
-            }, {
-                label: "Dotting",
-                arr: [
+                    ],
+
                     [
                         [-400, 0, 0, 1],
                         [-400, 0, 7, 10],
@@ -9170,11 +9158,8 @@
                         [-400, 0, 6, 10],
                         [-282, 282, 0, 1],
                         [-282, 282, 7, 10]
-                    ]
-                ]
-            }, {
-                label: "Christmas",
-                arr: [
+                    ],
+
                     [
                         [-325, 56, 0, 1],
                         [-331, 55, 4, 0],
@@ -16113,29 +16098,4 @@
                         [206, -62, 2, 0],
                         [186, -43, 2, 1]
                     ]
-                ]
-            }, {
-                label: "Animation A",
-                arr: [0, 51]
-            }, {
-                label: "Animation B",
-                arr: [0, 14]
-            }];
-            e.exports = {
-                picArray: r,
-                getPicArrayInfo: function() {
-                    for (var e = [], t = 0; t < r.length; t++) {
-                        var n = r[t].label;
-                        "\u52a8\u753bA" == n || "\u52a8\u753bB" == n ? e.push({
-                            label: r[t].label,
-                            arr: [r[t].arr[0], r[t].arr[1]],
-                            count: r[t].arr[1] - r[t].arr[0]
-                        }) : e.push({
-                            label: r[t].label,
-                            count: r[t].arr.length
-                        })
-                    }
-                    return e
-                }
-            }
-        },
+            ]
