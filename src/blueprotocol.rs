@@ -819,4 +819,10 @@ pub fn encode_layout_to_command_data(
     full_command.to_uppercase()
     }
 
+
+    pub fn pack_pis_list_command(config: &Vec<DrawConfig>) -> String {
+
+    }
+
+
 } // end impl BlueProtocol

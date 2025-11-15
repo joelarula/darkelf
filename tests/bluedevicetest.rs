@@ -69,7 +69,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //sleep(Duration::from_millis(500));
     //test_tick_playback_command(device).await;
 
-    //test_shapes(device).await;
+   // test_shapes(device).await;
 
     //sleep(Duration::from_millis(500));
     
@@ -85,7 +85,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     //sleep(Duration::from_millis(500));
 
-    //test_show_drawing_protocol_b(device).await;
+    test_show_drawing_protocol_b(device).await;
 
     test_pis_command(device).await;
 
@@ -94,6 +94,18 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
 
 async fn test_pis_command(device: &mut BlueLaserDevice) {
+
+                               //pisList: [{
+                                //    playTime: 0,
+                                //    cnfValus: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                //}, {
+                                //    playTime: 1,
+                                //    cnfValus: [2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                //}/, {
+                                //   playTime: 2,
+                                //    cnfValus: [3, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                //}],
+
 
    let mode = DeviceMode::Program;
     info!("Set playback mode: {:?}", mode);
@@ -106,11 +118,11 @@ async fn test_pis_command(device: &mut BlueLaserDevice) {
     sleep(Duration::from_millis(500));
 
     let draw_config = DrawConfig {
-        config_values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        config_values: [0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         play_time: 5,
     };
     
-    device.draw_builtin_shape(150, draw_config.clone()).await;
+    device.draw_builtin_shape(1, draw_config.clone()).await;
     sleep(Duration::from_millis(500));
 
 
@@ -514,8 +526,9 @@ async fn test_shapes(device: &mut BlueLaserDevice) {
 
     let file_name = "scripts/picArrayShapes.json";
     let file_name2 = "scripts/lineShapes.json";
+    let file_name3 = "scripts/shapePatternTemplates.json";
      // Load the point arrays from picArrayShapes.json
-    let json_content = fs::read_to_string(file_name2)
+    let json_content = fs::read_to_string(file_name3)
         .expect("Failed to read picArrayShapes.json");
 
 

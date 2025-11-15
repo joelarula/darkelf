@@ -6109,19 +6109,20 @@ globalThis["webpackJsonp"].push([
                                     n = r.picArray;
                                 this.doPisCanvasDraw(n)
                             },
-                            sendTmpCmd: function (e, t) {
-                                var r = [];
-                                Object.assign(r, this.pisObj.cnfValus);
-                                var n = this.convertPicIdxTo255(e, t);
-                                r[0] = n.idx, r[1] = n.group;
-                                var h = {
+                            sendTmpCmd: function (selectedGroup, selectedIndex) {
+                                var selectedConfigValues = [];
+                                Object.assign(selectedConfigValues, this.pisObj.cnfValus);
+                                var picIdxTo255 = this.convertPicIdxTo255(selectedGroup, selectedIndex);
+                                selectedConfigValues[0] = picIdxTo255.idx;
+                                selectedConfigValues[1] = picIdxTo255.group;
+                                var commandData = {
                                     playTime: this.pisObj.playTime,
-                                    cnfValus: r
-                                },
-                                    a = i.getPisCmdStr(this.pisIdx, h, {
-                                        features: this.features
-                                    });
-                                c.gosend(!0, a)
+                                    cnfValus: selectedConfigValues
+                                };
+                                var commandString = i.getPisCmdStr(this.pisIdx, commandData, {
+                                    features: this.features
+                                });
+                                c.gosend(!0, commandString);
                             },
                             imgClick: function (e) {
                                 this.pisSelectedIdx = e, this.sendTmpCmd(this.pisSelectedGroup, this.pisSelectedIdx)
@@ -6131,6 +6132,168 @@ globalThis["webpackJsonp"].push([
                 t.default = s
             }).call(this, r("enhancedConsoleLogger")["default"])
         },
+
+        "sceneManagerPageComponent": function(e, t, r) {
+            "use strict";
+            (function(e) {
+                Object.defineProperty(t, "__esModule", {
+                    value: !0
+                }), t.default = void 0;
+                var n = getApp(),
+                    h = r("deviceCommandUtils "),
+                    a = r("bleDeviceControlUtils "),
+                    i = {
+                        data: function() {
+                            var e = n.globalData.getDeviceFeatures(),
+                                t = 650 * n.globalData.screen_width_float;
+                            return {
+                                screen_width: n.globalData.screen_width_str,
+                                rtl: n.globalData.rtl,
+                                features: e,
+                                ntitle: this.$t("\u573a\u666f\u7ba1\u7406"),
+                                scrollTop: 0,
+                                oldScrollTop: 0,
+                                imgArrays: [],
+                                pisList: [{
+                                    playTime: 0,
+                                    cnfValus: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                }, {
+                                    playTime: 1,
+                                    cnfValus: [2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                }, {
+                                    playTime: 2,
+                                    cnfValus: [3, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                }],
+                                position: {
+                                    x: t,
+                                    y: t
+                                },
+                                startPosition: {
+                                    x: 0,
+                                    y: 0
+                                },
+                                defaultPis: {
+                                    playTime: 5,
+                                    cnfValus: [0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                }
+                            }
+                        },
+                        computed: {},
+                        onLoad: function(t) {
+                            e("log", "onload pgs", " at sub2/pages/pgs/pgs.js:49");
+                            t.tag;
+                            var r = n.globalData.getCmdData("pgsData");
+                            this.pisList = r.pisList, this.initData()
+                        },
+                        onReady: function() {},
+                        onShow: function() {},
+                        onHide: function() {},
+                        methods: {
+                            sendCmd: function() {
+                                n.globalData.setCmdData("pgsData", {
+                                    pisList: this.pisList
+                                });
+                                n.globalData.getCmdData("pgsData");
+                                var e = h.getPisListCmdStr(n.globalData.cmd.pgsData.pisList, {
+                                    features: this.features
+                                });
+                                a.gosend(!0, e)
+                            },
+                            initData: function() {
+                                this.features.ilda && (this.defaultPis = {
+                                    playTime: 5,
+                                    cnfValus: [0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                })
+                            },
+                            onInputBlur: function(t) {
+                                var r = this,
+                                    n = 0;
+                                t.detail.value && (n = parseInt(t.detail.value));
+                                var h = n;
+                                n < 1 && (h = 1), n > 25 && (h = 25);
+                                var a = t.currentTarget.dataset.tag;
+                                e("log", "-----", n, h, this.pisList[a].playTime, " at sub2/pages/pgs/pgs.js:87"), this.$set(this.pisList[a], "playTime", n), setTimeout((function() {
+                                    r.$set(r.pisList[a], "playTime", h), r.sendCmd()
+                                }), 100)
+                            },
+                            timeInput: function(e) {},
+                            scrollToBottom: function() {
+                                var e = this;
+                                uni.createSelectorQuery().in(this).select("#scroll_view").fields({
+                                    size: !0,
+                                    scrollOffset: !0,
+                                    scrollHeight: !0
+                                }).exec((function(t) {
+                                    if (t[0]) {
+                                        var r = t[0].scrollHeight;
+                                        e.scrollTop = e.oldScrollTop, e.$nextTick((function() {
+                                            e.scrollTop = r
+                                        }))
+                                    }
+                                }))
+                            },
+                            onscroll: function(e) {
+                                this.oldScrollTop = e.detail.scrollTop
+                            },
+                            oprNew: function(e) {
+                                if (this.pisList.length >= 20) n.globalData.showModalTips(this.$t("\u6700\u591a20\u4e2a\u573a\u666f"), !1);
+                                else {
+                                    var t = {
+                                        playTime: 0,
+                                        cnfValus: []
+                                    };
+                                    t.playTime = this.defaultPis.playTime, Object.assign(t.cnfValus, this.defaultPis.cnfValus), this.pisList.push(t), this.scrollToBottom(), this.sendCmd()
+                                }
+                            },
+                            oprEdit: function(t) {
+                                var r = this.pisList[t],
+                                    n = this;
+                                uni.navigateTo({
+                                    url: "/sub2/pages/pis/pis",
+                                    events: {
+                                        acceptDataFromOpenedPage: function(r) {
+                                            e("log", "acceptDataFromOpenedPage", r, " at sub2/pages/pgs/pgs.js:160"), n.$set(n.pisList, t, r.pis), n.imgArrays = r.imgArrays, n.sendCmd()
+                                        }
+                                    },
+                                    success: function(e) {
+                                        e.eventChannel.emit("acceptDataFromOpenerPage", {
+                                            pis: r,
+                                            idx: t,
+                                            imgArrays: n.imgArrays,
+                                            defaultPis: n.defaultPis
+                                        })
+                                    }
+                                })
+                            },
+                            onBtnSetTouchStart: function(e) {
+                                this.startPosition.x = e.touches[0].clientX - this.position.x, this.startPosition.y = e.touches[0].clientY - this.position.y
+                            },
+                            onBtnSetTouchMove: function(e) {
+                                this.position.x = e.touches[0].clientX - this.startPosition.x, this.position.y = e.touches[0].clientY - this.startPosition.y
+                            },
+                            onBtnSetTouchEnd: function() {},
+                            onBtnSetClick: function(e) {
+                                uni.navigateTo({
+                                    url: "/pages/subset/subset"
+                                })
+                            },
+                            oprDelete: function(t) {
+                                e("log", "oprDelete", t, " at sub2/pages/pgs/pgs.js:193");
+                                var r = this;
+                                uni.showModal({
+                                    title: this.$t("\u63d0\u793a"),
+                                    content: this.$t("\u662f\u5426\u5220\u9664\u573a\u666f") + t + "?",
+                                    success: function(n) {
+                                        n.confirm ? (r.pisList.splice(t, 1), r.sendCmd()) : n.cancel && e("log", "\u7528\u6237\u70b9\u51fb\u53d6\u6d88", " at sub2/pages/pgs/pgs.js:205")
+                                    }
+                                })
+                            }
+                        }
+                    };
+                t.default = i
+            }).call(this, r("enhancedConsoleLogger")["default"])
+        },
+
 
         "handDrawGeometryUtils": function (e, t, r) {
             (function (t) {

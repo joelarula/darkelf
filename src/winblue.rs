@@ -299,7 +299,7 @@ impl WinBlueController {
     }
 
     async fn send_buffer_sequence(&mut self, buffers: Vec<Vec<u8>>, total_count: usize) -> Result<(), Box<dyn Error + Send + Sync>> {
-        info!("Starting buffer sequence send - {} total buffers", total_count);
+        debug!("Starting buffer sequence send - {} total buffers", total_count);
         
         let platform_send_interval = Duration::from_millis(BLE_SEND_INTERVAL_MS);
      
@@ -344,7 +344,7 @@ impl WinBlueController {
 
             // Send the buffer
             if let Some(write_char) = &self.write_char {
-                info!("Writing BLE data packet {} of {} ({} bytes)", 
+                debug!("Writing BLE data packet {} of {} ({} bytes)", 
                     total_count - remaining_buffers.len(), 
                     total_count,
                     current_buffer.len());
@@ -358,7 +358,7 @@ impl WinBlueController {
                     GattWriteOption::WriteWithoutResponse,
                 )?.get() {
                     Ok(GattCommunicationStatus::Success) => {
-                        info!("Successfully sent BLE packet {} of {} - HEX: {} ASCII: {}", 
+                        debug!("Successfully sent BLE packet {} of {} - HEX: {} ASCII: {}", 
                             total_count - remaining_buffers.len(),
                             total_count,
                             current_buffer.iter().map(|b| format!("{:02X}", b)).collect::<String>(),
@@ -386,7 +386,7 @@ impl WinBlueController {
             return Ok(());
         }
 
-        info!("Initiating BLE command send: {}", cmd);
+        debug!("Initiating BLE command send: {}", cmd);
         
         // Handle non-command data when not ready
         if !cmd.starts_with(HEADER) {
@@ -540,7 +540,7 @@ impl BlueController for WinBlueController {
         let command = command.to_owned();
         Box::pin(async move {
             // Log the outgoing command
-            info!("Sending command - HEX: {} ASCII: {}", 
+            debug!("Sending command - HEX: {} ASCII: {}", 
                 command,
                 command.chars().map(|c| if c.is_ascii_graphic() { c } else { '.' }).collect::<String>());
             
@@ -561,7 +561,7 @@ impl BlueController for WinBlueController {
                     "Previous command still in progress")) as Box<dyn Error + Send + Sync>);
             }
             
-            info!("Device status check passed, proceeding with send...");
+            debug!("Device status check passed, proceeding with send...");
 
             self.cmd_sending = true;
             // Convert hex string to bytes
@@ -574,7 +574,7 @@ impl BlueController for WinBlueController {
                 }
             };
             
-            info!("Preparing to send command {} ({} bytes)", command, bytes.len());
+            debug!("Preparing to send command {} ({} bytes)", command, bytes.len());
             
             // Split into chunks and add split markers
             let mut buffers = Vec::new();
@@ -586,7 +586,7 @@ impl BlueController for WinBlueController {
             }
 
             let total_buffers = buffers.len();
-            info!("Split command into {} buffers", total_buffers);
+            debug!("Split command into {} buffers", total_buffers);
 
             let result = match self.send_buffer_sequence(buffers, total_buffers).await {
                 Ok(_) => Ok(()),
