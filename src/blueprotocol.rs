@@ -821,7 +821,45 @@ pub fn encode_layout_to_command_data(
 
 
     pub fn pack_pis_list_command(config: &Vec<DrawConfig>) -> String {
+        // Segment count: 128 | len (JS: toFixedWidthHex(128 | e.length, 2))
+        let segment_count = 128 | (config.len() as u8);
+        let segment_count_hex = Self::to_fixed_width_hex(segment_count, 2);
+        let segment_end_marker = "FF";
+        let mut encoded_segments = String::new();
 
+        for segment in config.iter() {
+            let mut segment_hex = String::new();
+            // Pack config_values[0..=12]
+            for value_idx in 0..=12 {
+                let value = if value_idx < segment.config_values.len() {
+                    segment.config_values[value_idx]
+                } else {
+                    0
+                };
+                segment_hex.push_str(&Self::to_fixed_width_hex(value as u8, 2));
+            }
+            // Play time: JS multiplies by 10
+            let play_time_hex = Self::to_fixed_width_hex((segment.play_time as u16 * 10) as u16, 2);
+            segment_hex.push_str(&play_time_hex);
+
+            // No featureParams/xyCnf support for now, so pad to 15 bytes (30 hex chars)
+            while segment_hex.len() < 30 {
+                segment_hex.push_str("00");
+            }
+            encoded_segments.push_str(&segment_hex);
+            encoded_segments.push_str(segment_end_marker);
+        }
+
+        // JS: "d0d1d2d3" + segmentCountHex + "00" + encodedSegments + "d4d5d6d7"
+        let full_command = format!(
+            "{}{}{}{}{}",
+            DRAWCONFIG_CMD_HEADER,
+            segment_count_hex,
+            "00",
+            encoded_segments,
+            DRAWCONFIG_CMD_FOOTER
+        );
+        full_command.to_uppercase()
     }
 
 
