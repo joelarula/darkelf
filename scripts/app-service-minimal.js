@@ -5754,15 +5754,15 @@ globalThis["webpackJsonp"].push([
                                     var e = r("lineShapes");
                                     return e
                                 }
-                                var t = r("shapePatternTemplates");
-                                return t
+                                var shapePatternTemplates = r("shapePatternTemplates");
+                                return shapePatternTemplates
                             },
                             sendCmd: function () {
                                 var e = (new Date).getTime(),
-                                    t = i.getPisCmdStr(this.pisIdx, this.pisObj, {
+                                    command = i.getPisCmdStr(this.pisIdx, this.pisObj, {
                                         features: this.features
                                     }),
-                                    r = c.gosend(!1, t);
+                                    r = c.gosend(!1, command);
                                 return r && (this.lastSendtime = e), r
                             },
                             initData: function () {
@@ -6108,19 +6108,21 @@ globalThis["webpackJsonp"].push([
                                     n = r.picArray;
                                 this.doPisCanvasDraw(n)
                             },
-                            sendTmpCmd: function (e, t) {
-                                var r = [];
-                                Object.assign(r, this.pisObj.cnfValus);
-                                var n = this.convertPicIdxTo255(e, t);
-                                r[0] = n.idx, r[1] = n.group;
-                                var h = {
+                            sendTmpCmd: function (selectedGroup, selectedIndex) {
+                                var cnfValusCopy = [];
+                                Object.assign(cnfValusCopy, this.pisObj.cnfValus);
+                                var picIdxTo255 = this.convertPicIdxTo255(selectedGroup, selectedIndex);
+                                cnfValusCopy[0] = picIdxTo255.idx;
+                                cnfValusCopy[1] = picIdxTo255.group;
+                                var pisObjForCmd = {
                                     playTime: this.pisObj.playTime,
-                                    cnfValus: r
-                                },
-                                    a = i.getPisCmdStr(this.pisIdx, h, {
-                                        features: this.features
-                                    });
-                                c.gosend(!0, a)
+                                    cnfValus: cnfValusCopy
+                                };
+                                var commandString = i.getPisCmdStr(this.pisIdx, pisObjForCmd, {
+                                    features: this.features
+                                });
+                                c.gosend(true, commandString);
+                            }
                             },
                             imgClick: function (e) {
                                 this.pisSelectedIdx = e, this.sendTmpCmd(this.pisSelectedGroup, this.pisSelectedIdx)

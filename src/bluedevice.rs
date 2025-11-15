@@ -157,12 +157,7 @@ impl BlueLaserDevice {
 
     }
 
-    pub async fn text(&self, text: String) {
-
-        //let fontName = "Roboto-Bold.ttf";
-        let font_name = "laser.regular.ttf";
-        let ttf_bytes = std::fs::read(format!("assets/fonts/{}", font_name)).unwrap();
-        let face = Face::from_slice(&ttf_bytes, 0).unwrap();
+    pub async fn text<'a>(&self, text: String, face: Face<'a>) {
 
         let text_data = DrawUtils::get_text_lines(&face, &text);
         let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
@@ -237,8 +232,8 @@ impl LaserDevice for BlueLaserDevice {
         self.draw(points, config).await
     }
 
-    async fn text(&self, text: String) {
-        self.text(text).await
+    async fn text<'a>(&self, text: String, face: Face<'a>) {
+        self.text(text,face).await
     }
     
     fn is_on(&self) -> bool {

@@ -20,6 +20,6 @@ pub trait LaserDevice {
 
     async fn draw(&self, points: Vec<Point>, config: DrawCommandData);
 
-    async fn text(&self, text: String);
+    async fn text(&self, text: String, face: ttf_parser::Face<'_>);
 
 }

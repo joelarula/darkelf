@@ -81,10 +81,16 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     sleep(Duration::from_millis(500));
     
-    test_show_drawing_protocol(device).await;
+    test_show_drawing_protocol_b(device).await;
+
+    sleep(Duration::from_millis(500));
+
+    test_show_drawing_protocol_b(device).await;
 
     Ok(())
 }
+
+
 
 
 async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
@@ -144,36 +150,36 @@ async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
     draw_points.push(Point::new(-336.0, 0.0, 1, 0));
     draw_points.push(Point::new(-269.0, 0.0, 1, 0));
     draw_points.push(Point::new(-202.0, 0.0, 1, 0));
-    draw_points.push(Point::new(-134.0, 0.0, 1, 0));
-    draw_points.push(Point::new(-67.0, 0.0, 1, 0));
+    draw_points.push(Point::new(-134.0, 0.0, 0, 1));
+    draw_points.push(Point::new(-67.0, 0.0, 0, 1));
     
-   // draw_points.push(Point::new(0.0, 0.0, 1, 1));
+    draw_points.push(Point::new(0.0, 0.0, 0, 1));
 
-    draw_points.push(Point::new(67.0, 0.0, 2, 0));
-    draw_points.push(Point::new(134.0, 0.0, 2, 0));
+    draw_points.push(Point::new(67.0, 0.0, 0, 1));
+    draw_points.push(Point::new(134.0, 0.0, 0, 1));
     draw_points.push(Point::new(202.0, 0.0, 2, 0));
     draw_points.push(Point::new(269.0, 0.0, 2, 0));
-    draw_points.push(Point::new(336.0, 0.0, 2, 0));
+    draw_points.push(Point::new(336.0, 0.0, 2, 1));
 
     draw_points.push(Point::new(403.0, 0.0, 2, 1));
     
     draw_points.push(Point::new(0.0, 403.0, 0, 1));
     
-    draw_points.push(Point::new(0.0, 336.0, 6, 0));
+    draw_points.push(Point::new(0.0, 336.0, 6, 1));
     draw_points.push(Point::new(0.0, 269.0, 6, 0));
     draw_points.push(Point::new(0.0, 202.0, 6, 0));
-    draw_points.push(Point::new(0.0, 134.0, 6, 0));
-    draw_points.push(Point::new(0.0, 67.0, 6, 0));
+    draw_points.push(Point::new(0.0, 134.0, 0, 1));
+    draw_points.push(Point::new(0.0, 67.0, 0, 1));
     
-    //draw_points.push(Point::new(0.0, 0.0, 6, 1));
+    draw_points.push(Point::new(0.0, 0.0, 0, 1));
     
-    draw_points.push(Point::new(0.0, -67.0, 7, 0));
-    draw_points.push(Point::new(0.0, -134.0, 7, 0));
+    draw_points.push(Point::new(0.0, -67.0, 0, 1));
+    draw_points.push(Point::new(0.0, -134.0, 0, 1));
     draw_points.push(Point::new(0.0, -202.0, 7, 0));
     draw_points.push(Point::new(0.0, -269.0, 7, 0));
     draw_points.push(Point::new(0.0, -336.0, 7, 0));
     
-    //draw_points.push(Point::new(0.0, -403.0, 7, 1));
+    draw_points.push(Point::new(0.0, -403.0, 7, 1));
 
     device.draw(draw_points, draw_config.clone()).await;
     sleep(Duration::from_millis(500));
@@ -181,11 +187,78 @@ async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
 
 }
 
+
+async fn test_show_drawing_protocol_b(device: &mut BlueLaserDevice) {
+
+
+   let mode = DeviceMode::Draw;
+    info!("Set playback mode: {:?}", mode);
+    if let Some(mut cmd) = device.get_command_data() {
+        cmd.device_mode = mode;
+        device.set_main_command(cmd).await;
+        sleep(Duration::from_secs(3));
+    }
+    
+    let draw_config = DrawCommandData {
+        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        tx_point_time: 5,
+    };
+    
+    let arr = [
+                    [-394, 0, 0, 1],
+                    [-394, 0, 7, 4],
+                    [-341, 0, 0, 1],
+                    [-341, 0, 7, 4],
+                    [-289, 0, 0, 1],
+                    [-289, 0, 1, 4],
+                    [-236, 0, 0, 1],
+                    [-236, 0, 1, 4],
+                    [-184, 0, 0, 1],
+                    [-184, 0, 3, 4],
+                    [-131, 0, 0, 1],
+                    [-131, 0, 3, 4],
+                    [-79, 0, 0, 1],
+                    [-79, 0, 6, 4],
+                    [-26, 0, 0, 1],
+                    [-26, 0, 6, 4],
+                    [26, 0, 0, 1],
+                    [26, 0, 5, 4],
+                    [79, 0, 0, 1],
+                    [79, 0, 5, 4],
+                    [131, 0, 0, 1],
+                    [131, 0, 4, 4],
+                    [184, 0, 0, 1],
+                    [184, 0, 4, 4],
+                    [236, 0, 0, 1],
+                    [236, 0, 2, 4],
+                    [289, 0, 0, 1],
+                    [289, 0, 2, 4],
+                    [341, 0, 0, 1],
+                    [341, 0, 7, 4],
+                    [394, 0, 0, 1],
+                    [394, 0, 7, 4]
+    ];
+    let draw_points: Vec<Point> = arr.iter().map(|&[x, y, color, pen]| Point::new(x as f64, y as f64, color as u8, pen as u8)).collect();
+
+
+    device.draw(draw_points, draw_config.clone()).await;
+    sleep(Duration::from_millis(500));
+
+
+}
+
+
 async fn test_show_text(device: &mut BlueLaserDevice) { 
 
 
 
     if let Some(mut cmd) = device.get_command_data() {
+
+
+        //let fontName = "Roboto-Bold.ttf";
+        let font_name = "laser.regular.ttf";
+        let ttf_bytes = std::fs::read(format!("assets/fonts/{}", font_name)).unwrap();
+        let face = Face::from_slice(&ttf_bytes, 0).unwrap();
 
         cmd.device_mode = DeviceMode::TextPlayback;
         cmd.text_distance = 50;
@@ -198,7 +271,7 @@ async fn test_show_text(device: &mut BlueLaserDevice) {
         sleep(Duration::from_secs(2));
 
         info!("Sending text draw command");
-        device.text("AIAS SADAS SAIA".to_string()).await;
+        device.text("AIAS SADAS SAIA".to_string(),face).await;
 
         sleep(Duration::from_millis(5000));
     }

@@ -1,6 +1,6 @@
-use crate::{draw::DrawUtils, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
+use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
 use log::{debug, info};
-
+use ilda::model::ILDA_BLANK;
 use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,FeatureConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
 
 pub const HEADER: &str = "E0E1E2E3";
@@ -30,24 +30,16 @@ impl BlueProtocol {
     }
 
     pub fn combine_nibbles(high: u8, low: u8) -> u8 {
-        debug!("combine_nibbles called with high: {}, low: {}", high, low);
-        // Combine two 4-bit values into one 8-bit value
-        // High nibble (upper 4 bits) and low nibble (lower 4 bits)
         (high & 0x0F) << 4 | (low & 0x0F)
     }
 
-
     pub fn to_fixed_width_hex_float(value: f64, width: usize) -> String {
-        // Round the value to nearest integer
-        let mut rounded_value = value.round() as i32;
+        let mut rounded_value = value.round() as i16;
         
-        // Handle negative values by setting bit 15 and using absolute value
         if rounded_value < 0 {
-            rounded_value = 32768 | -rounded_value;
+            rounded_value = ILDA_BLANK as i16 | -rounded_value;
         }
         
-        // Convert to hex string and pad with zeros
-        // format! with width specifier handles padding automatically
         format!("{:0width$x}", rounded_value, width = width)
     }
 
@@ -63,7 +55,6 @@ impl BlueProtocol {
         let start = if pos > 0 { 2 * (pos - 1) } else { 0 };
         let end = start + 2 * len;
         if end <= data.len() {
-            //info!("Extracted hex value from {}..{}: {}", start, end, &data[start..end]);
             u16::from_str_radix(&data[start..end], 16).unwrap_or(0)
         } else {
             0
@@ -71,13 +62,11 @@ impl BlueProtocol {
     }
 
     pub fn get_cmd_value(start: &str, end: &str, input: &str) -> Option<String> {
-        debug!("get_cmd_value called with start: {}, end: {}", start, end);
         
         if let Some(start_idx) = input.find(start) {
             if let Some(end_idx) = input[start_idx..].find(end) {
                 let start_pos = start_idx + start.len();
                 let content = &input[start_pos..start_idx + end_idx];
-                debug!("Found command value: {}", content);
                 return Some(content.to_string());
             }
         }
@@ -139,7 +128,6 @@ impl BlueProtocol {
         ).to_uppercase()
     }
     
-    /// Parses a complete device response into structured data
     pub fn extract_device_response(data: &str) -> Option<DeviceState> {
         
         let response = DeviceState {
@@ -292,12 +280,7 @@ impl BlueProtocol {
 
 
     pub fn extract_playback_command(playback_cmd: &str) -> Option<PlaybackData> {
- 
-        info!("Parsing playback command: {} {}", playback_cmd, playback_cmd.len());
-      
-        // Parse ProjectData from main_cmd (example logic, adjust as needed for your model)
-        // This assumes project item info is encoded in main_cmd or another section
-        // You may need to adjust parsing logic to match your protocol
+  
         let mut prj_item = std::collections::HashMap::new();
         // Use keys [2, 3, 5, 6] for project items
         let prj_keys = [2, 3, 5, 6];
@@ -323,8 +306,7 @@ impl BlueProtocol {
     pub fn extract_draw_command(data: &str) -> Option<DrawCommandData> {
 
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
-        info!("Parsing main command: {} {}", main_cmd, main_cmd.len());
-
+   
         let tx_point_time = BlueProtocol::clamp_value(BlueProtocol::extract_hex_value(15, 1, &main_cmd) as u8, 0, 100, 50);
         let mut cnf_valus_vec = Vec::new();
         for i in 0..13 {
@@ -342,7 +324,6 @@ impl BlueProtocol {
 
         // If draw config section exists, update PisObject fields from draw config data
         if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
-            info!("Parsing draw command: {} {}", draw_cmd, draw_cmd.len());
             for i in 0..15 {
                 let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd) as u32, 0, 255, 0);
                 if i < pis_obj.cnf_valus.len() {
@@ -358,24 +339,21 @@ impl BlueProtocol {
     }
 
     pub fn extract_device_info(data: &str) -> Option<DeviceInfo> {
-        // Find footer pattern and extract 8 bytes before it
+ 
         if let Some(footer_idx) = data.rfind(FOOTER) {
             if footer_idx >= 8 {
                 let info_start = footer_idx - 8;
                 let device_info_str = &data[info_start..footer_idx];
-                info!("Device info extracted: {}", device_info_str);
 
-                // Expected format: FF000200
                 let device_status = &device_info_str[..2];
                 let version = &device_info_str[2..4];
                 let device_type = &device_info_str[4..6];
 
-                // Create device info with known values
                 return Some(DeviceInfo {
-                    device_on: true,               // Status FF = device on
+                    device_on: true,               
                     device_type: device_type.to_string(),
                     version: version.to_string(),
-                    user_type: device_status.to_string(), // User type from status
+                    user_type: device_status.to_string(), 
                 });
             }
         }
@@ -432,7 +410,6 @@ impl BlueProtocol {
             playback_selection_hex.push_str(&format!("{}{}", play_back_mode_hex, show_selected_hex));
         }
 
-        // Q: padding (JS logic: run_direction + padding = 44 bytes)
         let mut padding = String::new();
         let run_direction_bytes = run_direction.len() / 2;
         if run_direction_bytes < 44 {
@@ -492,14 +469,13 @@ impl BlueProtocol {
     }
 
     pub fn encode_draw_point_command(points: &[Point], config: &DrawCommandData, ) -> String {
-        let point_time = "00";  // Default point time
+        let point_time = "00";  
         let mut config_str = String::new();
         let mut points_str = String::new();
         
-        // Build config values (15 iterations as in JS)
+
         for index in 0..15 {
             if index <= 11 {
-                // Use cnf_valus for indices 0-11
                 let value = if index < config.cnf_valus.len() {
                     config.cnf_valus[index] as u8
                 } else {
@@ -542,20 +518,15 @@ impl BlueProtocol {
 
 
 
-
-    /// Verifies the received data against the random verification bytes sent in the query.
-    /// Returns a tuple of (bool, DeviceInfo) where bool indicates if verification passed.
     pub fn check_received_data(data: &str, random_verify: &[u8]) -> (bool, Option<DeviceInfo>) {
         info!("Checking received data - data: {}, random_verify: {:02X?}", data, random_verify);
         
-        // Validate input lengths. The full response needs to be at least long enough
-        // to contain the header, footer, verification, and device info.
-        if random_verify.len() != 4 || data.len() < 24 { // 12-byte query + 12-byte response
+        if random_verify.len() != 4 || data.len() < 24 { 
             debug!("Invalid input lengths - random_verify: {}, data: {}", random_verify.len(), data.len());
             return (false, None);
         }
 
-        // Find the footer to locate the verification and device info bytes.
+
         let footer_idx = match data.rfind(FOOTER) {
             Some(idx) => idx,
             None => {
@@ -564,8 +535,6 @@ impl BlueProtocol {
             }
         };
 
-        // The 16 bytes before the footer contain verification (8 hex chars) and device info (8 hex chars).
-        // Check if the string is long enough to prevent a panic.
         if footer_idx < 16 {
             debug!("Response data is too short to contain verification info.");
             return (false, None);
@@ -574,28 +543,21 @@ impl BlueProtocol {
         let response_verify_hex = &data[info_and_verify_start..info_and_verify_start + 8];
         debug!("Response verification part: {}", response_verify_hex);
         
-        // Calculate the expected response by applying a transformation to the random bytes.
-        // This logic was reverse-engineered from the device's behavior. The device
-        // uses a specific arithmetic formula for each byte of the random challenge.
         let mut expected = Vec::with_capacity(4);
         for (i, &c) in random_verify.iter().enumerate() {
-            // Re-implementing the verification formula from the original JavaScript code.
-            // We cast to i32 to correctly handle potential negative intermediate results,
-            // mimicking JavaScript's number handling.
+
             let c = c as i32;
             let val = match i {
                 0 => ((c + 55) >> 1) - 10,
                 1 => 7 + ((c - 68) << 1),
                 2 => 15 + ((c + 97) >> 1),
                 3 => 87 + ((c - 127) >> 1),
-                _ => unreachable!(), // Should not happen with a 4-byte array
+                _ => unreachable!(), 
             };
-            // The `& 255` in JS is equivalent to casting back to u8 in Rust,
-            // wrapping the value to a single byte.
+
             expected.push(val as u8);
         }
 
-        // Parse received verification bytes from hex string
         let mut received = Vec::with_capacity(4);
         for i in 0..4 {
             let hex_pair = &response_verify_hex[i*2..i*2+2];
@@ -608,7 +570,6 @@ impl BlueProtocol {
             }
         }
 
-        // Compare expected with received
         debug!("Comparing expected values {:02X?} with received values {:02X?}", expected, received);
         if expected != received {
             info!("Verification mismatch - expected: {:02X?}, received: {:02X?}", expected, received);
@@ -617,7 +578,6 @@ impl BlueProtocol {
 
         debug!("Verification passed successfully");
         
-        // Extract and parse device information. It's in the 8 hex chars after verification.
         let device_info_hex = &data[info_and_verify_start + 8..footer_idx];
         
         let device_status = &device_info_hex[..2];
@@ -640,8 +600,6 @@ impl BlueProtocol {
         (true, Some(device_info))
     }
 
-
-    /// Unpacks prj_selected from ProjectItem into a flat Vec<u8> of bits (0/1), matching JS getCkValues
     pub fn extract_project_item_bits(project_item: &crate::model::Playback) -> Vec<u8> {
         let mut bits = Vec::with_capacity(project_item.selected_plays.len() * 16);
         for &n in &project_item.selected_plays {
@@ -653,7 +611,6 @@ impl BlueProtocol {
         bits
     }
 
-    /// Packs a flat Vec<u8> of bits (0/1) into a Vec<u16>, inverse of unpack_project_item_bits
     pub fn pack_bits_to_prj_selected(bits: &[u8]) -> Vec<u16> {
         let mut prj_selected = Vec::new();
         for chunk in bits.chunks(16) {
@@ -701,7 +658,7 @@ pub fn pack_xys_cmd(
 
 
     /// Encodes layout to command data, matching JS encodeLayoutToCommandData logic.
-    pub fn encode_layout_to_command_data(
+pub fn encode_layout_to_command_data(
         polyline_segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
         segment_time: f32,
     ) -> Option<EncodedCommandData> {
@@ -713,7 +670,6 @@ pub fn pack_xys_cmd(
         let mut counter2 = 0;
         let mut prev_index = -1;
         let mut command = String::new();
-        let mut b = String::new();
         let ver = Self::to_fixed_width_hex(a, 2);
         let mut char_point_cmd = String::new();
         let mut char_width_cmd = String::new();
@@ -726,7 +682,7 @@ pub fn pack_xys_cmd(
         if v >= 8 {
             f = 0;
         }
-        let test = false;
+
         let (xyss, grouped_segments, se1, se2, x_offset, _group_point_counts, _segment_widths) = {
             let seg_data = DrawUtils::generate_segmented_layout_data(
                 polyline_segments,
@@ -743,13 +699,8 @@ pub fn pack_xys_cmd(
                 seg_data.6,
             )
         };
-        // Debug: print segment grouping and metadata
-        println!("[Rust] generate_segmented_layout_data output:");
-        println!("  xyss.len(): {}", xyss.len());
-        println!("  se1: {:?}", se1);
-        println!("  se2: {:?}", se2);
-        println!("  x_offset: {}", x_offset);
-        // Print segment indices and point counts
+
+
         let mut segment_boundaries = Vec::new();
         let mut segment_point_counts = Vec::new();
         let mut last_index: Option<usize> = None;
@@ -768,39 +719,18 @@ pub fn pack_xys_cmd(
         if last_index.is_some() {
             segment_point_counts.push(current_count);
         }
-        println!("  segment_boundaries: {:?}", segment_boundaries);
-        println!("  segment_point_counts: {:?}", segment_point_counts);
-        // Print xyss segment array for parity comparison
-        println!("[Rust] xyss (segment array):");
-        for (seg_idx, seg) in xyss.iter().enumerate() {
-            println!("  seg {}: idx={}, width={:.2}, points={}", seg_idx, seg.0, seg.2, seg.1.len());
-            for (pt_idx, pt) in seg.1.iter().enumerate() {
-                println!("    pt {}: x={:.2} y={:.2} z={}", pt_idx, pt.x, pt.y, pt.z);
-            }
-        }
-        // Packing loop
+
         for (ix, seg) in xyss.iter().enumerate() {
             if prev_index != seg.0 as i32 {
                 prev_index = seg.0 as i32;
                 if counter2 > 0 {
                     char_point_cmd += &Self::to_fixed_width_hex(segment_point_count as i32, 2);
-                    println!(
-                        "[Rust] char_point_cmd append: seg {} count {} -> {}",
-                        counter2 - 1,
-                        segment_point_count,
-                        Self::to_fixed_width_hex(segment_point_count as i32, 2)
-                    );
                     segment_point_count = 0;
                 }
                 counter2 += 1;
                 let width = (seg.2 * scaling_factor).round() as i32;
                 char_width_cmd += &Self::to_fixed_width_hex(width, 2);
-                println!(
-                    "[Rust] char_width_cmd append: seg {} width {} -> {}",
-                    counter2 - 1,
-                    width,
-                    Self::to_fixed_width_hex(width, 2)
-                );
+
                 if v >= 8 && seg.1.len() > 1 {
                     f += 1;
                 }
@@ -830,20 +760,14 @@ pub fn pack_xys_cmd(
                 let x_hex = BlueProtocol::to_fixed_width_hex_float(x_screen as f64, 4);
                 let y_hex = BlueProtocol::to_fixed_width_hex_float(y_screen as f64, 4);
                 let combined_hex = BlueProtocol::to_fixed_width_hex(combined as i32, 2);
-                // Print packed hex for each point for parity comparison
-                println!("[Rust] Packed point: seg={} idx={} x={:.3} y={:.3} z={} segIdx={} type={} -> {}{}{}", seg.0, index, x_screen, y_screen, point.z, segment_index, point_type, x_hex, y_hex, combined_hex);
+                
                 command += &x_hex;
                 command += &y_hex;
                 command += &combined_hex;
             }
         }
         char_point_cmd += &Self::to_fixed_width_hex(segment_point_count as i32, 2);
-        println!(
-            "[Rust] char_point_cmd final append: seg {} count {} -> {}",
-            counter2 - 1,
-            segment_point_count,
-            Self::to_fixed_width_hex(segment_point_count as i32, 2)
-        );
+
 
         if counter == 0 {
             None

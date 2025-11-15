@@ -1,3 +1,8 @@
+
+
+pub mod model;
+pub mod reader;
+
 /// Format 4: 3D Coordinates with True Color (10 bytes)
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
