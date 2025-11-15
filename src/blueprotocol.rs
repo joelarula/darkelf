@@ -1,7 +1,7 @@
 use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
 use log::{debug, info};
 use ilda::model::ILDA_BLANK;
-use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,FeatureConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
+use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -13,8 +13,8 @@ const MAIN_CMD_HEADER: &str = "C0C1C2C3";
 const MAIN_CMD_FOOTER: &str = "C4C5C6C7";
 const SETTINGS_CMD_HEADER: &str = "00010203";
 const SETTINGS_CMD_FOOTER: &str = "000000000004050607";
-const FEATURES_CMD_HEADER: &str = "D0D1D2D3";
-const FEATURES_CMD_FOOTER: &str = "D4D5D6D7";
+const DRAWCONFIG_CMD_HEADER: &str = "D0D1D2D3";
+const DRAWCONFIG_CMD_FOOTER: &str = "D4D5D6D7";
 const DRAW_CMD_HEADER: &str = "F0F1F2F3";
 const DRAW_CMD_FOOTER: &str = "F4F5F6F7";
 pub const XYS_CMD_HEADER: &str = "A0A1A2A3";
@@ -237,11 +237,11 @@ impl BlueProtocol {
 
 
 
-    pub fn extract_features_config(data: &str) -> Option<Vec<FeatureConfig>> {
+    pub fn extract_features_config(data: &str) -> Option<Vec<DrawConfig>> {
         let mut features = Vec::new();
 
 
-        if let Some(features_cmd) = Self::get_cmd_value(FEATURES_CMD_HEADER, FEATURES_CMD_FOOTER, data) {
+        if let Some(features_cmd) = Self::get_cmd_value(DRAWCONFIG_CMD_HEADER, DRAWCONFIG_CMD_FOOTER, data) {
             
             info!("Parsing features command: {} {}", features_cmd, features_cmd.len());
             
@@ -249,9 +249,9 @@ impl BlueProtocol {
             let values_per_feature = 16; // or 22 if xy_config is enabled
 
             for i in 0..feature_count {
-                let mut config = FeatureConfig {
-                    play_time: 0.0,
-                    config_values: Vec::new(),
+                let mut config = DrawConfig {
+                    play_time: 0,
+                    config_values: [0u32; 13],
                 };
 
                 for j in 0..values_per_feature {
@@ -261,9 +261,11 @@ impl BlueProtocol {
                         255,
                         0
                     );
-                    config.config_values.push(value.try_into().unwrap());
+                    if j < 13 {
+                        config.config_values[j] = value.try_into().unwrap();
+                    }
                     if j == 13 {
-                        config.play_time = value as f32 / 10.0;
+                        config.play_time = (value as f32 / 10.0) as u32;
                     }
                 }
 
@@ -787,6 +789,34 @@ pub fn encode_layout_to_command_data(
     }
 
 
+    pub fn pack_pis_command(segment_index: &u8,  config: &DrawConfig) -> String {
+        // Start marker and segment index
+        let start_marker = "01";
+        let segment_index_hex = Self::to_fixed_width_hex(*segment_index as u8, 2);
+        let mut packed_hex = format!("{}{}", start_marker, segment_index_hex);
 
+        // Config values 0..=12
+        for config_idx in 0..=12 {
+            let value = if config_idx < config.config_values.len() {
+                config.config_values[config_idx]
+            } else {
+                0
+            };
+            packed_hex.push_str(&Self::to_fixed_width_hex(value as u8, 2));
+        }
 
-}
+        // Play time (tx_point_time)
+        let play_time_hex = Self::to_fixed_width_hex(config.play_time as u8, 2);
+        packed_hex.push_str(&play_time_hex);
+
+        // For now, we do not have featureParams/xyCnf logic, so always pad to 18 bytes (36 hex chars)
+        // If you want to support xyCnf, add extra config values 14..=18 and pad to 24 bytes (48 hex chars)
+        while packed_hex.len() < 36 {
+            packed_hex.push_str("00");
+        }
+
+    let full_command = format!("{}{}{}", DRAWCONFIG_CMD_HEADER, packed_hex, DRAWCONFIG_CMD_FOOTER);
+    full_command.to_uppercase()
+    }
+
+} // end impl BlueProtocol

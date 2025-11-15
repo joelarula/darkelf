@@ -1,6 +1,6 @@
 use crate::device::LaserDevice;
 use crate::draw::DrawUtils;
-use crate::model::{ DrawCommandData, EncodedCommandData, MainCommandData, Point};
+use crate::model::{ DrawCommandData, DrawConfig, EncodedCommandData, MainCommandData, Point};
 use log::{debug, info, error};
 use ttf_parser::Face;
 use std::sync::{Arc, Mutex};
@@ -157,6 +157,12 @@ impl BlueLaserDevice {
 
     }
 
+    pub async fn draw_builtin_shape(&self, index: u8, config: DrawConfig) {
+       let cmd = BlueProtocol::pack_pis_command(&index, &config);
+       let mut controller = self.device_controller.lock().unwrap();
+       let _ = controller.send(&cmd).await;
+    }
+
     pub async fn text<'a>(&self, text: String, face: Face<'a>) {
 
         let text_data = DrawUtils::get_text_lines(&face, &text);
@@ -228,8 +234,12 @@ impl LaserDevice for BlueLaserDevice {
         self.set_settings(new_settings).await
     }
     
-    async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
+    async fn draw_points(&self, points: Vec<Point>, config: DrawCommandData) {
         self.draw(points, config).await
+    }
+
+    async fn draw_builtin_shape(&self, index: u8, config: crate::model::DrawConfig) {
+         self.draw_builtin_shape(index, config).await
     }
 
     async fn text<'a>(&self, text: String, face: Face<'a>) {
@@ -247,6 +257,8 @@ impl LaserDevice for BlueLaserDevice {
     fn get_command_data(&self) -> Option<MainCommandData> {
         self.get_command_data()
     }
+    
+
     
 
 }

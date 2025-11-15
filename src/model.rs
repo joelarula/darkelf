@@ -48,13 +48,7 @@ pub struct DeviceInfo {
     pub user_type: String,
 }
 
-#[derive(Debug, Clone,Default)]
-pub struct FeatureConfig {
-    pub play_time: f32,
-    pub config_values: Vec<u8>,
 
-    
-}
 
 #[derive(Debug, Clone,Default)]
 pub struct DeviceFeatures{
@@ -112,7 +106,7 @@ pub struct DeviceState {
     pub main_data: MainCommandData,
     pub device_info: DeviceInfo, 
     pub features: DeviceFeatures,
-    pub features_config: Vec<FeatureConfig>,
+    pub features_config: Vec<DrawConfig>,
     pub draw_data: Option<DrawCommandData>,
 }
 
@@ -243,6 +237,17 @@ pub struct DrawCommandData {
     #[serde(rename = "cnfValus")]
     pub cnf_valus: [u32; 13],
 }
+
+
+#[derive(Debug, Clone,Default)]
+pub struct DrawConfig {
+    pub play_time: u32,
+    pub config_values:  [u32; 13],
+
+    
+}
+
+
 
 impl Default for DrawCommandData {
     fn default() -> Self {

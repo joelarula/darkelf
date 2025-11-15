@@ -6,7 +6,7 @@ use std::time::Duration;
 
 
 use darkelf::draw::DrawUtils;
-use darkelf::model::{DeviceMode, DeviceState, EncodedCommandData, LegacyDrawData, Playback, PlaybackMode};
+use darkelf::model::{DeviceMode, DeviceState, DrawConfig, EncodedCommandData, LegacyDrawData, Playback, PlaybackMode};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
@@ -69,7 +69,7 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //sleep(Duration::from_millis(500));
     //test_tick_playback_command(device).await;
 
-    test_shapes(device).await;
+    //test_shapes(device).await;
 
     //sleep(Duration::from_millis(500));
     
@@ -85,12 +85,36 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     //sleep(Duration::from_millis(500));
 
-    test_show_drawing_protocol_b(device).await;
+    //test_show_drawing_protocol_b(device).await;
+
+    test_pis_command(device).await;
 
     Ok(())
 }
 
 
+async fn test_pis_command(device: &mut BlueLaserDevice) {
+
+   let mode = DeviceMode::Program;
+    info!("Set playback mode: {:?}", mode);
+    if let Some(mut cmd) = device.get_command_data() {
+        cmd.device_mode = mode;
+        device.set_main_command(cmd).await;
+        sleep(Duration::from_secs(3));
+    }
+    
+    sleep(Duration::from_millis(500));
+
+    let draw_config = DrawConfig {
+        config_values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        play_time: 5,
+    };
+    
+    device.draw_builtin_shape(150, draw_config.clone()).await;
+    sleep(Duration::from_millis(500));
+
+
+}
 
 
 async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {

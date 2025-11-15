@@ -1,4 +1,4 @@
-use crate::model::{DeviceSettings, MainCommandData, DrawCommandData,Point};
+use crate::model::{DeviceSettings, DrawCommandData, DrawConfig, MainCommandData, Point};
 
 pub trait LaserDevice {
 
@@ -18,7 +18,9 @@ pub trait LaserDevice {
     
     async fn set_main_command(&self, command: MainCommandData);
 
-    async fn draw(&self, points: Vec<Point>, config: DrawCommandData);
+    async fn draw_points(&self, points: Vec<Point>, config: DrawCommandData);
+
+    async fn draw_builtin_shape(&self, index: u8, config: DrawConfig);
 
     async fn text(&self, text: String, face: ttf_parser::Face<'_>);
 
