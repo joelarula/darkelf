@@ -7,6 +7,12 @@ use uuid::Uuid;
 // If the X or Y coordinate value is 0x8000 (-32768 in two’s complement), the point is a blanked point and no line is drawn to it
 pub const ILDA_BLANK: u16 = 32768;
 
+// Total possible 16-bit coordinate values
+pub const ILDA_COORD_RANGE: u16 = 65536;
+
+// Drawable coordinates: –32767 to +32767 (65535 values)
+pub const ILDA_MIN_COORD: i16 = -32767;
+pub const ILDA_MAX_COORD: i16 = 32767;
 
 /// ILDA Format Codes
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -173,8 +179,7 @@ pub mod status {
 	pub const BLANKED: u8 = 64;
 	pub const LAST_POINT: u8 = 128;
 	pub const LAST_POINT_BLANKED: u8 = 192;
-	pub const BLANKING: u8 = 64;
-	// Bits 0-5 are reserved (should be 0)
+
 }
 
 /// Default color palette (64 colors, as per ILDA Appendix A)

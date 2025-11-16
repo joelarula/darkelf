@@ -1,5 +1,7 @@
 //! Builder for constructing ILDA models programmatically
-use super::model::{IldaFile, IldaSection, IldaHeader, IldaPoint, IldaPaletteColor, IldaFormatCode};
+use crate::ilda::model::status::BLANKING;
+
+use super::model::{IldaFile, IldaSection, IldaHeader, IldaPoint, IldaPaletteColor, IldaFormatCode,ILDA_COORD_RANGE,status::BLANKED,status::NORMAL};
 
  const DARK_ELF: &str = "darkelf";
 /// Builder for IldaFile
@@ -44,15 +46,15 @@ pub struct SectionBuilder {
 /// Projection settings for a section (not yet used)
 #[derive(Clone, Debug)]
 pub struct Projection {
-    pub x: i16,
-    pub y: i16,
+    pub width: i16,
+    pub height: i16,
 }
 
 impl Default for Projection {
     fn default() -> Self {
         Projection {
-            x: 32767, // ILDA max coordinate
-            y: 32767,
+            width: ILDA_COORD_RANGE as i16, 
+            height: ILDA_COORD_RANGE as i16,
         }
     }
 }
@@ -61,13 +63,13 @@ impl SectionBuilder {
 
     pub fn new_frame_with_projection(projection: Projection,point_axis_ratio: f32) -> Self {
         let default = Projection::default();
-        let x_scale_factor = if projection.x != 0 {
-            default.x as f32 / projection.x as f32
+        let x_scale_factor = if projection.width != 0 {
+            default.width as f32 / projection.width as f32
         } else {
             1.0
         };
-        let y_scale_factor = if projection.y != 0 {
-            default.y as f32 / projection.y as f32
+        let y_scale_factor = if projection.height != 0 {
+            default.height as f32 / projection.height as f32
         } else {
             1.0
         };
@@ -80,7 +82,7 @@ impl SectionBuilder {
             x_scale_factor,
             y_scale_factor,
             point_axis_ratio: point_axis_ratio,
-            point_spacing: Projection::default().x as f32 / point_axis_ratio,
+            point_spacing: Projection::default().width as f32 / point_axis_ratio,
         }
     }
     pub fn new_frame() -> Self {
@@ -93,7 +95,7 @@ impl SectionBuilder {
             x_scale_factor: 1.0,
             y_scale_factor: 1.0,
             point_axis_ratio: 20.0,
-            point_spacing: Projection::default().x as f32 / 20.0,
+            point_spacing: Projection::default().width as f32 / 20.0,
         }
     }
     pub fn new_palette() -> Self {
@@ -106,7 +108,7 @@ impl SectionBuilder {
             x_scale_factor: 1.0,
             y_scale_factor: 1.0,
             point_axis_ratio: 20.0,
-            point_spacing: Projection::default().x as f32 / 20.0,
+            point_spacing: Projection::default().width as f32 / 20.0,
         }
     }
     pub fn header(mut self, header: IldaHeader) -> Self {
@@ -124,7 +126,22 @@ impl SectionBuilder {
             pts.extend(points);
         }
         self
-    }    
+    }
+
+    pub fn move_to_point(x: i16,y: i16) -> Self {
+        if let Some(ref mut pts) = self.points {
+            pts.push(IldaPoint::Format4 { x, y, z: 0, status: BLANKED, blue: 0, green: 0, red: 0 });
+        }
+        self
+    }
+    pub fn line_to_point(x: i16,y: i16, color: IldaPaletteColor) -> Self {
+        if let Some(ref mut pts) = self.points {
+            pts.push(IldaPoint::Format4 { x, y, z: 0, status: NORMAL, blue: color.blue, green: color.green, red: color.red });
+        }
+        self
+    }
+
+
     pub fn add_color(mut self, color: IldaPaletteColor) -> Self {
         if let Some(ref mut cols) = self.colors {
             cols.push(color);

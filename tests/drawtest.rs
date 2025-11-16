@@ -81,12 +81,12 @@ fn build_single_triangle_ilda_frame() {
 
 
     // Build triangle points (closed triangle)
-    let p1 = IldaPointBuilder::new_format4_with_color(0, 0, 0, status::NORMAL, palette::GREEN).build();
-    let p2 = IldaPointBuilder::new_format4_with_color(100, 0, 0, status::NORMAL, palette::GREEN).build();
-    let p3 = IldaPointBuilder::new_format4_with_color(50, 100, 0, status::LAST_POINT, palette::GREEN).build();
+    let p1 = IldaPointBuilder::new_format4_with_color(-400, -400, 0, status::NORMAL, palette::GREEN).build();
+    let p2 = IldaPointBuilder::new_format4_with_color(0, 400, 0, status::NORMAL, palette::GREEN).build();
+    let p3 = IldaPointBuilder::new_format4_with_color(400, -400, 0, status::LAST_POINT, palette::GREEN).build();
     
     // Build section
-    let section = SectionBuilder::new_frame()
+    let section = SectionBuilder::new_frame_with_projection(Projection { width: 800, height: 800}, 20.0)
         .add_point(p1)
         .add_point(p2)
         .add_point(p3)
