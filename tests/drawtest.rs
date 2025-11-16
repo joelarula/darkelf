@@ -78,16 +78,7 @@ fn test_line_shape() {
 #[test]
 fn build_single_triangle_ilda_frame() {
 
-    // Build header
-    let header = HeaderBuilder::new()
-        .format_code(IldaFormatCode::Format4_3DTrueColor)
-        .frame_or_palette_name("triangle")
-        .company_name("darkelf")
-        .num_records(3)
-        .frame_or_palette_number(0)
-        .total_frames_or_0(1)
-        .projector_number(0)
-        .build();
+
 
     // Build triangle points (closed triangle)
     let p1 = IldaPointBuilder::new_format4_with_color(0, 0, 0, status::NORMAL, palette::GREEN).build();
@@ -96,7 +87,6 @@ fn build_single_triangle_ilda_frame() {
     
     // Build section
     let section = SectionBuilder::new_frame()
-        .header(header)
         .add_point(p1)
         .add_point(p2)
         .add_point(p3)

@@ -34,14 +34,80 @@ pub struct SectionBuilder {
     points: Option<Vec<IldaPoint>>,
     colors: Option<Vec<IldaPaletteColor>>,
     is_palette: bool,
+    projection: Projection,
+    x_scale_factor: f32,
+    y_scale_factor: f32,
+    point_axis_ratio: f32,
+    point_spacing: f32,
+}
+
+/// Projection settings for a section (not yet used)
+#[derive(Clone, Debug)]
+pub struct Projection {
+    pub x: i16,
+    pub y: i16,
+}
+
+impl Default for Projection {
+    fn default() -> Self {
+        Projection {
+            x: 32767, // ILDA max coordinate
+            y: 32767,
+        }
+    }
 }
 
 impl SectionBuilder {
+
+    pub fn new_frame_with_projection(projection: Projection,point_axis_ratio: f32) -> Self {
+        let default = Projection::default();
+        let x_scale_factor = if projection.x != 0 {
+            default.x as f32 / projection.x as f32
+        } else {
+            1.0
+        };
+        let y_scale_factor = if projection.y != 0 {
+            default.y as f32 / projection.y as f32
+        } else {
+            1.0
+        };
+        Self {
+            header: None,
+            points: Some(Vec::new()),
+            colors: None,
+            is_palette: false,
+            projection,
+            x_scale_factor,
+            y_scale_factor,
+            point_axis_ratio: point_axis_ratio,
+            point_spacing: Projection::default().x as f32 / point_axis_ratio,
+        }
+    }
     pub fn new_frame() -> Self {
-        Self { header: None, points: Some(Vec::new()), colors: None, is_palette: false }
+        Self {
+            header: None,
+            points: Some(Vec::new()),
+            colors: None,
+            is_palette: false,
+            projection: Projection::default(),
+            x_scale_factor: 1.0,
+            y_scale_factor: 1.0,
+            point_axis_ratio: 20.0,
+            point_spacing: Projection::default().x as f32 / 20.0,
+        }
     }
     pub fn new_palette() -> Self {
-        Self { header: None, points: None, colors: Some(Vec::new()), is_palette: true }
+        Self {
+            header: None,
+            points: None,
+            colors: Some(Vec::new()),
+            is_palette: true,
+            projection: Projection::default(),
+            x_scale_factor: 1.0,
+            y_scale_factor: 1.0,
+            point_axis_ratio: 20.0,
+            point_spacing: Projection::default().x as f32 / 20.0,
+        }
     }
     pub fn header(mut self, header: IldaHeader) -> Self {
         self.header = Some(header);
