@@ -464,7 +464,7 @@ impl BlueProtocol {
 
     }
 
-    pub fn pack_draw_cmd_str(points: &[Point], config: &DrawCommandData) -> String {
+    pub fn pack_draw_points_cmd(points: &[Point], config: &DrawCommandData) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
         let command_str = format!("{}{}{}", DRAW_CMD_HEADER, encoded_draw_cmd, DRAW_CMD_FOOTER);
         command_str.to_uppercase()
@@ -789,7 +789,7 @@ pub fn encode_layout_to_command_data(
     }
 
 
-    pub fn pack_pis_command(segment_index: &u8,  config: &DrawConfig) -> String {
+    pub fn pack_draw_shape_command(segment_index: &u8,  config: &DrawConfig) -> String {
         // Start marker and segment index
         let start_marker = "01";
         let segment_index_hex = Self::to_fixed_width_hex(*segment_index as u8, 2);
@@ -820,7 +820,7 @@ pub fn encode_layout_to_command_data(
     }
 
 
-    pub fn pack_pis_list_command(config: &Vec<DrawConfig>) -> String {
+    pub fn pack_play_shapes_command(config: &Vec<DrawConfig>) -> String {
         // Segment count: 128 | len (JS: toFixedWidthHex(128 | e.length, 2))
         let segment_count = 128 | (config.len() as u8);
         let segment_count_hex = Self::to_fixed_width_hex(segment_count, 2);

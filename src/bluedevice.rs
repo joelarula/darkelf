@@ -151,14 +151,20 @@ impl BlueLaserDevice {
     }
 
     pub async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
-       let cmd = BlueProtocol::pack_draw_cmd_str(&points, &config);
+       let cmd = BlueProtocol::pack_draw_points_cmd(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
 
     }
 
     pub async fn draw_builtin_shape(&self, index: u8, config: DrawConfig) {
-       let cmd = BlueProtocol::pack_pis_command(&index, &config);
+       let cmd = BlueProtocol::pack_draw_shape_command(&index, &config);
+       let mut controller = self.device_controller.lock().unwrap();
+       let _ = controller.send(&cmd).await;
+    }
+
+    pub async fn play_builtin_shapes(&self, shapes: Vec<DrawConfig> ) {
+       let cmd = BlueProtocol::pack_play_shapes_command(&shapes);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
     }
@@ -239,9 +245,13 @@ impl LaserDevice for BlueLaserDevice {
     }
 
     async fn draw_builtin_shape(&self, index: u8, config: crate::model::DrawConfig) {
-         self.draw_builtin_shape(index, config).await
+        self.draw_builtin_shape(index, config).await
     }
 
+    async fn play_builtin_shapes(&self, shapes: Vec<DrawConfig> ) {
+        self.play_builtin_shapes(shapes).await
+    }
+    
     async fn text<'a>(&self, text: String, face: Face<'a>) {
         self.text(text,face).await
     }
@@ -258,6 +268,7 @@ impl LaserDevice for BlueLaserDevice {
         self.get_command_data()
     }
     
+
 
     
 

@@ -436,7 +436,7 @@ fn test_draw_data() {
     let expected_command = "F0F1F2F300000000000000000000000000003700002A80A500C602804E00C670000800C670005E00C67000CA00C670010B00C671010B007040010B001940010B803D40010B809340010B80E94100B580E950005E80E950000880E950806480E95080A580E95180A580936080A5803D6080A500196080A500706080A500C663004A80E702005180E770005880E770005F80E770006780E770006C80E771006C80EE40006C80F440006C80FB40006C810240006C8109410066810950005F8109500058810950004F810950004A810951004A810260004A80FB60004A80F460004A80EE60004A80E763F4F5F6F7";
     
     // Generate the command string
-    let command_string = BlueProtocol::pack_draw_cmd_str(&prepared_points, &draw_config);
+    let command_string = BlueProtocol::pack_draw_points_cmd(&prepared_points, &draw_config);
     info!("Generated command string: {}", command_string);
 
     // Verify exact match with expected command
@@ -579,7 +579,7 @@ fn test_draw_data_polylines() {
     info!("Using all {} points for command generation", prepared_points.len());
     
     // Generate the command string
-    let command_string = BlueProtocol::pack_draw_cmd_str(&prepared_points, &draw_config);
+    let command_string = BlueProtocol::pack_draw_points_cmd(&prepared_points, &draw_config);
     info!("Generated command string: {}", command_string);
     
     // Expected command string for polylines test data
@@ -649,7 +649,7 @@ fn test_point_array_shapes_command_generation() {
         
         
         // Generate command string for this shape
-        let command_string = darkelf::blueprotocol::BlueProtocol::pack_draw_cmd_str(&draw_points, &draw_config);
+        let command_string = darkelf::blueprotocol::BlueProtocol::pack_draw_points_cmd(&draw_points, &draw_config);
         info!("Generated command: {} ", command_string);
         
     }

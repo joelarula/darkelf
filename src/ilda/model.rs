@@ -1,14 +1,14 @@
 //! Rust model for ILDA Image Data Transfer Format
 //! Based on ILDA specification (see ilda.md)
 
-use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 
 // If the X or Y coordinate value is 0x8000 (-32768 in two’s complement), the point is a blanked point and no line is drawn to it
 pub const ILDA_BLANK: u16 = 32768;
 
 
 /// ILDA Format Codes
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum IldaFormatCode {
 	Format0_3DIndexed = 0,
 	Format1_2DIndexed = 1,
@@ -31,87 +31,129 @@ impl IldaFormatCode {
 }
 
 /// ILDA Header (32 bytes)
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IldaHeader {
+	/// Format code (0, 1, 2, 4, 5)
 	pub format_code: IldaFormatCode,
-	pub frame_or_palette_name: String, // 8 bytes, null-terminated
-	pub company_name: String,          // 8 bytes, null-terminated
+	/// Frame or palette name (8 bytes, null-terminated)
+	pub frame_or_palette_name: String,
+	/// Company name (8 bytes, null-terminated)
+	pub company_name: String,
+	/// Number of records (points or colors) in this section
 	pub num_records: u16,
+	/// Frame or palette number (sequence index)
 	pub frame_or_palette_number: u16,
+	/// Total number of frames (or 0 if not specified)
 	pub total_frames_or_0: u16,
+	/// Projector number (0-255)
 	pub projector_number: u8,
 }
 
 /// ILDA Point Data (all formats)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum IldaPoint {
 	/// Format 0: 3D Indexed Color
 	Format0 {
+		/// X coordinate (signed 16-bit)
 		x: i16,
+		/// Y coordinate (signed 16-bit)
 		y: i16,
+		/// Z coordinate (signed 16-bit)
 		z: i16,
+		/// Status bitfield (see status module)
 		status: u8,
+		/// Color index (palette)
 		color_index: u8,
 	},
 	/// Format 1: 2D Indexed Color
 	Format1 {
+		/// X coordinate (signed 16-bit)
 		x: i16,
+		/// Y coordinate (signed 16-bit)
 		y: i16,
+		/// Status bitfield (see status module)
 		status: u8,
+		/// Color index (palette)
 		color_index: u8,
 	},
 	/// Format 4: 3D True Color
 	Format4 {
+		/// X coordinate (signed 16-bit)
 		x: i16,
+		/// Y coordinate (signed 16-bit)
 		y: i16,
+		/// Z coordinate (signed 16-bit)
 		z: i16,
+		/// Status bitfield (see status module)
 		status: u8,
+		/// Blue channel (0-255)
 		blue: u8,
+		/// Green channel (0-255)
 		green: u8,
+		/// Red channel (0-255)
 		red: u8,
 	},
 	/// Format 5: 2D True Color
 	Format5 {
+		/// X coordinate (signed 16-bit)
 		x: i16,
+		/// Y coordinate (signed 16-bit)
 		y: i16,
+		/// Status bitfield (see status module)
 		status: u8,
+		/// Blue channel (0-255)
 		blue: u8,
+		/// Green channel (0-255)
 		green: u8,
+		/// Red channel (0-255)
 		red: u8,
 	},
 }
 
 /// ILDA Color Palette Entry (Format 2)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IldaPaletteColor {
+	/// Red channel (0-255)
 	pub red: u8,
+	/// Green channel (0-255)
 	pub green: u8,
+	/// Blue channel (0-255)
 	pub blue: u8,
 }
 
 /// ILDA Section: Frame or Palette
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum IldaSection {
+	/// Frame section: contains header and point data
 	Frame {
+		/// Section header
 		header: IldaHeader,
+		/// List of points (Format 0, 1, 4, or 5)
 		points: Vec<IldaPoint>,
 	},
+	/// Palette section: contains header and color data
 	Palette {
+		/// Section header
 		header: IldaHeader,
+		/// List of palette colors (Format 2)
 		colors: Vec<IldaPaletteColor>,
 	},
 }
 
 /// ILDA File: Sequence of sections (frames and palettes)
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IldaFile {
+	/// Sequence of ILDA sections (frames and palettes)
 	pub sections: Vec<IldaSection>,
 }
 
 /// Helper: Status code bitfields
 pub mod status {
-	pub const LAST_POINT: u8 = 0b1000_0000;
-	pub const BLANKING: u8 = 0b0100_0000;
+	pub const NORMAL: u8 = 0;
+	pub const BLANKED: u8 = 64;
+	pub const LAST_POINT: u8 = 128;
+	pub const LAST_POINT_BLANKED: u8 = 192;
+	pub const BLANKING: u8 = 64;
 	// Bits 0-5 are reserved (should be 0)
 }
 

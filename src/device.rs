@@ -20,7 +20,9 @@ pub trait LaserDevice {
 
     async fn draw_points(&self, points: Vec<Point>, config: DrawCommandData);
 
-    async fn draw_builtin_shape(&self, index: u8, config: DrawConfig);
+    async fn draw_builtin_shape(&self, index: u8, shape: DrawConfig);
+
+    async fn play_builtin_shapes(&self, shapes: Vec<DrawConfig> );
 
     async fn text(&self, text: String, face: ttf_parser::Face<'_>);
 

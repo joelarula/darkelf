@@ -85,13 +85,45 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
     //sleep(Duration::from_millis(500));
 
-    test_show_drawing_protocol_b(device).await;
+    //test_show_drawing_protocol_b(device).await;
 
-    test_pis_command(device).await;
+    //test_pis_command(device).await;
+
+    sleep(Duration::from_millis(500));
+
+    test_pis_list_command(device).await;
 
     Ok(())
 }
 
+
+async fn test_pis_list_command(device: &mut BlueLaserDevice) {
+
+
+
+   let mode = DeviceMode::Program;
+    info!("Set playback mode: {:?}", mode);
+    if let Some(mut cmd) = device.get_command_data() {
+        cmd.device_mode = mode;
+        device.set_main_command(cmd).await;
+        sleep(Duration::from_secs(3));
+    }
+    
+    sleep(Duration::from_millis(500));
+
+
+    let pis = convert_pic_idx_to_255(4,72,false);
+
+    let draw_config = DrawConfig {
+        config_values: [pis.group as u32, pis.idx as u32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        play_time: 5,
+    };
+    
+    device.draw_builtin_shape(1, draw_config.clone()).await;
+    sleep(Duration::from_millis(500));
+
+
+}
 
 async fn test_pis_command(device: &mut BlueLaserDevice) {
 

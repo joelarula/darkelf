@@ -243,8 +243,19 @@ pub struct DrawCommandData {
 pub struct DrawConfig {
     pub play_time: u32,
     pub config_values:  [u32; 13],
-
     
+  //  pub group_index: u8, // Graphics Group Selection"
+  //  pub pattern_index: u8, //Pattern Selection
+  //  pub color_change_speed: u8, // Color Change Speed"
+  //  pub pattern_size: u8, // Pattern Size
+  //  pub pattern_expansion: u8, // Size Control
+  //  pub pattern_rotation: u8, // Rotation
+  //  pub pattern_vertical_flip: u8, // Vertical Flip
+  //  pub pattern_horizontal_flip: u8, // Horizontal Flip
+  //  pub pattern_vertical_position: u8, //Pattern Position   
+  //  pub pattern_horizontal_position: u8, // Horizontal Position
+  //  pub pattern_wave: u8, // Wave    
+     
 }
 
 
