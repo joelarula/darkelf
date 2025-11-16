@@ -859,7 +859,9 @@ pub fn encode_layout_to_command_data(
             encoded_segments,
             DRAWCONFIG_CMD_FOOTER
         );
+        
         full_command.to_uppercase()
+
     }
 
 
