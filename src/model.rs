@@ -133,7 +133,7 @@ pub struct Point {
     pub x: f64,
     pub y: f64,
     pub color: u8,
-    pub pen_state: u8,  // 0=pen up/move, 1=pen down/draw
+    pub pen_state: u8,  // 
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -226,7 +226,11 @@ pub struct Playback {
 }
 
 
-
+pub struct TextPlayback {
+    pub text: String, // text content
+    pub time: u16, // seconds
+    pub color: DisplayColor, // color
+}
 
 
 // cnf_valus[12] playback time configuration.
