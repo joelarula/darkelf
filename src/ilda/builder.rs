@@ -1,12 +1,13 @@
 //! Builder for constructing ILDA models programmatically
 use super::model::{IldaFile, IldaSection, IldaHeader, IldaPoint, IldaPaletteColor, IldaFormatCode};
 
+ const DARK_ELF: &str = "darkelf";
 /// Builder for IldaFile
-pub struct IldaFileBuilder {
+pub struct FileBuilder {
     sections: Vec<IldaSection>,
 }
 
-impl IldaFileBuilder {
+impl FileBuilder {
     pub fn new() -> Self {
         Self { sections: Vec::new() }
     }
@@ -28,14 +29,14 @@ impl IldaFileBuilder {
 }
 
 /// Builder for IldaSection
-pub struct IldaSectionBuilder {
+pub struct SectionBuilder {
     header: Option<IldaHeader>,
     points: Option<Vec<IldaPoint>>,
     colors: Option<Vec<IldaPaletteColor>>,
     is_palette: bool,
 }
 
-impl IldaSectionBuilder {
+impl SectionBuilder {
     pub fn new_frame() -> Self {
         Self { header: None, points: Some(Vec::new()), colors: None, is_palette: false }
     }
@@ -57,7 +58,7 @@ impl IldaSectionBuilder {
             pts.extend(points);
         }
         self
-    }
+    }    
     pub fn add_color(mut self, color: IldaPaletteColor) -> Self {
         if let Some(ref mut cols) = self.colors {
             cols.push(color);
@@ -71,7 +72,32 @@ impl IldaSectionBuilder {
         self
     }
     pub fn build(self) -> IldaSection {
-        let header = self.header.expect("Header must be set");
+       
+        let header = self.header.unwrap_or_else(|| {
+            if self.is_palette {
+                // Default palette header
+                HeaderBuilder::new()
+                    .format_code(IldaFormatCode::Format2_Palette)
+                    .frame_or_palette_name(Uuid::new_v4().to_string())
+                    .company_name(DARK_ELF)
+                    .num_records(self.colors.as_ref().map(|c| c.len() as u16).unwrap_or(0))
+                    .frame_or_palette_number(1)
+                    .total_frames_or_0(1)
+                    .projector_number(0)
+                    .build()
+            } else {
+                // Default frame header
+                HeaderBuilder::new()
+                    .format_code(IldaFormatCode::Format0_3DIndexed)
+                    .frame_or_palette_name(uid::new_v4().to_string())
+                    .company_name(DARK_ELF)
+                    .num_records(self.points.as_ref().map(|p| p.len() as u16).unwrap_or(0))
+                    .frame_or_palette_number(0)
+                    .total_frames_or_0(0)
+                    .projector_number(0)
+                    .build()
+            }
+        });
         if self.is_palette {
             IldaSection::Palette {
                 header,
@@ -87,7 +113,7 @@ impl IldaSectionBuilder {
 }
 
 /// Builder for IldaHeader
-pub struct IldaHeaderBuilder {
+pub struct HeaderBuilder {
     format_code: Option<IldaFormatCode>,
     frame_or_palette_name: Option<String>,
     company_name: Option<String>,
@@ -97,7 +123,7 @@ pub struct IldaHeaderBuilder {
     projector_number: Option<u8>,
 }
 
-impl IldaHeaderBuilder {
+impl HeaderBuilder {
     pub fn new() -> Self {
         Self {
             format_code: None,
@@ -172,8 +198,35 @@ impl IldaPointBuilder {
     pub fn new_format4(x: i16, y: i16, z: i16, status: u8, blue: u8, green: u8, red: u8) -> Self {
         Self { kind: Some(IldaPointKind::Format4 { x, y, z, status, blue, green, red }) }
     }
+    /// Create a Format4 point using an IldaPaletteColor
+    pub fn new_format4_with_color(x: i16, y: i16, z: i16, status: u8, color: IldaPaletteColor) -> Self {
+        Self {
+            kind: Some(IldaPointKind::Format4 {
+                x,
+                y,
+                z,
+                status,
+                blue: color.blue,
+                green: color.green,
+                red: color.red,
+            }),
+        }
+    }
     pub fn new_format5(x: i16, y: i16, status: u8, blue: u8, green: u8, red: u8) -> Self {
         Self { kind: Some(IldaPointKind::Format5 { x, y, status, blue, green, red }) }
+    }
+    /// Create a Format5 point using an IldaPaletteColor
+    pub fn new_format5_with_color(x: i16, y: i16, status: u8, color: IldaPaletteColor) -> Self {
+        Self {
+            kind: Some(IldaPointKind::Format5 {
+                x,
+                y,
+                status,
+                blue: color.blue,
+                green: color.green,
+                red: color.red,
+            }),
+        }
     }
     pub fn build(self) -> IldaPoint {
         match self.kind.expect("Point kind required") {
@@ -222,10 +275,10 @@ mod tests {
     use super::*;
     #[test]
     fn test_complete_builder_chain() {
-        let header = IldaHeaderBuilder::new()
+        let header = HeaderBuilder::new()
             .format_code(IldaFormatCode::Format1_2DIndexed)
             .frame_or_palette_name("frame1")
-            .company_name("testco")
+            .company_name(DARK_ELF)
             .num_records(2)
             .frame_or_palette_number(0)
             .total_frames_or_0(1)
@@ -233,19 +286,19 @@ mod tests {
             .build();
         let point1 = IldaPointBuilder::new_format1(0, 0, 0, 1).build();
         let point2 = IldaPointBuilder::new_format1(100, 100, 0, 2).build();
-        let section = IldaSectionBuilder::new_frame()
+        let section = SectionBuilder::new_frame()
             .header(header)
             .add_point(point1)
             .add_point(point2)
             .build();
-        let file = IldaFileBuilder::new()
+        let file = FileBuilder::new()
             .add_section(section)
             .build();
         assert_eq!(file.sections.len(), 1);
     }
     #[test]
     fn test_palette_builder() {
-        let header = IldaHeaderBuilder::new()
+        let header = HeaderBuilder::new()
             .format_code(IldaFormatCode::Format2_Palette)
             .frame_or_palette_name("palette1")
             .company_name("testco")
@@ -255,11 +308,11 @@ mod tests {
             .projector_number(0)
             .build();
         let color = IldaPaletteColorBuilder::new().red(10).green(20).blue(30).build();
-        let section = IldaSectionBuilder::new_palette()
+        let section = SectionBuilder::new_palette()
             .header(header)
             .add_color(color)
             .build();
-        let file = IldaFileBuilder::new().add_section(section).build();
+        let file = FileBuilder::new().add_section(section).build();
         assert_eq!(file.sections.len(), 1);
     }
 }

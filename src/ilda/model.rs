@@ -2,6 +2,7 @@
 //! Based on ILDA specification (see ilda.md)
 
 use serde::{Serialize, Deserialize};
+use uuid::Uuid;
 
 // If the X or Y coordinate value is 0x8000 (-32768 in two’s complement), the point is a blanked point and no line is drawn to it
 pub const ILDA_BLANK: u16 = 32768;
@@ -119,6 +120,25 @@ pub struct IldaPaletteColor {
 	pub green: u8,
 	/// Blue channel (0-255)
 	pub blue: u8,
+}
+
+/// Common named palette colors (1-based index for ILDA default palette)
+pub mod palette {
+	use super::IldaPaletteColor;
+	pub const RED: IldaPaletteColor = IldaPaletteColor { red: 255, green: 0, blue: 0 };
+	pub const GREEN: IldaPaletteColor = IldaPaletteColor { red: 0, green: 255, blue: 0 };
+	pub const BLUE: IldaPaletteColor = IldaPaletteColor { red: 0, green: 0, blue: 255 };
+	pub const YELLOW: IldaPaletteColor = IldaPaletteColor { red: 255, green: 255, blue: 0 };
+	pub const CYAN: IldaPaletteColor = IldaPaletteColor { red: 0, green: 255, blue: 255 };
+	pub const PURPLE: IldaPaletteColor = IldaPaletteColor { red: 128, green: 0, blue: 128 };
+	pub const MAGENTA: IldaPaletteColor = IldaPaletteColor { red: 255, green: 0, blue: 255 };
+	pub const WHITE: IldaPaletteColor = IldaPaletteColor { red: 255, green: 255, blue: 255 };
+	pub const ORANGE: IldaPaletteColor = IldaPaletteColor { red: 255, green: 128, blue: 0 };
+	pub const PINK: IldaPaletteColor = IldaPaletteColor { red: 255, green: 105, blue: 180 };
+	pub const GRAY: IldaPaletteColor = IldaPaletteColor { red: 128, green: 128, blue: 128 };
+	pub const BLACK: IldaPaletteColor = IldaPaletteColor { red: 0, green: 0, blue: 0 };
+	// 1-based index mapping for ILDA default palette (approximate):
+	// 1: RED, 2: GREEN, 3: BLUE, 4: YELLOW, 5: CYAN, 6: PURPLE, 7: WHITE
 }
 
 /// ILDA Section: Frame or Palette

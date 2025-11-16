@@ -1,6 +1,8 @@
-use std::any::Any;
 
-use svg::node::element::Element;
+use darkelf::ilda::builder::*;
+use darkelf::ilda::model::{IldaFormatCode, IldaSection, palette, status};
+use darkelf::ilda::builder::HeaderBuilder;
+
 
 use darkelf::model::DisplayColor;
 //use lyon::math::{point};
@@ -17,6 +19,8 @@ use svg::node::element::path::Data;
 fn test_line_shape() {
 
 
+
+    
 
     // 1. Create a lyon path for a line
 //    let mut builder = Path::builder();
@@ -69,4 +73,46 @@ fn test_line_shape() {
     let png_data = pixmap.encode_png().unwrap();
     std::fs::write("line.png", &png_data).unwrap();
     println!("Saved to line.png");
+}
+
+#[test]
+fn build_single_triangle_ilda_frame() {
+
+    // Build header
+    let header = HeaderBuilder::new()
+        .format_code(IldaFormatCode::Format4_3DTrueColor)
+        .frame_or_palette_name("triangle")
+        .company_name("darkelf")
+        .num_records(3)
+        .frame_or_palette_number(0)
+        .total_frames_or_0(1)
+        .projector_number(0)
+        .build();
+
+    // Build triangle points (closed triangle)
+    let p1 = IldaPointBuilder::new_format4_with_color(0, 0, 0, status::NORMAL, palette::GREEN).build();
+    let p2 = IldaPointBuilder::new_format4_with_color(100, 0, 0, status::NORMAL, palette::GREEN).build();
+    let p3 = IldaPointBuilder::new_format4_with_color(50, 100, 0, status::LAST_POINT, palette::GREEN).build();
+    
+    // Build section
+    let section = SectionBuilder::new_frame()
+        .header(header)
+        .add_point(p1)
+        .add_point(p2)
+        .add_point(p3)
+        .build();
+    
+    match &section {
+        IldaSection::Frame { points, .. } => {
+            for point in points {
+                println!("{:?}", point);
+
+
+            }
+        }
+        _ => {
+            println!("Section is not a Frame variant");
+        }
+    }
+
 }
