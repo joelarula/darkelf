@@ -95,16 +95,6 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
 
 async fn test_pis_command(device: &mut BlueLaserDevice) {
 
-                               //pisList: [{
-                                //    playTime: 0,
-                                //    cnfValus: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-                                //}, {
-                                //    playTime: 1,
-                                //    cnfValus: [2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-                                //}/, {
-                                //   playTime: 2,
-                                //    cnfValus: [3, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-                                //}],
 
 
    let mode = DeviceMode::Program;
@@ -117,8 +107,11 @@ async fn test_pis_command(device: &mut BlueLaserDevice) {
     
     sleep(Duration::from_millis(500));
 
+
+    let pis = convert_pic_idx_to_255(4,72,false);
+
     let draw_config = DrawConfig {
-        config_values: [0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        config_values: [pis.group as u32, pis.idx as u32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         play_time: 5,
     };
     
@@ -638,4 +631,62 @@ fn load_draw_data<P: AsRef<Path>>(path: P) -> Result<LegacyDrawData, anyhow::Err
         .map_err(|e| anyhow!("Failed to parse draw data JSON: {}", e))?;
     
     Ok(draw_data)
+}
+
+
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PicIdxResult {
+    pub group: i32,
+    pub idx: i32,
+}
+
+/// Converts a (group_index, item_index) pair into device protocol values, matching the JS convertPicIdxTo255 logic.
+/// Pass `ilda_mode` as true for ILDA mode, false for normal mode.
+pub fn convert_pic_idx_to_255(group_index: i32, item_index: i32, ilda_mode: bool) -> PicIdxResult {
+    let mut group_value = 0;
+    let mut item_value = 0;
+    if ilda_mode {
+        group_value = 25 * group_index;
+        item_value = 0;
+        if group_index == 0 || group_index == 1 {
+            item_value = 4 * item_index;
+        }
+        if group_index == 2 || group_index == 3 {
+            item_value = 6 * item_index;
+        }
+        if group_index == 5 || group_index == 6 {
+            item_value = 5 * item_index;
+        }
+    } else {
+        group_value = 25 * group_index;
+        item_value = 0;
+        if group_index == 0 || group_index == 1 || group_index == 5 || group_index == 6 {
+            item_value = 5 * item_index;
+        }
+        if group_index == 2 || group_index == 3 {
+            item_value = 10 * item_index;
+        }
+        if group_index == 4 {
+            if item_index <= 19 {
+                item_value = 5 * item_index;
+            } else if item_index >= 70 && item_index <= 77 {
+                item_value = 5 * (item_index - 70) + 120;
+            } else if item_index == 20 {
+                item_value = 100;
+            } else if item_index == 22 {
+                item_value = 105;
+            } else if item_index == 24 {
+                item_value = 110;
+            } else if item_index == 30 {
+                item_value = 115;
+            } else {
+                item_value = 160;
+            }
+        }
+    }
+    PicIdxResult {
+        group: group_value,
+        idx: item_value,
+    }
 }

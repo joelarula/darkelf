@@ -667,3 +667,4 @@ fn load_draw_data<P: AsRef<Path>>(path: P) -> Result<LegacyDrawData, anyhow::Err
     
     Ok(draw_data)
 }
+

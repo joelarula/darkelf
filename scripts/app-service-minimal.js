@@ -6087,13 +6087,52 @@ globalThis["webpackJsonp"].push([
                                     iidx: n
                                 }
                             },
-                            convertPicIdxTo255: function (e, t) {
-                                var r = 0,
-                                    n = 0;
-                                return this.features.ilda ? (r = 25 * e, n = 0, 0 != e && 1 != e || (n = 4 * t), 2 != e && 3 != e || (n = 6 * t), 5 != e && 6 != e || (n = 5 * t)) : (r = 25 * e, n = 0, 0 != e && 1 != e && 5 != e && 6 != e || (n = 5 * t), 2 != e && 3 != e || (n = 10 * t), 4 == e && (n = t <= 19 ? 5 * t : t >= 70 && t <= 77 ? 5 * (t - 70) + 120 : 20 == t ? 100 : 22 == t ? 105 : 24 == t ? 110 : 30 == t ? 115 : 160)), {
-                                    group: r,
-                                    idx: n
+                            convertPicIdxTo255: function (groupIndex, itemIndex) {
+                                var groupValue = 0;
+                                var itemValue = 0;
+                                if (this.features.ilda) {
+                                    groupValue = 25 * groupIndex;
+                                    itemValue = 0;
+                                    if (groupIndex === 0 || groupIndex === 1) {
+                                        itemValue = 4 * itemIndex;
+                                    }
+                                    if (groupIndex === 2 || groupIndex === 3) {
+                                        itemValue = 6 * itemIndex;
+                                    }
+                                    if (groupIndex === 5 || groupIndex === 6) {
+                                        itemValue = 5 * itemIndex;
+                                    }
+                                } else {
+                                    groupValue = 25 * groupIndex;
+                                    itemValue = 0;
+                                    if (groupIndex === 0 || groupIndex === 1 || groupIndex === 5 || groupIndex === 6) {
+                                        itemValue = 5 * itemIndex;
+                                    }
+                                    if (groupIndex === 2 || groupIndex === 3) {
+                                        itemValue = 10 * itemIndex;
+                                    }
+                                    if (groupIndex === 4) {
+                                        if (itemIndex <= 19) {
+                                            itemValue = 5 * itemIndex;
+                                        } else if (itemIndex >= 70 && itemIndex <= 77) {
+                                            itemValue = 5 * (itemIndex - 70) + 120;
+                                        } else if (itemIndex === 20) {
+                                            itemValue = 100;
+                                        } else if (itemIndex === 22) {
+                                            itemValue = 105;
+                                        } else if (itemIndex === 24) {
+                                            itemValue = 110;
+                                        } else if (itemIndex === 30) {
+                                            itemValue = 115;
+                                        } else {
+                                            itemValue = 160;
+                                        }
+                                    }
                                 }
+                                return {
+                                    group: groupValue,
+                                    idx: itemValue
+                                };
                             },
                             chResetClick: function (e) {
                                 if (null != this.defaultPis) {
