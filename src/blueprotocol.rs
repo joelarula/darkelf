@@ -249,10 +249,8 @@ impl BlueProtocol {
             let values_per_feature = 16; // or 22 if xy_config is enabled
 
             for i in 0..feature_count {
-                let mut config = DrawConfig {
-                    play_time: 0,
-                    config_values: [0u32; 13],
-                };
+                
+                let mut config_array = [0u8; 14];
 
                 for j in 0..values_per_feature {
                     let value = Self::clamp_value(
@@ -262,13 +260,14 @@ impl BlueProtocol {
                         0
                     );
                     if j < 13 {
-                        config.config_values[j] = value.try_into().unwrap();
+                        config_array[j] = value.try_into().unwrap();
                     }
                     if j == 13 {
-                        config.play_time = (value as f32 / 10.0) as u32;
+                          config_array[j] = value.try_into().unwrap();
                     }
                 }
 
+                let mut config = DrawConfig::from_config_values( &config_array);
                 features.push(config);
             }
             Some(features)
@@ -790,22 +789,25 @@ pub fn encode_layout_to_command_data(
 
 
     pub fn pack_draw_shape_command(segment_index: &u8,  config: &DrawConfig) -> String {
-        // Start marker and segment index
+    
         let start_marker = "01";
         let segment_index_hex = Self::to_fixed_width_hex(*segment_index as u8, 2);
         let mut packed_hex = format!("{}{}", start_marker, segment_index_hex);
 
-        // Config values 0..=12
-        for config_idx in 0..=12 {
-            let value = if config_idx < config.config_values.len() {
-                config.config_values[config_idx]
-            } else {
-                0
-            };
-            packed_hex.push_str(&Self::to_fixed_width_hex(value as u8, 2));
-        }
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.group_index as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_index as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.color as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.color_flow_speed as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_size as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_scale as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_rotation as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_vertical_flip as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_horizontal_flip as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_horizontal_position as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_vertical_position as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.pattern_wave as u8, 2));
+        packed_hex.push_str(&Self::to_fixed_width_hex(config.gradient_draw as u8, 2));
 
-        // Play time (tx_point_time)
         let play_time_hex = Self::to_fixed_width_hex(config.play_time as u8, 2);
         packed_hex.push_str(&play_time_hex);
 
@@ -829,18 +831,27 @@ pub fn encode_layout_to_command_data(
 
         for segment in config.iter() {
             let mut segment_hex = String::new();
-            // Pack config_values[0..=12]
-            for value_idx in 0..=12 {
-                let value = if value_idx < segment.config_values.len() {
-                    segment.config_values[value_idx]
-                } else {
-                    0
-                };
-                segment_hex.push_str(&Self::to_fixed_width_hex(value as u8, 2));
-            }
+            
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.group_index as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_index as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.color as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.color_flow_speed as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_size as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_scale as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_rotation as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_vertical_flip as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_horizontal_flip as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_horizontal_position as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_vertical_position as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.pattern_wave as u8, 2));
+            segment_hex.push_str(&Self::to_fixed_width_hex(segment.gradient_draw as u8, 2));
+
             // Play time: JS multiplies by 10
             let play_time_hex = Self::to_fixed_width_hex((segment.play_time as u16 * 10) as u16, 2);
             segment_hex.push_str(&play_time_hex);
+
+
+
 
             // No featureParams/xyCnf support for now, so pad to 15 bytes (30 hex chars)
             while segment_hex.len() < 30 {

@@ -8,7 +8,7 @@ use uuid::Uuid;
 pub const ILDA_BLANK: u16 = 32768;
 
 // Total possible 16-bit coordinate values
-pub const ILDA_COORD_RANGE: u16 = 65536;
+pub const ILDA_COORD_RANGE: u32 = 65536;
 
 // Drawable coordinates: –32767 to +32767 (65535 values)
 pub const ILDA_MIN_COORD: i16 = -32767;

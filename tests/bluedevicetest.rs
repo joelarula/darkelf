@@ -114,9 +114,23 @@ async fn test_pis_list_command(device: &mut BlueLaserDevice) {
 
     let pis = convert_pic_idx_to_255(4,72,false);
 
+ //let pis = convert_pic_idx_to_255(2,72,false);
+   
     let draw_config = DrawConfig {
-        config_values: [pis.group as u32, pis.idx as u32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         play_time: 5,
+        group_index: pis.group as u8,
+        pattern_index: pis.idx as u8,
+        color: 0,
+        color_flow_speed: 0,
+        pattern_size: 0,
+        pattern_scale: 0,
+        pattern_rotation: 0,
+        pattern_vertical_flip: 0,
+        pattern_horizontal_flip: 0,
+        pattern_horizontal_position: 0,
+        pattern_vertical_position: 0,
+        pattern_wave: 0,
+        gradient_draw: 3,
     };
     
     device.draw_builtin_shape(1, draw_config.clone()).await;
@@ -143,8 +157,20 @@ async fn test_pis_command(device: &mut BlueLaserDevice) {
     let pis = convert_pic_idx_to_255(4,72,false);
 
     let draw_config = DrawConfig {
-        config_values: [pis.group as u32, pis.idx as u32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         play_time: 5,
+        group_index: pis.group as u8,
+        pattern_index: pis.idx as u8,
+        color: 0,
+        color_flow_speed: 0,
+        pattern_size: 0,
+        pattern_scale: 0,
+        pattern_rotation: 0,
+        pattern_vertical_flip: 0,
+        pattern_horizontal_flip: 0,
+        pattern_horizontal_position: 0,
+        pattern_vertical_position: 0,
+        pattern_wave: 0,
+        gradient_draw: 3,
     };
     
     device.draw_builtin_shape(1, draw_config.clone()).await;

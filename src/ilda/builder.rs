@@ -1,5 +1,6 @@
 //! Builder for constructing ILDA models programmatically
-use crate::ilda::model::status::BLANKING;
+
+use uuid::Uuid;
 
 use super::model::{IldaFile, IldaSection, IldaHeader, IldaPoint, IldaPaletteColor, IldaFormatCode,ILDA_COORD_RANGE,status::BLANKED,status::NORMAL};
 
@@ -128,13 +129,13 @@ impl SectionBuilder {
         self
     }
 
-    pub fn move_to_point(x: i16,y: i16) -> Self {
+    pub fn move_to_point(mut self,x: i16,y: i16) -> Self {
         if let Some(ref mut pts) = self.points {
             pts.push(IldaPoint::Format4 { x, y, z: 0, status: BLANKED, blue: 0, green: 0, red: 0 });
         }
         self
     }
-    pub fn line_to_point(x: i16,y: i16, color: IldaPaletteColor) -> Self {
+    pub fn line_to_point(mut self,x: i16,y: i16, color: IldaPaletteColor) -> Self {
         if let Some(ref mut pts) = self.points {
             pts.push(IldaPoint::Format4 { x, y, z: 0, status: NORMAL, blue: color.blue, green: color.green, red: color.red });
         }
@@ -161,7 +162,7 @@ impl SectionBuilder {
                 // Default palette header
                 HeaderBuilder::new()
                     .format_code(IldaFormatCode::Format2_Palette)
-                    .frame_or_palette_name(Uuid::new_v4().to_string())
+                    .frame_or_palette_name(uuid::Uuid::new_v4().to_string())
                     .company_name(DARK_ELF)
                     .num_records(self.colors.as_ref().map(|c| c.len() as u16).unwrap_or(0))
                     .frame_or_palette_number(1)
@@ -172,7 +173,7 @@ impl SectionBuilder {
                 // Default frame header
                 HeaderBuilder::new()
                     .format_code(IldaFormatCode::Format0_3DIndexed)
-                    .frame_or_palette_name(uid::new_v4().to_string())
+                    .frame_or_palette_name(uuid::Uuid::new_v4().to_string())
                     .company_name(DARK_ELF)
                     .num_records(self.points.as_ref().map(|p| p.len() as u16).unwrap_or(0))
                     .frame_or_palette_number(0)

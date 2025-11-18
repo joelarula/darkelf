@@ -10,9 +10,6 @@ use darkelf::model::DisplayColor;
 //use lyon::tessellation::{StrokeTessellator, StrokeOptions, StrokeVertex, VertexBuffers};
 use tiny_skia::{Pixmap, Paint, Stroke, PathBuilder, Color};
 
-use svg::Document;
-use svg::node::element::Path;
-use svg::node::element::path::Data;
 
 
 #[test]

@@ -245,23 +245,44 @@ pub struct DrawCommandData {
 
 #[derive(Debug, Clone,Default)]
 pub struct DrawConfig {
-    pub play_time: u32,
-    pub config_values:  [u32; 13],
-    
-  //  pub group_index: u8, // Graphics Group Selection"
-  //  pub pattern_index: u8, //Pattern Selection
-  //  pub color_change_speed: u8, // Color Change Speed"
-  //  pub pattern_size: u8, // Pattern Size
-  //  pub pattern_expansion: u8, // Size Control
-  //  pub pattern_rotation: u8, // Rotation
-  //  pub pattern_vertical_flip: u8, // Vertical Flip
-  //  pub pattern_horizontal_flip: u8, // Horizontal Flip
-  //  pub pattern_vertical_position: u8, //Pattern Position   
-  //  pub pattern_horizontal_position: u8, // Horizontal Position
-  //  pub pattern_wave: u8, // Wave    
+  
+    pub group_index: u8, // Graphics Group Selection" 1
+    pub pattern_index: u8, //Pattern Selection 
+    pub color: u8, // Color
+    pub color_flow_speed: u8, // Color Change Speed"  
+    pub pattern_size: u8, // Pattern Size 
+    pub pattern_scale: u8, // Size scale 
+    pub pattern_rotation: u8, // Rotation 
+    pub pattern_vertical_flip: u8, // Vertical Flip 
+    pub pattern_horizontal_flip: u8, // Horizontal Flip  
+    pub pattern_horizontal_position: u8, // Horizontal Position 
+    pub pattern_vertical_position: u8, //Pattern Position  
+    pub pattern_wave: u8, // Wave     
+    pub gradient_draw: u8, // Wave    
+    pub play_time: u8, // Time Control
      
 }
 
+impl DrawConfig {
+    pub fn from_config_values( config_values: &[u8; 14]) -> Self {
+        Self { 
+            group_index: config_values[0],
+            pattern_index: config_values[1],
+            color: config_values[2],
+            color_flow_speed: config_values[3],
+            pattern_size: config_values[4],
+            pattern_scale: config_values[5],
+            pattern_rotation: config_values[6],
+            pattern_vertical_flip: config_values[7],
+            pattern_horizontal_flip: config_values[8],
+            pattern_horizontal_position: config_values[9],
+            pattern_vertical_position: config_values[10],
+            pattern_wave: config_values[11],
+            gradient_draw: config_values[12],
+            play_time:  config_values[13]
+        }
+    }
+}
 
 
 impl Default for DrawCommandData {
