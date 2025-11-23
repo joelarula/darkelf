@@ -1,10 +1,9 @@
 use crate::blueprotocol::BlueProtocol;
 use crate::model::{
-    LegacyDrawData, DrawItem, DrawMode, DrawPoint, EncodedCommandData, MirroredPolylines, PathCommand, Point, PolyPoint, PolylineData
+    DrawItem, DrawMode, LegacyDrawData, PathCommand, Point, PolylineData
 };
-use std::collections::HashMap;
 use ttf_parser::Face;
-use ttf_parser::{GlyphId, OutlineBuilder};
+use ttf_parser::{OutlineBuilder};
 
 const REFERENCE_COORDINATE_SIZE: f64 = 800.0;
 
@@ -41,10 +40,10 @@ impl DrawUtils {
         } else {
             for o in n {
                 for pt in o {
-                    left = left.min(pt.x);
-                    top = top.min(pt.y);
-                    right = right.max(pt.x);
-                    bottom = bottom.max(pt.y);
+                    left = left.min(pt.x as f32);
+                    top = top.min(pt.y as f32);
+                    right = right.max(pt.x as f32);
+                    bottom = bottom.max(pt.y as f32);
                 }
             }
             width = right - left;
@@ -57,19 +56,20 @@ impl DrawUtils {
         for b in n {
             let mut g = Vec::new();
             for pt in b {
-                let mut x = PolyPoint {
+                let mut x = Point {
                     x: pt.x,
                     y: pt.y,
-                    z: pt.z,
+                    color: 0,
+                    pen_state: pt.pen_state,
                 };
                 if is_horizontal_adjustment {
                     if flip_horizontal {
-                        x.x = -x.x + 2.0 * x0 - left + 20.0;
+                        x.x = -x.x as f64 + 2.0 * x0 as f64 - left as f64 + 20.0;
                     } else {
-                        x.x = x.x - left + 20.0;
+                        x.x = x.x - left as f64 + 20.0;
                     }
                 } else {
-                    x.y = x.y - top + 20.0;
+                    x.y = x.y - top as f64 + 20.0;
                 }
                 g.push(x);
             }
@@ -92,7 +92,7 @@ impl DrawUtils {
         mark_corners: bool,
         is_horizontal_layout: bool,
         simplify: bool,
-    ) -> Vec<(usize, Vec<PolyPoint>, f32, f32)> {
+    ) -> Vec<(usize, Vec<Point>, f32, f32)> {
         // 1. Normalize and center each shape (match JS logic)
         let normalized_shapes: Vec<PolylineData> = shapes
             .iter()
@@ -126,10 +126,11 @@ impl DrawUtils {
             for line in lines {
                 let mut line = line.clone();
                 let mut simplified_line = Vec::new();
-                let mut first_point = PolyPoint {
-                    x: offset_x + line[0].x + layout_x,
-                    y: offset_y - line[0].y + layout_y,
-                    z: 1,
+                let mut first_point = Point {
+                    x: offset_x as f64 + line[0].x as f64 + layout_x as f64,
+                    y: offset_y as f64 - line[0].y as f64 + layout_y as f64,
+                    color: 0,
+                    pen_state: 1,
                 };
                 if simplify {
                     if mark_corners {
@@ -137,10 +138,11 @@ impl DrawUtils {
                     } else {
                         let mut point_idx = 1;
                         while point_idx < line.len() {
-                            let current_point = PolyPoint {
-                                x: offset_x + line[point_idx].x + layout_x,
-                                y: offset_y - line[point_idx].y + layout_y,
-                                z: line[point_idx].z,
+                            let current_point = Point {
+                                x: offset_x as f64 + line[point_idx].x as f64 + layout_x as f64,
+                                y: offset_y as f64 - line[point_idx].y as f64 + layout_y as f64,
+                                color: line[point_idx].color,
+                                pen_state: line[point_idx].pen_state,
                             };
                             if Self::distance_between_points(&first_point, &current_point) < 2.0 {
                                 line.remove(point_idx);
@@ -152,23 +154,26 @@ impl DrawUtils {
                         line = Self::mark_corner_points(&mut line, 145.0, true);
                     }
                 }
-                first_point = PolyPoint {
-                    x: offset_x + line[0].x + layout_x,
-                    y: offset_y - line[0].y + layout_y,
-                    z: 1,
+                first_point = Point {
+                    x: offset_x as f64 + line[0].x as f64 + layout_x as f64,
+                    y: offset_y as f64 - line[0].y as f64 + layout_y as f64,
+                    color: 0,
+                    pen_state: 1,
                 };
                 simplified_line.push(first_point.clone());
                 let mut mid_idx = 1;
                 while mid_idx < line.len() - 1 {
-                    let mid_point = PolyPoint {
-                        x: offset_x + line[mid_idx].x + layout_x,
-                        y: offset_y - line[mid_idx].y + layout_y,
-                        z: line[mid_idx].z,
+                    let mid_point = Point {
+                        x: offset_x as f64 + line[mid_idx].x as f64 + layout_x as f64,
+                        y: offset_y as f64 - line[mid_idx].y as f64 + layout_y as f64,
+                        color: line[mid_idx].color,
+                        pen_state: line[mid_idx].pen_state,
                     };
-                    let next_point = PolyPoint {
-                        x: offset_x + line[mid_idx + 1].x + layout_x,
-                        y: offset_y - line[mid_idx + 1].y + layout_y,
-                        z: line[mid_idx + 1].z,
+                    let next_point = Point {
+                        x: offset_x as f64 + line[mid_idx + 1].x as f64 + layout_x as f64,
+                        y: offset_y as f64 - line[mid_idx + 1].y as f64 + layout_y as f64,
+                        color: line[mid_idx + 1].color,
+                        pen_state: line[mid_idx + 1].pen_state,
                     };
                     if simplify {
                         let angle = Self::calculate_angle_between_points_b(
@@ -176,7 +181,7 @@ impl DrawUtils {
                             &mid_point,
                             &next_point,
                         );
-                        if (angle == 0.0 || angle > 174.0) && mid_point.z == 0 {
+                        if (angle == 0.0 || angle > 174.0) && mid_point.pen_state == 0 {
                             line.remove(mid_idx);
                             if mid_idx > 1 {
                                 mid_idx -= 1;
@@ -185,7 +190,7 @@ impl DrawUtils {
                             }
                             continue;
                         }
-                        if mid_point.z == 0
+                        if mid_point.pen_state == 0
                             && Self::distance_between_points(
                                 &simplified_line[simplified_line.len() - 1],
                                 &mid_point,
@@ -204,19 +209,21 @@ impl DrawUtils {
                     first_point = mid_point;
                     mid_idx += 1;
                 }
-                let last_point = PolyPoint {
-                    x: offset_x + line[line.len() - 1].x + layout_x,
-                    y: offset_y - line[line.len() - 1].y + layout_y,
-                    z: 1,
+                let last_point = Point {
+                    x: offset_x as f64 + line[line.len() - 1].x as f64 + layout_x as f64,
+                    y: offset_y as f64 - line[line.len() - 1].y as f64 + layout_y as f64,
+                    color: line[line.len() - 1].color,
+                    pen_state: line[line.len() - 1].pen_state,
                 };
                 simplified_line.push(last_point);
                 result.push((shape_iter, simplified_line, shape.w, shape.h));
             }
             if lines.is_empty() {
-                let placeholder = PolyPoint {
-                    x: offset_x + shape.w / 2.0 + layout_x,
+                let placeholder = Point {
+                    x: offset_x as f64 + shape.w as f64 / 2.0 + layout_x as f64,
                     y: 0.0,
-                    z: 0,
+                    color: 0,
+                    pen_state: 0,
                 };
                 result.push((shape_iter, vec![placeholder], shape.w, shape.h));
             }
@@ -239,14 +246,14 @@ impl DrawUtils {
                     );
                     if start_angle > 145.0 || start_angle == 0.0 {
                         for corner_idx in 1..line_arr.len() - 1 {
-                            if line_arr[corner_idx].z == 1 {
+                            if line_arr[corner_idx].pen_state == 1 {
                                 let mut new_arr = Vec::new();
                                 for i in corner_idx..line_arr.len() - 1 {
                                     new_arr.push(line_arr[i].clone());
                                 }
                                 for c in 0..=corner_idx {
                                     if c == 0 {
-                                        line_arr[c].z = 0;
+                                        line_arr[c].pen_state = 0;
                                     }
                                     new_arr.push(line_arr[c].clone());
                                 }
@@ -264,39 +271,42 @@ impl DrawUtils {
         result
     }
 
-    // Dummy stub for distance_between_points
-    fn distance_between_points(a: &PolyPoint, b: &PolyPoint) -> f32 {
-        ((a.x - b.x).powi(2) + (a.y - b.y).powi(2)).sqrt()
+  
+    fn distance_between_points(a: &Point, b: &Point) -> f32 {
+        (((a.x - b.x).powi(2) + (a.y - b.y).powi(2)).sqrt()) as f32
     }
 
-    /// Marks corner points in a polyline based on angle threshold, similar to JS markCornerPoints.
+
     fn mark_corner_points(
-        points: &mut Vec<PolyPoint>,
+        points: &mut Vec<Point>,
         angle_threshold: f32,
         set_z: bool,
-    ) -> Vec<PolyPoint> {
+    ) -> Vec<Point> {
         if points.len() < 3 {
             return points.clone();
         }
-        let mut point1 = PolyPoint {
+        let mut point1 = Point {
             x: points[0].x,
             y: points[0].y,
-            z: 1,
+            color: points[0].color,
+            pen_state: points[0].pen_state,
         };
         for n in 1..points.len() - 1 {
-            let h = PolyPoint {
+            let h = Point {
                 x: points[n].x,
                 y: points[n].y,
-                z: points[n].z,
+                color: points[n].color,
+                pen_state: points[n].pen_state,
             };
-            let a = PolyPoint {
+            let a = Point {
                 x: points[n + 1].x,
                 y: points[n + 1].y,
-                z: points[n + 1].z,
+                color: points[n + 1].color,
+                pen_state: points[n + 1].pen_state,
             };
             let i = Self::calculate_angle_between_points_b(&point1, &h, &a);
-            if set_z || points[n].z == 1 {
-                points[n].z = if i <= angle_threshold && i > 0.0 {
+            if set_z || points[n].pen_state == 1 {
+                points[n].pen_state = if i <= angle_threshold && i > 0.0 {
                     1
                 } else {
                     0
@@ -307,9 +317,8 @@ impl DrawUtils {
         points.clone()
     }
 
-    /// Calculates the angle (in degrees) between three points: a, b, c.
-    /// Equivalent to JS calculateAngleBetweenPoints_B.
-    fn calculate_angle_between_points_b(a: &PolyPoint, b: &PolyPoint, c: &PolyPoint) -> f32 {
+
+    fn calculate_angle_between_points_b(a: &Point, b: &Point, c: &Point) -> f32 {
         let n = [a.x - b.x, a.y - b.y];
         let h = [c.x - b.x, c.y - b.y];
         let dot_product = n[0] * h[0] + n[1] * h[1];
@@ -549,9 +558,9 @@ impl DrawUtils {
 
     /// Rotate points around bounding box center for a single polyline
     fn rotate_points_around_bounding_box_center_polyline(
-        points: &[DrawPoint],
+        points: &[Point],
         angle_degrees: f64,
-    ) -> Vec<DrawPoint> {
+    ) -> Vec<Point> {
         // This is similar to the regular rotation but for a single polyline
         if points.is_empty() || angle_degrees == 0.0 {
             return points.to_vec();
@@ -577,7 +586,7 @@ impl DrawUtils {
                     point.x,
                     point.y,
                 );
-                DrawPoint {
+                Point {
                     x: rotated_x,
                     y: rotated_y,
                     color: point.color,
@@ -595,9 +604,9 @@ impl DrawUtils {
 
 
     fn rotate_points_around_bounding_box_center(
-        points: &[DrawPoint],
+        points: &[Point],
         angle: f64,
-    ) -> Vec<DrawPoint> {
+    ) -> Vec<Point> {
         if points.is_empty() {
             return Vec::new();
         }
@@ -626,8 +635,8 @@ impl DrawUtils {
             let y = -point.y; 
 
             let rotated = Self::rotate_point_around_center(angle, center_x, center_y, x, y);
-
-            rotated_points.push(DrawPoint::new(
+            
+            rotated_points.push(Point::new(
                 rotated.0,  
                 -rotated.1, 
                 point.color,
@@ -658,24 +667,25 @@ impl DrawUtils {
     }
 
     fn sample_quadratic_bezier(
-        start: &PolyPoint,
-        control: &PolyPoint,
-        end: &PolyPoint,
+        start: &Point,
+        control: &Point,
+        end: &Point,
         n: usize,
-    ) -> Vec<PolyPoint> {
+    ) -> Vec<Point> {
         let mut points = Vec::new();
         for i in 0..=n {
             let t = i as f32 / n as f32;
+            let t = t as f64;
             let x =
                 (1.0 - t).powi(2) * start.x + 2.0 * (1.0 - t) * t * control.x + t.powi(2) * end.x;
             let y =
                 (1.0 - t).powi(2) * start.y + 2.0 * (1.0 - t) * t * control.y + t.powi(2) * end.y;
-            points.push(PolyPoint { x, y, z: 0 });
+            points.push(Point { x, y, color: 0, pen_state: 0 });
         }
         points
     }
 
-    fn append_to_array_or(arr: &mut Vec<PolyPoint>, pt: PolyPoint) -> bool {
+    fn append_to_array_or(arr: &mut Vec<Point>, pt: Point) -> bool {
         arr.push(pt);
         true
     }
@@ -683,27 +693,29 @@ impl DrawUtils {
     fn parse_path_commands(
         path_commands: &[PathCommand],
         num_segments: usize,
-    ) -> Vec<Vec<PolyPoint>> {
+    ) -> Vec<Vec<Point>> {
         let mut result = Vec::new();
         let mut current_poly = Vec::new();
         let mut h = 0;
         for cmd in path_commands {
             match cmd.cmd_type {
                 'M' => {
-                    let pt = PolyPoint {
-                        x: cmd.x,
-                        y: cmd.y,
-                        z: 1,
+                    let pt = Point {
+                        x: cmd.x as f64,
+                        y: cmd.y as f64,
+                        color: 0,
+                        pen_state: 0,
                     };
                     if DrawUtils::append_to_array_or(&mut current_poly, pt) {
                         h += 1;
                     }
                 }
                 'L' => {
-                    let pt = PolyPoint {
-                        x: cmd.x,
-                        y: cmd.y,
-                        z: 1,
+                    let pt = Point {
+                        x: cmd.x as f64,
+                        y: cmd.y as f64,
+                        color: 0,
+                        pen_state: 0,
                     };
                     if DrawUtils::append_to_array_or(&mut current_poly, pt) {
                         h += 1;
@@ -713,11 +725,12 @@ impl DrawUtils {
                     if let (Some(x1), Some(y1)) = (cmd.x1, cmd.y1) {
                         if let Some(last) = current_poly.last() {
                             let start = last.clone();
-                            let control = PolyPoint { x: x1, y: y1, z: 0 };
-                            let end = PolyPoint {
-                                x: cmd.x,
-                                y: cmd.y,
-                                z: 0,
+                            let control = Point { x: x1 as f64, y: y1 as f64, color: 0, pen_state: 0 };
+                            let end = Point {   
+                                x: cmd.x as f64,
+                                y: cmd.y as f64,
+                                color: 0,
+                                pen_state: 0,
                             };
                             let bezier_points = DrawUtils::sample_quadratic_bezier(
                                 &start,
@@ -738,7 +751,7 @@ impl DrawUtils {
                         let first = current_poly[0].clone();
                         // Always repeat the start point at the end for closure, with z=0
                         let mut first_closed = first.clone();
-                        first_closed.z = 0;
+                        first_closed.pen_state = 0;
                         current_poly.push(first_closed);
                         result.push(current_poly.clone());
                         current_poly.clear();
@@ -752,7 +765,7 @@ impl DrawUtils {
         if !current_poly.is_empty() {
             let first = current_poly[0].clone();
             let mut first_closed = first.clone();
-            first_closed.z = 0;
+            first_closed.pen_state = 0;
             current_poly.push(first_closed);
             result.push(current_poly.clone());
         }
@@ -807,13 +820,13 @@ impl DrawUtils {
                     let n = poly.len();
                     for (i, pt) in poly.iter_mut().enumerate() {
                         // Normalize X and Y to reference height, flip Y, and align baseline to y_min = 0
-                        pt.x = (pt.x - x_min) * scale;
-                        pt.y = (y_max - pt.y) * scale; // flip Y, baseline at bottom
+                        pt.x = ((pt.x as f32 - x_min) * scale) as f64;
+                        pt.y = ((y_max as f64 - pt.y) * scale as f64); // flip Y, baseline at bottom
                         // Set pen state: z=0 for first and last, z=1 for others
                         if i == 0 || i == n - 1 {
-                            pt.z = 0;
+                            pt.pen_state = 0;
                         } else {
-                            pt.z = 1;
+                            pt.pen_state = 1;
                         }
                     }
                 }
@@ -831,10 +844,10 @@ impl DrawUtils {
     }
 
     pub fn generate_segmented_layout_data(
-        segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+        segments: &Vec<(usize, Vec<Point>, f32, f32)>,
         scaling_factor: f32,
         mode: i32,
-    ) -> (Vec<(usize, Vec<PolyPoint>, f32, f32)>, Vec<(usize, Vec<PolyPoint>, f32, f32)>, String, String, f32, Vec<usize>, Vec<f32>) {
+    ) -> (Vec<(usize, Vec<Point>, f32, f32)>, Vec<(usize, Vec<Point>, f32, f32)>, String, String, f32, Vec<usize>, Vec<f32>) {
         let mut n = -1_i32;
         let mut segment_widths: Vec<f32> = Vec::new();
         let mut segment_heights: Vec<f32> = Vec::new();
@@ -854,7 +867,7 @@ impl DrawUtils {
         }
 
         let mut out = segments.clone();
-        let mut grouped_segments: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+        let mut grouped_segments: Vec<(usize, Vec<Point>, f32, f32)> = Vec::new();
 
         let mut protocol_segment_widths: Vec<f64> = segment_widths.iter().map(|&x| x as f64).collect();
         while protocol_segment_widths.len() < 12 {
@@ -873,13 +886,14 @@ impl DrawUtils {
     if mode == 127 {
             // ...existing code for vertical mode...
             let mut d = 0.0;
-            let mut b: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+            let mut b: Vec<(usize, Vec<Point>, f32, f32)> = Vec::new();
             for i in 0..9 {
                 n += 1;
-                let pt = PolyPoint {
+                let pt = Point {
                     x: 0.0,
-                    y: total_segment_height / 2.0 + segment_default_size / 2.0 + d,
-                    z: 0,
+                    y: total_segment_height as f64 / 2.0 + segment_default_size as f64 / 2.0 + d as f64,
+                    color: 0,   
+                    pen_state: 0,
                 };
                 b.push((n as usize, vec![pt], segment_default_size, segment_default_size));
                 d += segment_default_size;
@@ -916,15 +930,16 @@ impl DrawUtils {
 
             (out, grouped_segments, segment_start_hex, segment_count_hex, x_offset, group_point_counts, segment_heights)
         } else {
-            // ...existing code for horizontal mode...
+   
             let mut k = 0.0;
-            let mut m: Vec<(usize, Vec<PolyPoint>, f32, f32)> = Vec::new();
+            let mut m: Vec<(usize, Vec<Point>, f32, f32)> = Vec::new();
             for p in 0..9 {
                 n += 1;
-                let pt = PolyPoint {
-                    x: total_segment_width / 2.0 + segment_default_size / 2.0 + k,
+                let pt = Point {
+                    x: total_segment_width as f64 / 2.0 + segment_default_size as f64 / 2.0 + k as f64,
                     y: 0.0,
-                    z: 0,
+                    color: 0,
+                    pen_state: 0,
                 };
                 m.push((n as usize, vec![pt], segment_default_size, segment_default_size));
                 k += segment_default_size;

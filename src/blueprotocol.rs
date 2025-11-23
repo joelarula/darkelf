@@ -1,4 +1,4 @@
-use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point, PolyPoint}};
+use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point}};
 use log::{debug, info};
 use ilda::model::ILDA_BLANK;
 use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
@@ -304,7 +304,7 @@ impl BlueProtocol {
 
     }
 
-    pub fn extract_draw_command(data: &str) -> Option<DrawCommandData> {
+    pub fn extract_draw_command(data: &str) -> Option<DrawConfig> {
 
         let main_cmd = Self::get_cmd_value(MAIN_CMD_HEADER, MAIN_CMD_FOOTER, data)?;
    
@@ -318,25 +318,25 @@ impl BlueProtocol {
             cnf_valus_arr[i] = *val;
         }
 
-        let mut pis_obj = DrawCommandData {
+        let mut cmd_data = DrawCommandData {
             tx_point_time: tx_point_time as u32,
             cnf_valus: cnf_valus_arr,
         };
 
-        // If draw config section exists, update PisObject fields from draw config data
+        // If draw config section exists, update DrawCommandData fields from draw config data
         if let Some(draw_cmd) = Self::get_cmd_value(DRAW_CMD_HEADER, DRAW_CMD_FOOTER, data) {
             for i in 0..15 {
                 let value = Self::clamp_value(Self::extract_hex_value(i + 1, 1, &draw_cmd) as u32, 0, 255, 0);
-                if i < pis_obj.cnf_valus.len() {
-                    pis_obj.cnf_valus[i] = value;
+                if i < cmd_data.cnf_valus.len() {
+                    cmd_data.cnf_valus[i] = value;
                 }
                 if i == 14 {
-                    pis_obj.tx_point_time = value;
+                    cmd_data.tx_point_time = value;
                 }
             }
         }
 
-        Some(pis_obj)
+        Some(cmd_data.to_draw_config())
     }
 
     pub fn extract_device_info(data: &str) -> Option<DeviceInfo> {
@@ -463,22 +463,23 @@ impl BlueProtocol {
 
     }
 
-    pub fn pack_draw_points_cmd(points: &[Point], config: &DrawCommandData) -> String {
+    pub fn pack_draw_points_cmd(points: &[Point], config: &DrawConfig) -> String {
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
         let command_str = format!("{}{}{}", DRAW_CMD_HEADER, encoded_draw_cmd, DRAW_CMD_FOOTER);
         command_str.to_uppercase()
     }
 
-    pub fn encode_draw_point_command(points: &[Point], config: &DrawCommandData, ) -> String {
+    pub fn encode_draw_point_command(points: &[Point], config: &DrawConfig, ) -> String {
         let point_time = "00";  
         let mut config_str = String::new();
         let mut points_str = String::new();
         
+        let config_values = config.to_config_values();
 
         for index in 0..15 {
             if index <= 11 {
-                let value = if index < config.cnf_valus.len() {
-                    config.cnf_valus[index] as u8
+                let value = if index < config_values.len() {
+                    config_values[index] as u8
                 } else {
                     0
                 };
@@ -488,7 +489,7 @@ impl BlueProtocol {
                 config_str.push_str(point_time);
             } else if index == 14 {
                 // Use tx_point_time for textStopTime feature
-                config_str.push_str(&Self::to_fixed_width_hex(config.tx_point_time as u8, 2));
+                config_str.push_str(&Self::to_fixed_width_hex(config_values[13] as u8, 2));
             } else {
                 config_str.push_str(point_time);
             }
@@ -628,8 +629,8 @@ impl BlueProtocol {
 
 
 
-pub fn pack_xys_cmd(
-    segment_points: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+pub fn pack_text_command(
+    segment_points: &Vec<(usize, Vec<Point>, f32, f32)>,
     time: f32,
 ) -> String {
     if let Some(encoded_command_data) = Self::encode_layout_to_command_data(
@@ -660,7 +661,7 @@ pub fn pack_xys_cmd(
 
     /// Encodes layout to command data, matching JS encodeLayoutToCommandData logic.
 pub fn encode_layout_to_command_data(
-        polyline_segments: &Vec<(usize, Vec<PolyPoint>, f32, f32)>,
+        polyline_segments: &Vec<(usize, Vec<Point>, f32, f32)>,
         segment_time: f32,
     ) -> Option<EncodedCommandData> {
         let a = 0;
@@ -743,9 +744,9 @@ pub fn encode_layout_to_command_data(
             segment_point_count += segment_points.len();
             for (index, point) in segment_points.iter().enumerate() {
                 counter += 1;
-                let x_screen = (point.x * scaling_factor) + x_offset;
-                let y_screen = point.y * scaling_factor;
-                let mut point_type = point.z as u8;
+                let x_screen = (point.x * scaling_factor as f64) + (x_offset as f64);
+                let y_screen = point.y * scaling_factor as f64;
+                let mut point_type = point.pen_state as u8;
                 let mut segment_index = f as u8;
                 if index == 0 {
                     segment_index = 0;
@@ -755,7 +756,7 @@ pub fn encode_layout_to_command_data(
                     point_type = 1;
                 }
                 if segment_points.len() == 1 {
-                    point_type = point.z as u8;
+                    point_type = point.pen_state as u8;
                 }
                 let combined = BlueProtocol::combine_nibbles(segment_index, point_type);
                 let x_hex = BlueProtocol::to_fixed_width_hex_float(x_screen as f64, 4);

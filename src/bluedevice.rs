@@ -150,7 +150,7 @@ impl BlueLaserDevice {
         }
     }
 
-    pub async fn draw(&self, points: Vec<Point>, config: DrawCommandData) {
+    pub async fn draw(&self, points: Vec<Point>, config: DrawConfig) {
        let cmd = BlueProtocol::pack_draw_points_cmd(&points, &config);
        let mut controller = self.device_controller.lock().unwrap();
        let _ = controller.send(&cmd).await;
@@ -173,10 +173,7 @@ impl BlueLaserDevice {
 
         let text_data = DrawUtils::get_text_lines(&face, &text);
         let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
-
-        let  data: EncodedCommandData = BlueProtocol::encode_layout_to_command_data( &simplified_shapes,  5.0).unwrap();
-
-        let cmd_text = BlueProtocol::pack_xys_cmd(&simplified_shapes, 5.0);
+        let cmd_text = BlueProtocol::pack_text_command(&simplified_shapes, 5.0);
 
         let mut controller = self.device_controller.lock().unwrap();
         let _ = controller.send(&cmd_text).await;
@@ -240,7 +237,7 @@ impl LaserDevice for BlueLaserDevice {
         self.set_settings(new_settings).await
     }
     
-    async fn draw_points(&self, points: Vec<Point>, config: DrawCommandData) {
+    async fn draw_points(&self, points: Vec<Point>, config: DrawConfig) {
         self.draw(points, config).await
     }
 

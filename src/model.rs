@@ -1,4 +1,5 @@
 
+
 use std::{convert::TryFrom, fmt::Display};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
@@ -107,7 +108,7 @@ pub struct DeviceState {
     pub device_info: DeviceInfo, 
     pub features: DeviceFeatures,
     pub features_config: Vec<DrawConfig>,
-    pub draw_data: Option<DrawCommandData>,
+    pub draw_data: Option<DrawConfig>,
 }
 
 
@@ -136,24 +137,18 @@ pub struct Point {
     pub pen_state: u8,  // 
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct PolyPoint {
-    pub x: f32,
-    pub y: f32,
-    pub z: u8,
-}
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct PolylineData {
-    pub lines: Vec<Vec<PolyPoint>>, 
+    pub lines: Vec<Vec<Point>>, 
     pub w: f32,
     pub h: f32,
 }
 
 #[derive(Debug, Clone)]
 pub struct MirroredPolylines {
-    pub new_lines_up: Vec<Vec<PolyPoint>>,
-    pub new_lines_down: Vec<Vec<PolyPoint>>,
+    pub new_lines_up: Vec<Vec<Point>>,
+    pub new_lines_down: Vec<Vec<Point>>,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -243,9 +238,8 @@ pub struct DrawCommandData {
 }
 
 
-#[derive(Debug, Clone,Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct DrawConfig {
-  
     pub group_index: u8, // Graphics Group Selection" 1
     pub pattern_index: u8, //Pattern Selection 
     pub color: u8, // Color
@@ -260,10 +254,71 @@ pub struct DrawConfig {
     pub pattern_wave: u8, // Wave     
     pub gradient_draw: u8, // Wave    
     pub play_time: u8, // Time Control
-     
+}
+
+impl Default for DrawConfig {
+    fn default() -> Self {
+        Self {
+            group_index: 0,
+            pattern_index: 0,
+            color: 0,
+            color_flow_speed: 0,
+            pattern_size: 0,
+            pattern_scale: 0,
+            pattern_rotation: 0,
+            pattern_vertical_flip: 0,
+            pattern_horizontal_flip: 0,
+            pattern_horizontal_position: 0,
+            pattern_vertical_position: 0,
+            pattern_wave: 0,
+            gradient_draw: 0,
+            play_time: 0,
+        }
+    }
 }
 
 impl DrawConfig {
+    /// Converts a DrawCommandData to a DrawConfig by mapping cnf_valus and tx_point_time.
+    pub fn from_draw_command_data(cmd: &DrawCommandData) -> Self {
+        // Build a [u8; 14] array from the 13 cnf_valus and tx_point_time
+        let mut config_values = [0u8; 14];
+        for i in 0..13 {
+            config_values[i] = cmd.cnf_valus[i] as u8;
+        }
+        config_values[13] = cmd.tx_point_time as u8;
+        Self::from_config_values(&config_values)
+    }
+    /// Converts this DrawConfig to a DrawCommandData (fills cnf_valus and tx_point_time)
+    pub fn to_draw_command_data(&self) -> DrawCommandData {
+        let config_values = self.to_config_values();
+        let mut cnf_valus = [0u32; 13];
+        for i in 0..13 {
+            cnf_valus[i] = config_values[i] as u32;
+        }
+        DrawCommandData {
+            tx_point_time: self.play_time as u32,
+            cnf_valus,
+        }
+    }
+    /// Converts the DrawConfig fields back to a [u8; 14] array, matching the order used in from_config_values.
+    pub fn to_config_values(&self) -> [u8; 14] {
+        [
+            self.group_index,
+            self.pattern_index,
+            self.color,
+            self.color_flow_speed,
+            self.pattern_size,
+            self.pattern_scale,
+            self.pattern_rotation,
+            self.pattern_vertical_flip,
+            self.pattern_horizontal_flip,
+            self.pattern_horizontal_position,
+            self.pattern_vertical_position,
+            self.pattern_wave,
+            self.gradient_draw,
+            self.play_time,
+        ]
+    }
     pub fn from_config_values( config_values: &[u8; 14]) -> Self {
         Self { 
             group_index: config_values[0],
@@ -394,8 +449,8 @@ impl DisplayColor {
             DisplayColor::Blue => "blue",
             DisplayColor::Purple => "purple",
             DisplayColor::White => "white",
-            DisplayColor::Jump => "transparent",
-            DisplayColor::RGB => "transparent",
+            DisplayColor::Jump => "Jump",
+            DisplayColor::RGB => "RGB",
         }
     }
 
@@ -416,161 +471,6 @@ impl DisplayColor {
 }
 
 
-#[derive(Debug, Clone)]
-pub enum PisObjNote {
-    PatternSelection(Vec<(u16, &'static str)>),
-    PatternType(Vec<(u16, &'static str)>),
-    Color(Vec<(u16, &'static str)>),
-    WaterFlow(Vec<(u16, &'static str)>),
-    PatternSize(Vec<(u16, &'static str)>),
-    Expansion(Vec<(u16, &'static str)>),
-    Rotation(Vec<(u16, &'static str)>),
-    WaterSurfaceRotation(Vec<(u16, &'static str)>),
-    VerticalRotation(Vec<(u16, &'static str)>),
-    WaterSurfaceMotion(Vec<(u16, &'static str)>),
-    VerticalMotion(Vec<(u16, &'static str)>),
-    WaterWidth(Vec<(u16, &'static str)>),
-}
-
-impl PisObjNote {
-    pub fn get_notes(category: usize) -> Option<PisObjNote> {
-        match category {
-            0 => Some(PisObjNote::PatternSelection(vec![
-                (256, "Pattern Selection"),
-            ])),
-            1 => Some(PisObjNote::PatternType(vec![
-                (25, "Straight Line Pattern"),
-                (25, "Arc Pattern"),
-                (25, "Bright Spot Pattern"),
-                (25, "Dot Pattern"),
-                (25, "Christmas Pattern"),
-                (25, "Animation Group 1"),
-                (25, "Animation Group 2"),
-                (25, "Animation Group 3"),
-                (25, "Animation Group 4"),
-                (31, "Animation Group 5"),
-            ])),
-            2 => Some(PisObjNote::Color(vec![
-                (10, "White"),
-                (10, "Red"),
-                (10, "Blue"),
-                (10, "Pink"),
-                (10, "Cyan"),
-                (10, "Yellow"),
-                (10, "Green"),
-                (10, "Overall Color Change"),
-                (13, "Rainbow Colors"),
-                (18, "2-Segment Color"),
-                (21, "3-Segment Color"),
-                (18, "4-Segment Color"),
-                (33, "8-Segment Color"),
-                (36, "16-Segment Color"),
-                (35, "32-Segment Color"),
-                (2, "Color Gradient Drawing"),
-            ])),
-            3 => Some(PisObjNote::WaterFlow(vec![
-                (10, "Non-Flowing Water"),
-                (118, "Forward Flowing Water"),
-                (128, "Reverse Flowing Water"),
-            ])),
-            4 => Some(PisObjNote::PatternSize(vec![
-                (256, "Pattern Size"),
-            ])),
-            5 => Some(PisObjNote::Expansion(vec![
-                (16, "Expand Manual Selection"),
-                (40, "From Small to Large Expansion"),
-                (40, "From Large to Small Expansion"),
-                (40, "Large to Small Expansion"),
-                (120, "Preview No Function"),
-            ])),
-            6 => Some(PisObjNote::Rotation(vec![
-                (128, "Rotation Angle"),
-                (64, "Forward Rotation Speed"),
-                (64, "Reverse Rotation Speed"),
-            ])),
-            7 => Some(PisObjNote::WaterSurfaceRotation(vec![
-                (128, "Water Surface Rotation Position"),
-                (128, "Water Surface Rotation Speed"),
-            ])),
-            8 => Some(PisObjNote::VerticalRotation(vec![
-                (128, "Vertical Rotation Position"),
-                (128, "Vertical Rotation Speed"),
-            ])),
-            9 => Some(PisObjNote::WaterSurfaceMotion(vec![
-                (128, "Water Surface Rotation"),
-                (128, "Water Surface Movement"),
-            ])),
-            10 => Some(PisObjNote::VerticalMotion(vec![
-                (128, "Vertical Rotation Position"),
-                (128, "Vertical Rotation Movement"),
-            ])),
-            11 => Some(PisObjNote::WaterWidth(vec![
-                (2, "Non-Flowing Water"),
-                (31, "Flowing Water Width 1"),
-                (32, "Flowing Water Width 2"),
-                (32, "Flowing Water Width 3"),
-                (32, "Flowing Water Width 4"),
-                (32, "Flowing Water Width 5"),
-                (32, "Flowing Water Width 6"),
-                (32, "Flowing Water Width 7"),
-                (31, "Flowing Water Width 8"),
-            ])),
-            _ => None,
-        }
-    }
-}
-
-
-
-/// Represents a single point in a drawing path with [x, y, color, pen_state] format
-/// Serializes as a 4-element array to match JSON format: [x, y, color, pen_state]
-#[derive(Debug, Clone, PartialEq)]
-pub struct DrawPoint {
-    pub x: f64,
-    pub y: f64,
-    pub color: u8,      // Color value (0-15)
-    pub pen_state: u8,  // Pen state: 0=pen up/move, 1=pen down/draw
-}
-
-impl Serialize for DrawPoint {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        (self.x, self.y, self.color, self.pen_state).serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for DrawPoint {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let (x, y, color, pen_state) = <(f64, f64, u8, u8)>::deserialize(deserializer)?;
-        Ok(DrawPoint { x, y, color, pen_state })
-    }
-}
-
-impl DrawPoint {
-    pub fn new(x: f64, y: f64, color: u8, pen_state: u8) -> Self {
-        Self { x, y, color, pen_state }
-    }
-    
-    /// Create from a 4-element array [x, y, color, pen_state]
-    pub fn from_array(arr: [f64; 4]) -> Self {
-        Self {
-            x: arr[0],
-            y: arr[1], 
-            color: arr[2] as u8,
-            pen_state: arr[3] as u8,
-        }
-    }
-    
-    /// Convert to a 4-element array [x, y, color, pen_state]
-    pub fn to_array(&self) -> [f64; 4] {
-        [self.x, self.y, self.color as f64, self.pen_state as f64]
-    }
-}
 
 /// Drawing modes that determine how the object is rendered
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -619,14 +519,14 @@ impl<'de> Deserialize<'de> for DrawMode {
 #[derive(Debug, Clone)]
 pub enum DrawPoints {
     /// Simple array of points for regular shapes/text
-    Simple(Vec<DrawPoint>),
+    Simple(Vec<Point>),
     /// Nested arrays for polylines mode
-    Polylines(Vec<Vec<DrawPoint>>),
+    Polylines(Vec<Vec<Point>>),
 }
 
 impl DrawPoints {
     /// Get all points as a flattened vector for processing
-    pub fn flatten(&self) -> Vec<DrawPoint> {
+    pub fn flatten(&self) -> Vec<Point> {
         match self {
             DrawPoints::Simple(points) => points.clone(),
             DrawPoints::Polylines(polylines) => {
@@ -650,7 +550,7 @@ impl DrawPoints {
 
 /// Custom serialization/deserialization for DrawPoints
 mod flexible_points {
-    use super::{DrawPoints, DrawPoint};
+    use super::{DrawPoints, Point};
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use serde_json::Value;
 
@@ -693,7 +593,7 @@ mod flexible_points {
                                             let y = point_arr[1].as_f64().unwrap_or(0.0);
                                             let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                             let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                            polyline_points.push(DrawPoint { x, y, color, pen_state });
+                                            polyline_points.push(Point { x, y, color, pen_state });
                                         }
                                     }
                                 }
@@ -711,7 +611,7 @@ mod flexible_points {
                                     let y = point_arr[1].as_f64().unwrap_or(0.0);
                                     let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                     let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                    points.push(DrawPoint { x, y, color, pen_state });
+                                    points.push(Point { x, y, color, pen_state });
                                 }
                             }
                         }
@@ -729,7 +629,7 @@ mod flexible_points {
                                 let y = point_arr[1].as_f64().unwrap_or(0.0);
                                 let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                 let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                points.push(DrawPoint { x, y, color, pen_state });
+                                points.push(Point { x, y, color, pen_state });
                             }
                         }
                     }
@@ -788,7 +688,7 @@ impl DrawItem {
     }
     
     /// Add a point to the drawing path
-    pub fn add_point(&mut self, point: DrawPoint) {
+    pub fn add_point(&mut self, point: Point) {
         match &mut self.ps {
             DrawPoints::Simple(points) => points.push(point),
             DrawPoints::Polylines(_) => {
@@ -800,8 +700,8 @@ impl DrawItem {
         }
     }
     
-    /// Get all points as a flattened vector
-    pub fn get_all_points(&self) -> Vec<DrawPoint> {
+ 
+    pub fn get_all_points(&self) -> Vec<Point> {
         self.ps.flatten()
     }
 }
@@ -812,10 +712,24 @@ impl Default for DrawItem {
     }
 }
 
+impl DrawCommandData{
+
+    /// Converts this DrawCommandData to a DrawConfig by mapping cnf_valus and tx_point_time.
+    pub fn to_draw_config(&self) -> DrawConfig {
+        let mut config_values = [0u8; 14];
+        for i in 0..13 {
+            config_values[i] = self.cnf_valus[i] as u8;
+        }
+        config_values[13] = self.tx_point_time as u8;
+        DrawConfig::from_config_values(&config_values)
+    }
+
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DrawData {
     pub points: Vec<Point>,
-    pub config: DrawCommandData,
+    pub config: DrawConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

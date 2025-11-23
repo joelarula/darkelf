@@ -69,29 +69,29 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //sleep(Duration::from_millis(500));
     //test_tick_playback_command(device).await;
 
-   // test_shapes(device).await;
+    test_shapes(device).await;
 
-    //sleep(Duration::from_millis(500));
+    sleep(Duration::from_millis(500));
     
-    //test_show_text(device).await;
+    test_show_text(device).await;
 
-    //sleep(Duration::from_millis(500));
+    sleep(Duration::from_millis(500));
     
-   // test_show_drawings(device).await;
+    test_show_drawings(device).await;
 
-    //sleep(Duration::from_millis(500));
+    sleep(Duration::from_millis(500));
     
-    //test_show_drawing_protocol_b(device).await;
-
-    //sleep(Duration::from_millis(500));
-
-    //test_show_drawing_protocol_b(device).await;
-
-    //test_pis_command(device).await;
+    test_show_drawing_protocol_b(device).await;
 
     sleep(Duration::from_millis(500));
 
-    test_pis_list_command(device).await;
+    test_show_drawing_protocol_b(device).await;
+
+    test_pis_command(device).await;
+
+    sleep(Duration::from_millis(500));
+
+   // test_pis_list_command(device).await;
 
     Ok(())
 }
@@ -191,9 +191,21 @@ async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
         sleep(Duration::from_secs(3));
     }
     
-    let draw_config = DrawCommandData {
-        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        tx_point_time: 5,
+    let draw_config = DrawConfig {
+        group_index: 0,
+        pattern_index: 0,
+        color: 0,
+        color_flow_speed: 0,
+        pattern_size: 0,
+        pattern_scale: 0,
+        pattern_rotation: 0,
+        pattern_vertical_flip: 0,
+        pattern_horizontal_flip: 0,
+        pattern_horizontal_position: 0,
+        pattern_vertical_position: 0,
+        pattern_wave: 0,
+        gradient_draw: 3,
+        play_time: 5,
     };
     
     let mut draw_points: Vec<Point> = Vec::new();
@@ -286,9 +298,21 @@ async fn test_show_drawing_protocol_b(device: &mut BlueLaserDevice) {
         sleep(Duration::from_secs(3));
     }
     
-    let draw_config = DrawCommandData {
-        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        tx_point_time: 5,
+    let draw_config = DrawConfig {
+        group_index: 0,
+        pattern_index: 0,
+        color: 0,
+        color_flow_speed: 0,
+        pattern_size: 0,
+        pattern_scale: 0,
+        pattern_rotation: 0,
+        pattern_vertical_flip: 0,
+        pattern_horizontal_flip: 0,
+        pattern_horizontal_position: 0,
+        pattern_vertical_position: 0,
+        pattern_wave: 0,
+        gradient_draw: 3,
+        play_time: 5,
     };
     
     let arr = [
@@ -590,9 +614,21 @@ async fn test_shapes(device: &mut BlueLaserDevice) {
     info!("Loaded {} shape arrays from JSON", point_arrays.len());
     
     // Create default PisObject for command generation
-    let draw_config = DrawCommandData {
-        cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        tx_point_time: 5,
+    let draw_config = DrawConfig {
+        group_index: 0,
+        pattern_index: 0,
+        color: 0,
+        color_flow_speed: 0,
+        pattern_size: 0,
+        pattern_scale: 0,
+        pattern_rotation: 0,
+        pattern_vertical_flip: 0,
+        pattern_horizontal_flip: 0,
+        pattern_horizontal_position: 0,
+        pattern_vertical_position: 0,
+        pattern_wave: 0,
+        gradient_draw: 3,
+        play_time: 5,
     };
     
     // Process each point array and generate commands
@@ -645,9 +681,21 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
         let draw_data: LegacyDrawData = load_draw_data(filename)
             .expect(&format!("Should be able to load {} DrawData", filename));
         
-        let draw_config = DrawCommandData {
-            cnf_valus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-            tx_point_time: 5,
+        let draw_config = DrawConfig {
+            group_index: 0,
+            pattern_index: 0,
+            color: 0,
+            color_flow_speed: 0,
+            pattern_size: 0,
+            pattern_scale: 0,
+            pattern_rotation: 0,
+            pattern_vertical_flip: 0,
+            pattern_horizontal_flip: 0,
+            pattern_horizontal_position: 0,
+            pattern_vertical_position: 0,
+            pattern_wave: 0,
+            gradient_draw: 3,
+            play_time: 5,
         };
 
         let points = DrawUtils::prepare_draw_data(&draw_data, 300.0);

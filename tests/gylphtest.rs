@@ -57,7 +57,7 @@ fn test_glyphs() {
     assert_eq!(verify_cmd_b, data.cmd);
 
 
-    let cmd_text = BlueProtocol::pack_xys_cmd(&simplified_shapes, 5.0);
+    let cmd_text = BlueProtocol::pack_text_command(&simplified_shapes, 5.0);
 
     // Fine-grained protocol assertions
     // These indices are based on the expected command format and field lengths

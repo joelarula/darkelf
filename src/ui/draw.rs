@@ -1,4 +1,4 @@
-use crate::{model::{DrawCommandData, Point,DrawData}, ui::{self, app::App, model::DeviceCommand}};
+use crate::{model::{DrawCommandData, DrawConfig, DrawData, Point}, ui::{self, app::App, model::DeviceCommand}};
 use eframe::egui::*;
 
 
@@ -74,18 +74,18 @@ pub fn show_draw_ui(app: &mut App, ctx:  &eframe::egui::Context) {
                                 };
                                 if should_send {
                                     // Build cross shape at (virt_x, virt_y) with correct types
-                                    let cross_size = 40.0;
-                                    let points = vec![
-                                        Point { x: (virt_x - cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
-                                        Point { x: (virt_x + cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
-                                        Point { x: virt_x as f64, y: (virt_y - cross_size) as f64, color: 9, pen_state: 1u8 },
-                                        Point { x: virt_x as f64, y: (virt_y + cross_size) as f64, color: 9, pen_state: 1u8 },
-                                    ];
+                               //     let cross_size = 40.0;
+                               //     let points = vec![
+                              //          Point { x: (virt_x - cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
+                              //          Point { x: (virt_x + cross_size) as f64, y: virt_y as f64, color: 9, pen_state: 1u8 },
+                               //         Point { x: virt_x as f64, y: (virt_y - cross_size) as f64, color: 9, pen_state: 1u8 },
+                               //         Point { x: virt_x as f64, y: (virt_y + cross_size) as f64, color: 9, pen_state: 1u8 },
+                               //     ];
 
                                     
-                                    let draw_data = DrawData { points, config: app.cached_points_result.as_ref().map_or(DrawCommandData::default(), |d| d.config.clone()) };
-                                    let _ = app.command_sender.send(DeviceCommand::Draw(draw_data.points.clone(), draw_data.config.clone()));
-                                    unsafe { LAST_SEND = Some(now); }
+                               //     let draw_data = DrawData { points, config: app.cached_points_result.as_ref().map_or(DrawCommandData::default(), |d| d.config.clone()) };
+                               //     let _ = app.command_sender.send(DeviceCommand::Draw(draw_data.points.clone(), draw_data.config.clone()));
+                               //     unsafe { LAST_SEND = Some(now); }
                                 }
                             } else {
                                 ui.label("Cursor: (not over painter)");
@@ -111,7 +111,7 @@ pub fn show_draw_ui(app: &mut App, ctx:  &eframe::egui::Context) {
                         app.cached_error_result = Some(err);
                     }
                 } else {
-                    app.cached_points_result = Some(DrawData{ points: Vec::new(), config: DrawCommandData::default() });
+                    app.cached_points_result = Some(DrawData{ points: Vec::new(), config: DrawConfig::default() });
                 }
             }
             

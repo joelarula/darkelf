@@ -18,7 +18,7 @@ pub trait LaserDevice {
     
     async fn set_main_command(&self, command: MainCommandData);
 
-    async fn draw_points(&self, points: Vec<Point>, config: DrawCommandData);
+    async fn draw_points(&self, points: Vec<Point>, config: DrawConfig);
 
     async fn draw_builtin_shape(&self, index: u8, shape: DrawConfig);
 
