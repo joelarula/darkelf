@@ -1,6 +1,6 @@
 use crate::blueprotocol::BlueProtocol;
 use crate::model::{
-    DrawItem, DrawMode, LegacyDrawData, PathCommand, Point, PolylineData
+    DisplayColor, DrawItem, DrawMode, LegacyDrawData, PathCommand, Point, PolylineData
 };
 use ttf_parser::Face;
 use ttf_parser::{OutlineBuilder};
@@ -59,7 +59,7 @@ impl DrawUtils {
                 let mut x = Point {
                     x: pt.x,
                     y: pt.y,
-                    color: 0,
+                    color: DisplayColor::Blank,
                     pen_state: pt.pen_state,
                 };
                 if is_horizontal_adjustment {
@@ -129,7 +129,7 @@ impl DrawUtils {
                 let mut first_point = Point {
                     x: offset_x as f64 + line[0].x as f64 + layout_x as f64,
                     y: offset_y as f64 - line[0].y as f64 + layout_y as f64,
-                    color: 0,
+                    color: DisplayColor::Blank,
                     pen_state: 1,
                 };
                 if simplify {
@@ -157,7 +157,7 @@ impl DrawUtils {
                 first_point = Point {
                     x: offset_x as f64 + line[0].x as f64 + layout_x as f64,
                     y: offset_y as f64 - line[0].y as f64 + layout_y as f64,
-                    color: 0,
+                    color: DisplayColor::Blank,
                     pen_state: 1,
                 };
                 simplified_line.push(first_point.clone());
@@ -222,7 +222,7 @@ impl DrawUtils {
                 let placeholder = Point {
                     x: offset_x as f64 + shape.w as f64 / 2.0 + layout_x as f64,
                     y: 0.0,
-                    color: 0,
+                    color: DisplayColor::Blank,
                     pen_state: 0,
                 };
                 result.push((shape_iter, vec![placeholder], shape.w, shape.h));
@@ -448,13 +448,13 @@ impl DrawUtils {
                 current_color_index = 1;
             }
 
-            let final_color = if rotated_point.color != 0 {
+            let final_color = if rotated_point.color != DisplayColor::Blank {
                 if color_segment_index < 0 {
-                    current_color_index as u8
+                    DisplayColor::from_u8(current_color_index as u8).unwrap_or(DisplayColor::Blank)
                 } else if color_segment_index == 0 {
                     rotated_point.color // Keep original color
                 } else {
-                    current_color_index as u8
+                    DisplayColor::from_u8(current_color_index as u8).unwrap_or(DisplayColor::Blank)
                 }
             } else {
                 rotated_point.color
@@ -464,7 +464,7 @@ impl DrawUtils {
                 + (position_x - center_offset_x) * scaling_factor;
             let result_y = rotated_point.y * scale_z * scaling_factor
                 + (-position_y + center_offset_x) * scaling_factor;
-            let result_color = if point_index == 0 { 0 } else { final_color };
+            let result_color = if point_index == 0 { DisplayColor::Blank } else { final_color };
             let result_pen_state = rotated_point.pen_state;
 
             result_points.push(Point::new(
@@ -680,7 +680,7 @@ impl DrawUtils {
                 (1.0 - t).powi(2) * start.x + 2.0 * (1.0 - t) * t * control.x + t.powi(2) * end.x;
             let y =
                 (1.0 - t).powi(2) * start.y + 2.0 * (1.0 - t) * t * control.y + t.powi(2) * end.y;
-            points.push(Point { x, y, color: 0, pen_state: 0 });
+            points.push(Point { x, y, color: DisplayColor::Blank, pen_state: 0 });
         }
         points
     }
@@ -703,7 +703,7 @@ impl DrawUtils {
                     let pt = Point {
                         x: cmd.x as f64,
                         y: cmd.y as f64,
-                        color: 0,
+                        color: DisplayColor::Blank,
                         pen_state: 0,
                     };
                     if DrawUtils::append_to_array_or(&mut current_poly, pt) {
@@ -714,7 +714,7 @@ impl DrawUtils {
                     let pt = Point {
                         x: cmd.x as f64,
                         y: cmd.y as f64,
-                        color: 0,
+                        color: DisplayColor::Blank,
                         pen_state: 0,
                     };
                     if DrawUtils::append_to_array_or(&mut current_poly, pt) {
@@ -725,11 +725,11 @@ impl DrawUtils {
                     if let (Some(x1), Some(y1)) = (cmd.x1, cmd.y1) {
                         if let Some(last) = current_poly.last() {
                             let start = last.clone();
-                            let control = Point { x: x1 as f64, y: y1 as f64, color: 0, pen_state: 0 };
+                            let control = Point { x: x1 as f64, y: y1 as f64, color: DisplayColor::Blank, pen_state: 0 };
                             let end = Point {   
                                 x: cmd.x as f64,
                                 y: cmd.y as f64,
-                                color: 0,
+                                color: DisplayColor::Blank,
                                 pen_state: 0,
                             };
                             let bezier_points = DrawUtils::sample_quadratic_bezier(
@@ -892,7 +892,7 @@ impl DrawUtils {
                 let pt = Point {
                     x: 0.0,
                     y: total_segment_height as f64 / 2.0 + segment_default_size as f64 / 2.0 + d as f64,
-                    color: 0,   
+                    color: DisplayColor::Blank,
                     pen_state: 0,
                 };
                 b.push((n as usize, vec![pt], segment_default_size, segment_default_size));
@@ -938,7 +938,7 @@ impl DrawUtils {
                 let pt = Point {
                     x: total_segment_width as f64 / 2.0 + segment_default_size as f64 / 2.0 + k as f64,
                     y: 0.0,
-                    color: 0,
+                    color: DisplayColor::Blank,
                     pen_state: 0,
                 };
                 m.push((n as usize, vec![pt], segment_default_size, segment_default_size));

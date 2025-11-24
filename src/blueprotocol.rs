@@ -501,13 +501,13 @@ impl BlueProtocol {
             let mut pen_state = point.pen_state;
                 
             // Handle textStopTime feature logic - always enabled for polylines mode
-            if point.color == 0 {
+            if point.color == DisplayColor::Blank {
                 pen_state = 2;
-            } else if (ix < points.len() - 1 && points[ix + 1].color == 0) || ix == points.len() - 1 {
+            } else if (ix < points.len() - 1 && points[ix + 1].color == DisplayColor::Blank) || ix == points.len() - 1 {
                 pen_state = 3;
             }
                 
-            let combined = Self::combine_nibbles(point.color, pen_state);
+            let combined = Self::combine_nibbles(point.color as u8, pen_state);
                 
             points_str.push_str(&Self::to_fixed_width_hex_float(point.x, 4));
             points_str.push_str(&Self::to_fixed_width_hex_float(point.y, 4));

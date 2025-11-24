@@ -133,7 +133,7 @@ impl Default for DeviceSettings {
 pub struct Point {
     pub x: f64,
     pub y: f64,
-    pub color: u8,
+    pub color: DisplayColor,
     pub pen_state: u8,  // 
 }
 
@@ -175,7 +175,7 @@ pub struct PathCommand {
 
 
 impl Point {
-    pub fn new(x: f64, y: f64, color: u8, pen_state: u8) -> Self {
+    pub fn new(x: f64, y: f64, color: DisplayColor, pen_state: u8) -> Self {
         Self { x, y, color, pen_state }
     }
     
@@ -184,7 +184,7 @@ impl Point {
         Self {
             x: arr[0],
             y: arr[1], 
-            color: arr[2] as u8,
+            color: DisplayColor::try_from(arr[2] as u8).unwrap_or(DisplayColor::Blank),
             pen_state: arr[3] as u8,
         }
     }
@@ -194,14 +194,14 @@ impl Point {
         Self {
             x,
             y,
-            color: color as u8,
+            color: DisplayColor::try_from(color as u8).unwrap_or(DisplayColor::Blank),
             pen_state: pen_state as u8,
         }
     }
     
     /// Convert to array format: [x, y, color, pen_state]
     pub fn to_array(&self) -> [f64; 4] {
-        [self.x, self.y, self.color as f64, self.pen_state as f64]
+        [self.x, self.y, self.color as u8 as f64, self.pen_state as f64]
     }
     
 
@@ -350,8 +350,9 @@ impl Default for DrawCommandData {
 }
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq,Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum DisplayColor {
+    Blank = 0,
     Red = 1,
     Yellow = 4,
     Green = 2,
@@ -368,6 +369,7 @@ impl TryFrom<u8> for DisplayColor {
     type Error = ();
     fn try_from(val: u8) -> Result<Self, Self::Error> {
         match val {
+            0 => Ok(DisplayColor::Blank),
             1 => Ok(DisplayColor::Red),
             2 => Ok(DisplayColor::Green),
             3 => Ok(DisplayColor::Blue),
@@ -386,6 +388,7 @@ impl TryFrom<u8> for DisplayColor {
 impl DisplayColor {
     pub fn from_u8(val: u8) -> Option<Self> {
         match val {
+            0 => Some(DisplayColor::Blank),
             1 => Some(DisplayColor::Red),
             2 => Some(DisplayColor::Green),
             3 => Some(DisplayColor::Blue),
@@ -427,6 +430,7 @@ impl DisplayColor {
     /// Returns the display name for the color.
     pub fn name(&self) -> &'static str {
         match self {
+            DisplayColor::Blank => "Blank",
             DisplayColor::Red => "Red",
             DisplayColor::Yellow => "yellow",
             DisplayColor::Green => "green",
@@ -442,6 +446,7 @@ impl DisplayColor {
     /// Returns the color value as a string (CSS color or hex code).
     pub fn color(&self) -> &'static str {
         match self {
+            DisplayColor::Blank => "black",
             DisplayColor::Red => "red",
             DisplayColor::Yellow => "yellow",
             DisplayColor::Green => "green",
@@ -457,6 +462,7 @@ impl DisplayColor {
     /// Returns the idx value for the color.
     pub fn idx(&self) -> u8 {
         match self {
+            DisplayColor::Blank => 0,
             DisplayColor::Red => 1,
             DisplayColor::Yellow => 4,
             DisplayColor::Green => 2,
@@ -550,6 +556,8 @@ impl DrawPoints {
 
 /// Custom serialization/deserialization for DrawPoints
 mod flexible_points {
+    use crate::model::DisplayColor;
+
     use super::{DrawPoints, Point};
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use serde_json::Value;
@@ -593,7 +601,7 @@ mod flexible_points {
                                             let y = point_arr[1].as_f64().unwrap_or(0.0);
                                             let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                             let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                            polyline_points.push(Point { x, y, color, pen_state });
+                                            polyline_points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
                                         }
                                     }
                                 }
@@ -611,7 +619,7 @@ mod flexible_points {
                                     let y = point_arr[1].as_f64().unwrap_or(0.0);
                                     let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                     let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                    points.push(Point { x, y, color, pen_state });
+                                    points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
                                 }
                             }
                         }
@@ -629,7 +637,7 @@ mod flexible_points {
                                 let y = point_arr[1].as_f64().unwrap_or(0.0);
                                 let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                 let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                points.push(Point { x, y, color, pen_state });
+                                points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
                             }
                         }
                     }

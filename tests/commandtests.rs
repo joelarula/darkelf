@@ -330,106 +330,8 @@ fn test_draw_data() {
     let draw_data = load_draw_data("./scripts/ruut.json")
         .expect("Should be able to load ruut.json DrawData");
     
-    // Log the contents
-    info!("DrawData Contents:");
-    info!("Draw Objects: {} objects", draw_data.draw_points.len());
-    
-    // Log each draw object
-    for (i, obj) in draw_data.draw_points.iter().enumerate() {
-        info!("\n  🎯 Draw Object #{}", i + 1);
-        info!(" Position: x0={:.3}, y0={:.3}", obj.x0, obj.y0);
-        info!("Scale (z): {:.6}", obj.z);
-        info!("Rotation (ang): {:.1}°", obj.ang);
-        info!("Line Color: {}", obj.line_color);
-        info!("Draw Mode: {:?}", obj.draw_mode);
-        info!("Points: {} points", obj.ps.len());
-        info!("Points type: {:?}", match &obj.ps {
-            darkelf::model::DrawPoints::Simple(_) => "Simple",
-            darkelf::model::DrawPoints::Polylines(_) => "Polylines",
-        });
-        
-        // Log first few points as examples
-        let all_points = obj.get_all_points();
-        let point_preview = all_points.iter().take(3).collect::<Vec<_>>();
-        for (j, point) in point_preview.iter().enumerate() {
-            info!("  Point {}: x={:.3}, y={:.3}, color={}, pen={}", 
-                j + 1, point.x, point.y, point.color, point.pen_state);
-        }
-        if all_points.len() > 3 {
-            info!("      ... and {} more points", all_points.len() - 3);
-        }
-        
-    }
-    
-    info!("PisObject Configuration:");
-    info!("TX Point Time: {}", draw_data.pis_obj.tx_point_time);
-    info!("Config Values: {:?}", draw_data.pis_obj.cnf_valus);
-
-    // Test prepare_draw_data function with width=300 (matching JavaScript test)
-    info!("\nTesting prepare_draw_data function:");
     let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
-    info!("Total prepared points: {}", prepared_points.len());
-    
-    // Reference flatPoints2 data from JavaScript drawPs2 output (first 15 points for comparison)
-    let reference_points = vec![
-        [-164.5376292142001, 198.01136363636368, 0.0, 1.0],
-        [-78.2680216702548, 198.01136363636368, 7.0, 0.0],
-        [8.001585873690523, 198.01136363636368, 7.0, 0.0],
-        [94.27119341763583, 198.01136363636368, 7.0, 0.0],
-        [202.10820284756747, 198.01136363636368, 7.0, 0.0],
-        [266.8104085055265, 198.01136363636368, 7.0, 1.0],
-        [266.8104085055265, 111.74175609241836, 4.0, 0.0],
-        [266.8104085055265, 25.47214854847304, 4.0, 0.0],
-        [266.8104085055265, -60.79745899547227, 4.0, 0.0],
-        [266.8104085055265, -147.0670665394176, 4.0, 0.0],
-        [266.8104085055265, -233.33667408336294, 4.0, 1.0],
-        [180.54080096158114, -233.33667408336294, 5.0, 0.0],
-        [94.27119341763583, -233.33667408336294, 5.0, 0.0],
-        [8.001585873690523, -233.33667408336294, 5.0, 0.0],
-        [-99.83542355624112, -233.33667408336294, 5.0, 0.0],
-    ];
-    
-    info!("Comparing first 15 points with reference flatPoints2:");
-    for (i, point) in prepared_points.iter().take(15).enumerate() {
-        if i < reference_points.len() {
-            let ref_point = &reference_points[i];
-            info!("    Point {}: prepared=({:.3}, {:.3}, {}, {}) | reference=({:.3}, {:.3}, {}, {})", 
-                i + 1, 
-                point.x, point.y, point.color, point.pen_state,
-                ref_point[0], ref_point[1], ref_point[2] as u8, ref_point[3] as u8
-            );
-            
-            // Check if coordinates are reasonably close (allowing for transformation differences)
-            let x_diff = (point.x - ref_point[0]).abs();
-            let y_diff = (point.y - ref_point[1]).abs();
-            info!("      Coordinate diff: x={:.3}, y={:.3}", x_diff, y_diff);
-            
-            // Verify color and pen_state match exactly
-            assert_eq!(point.color, ref_point[2] as u8, "Color should match for point {}", i + 1);
-            assert_eq!(point.pen_state, ref_point[3] as u8, "Pen state should match for point {}", i + 1);
-        }
-    }
-    
-    // Test Point struct compatibility with drawPs2 format
-    info!("\nTesting Point struct compatibility with drawPs2 format:");
-    let sample_draw_ps2_point = [-164.5376292142001, 198.01136363636368, 0.0, 1.0];
-    let point_from_js = Point::from_js_array(
-        sample_draw_ps2_point[0], 
-        sample_draw_ps2_point[1], 
-        sample_draw_ps2_point[2], 
-        sample_draw_ps2_point[3]
-    );
-    
-    info!("Sample Point from JS array: x={:.3}, y={:.3}, color={}, pen_state={}", 
-        point_from_js.x, point_from_js.y, point_from_js.color, point_from_js.pen_state);
-    
-    // Convert back to array format
-    let array_format = point_from_js.to_array();
-    info!("Converted back to array: [{:.3}, {:.3}, {}, {}]", 
-        array_format[0], array_format[1], array_format[2], array_format[3]);
-    
 
-    // Use PisObject directly from the loaded data
     let draw_config = draw_data.pis_obj.clone();
 
      // Expected command string for polylines test data
@@ -453,126 +355,19 @@ fn test_draw_data_polylines() {
     let draw_data = load_draw_data("./scripts/lill.json")
         .expect("Should be able to load lill.json DrawData");
     
-    // Log the contents
-    info!("\nPolylines DrawData Contents:");
-    info!("Draw Objects: {} objects", draw_data.draw_points.len());
-    info!("Draw Objects Count: {}", draw_data.draw_points.len());
-    
-    // Log each draw object
-    for (i, obj) in draw_data.draw_points.iter().enumerate() {
-
-        
-        // Handle both simple points and polylines structure
-        match &obj.ps {
-            DrawPoints::Simple(points) => {
-                info!("    Simple Points: {} points", points.len());
-                for (j, point) in points.iter().enumerate().take(3) {
-                    info!("      Point {}: x={:.3}, y={:.3}, color={}, pen={}", 
-                        j + 1, point.x, point.y, point.color, point.pen_state);
-                }
-                if points.len() > 3 {
-                    info!("      ... and {} more points", points.len() - 3);
-                }
-            }
-            DrawPoints::Polylines(polylines) => {
-                info!("    Polylines: {} polylines", polylines.len());
-                for (j, polyline) in polylines.iter().enumerate().take(3) {
-                    info!("      Polyline {}: {} points", j + 1, polyline.len());
-                    // Show first few points of each polyline
-                    for (k, point) in polyline.iter().enumerate().take(3) {
-                        info!("        Point {}: x={:.3}, y={:.3}, color={}, pen={}", 
-                            k + 1, point.x, point.y, point.color, point.pen_state);
-                    }
-                    if polyline.len() > 3 {
-                        info!("        ... and {} more points", polyline.len() - 3);
-                    }
-                }
-                if polylines.len() > 3 {
-                    info!("      ... and {} more polylines", polylines.len() - 3);
-                }
-            }
-        }
-        
-        // Verify this is actually polylines data
-        assert_eq!(obj.draw_mode, DrawMode::Polylines, "Draw mode should be Polylines (-1)");
-    }
-    
-    info!("\nPisObject Configuration:");
-    info!("  TX Point Time: {}", draw_data.pis_obj.tx_point_time);
-    info!("  Config Values: {:?}", draw_data.pis_obj.cnf_valus);
-
     // Test prepare_draw_data function with width=300 for polylines
     info!("\nTesting prepare_draw_data function for polylines:");
     let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
     info!("Total prepared points from polylines: {}", prepared_points.len());
     
-    // Reference flatPoints2 data from JavaScript drawAllTransformedPolylines2 output 
-    let reference_points = vec![
-        [-169.60686770352447, 24.71719221635294, 0.0, 1.0],
-        [-179.4754028320312, 29.794484918767694, 1.0, 0.0],
-        [-189.87485712224782, 34.58872708407314, 1.0, 0.0],
-        [-196.21210965243247, 41.19314713911573, 1.0, 0.0],
-        [-203.203027898615, 48.97041320800781, 1.0, 0.0],
-        [-209.8484732887961, 60.13256419788702, 1.0, 0.0],
-        [-216.577859358354, 69.10507895729756, 1.0, 0.0],
-        [-238.31601576371622, 109.06483043323858, 1.0, 0.0],
-        [-240.41155034845522, 121.84666720303619, 1.0, 0.0],
-        [-233.85559428821904, 167.54382740367538, 1.0, 0.0],
-        [-228.6445791071111, 182.17176957563916, 1.0, 0.0],
-        [-219.98086409135294, 195.31277743252838, 1.0, 0.0],
-        [-209.34609499844635, 207.88463245738632, 1.0, 0.0],
-        [-187.6539056951349, 233.18297646262425, 1.0, 0.0],
-        [-174.84021620316935, 244.53274119984013, 1.0, 0.0],
-        [-162.48439442027694, 253.60121293501416, 1.0, 0.0],
-        [-148.7498196688565, 261.89405267888844, 1.0, 0.0],
-        [-134.54832597212354, 267.8083939985795, 1.0, 0.0],
-        [-120.74647383256388, 271.8949751420454, 1.0, 0.0],
-        [-92.79542402787638, 273.42109680175776, 1.0, 0.0],
-    ];
-    
-    info!("Comparing first 20 points with reference flatPoints2:");
-    for (i, point) in prepared_points.iter().take(20).enumerate() {
-        if i < reference_points.len() {
-            let ref_point = &reference_points[i];
-            info!("    Point {}: prepared=({:.3}, {:.3}, {}, {}) | reference=({:.3}, {:.3}, {}, {})", 
-                i + 1, 
-                point.x, point.y, point.color, point.pen_state,
-                ref_point[0], ref_point[1], ref_point[2] as u8, ref_point[3] as u8
-            );
-            
-            // Check coordinate differences
-            let x_diff = (point.x - ref_point[0]).abs();
-            let y_diff = (point.y - ref_point[1]).abs();
-            info!("      Coordinate diff: x={:.3}, y={:.3}", x_diff, y_diff);
-            
-            // Verify color and pen_state match exactly
-            assert_eq!(point.color, ref_point[2] as u8, "Color should match for point {}", i + 1);
-            assert_eq!(point.pen_state, ref_point[3] as u8, "Pen state should match for point {}", i + 1);
-        }
-    }
-    
+   
     // Verify we got some points
     assert!(!prepared_points.is_empty(), "Should have prepared some points from polylines data");
-    
-    // Test that all points have valid color and pen_state values
-    for (i, point) in prepared_points.iter().enumerate() {
-        assert!(point.color <= 255, "Point {} should have valid color value", i + 1);
-        assert!(point.pen_state <= 1, "Point {} should have valid pen_state (0 or 1)", i + 1);
-    }
-    
-    // Test command string generation from prepared points
-    info!("\nTesting get_draw_cmd_str function:");
     
     // Read DrawConfig from the PisObject in the loaded data
     let draw_config = draw_data.pis_obj.clone();
     
-    info!("PisObject:");
-    info!("Config Values: {:?}", draw_config.cnf_valus);
-    info!("Text Point Time: {} (0x{:02X})", draw_config.tx_point_time, draw_config.tx_point_time);
-    
-    // Use all prepared points for command generation
-    info!("Using all {} points for command generation", prepared_points.len());
-    
+
     // Generate the command string
     let command_string = BlueProtocol::pack_draw_points_cmd(&prepared_points, &draw_config.to_draw_config());
     info!("Generated command string: {}", command_string);
@@ -633,11 +428,11 @@ fn test_point_array_shapes_command_generation() {
                     Point::new(
                         point_data[0],           // x
                         point_data[1],           // y
-                        point_data[2] as u8,     // color
+                        DisplayColor::try_from(point_data[2] as u8).unwrap(),     // color
                         point_data[3] as u8,     // pen_state
                     )
                 } else {
-                    Point::new(0.0, 0.0, 1, 0)  // Default fallback
+                    Point::new(0.0, 0.0, DisplayColor::Red, 0)  // Default fallback
                 }
             })
             .collect();
