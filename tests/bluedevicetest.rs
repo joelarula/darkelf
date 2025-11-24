@@ -6,7 +6,7 @@ use std::time::Duration;
 
 
 use darkelf::draw::DrawUtils;
-use darkelf::model::{DeviceMode, DeviceState, DisplayColor, DrawConfig, EncodedCommandData, LegacyDrawData, Playback, PlaybackMode};
+use darkelf::model::{DeviceMode, DeviceState, BeamColor, DrawConfig, EncodedCommandData, LegacyDrawData, Playback, PlaybackMode};
 use darkelf::winblue::{ self, WinBlueController};
 use darkelf::util;
 use darkelf::bluedevice::BlueLaserDevice;
@@ -244,41 +244,41 @@ async fn test_show_drawing_protocol(device: &mut BlueLaserDevice) {
 
 
     // Add hardcoded points to draw_points
-    draw_points.push(Point::new(-403.0, 0.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(-403.0, 0.0, BeamColor::Blank, 1));
 
-    draw_points.push(Point::new(-336.0, 0.0, DisplayColor::Red, 0));
-    draw_points.push(Point::new(-269.0, 0.0, DisplayColor::Red, 0));
-    draw_points.push(Point::new(-202.0, 0.0, DisplayColor::Red, 0));
-    draw_points.push(Point::new(-134.0, 0.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(-67.0, 0.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(-336.0, 0.0, BeamColor::Red, 0));
+    draw_points.push(Point::new(-269.0, 0.0, BeamColor::Red, 0));
+    draw_points.push(Point::new(-202.0, 0.0, BeamColor::Red, 0));
+    draw_points.push(Point::new(-134.0, 0.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(-67.0, 0.0, BeamColor::Blank, 1));
     
-    draw_points.push(Point::new(0.0, 0.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(0.0, 0.0, BeamColor::Blank, 1));
 
-    draw_points.push(Point::new(67.0, 0.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(134.0, 0.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(202.0, 0.0, DisplayColor::Blue, 0));
-    draw_points.push(Point::new(269.0, 0.0, DisplayColor::Blue, 0));
-    draw_points.push(Point::new(336.0, 0.0, DisplayColor::Blue, 1));
+    draw_points.push(Point::new(67.0, 0.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(134.0, 0.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(202.0, 0.0, BeamColor::Blue, 0));
+    draw_points.push(Point::new(269.0, 0.0, BeamColor::Blue, 0));
+    draw_points.push(Point::new(336.0, 0.0, BeamColor::Blue, 1));
 
-    draw_points.push(Point::new(403.0, 0.0, DisplayColor::Blue, 1));
+    draw_points.push(Point::new(403.0, 0.0, BeamColor::Blue, 1));
     
-    draw_points.push(Point::new(0.0, 403.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(0.0, 403.0, BeamColor::Blank, 1));
     
-    draw_points.push(Point::new(0.0, 336.0, DisplayColor::Purple, 1));
-    draw_points.push(Point::new(0.0, 269.0, DisplayColor::Purple, 0));
-    draw_points.push(Point::new(0.0, 202.0, DisplayColor::Purple, 0));
-    draw_points.push(Point::new(0.0, 134.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(0.0, 67.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(0.0, 336.0, BeamColor::Purple, 1));
+    draw_points.push(Point::new(0.0, 269.0, BeamColor::Purple, 0));
+    draw_points.push(Point::new(0.0, 202.0, BeamColor::Purple, 0));
+    draw_points.push(Point::new(0.0, 134.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(0.0, 67.0, BeamColor::Blank, 1));
     
-    draw_points.push(Point::new(0.0, 0.0, DisplayColor::Blank, 1));
+    draw_points.push(Point::new(0.0, 0.0, BeamColor::Blank, 1));
     
-    draw_points.push(Point::new(0.0, -67.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(0.0, -134.0, DisplayColor::Blank, 1));
-    draw_points.push(Point::new(0.0, -202.0, DisplayColor::White, 0));
-    draw_points.push(Point::new(0.0, -269.0, DisplayColor::White, 0));
-    draw_points.push(Point::new(0.0, -336.0, DisplayColor::White, 0));
+    draw_points.push(Point::new(0.0, -67.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(0.0, -134.0, BeamColor::Blank, 1));
+    draw_points.push(Point::new(0.0, -202.0, BeamColor::White, 0));
+    draw_points.push(Point::new(0.0, -269.0, BeamColor::White, 0));
+    draw_points.push(Point::new(0.0, -336.0, BeamColor::White, 0));
     
-    draw_points.push(Point::new(0.0, -403.0, DisplayColor::White, 1));
+    draw_points.push(Point::new(0.0, -403.0, BeamColor::White, 1));
 
     device.draw(draw_points, draw_config.clone()).await;
     sleep(Duration::from_millis(500));
@@ -385,7 +385,7 @@ async fn test_show_drawing_protocol_b(device: &mut BlueLaserDevice) {
         Point::new(
             x as f64,
             y as f64,
-            DisplayColor::from_u8(color as u8).unwrap_or(DisplayColor::White),
+            BeamColor::from_u8(color as u8).unwrap_or(BeamColor::White),
             pen as u8
         )
     }).collect();
@@ -413,7 +413,7 @@ async fn test_show_text(device: &mut BlueLaserDevice) {
         cmd.device_mode = DeviceMode::TextPlayback;
         cmd.text_distance = 100;
         cmd.run_speed = 50;
-        cmd.color = DisplayColor::Yellow;
+        cmd.color = BeamColor::Yellow;
         cmd.text_point_time = 10;
         cmd.draw_point_time = 10;
 
@@ -683,11 +683,11 @@ async fn test_shapes(device: &mut BlueLaserDevice) {
                     Point::new(
                         point_data[0],           // x
                         point_data[1],           // y
-                        DisplayColor::from_u8(point_data[2] as u8).unwrap_or(DisplayColor::White),     // color
+                        BeamColor::from_u8(point_data[2] as u8).unwrap_or(BeamColor::White),     // color
                         point_data[3] as u8,     // pen_state
                     )
                 } else {
-                    Point::new(0.0, 0.0, DisplayColor::Red, 0)  // Default fallback
+                    Point::new(0.0, 0.0, BeamColor::Red, 0)  // Default fallback
                 }
             })
             .collect();

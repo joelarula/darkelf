@@ -73,7 +73,7 @@ pub struct DeviceFeatures{
 pub struct MainCommandData {
     pub device_mode: DeviceMode,
     pub audio_trigger_mode: u8,
-    pub color: DisplayColor, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
+    pub color: BeamColor, // 0: Black 1: Red 2: Green 3: Blue 4: Yellow 5: Magenta 6: Cyan 7: White 8: Orange 9: RGB
     pub text_size_x: u8, // text size x 10 - 100
     pub text_size_y: u8, // text size y 10 - 100
     pub run_speed: u8, // speed 0 - 100
@@ -133,7 +133,7 @@ impl Default for DeviceSettings {
 pub struct Point {
     pub x: f64,
     pub y: f64,
-    pub color: DisplayColor,
+    pub color: BeamColor,
     pub pen_state: u8,  // 
 }
 
@@ -175,7 +175,7 @@ pub struct PathCommand {
 
 
 impl Point {
-    pub fn new(x: f64, y: f64, color: DisplayColor, pen_state: u8) -> Self {
+    pub fn new(x: f64, y: f64, color: BeamColor, pen_state: u8) -> Self {
         Self { x, y, color, pen_state }
     }
     
@@ -184,7 +184,7 @@ impl Point {
         Self {
             x: arr[0],
             y: arr[1], 
-            color: DisplayColor::try_from(arr[2] as u8).unwrap_or(DisplayColor::Blank),
+            color: BeamColor::try_from(arr[2] as u8).unwrap_or(BeamColor::Blank),
             pen_state: arr[3] as u8,
         }
     }
@@ -194,7 +194,7 @@ impl Point {
         Self {
             x,
             y,
-            color: DisplayColor::try_from(color as u8).unwrap_or(DisplayColor::Blank),
+            color: BeamColor::try_from(color as u8).unwrap_or(BeamColor::Blank),
             pen_state: pen_state as u8,
         }
     }
@@ -224,7 +224,7 @@ pub struct Playback {
 pub struct TextPlayback {
     pub text: String, // text content
     pub time: u16, // seconds
-    pub color: DisplayColor, // color
+    pub color: BeamColor, // color
 }
 
 
@@ -351,7 +351,7 @@ impl Default for DrawCommandData {
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-pub enum DisplayColor {
+pub enum BeamColor {
     Blank = 0,
     Red = 1,
     Yellow = 4,
@@ -365,39 +365,39 @@ pub enum DisplayColor {
     RGB = 9,
 }
 
-impl TryFrom<u8> for DisplayColor {
+impl TryFrom<u8> for BeamColor {
     type Error = ();
     fn try_from(val: u8) -> Result<Self, Self::Error> {
         match val {
-            0 => Ok(DisplayColor::Blank),
-            1 => Ok(DisplayColor::Red),
-            2 => Ok(DisplayColor::Green),
-            3 => Ok(DisplayColor::Blue),
-            4 => Ok(DisplayColor::Yellow),
-            5 => Ok(DisplayColor::Cyan),
-            6 => Ok(DisplayColor::Purple),
-            7 => Ok(DisplayColor::White),
-            8 => Ok(DisplayColor::Jump),
-            9 => Ok(DisplayColor::RGB),
+            0 => Ok(BeamColor::Blank),
+            1 => Ok(BeamColor::Red),
+            2 => Ok(BeamColor::Green),
+            3 => Ok(BeamColor::Blue),
+            4 => Ok(BeamColor::Yellow),
+            5 => Ok(BeamColor::Cyan),
+            6 => Ok(BeamColor::Purple),
+            7 => Ok(BeamColor::White),
+            8 => Ok(BeamColor::Jump),
+            9 => Ok(BeamColor::RGB),
             _ => Err(()),
         }
     }
 }
 
 
-impl DisplayColor {
+impl BeamColor {
     pub fn from_u8(val: u8) -> Option<Self> {
         match val {
-            0 => Some(DisplayColor::Blank),
-            1 => Some(DisplayColor::Red),
-            2 => Some(DisplayColor::Green),
-            3 => Some(DisplayColor::Blue),
-            4 => Some(DisplayColor::Yellow),
-            5 => Some(DisplayColor::Cyan),
-            6 => Some(DisplayColor::Purple),
-            7 => Some(DisplayColor::White),
-            8 => Some(DisplayColor::Jump),
-            9 => Some(DisplayColor::RGB),
+            0 => Some(BeamColor::Blank),
+            1 => Some(BeamColor::Red),
+            2 => Some(BeamColor::Green),
+            3 => Some(BeamColor::Blue),
+            4 => Some(BeamColor::Yellow),
+            5 => Some(BeamColor::Cyan),
+            6 => Some(BeamColor::Purple),
+            7 => Some(BeamColor::White),
+            8 => Some(BeamColor::Jump),
+            9 => Some(BeamColor::RGB),
             _ => None,
         }
     }
@@ -426,52 +426,52 @@ impl std::convert::TryFrom<u8> for PlaybackMode {
 }
 
 
-impl DisplayColor {
+impl BeamColor {
     /// Returns the display name for the color.
     pub fn name(&self) -> &'static str {
         match self {
-            DisplayColor::Blank => "Blank",
-            DisplayColor::Red => "Red",
-            DisplayColor::Yellow => "yellow",
-            DisplayColor::Green => "green",
-            DisplayColor::Cyan => "Cyan",
-            DisplayColor::Blue => "blue",
-            DisplayColor::Purple => "purple",
-            DisplayColor::White => "white",
-            DisplayColor::Jump => "Jump",
-            DisplayColor::RGB => "RGB",
+            BeamColor::Blank => "Blank",
+            BeamColor::Red => "Red",
+            BeamColor::Yellow => "yellow",
+            BeamColor::Green => "green",
+            BeamColor::Cyan => "Cyan",
+            BeamColor::Blue => "blue",
+            BeamColor::Purple => "purple",
+            BeamColor::White => "white",
+            BeamColor::Jump => "Jump",
+            BeamColor::RGB => "RGB",
         }
     }
 
     /// Returns the color value as a string (CSS color or hex code).
     pub fn color(&self) -> &'static str {
         match self {
-            DisplayColor::Blank => "black",
-            DisplayColor::Red => "red",
-            DisplayColor::Yellow => "yellow",
-            DisplayColor::Green => "green",
-            DisplayColor::Cyan => "#00FFFF",
-            DisplayColor::Blue => "blue",
-            DisplayColor::Purple => "purple",
-            DisplayColor::White => "white",
-            DisplayColor::Jump => "Jump",
-            DisplayColor::RGB => "RGB",
+            BeamColor::Blank => "black",
+            BeamColor::Red => "red",
+            BeamColor::Yellow => "yellow",
+            BeamColor::Green => "green",
+            BeamColor::Cyan => "#00FFFF",
+            BeamColor::Blue => "blue",
+            BeamColor::Purple => "purple",
+            BeamColor::White => "white",
+            BeamColor::Jump => "Jump",
+            BeamColor::RGB => "RGB",
         }
     }
 
     /// Returns the idx value for the color.
     pub fn idx(&self) -> u8 {
         match self {
-            DisplayColor::Blank => 0,
-            DisplayColor::Red => 1,
-            DisplayColor::Yellow => 4,
-            DisplayColor::Green => 2,
-            DisplayColor::Cyan => 5,
-            DisplayColor::Blue => 3,
-            DisplayColor::Purple => 6,
-            DisplayColor::White => 7,
-            DisplayColor::Jump => 8,
-            DisplayColor::RGB => 9,
+            BeamColor::Blank => 0,
+            BeamColor::Red => 1,
+            BeamColor::Yellow => 4,
+            BeamColor::Green => 2,
+            BeamColor::Cyan => 5,
+            BeamColor::Blue => 3,
+            BeamColor::Purple => 6,
+            BeamColor::White => 7,
+            BeamColor::Jump => 8,
+            BeamColor::RGB => 9,
         }
     }
 }
@@ -556,7 +556,7 @@ impl DrawPoints {
 
 /// Custom serialization/deserialization for DrawPoints
 mod flexible_points {
-    use crate::model::DisplayColor;
+    use crate::model::BeamColor;
 
     use super::{DrawPoints, Point};
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -601,7 +601,7 @@ mod flexible_points {
                                             let y = point_arr[1].as_f64().unwrap_or(0.0);
                                             let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                             let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                            polyline_points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
+                                            polyline_points.push(Point { x, y, color: BeamColor::try_from(color).unwrap_or(BeamColor::Blank), pen_state });
                                         }
                                     }
                                 }
@@ -619,7 +619,7 @@ mod flexible_points {
                                     let y = point_arr[1].as_f64().unwrap_or(0.0);
                                     let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                     let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                    points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
+                                    points.push(Point { x, y, color: BeamColor::try_from(color).unwrap_or(BeamColor::Blank), pen_state });
                                 }
                             }
                         }
@@ -637,7 +637,7 @@ mod flexible_points {
                                 let y = point_arr[1].as_f64().unwrap_or(0.0);
                                 let color = point_arr[2].as_u64().unwrap_or(0) as u8;
                                 let pen_state = point_arr[3].as_u64().unwrap_or(0) as u8;
-                                points.push(Point { x, y, color: DisplayColor::try_from(color).unwrap_or(DisplayColor::Blank), pen_state });
+                                points.push(Point { x, y, color: BeamColor::try_from(color).unwrap_or(BeamColor::Blank), pen_state });
                             }
                         }
                     }

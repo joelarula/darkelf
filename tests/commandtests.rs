@@ -1,6 +1,6 @@
 use std::{env, fs, path::Path};
 use log::info;
-use darkelf::{blueprotocol::BlueProtocol, draw::DrawUtils, model::{DeviceMode, DeviceSettings, DisplayColor, DrawCommandData, DrawMode, DrawPoints, LegacyDrawData, Playback, PlaybackMode, Point}, util};
+use darkelf::{blueprotocol::BlueProtocol, draw::DrawUtils, model::{DeviceMode, DeviceSettings, BeamColor, DrawCommandData, DrawMode, DrawPoints, LegacyDrawData, Playback, PlaybackMode, Point}, util};
 use anyhow::{anyhow, Ok};
 
 use std::sync::Once;
@@ -73,7 +73,7 @@ fn test_parse_device_response() {
 
     // Verify main command data
     assert_eq!(response.main_data.device_mode, DeviceMode::try_from(6).unwrap(), "Current mode should be 6");
-    assert_eq!(response.main_data.color, DisplayColor::try_from(9).unwrap(), "Text color should be 9");
+    assert_eq!(response.main_data.color, BeamColor::try_from(9).unwrap(), "Text color should be 9");
     assert_eq!(response.main_data.text_size_x, 148, "Text size should be 148");
     assert_eq!(response.main_data.run_speed, 56, "Run speed should be 56");
     assert_eq!(response.main_data.text_distance, 165, "Text distance should be 165");
@@ -428,11 +428,11 @@ fn test_point_array_shapes_command_generation() {
                     Point::new(
                         point_data[0],           // x
                         point_data[1],           // y
-                        DisplayColor::try_from(point_data[2] as u8).unwrap(),     // color
+                        BeamColor::try_from(point_data[2] as u8).unwrap(),     // color
                         point_data[3] as u8,     // pen_state
                     )
                 } else {
-                    Point::new(0.0, 0.0, DisplayColor::Red, 0)  // Default fallback
+                    Point::new(0.0, 0.0, BeamColor::Red, 0)  // Default fallback
                 }
             })
             .collect();

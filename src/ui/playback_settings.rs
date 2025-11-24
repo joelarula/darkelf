@@ -1,6 +1,6 @@
 use eframe::egui::{self, TopBottomPanel};
 use log::info;
-use crate::model::DisplayColor;
+use crate::model::BeamColor;
 use crate::ui::{app::App, model::DeviceCommand};
 
 pub fn show_playback_settings_ui(app: &mut App, ctx: &eframe::egui::Context) {
@@ -23,7 +23,7 @@ pub fn show_playback_settings_ui(app: &mut App, ctx: &eframe::egui::Context) {
 								egui::ComboBox::from_id_salt("display_color_combo")
 									.selected_text(format!("{:?}", app.command_data.color))
 									.show_ui(ui, |ui| {
-										for &color in &[DisplayColor::Red, DisplayColor::Yellow, DisplayColor::Green, DisplayColor::Cyan, DisplayColor::Blue, DisplayColor::Purple, DisplayColor::White, DisplayColor::Jump, DisplayColor::RGB] {
+										for &color in &[BeamColor::Red, BeamColor::Yellow, BeamColor::Green, BeamColor::Cyan, BeamColor::Blue, BeamColor::Purple, BeamColor::White, BeamColor::Jump, BeamColor::RGB] {
 											ui.selectable_value(&mut app.command_data.color, color, format!("{:?}", color));
 										}
 									});

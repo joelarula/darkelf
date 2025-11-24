@@ -1,7 +1,7 @@
 use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point}};
 use log::{debug, info};
 use ilda::model::ILDA_BLANK;
-use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, DisplayColor};
+use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, BeamColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -157,7 +157,7 @@ impl BlueProtocol {
         Some(MainCommandData {
             device_mode: device_mode ,
             audio_trigger_mode: Self::clamp_value(Self::extract_hex_value(2, 1, &cmd) as u8, 0, 9, 0),
-            color: DisplayColor::try_from(Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0)).unwrap(),
+            color: BeamColor::try_from(Self::clamp_value(Self::extract_hex_value(3, 1, &cmd) as u8, 0, 9, 0)).unwrap(),
             text_size_x: Self::clamp_value(Self::extract_hex_value(4, 1, &cmd) as u8 , 0, 255, 125),
             text_size_y: Self::clamp_value(Self::extract_hex_value(5, 1, &cmd) as u8 , 0, 255, 125),
             run_speed:  Self::clamp_value(Self::extract_hex_value(6, 1, &cmd) as u8 , 0, 255, 128),
@@ -503,9 +503,9 @@ impl BlueProtocol {
             let mut pen_state = point.pen_state;
                 
             // Handle textStopTime feature logic - always enabled for polylines mode
-            if point.color == DisplayColor::Blank {
+            if point.color == BeamColor::Blank {
                 pen_state = 2;
-            } else if (ix < points.len() - 1 && points[ix + 1].color == DisplayColor::Blank) || ix == points.len() - 1 {
+            } else if (ix < points.len() - 1 && points[ix + 1].color == BeamColor::Blank) || ix == points.len() - 1 {
                 pen_state = 3;
             }
                 
