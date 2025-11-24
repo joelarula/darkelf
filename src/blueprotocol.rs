@@ -110,7 +110,7 @@ impl BlueProtocol {
 
 
     pub fn pack_setting_cmd(settings: &DeviceSettings) -> String {
-
+        info!("Packing settings command with {:?}", settings);
         format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}", 
             SETTINGS_CMD_HEADER,
@@ -363,6 +363,7 @@ impl BlueProtocol {
 
 
     pub fn pack_query_cmd(random_verify: &[u8]) -> String {
+        info!("Packing query command with verify bytes: {:?}", random_verify);
         let middle = if random_verify.len() >= 4 {
             format!("{:02X}{:02X}{:02X}{:02X}", 
                 random_verify[0], random_verify[1], 
@@ -375,7 +376,7 @@ impl BlueProtocol {
     }
 
     pub fn pack_main_command(command: &MainCommandData) -> String {
-      
+       info!("Packing main command with {:?}", command);
         let cur_mode_hex = Self::to_fixed_width_hex(command.device_mode as u8, 2);
         let reserved_hex = Self::to_fixed_width_hex(0, 2);
         let audio_trigger_mode_hex = Self::to_fixed_width_hex(command.audio_trigger_mode as u8, 2);
@@ -464,6 +465,7 @@ impl BlueProtocol {
     }
 
     pub fn pack_draw_points_cmd(points: &[Point], config: &DrawConfig) -> String {
+        info!("Packing draw points command with {:?} {:?}", points,config);
         let encoded_draw_cmd = Self::encode_draw_point_command(points, config);
         let command_str = format!("{}{}{}", DRAW_CMD_HEADER, encoded_draw_cmd, DRAW_CMD_FOOTER);
         command_str.to_uppercase()
@@ -614,6 +616,7 @@ impl BlueProtocol {
     }
 
     pub fn pack_bits_to_prj_selected(bits: &[u8]) -> Vec<u16> {
+        info!("Packing bits: {:?}", bits);
         let mut prj_selected = Vec::new();
         for chunk in bits.chunks(16) {
             let mut val = 0u16;
@@ -633,6 +636,7 @@ pub fn pack_text_command(
     segment_points: &Vec<(usize, Vec<Point>, f32, f32)>,
     time: f32,
 ) -> String {
+    info!("Packing text command with segment points: {:?} and time: {}", segment_points, time);
     if let Some(encoded_command_data) = Self::encode_layout_to_command_data(
         segment_points,
         time, 
@@ -790,7 +794,7 @@ pub fn encode_layout_to_command_data(
 
 
     pub fn pack_draw_shape_command(segment_index: &u8,  config: &DrawConfig) -> String {
-    
+        info!("Packing draw shape command with {:?} {:?}", segment_index,config);
         let start_marker = "01";
         let segment_index_hex = Self::to_fixed_width_hex(*segment_index as u8, 2);
         let mut packed_hex = format!("{}{}", start_marker, segment_index_hex);
@@ -824,6 +828,7 @@ pub fn encode_layout_to_command_data(
 
 
     pub fn pack_play_shapes_command(config: &Vec<DrawConfig>) -> String {
+        info!("Packing draw shapes command with {:?}", config);
         // Segment count: 128 | len (JS: toFixedWidthHex(128 | e.length, 2))
         let segment_count = 128 | (config.len() as u8);
         let segment_count_hex = Self::to_fixed_width_hex(segment_count, 2);

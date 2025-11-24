@@ -2,8 +2,8 @@ use std::sync::{Arc, Mutex as StdMutex};
 use anyhow::anyhow;
 use darkelf::bluedevice::BlueLaserDevice;
 use darkelf::model::{DeviceInfo, DeviceSettings, MainCommandData};
-use darkelf::ui::model::{DeviceList, DeviceMessage,DeviceCommand};
-use darkelf::winblue::WinBlueController;
+use darkelf::ui::model::{ DeviceMessage,DeviceCommand};
+use darkelf::winblue::{DeviceList, WinBlueController};
 use darkelf::{
     ui::app::{App},
     util, winblue,

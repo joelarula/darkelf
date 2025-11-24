@@ -1,7 +1,8 @@
 use std::sync::Arc;
 use std::collections::HashMap;
 use crate::model::{DeviceInfo, DeviceSettings, DrawData, MainCommandData, DrawCommandData, Playback, PlaybackMode, Point};
-use crate::ui::model::{DeviceCommand, DeviceList, DeviceMessage};
+use crate::ui::model::{DeviceCommand, DeviceMessage};
+use crate::winblue::DeviceList;
 use eframe::egui; 
 use egui::Mesh;
 use log::info;
