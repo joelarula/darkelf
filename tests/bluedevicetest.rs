@@ -69,28 +69,28 @@ async fn test_laser_device_functionality(device: &mut BlueLaserDevice) -> Result
     //sleep(Duration::from_millis(500));
     //test_tick_playback_command(device).await;
 
-    test_shapes(device).await;
-
-    sleep(Duration::from_millis(500));
-    
-    test_show_text(device).await;
+    //test_shapes(device).await;
 
     sleep(Duration::from_millis(500));
     
     test_show_drawings(device).await;
 
+
     sleep(Duration::from_millis(500));
     
     test_show_drawing_protocol_b(device).await;
 
     sleep(Duration::from_millis(500));
 
-    test_show_drawing_protocol_b(device).await;
-
     test_pis_command(device).await;
 
     sleep(Duration::from_millis(500));
 
+
+    test_show_text(device).await;
+
+    sleep(Duration::from_millis(500));
+    
    // test_pis_list_command(device).await;
 
     Ok(())
@@ -372,7 +372,7 @@ async fn test_show_text(device: &mut BlueLaserDevice) {
         let face = Face::from_slice(&ttf_bytes, 0).unwrap();
 
         cmd.device_mode = DeviceMode::TextPlayback;
-        cmd.text_distance = 50;
+        cmd.text_distance = 10;
         cmd.run_speed = 50;
         cmd.text_point_time = 10;
         cmd.draw_point_time = 10;
@@ -382,7 +382,7 @@ async fn test_show_text(device: &mut BlueLaserDevice) {
         sleep(Duration::from_secs(2));
 
         info!("Sending text draw command");
-        device.text("AIAS SADAS SAIA".to_string(),face).await;
+        device.text("SURRAMURRA".to_string(),face).await;
 
         sleep(Duration::from_millis(5000));
     }

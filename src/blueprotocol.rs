@@ -853,7 +853,6 @@ pub fn encode_layout_to_command_data(
 
 
 
-
             // No featureParams/xyCnf support for now, so pad to 15 bytes (30 hex chars)
             while segment_hex.len() < 30 {
                 segment_hex.push_str("00");
@@ -862,7 +861,6 @@ pub fn encode_layout_to_command_data(
             encoded_segments.push_str(segment_end_marker);
         }
 
-        // JS: "d0d1d2d3" + segmentCountHex + "00" + encodedSegments + "d4d5d6d7"
         let full_command = format!(
             "{}{}{}{}{}",
             DRAWCONFIG_CMD_HEADER,
