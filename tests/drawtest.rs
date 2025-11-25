@@ -4,7 +4,7 @@ use darkelf::ilda::model::{IldaFormatCode, IldaSection, palette, status};
 use darkelf::ilda::builder::HeaderBuilder;
 
 
-use darkelf::model::BeamColor;
+use darkelf::blue::model::BeamColor;
 //use lyon::math::{point};
 //use lyon::path::Path;
 //use lyon::tessellation::{StrokeTessellator, StrokeOptions, StrokeVertex, VertexBuffers};

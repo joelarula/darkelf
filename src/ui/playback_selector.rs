@@ -1,8 +1,6 @@
-use crate::model::PlaybackMode;
-use crate::ui::app;
-/// Shows a grid of 10x5 on/off buttons labeled 1-50.
+use crate::blue::model::PlaybackMode;
 use crate::ui::{app::App, model::DeviceCommand};
-use crate::blueprotocol::BlueProtocol;
+use crate::blue::blueprotocol::BlueProtocol;
 use egui::{Grid, Button};
 use log::info;
 

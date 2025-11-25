@@ -21,8 +21,9 @@ use std::time::Duration;
 use tokio::time::{Instant, sleep};
 use log::{info, error, debug};
 
-use crate::blue::{self, BlueController};
-use crate::blueprotocol::{HEADER, FOOTER};
+use crate::blue::{self};
+use crate::blue::blue::BlueController;
+use crate::blue::blueprotocol::{HEADER, FOOTER};
 
 // BLE timing and packet constants
 const BLE_SEND_INTERVAL_MS: u64 = 20;
@@ -126,7 +127,7 @@ impl WinBlueController {
                 let service_uuid = service.Uuid()?;
                 let service_uuid_str = format!("{:?}", service_uuid).to_uppercase();
                 debug!("Found service UUID: {}", service_uuid_str);
-                if blue::LASER_SERVICE_UUID.contains(&service_uuid_str.as_str()) {
+                if blue::blue::LASER_SERVICE_UUID.contains(&service_uuid_str.as_str()) {
                     self.service_uuid = Some(service_uuid);
                     info!("Service UUID: {:?} Found Laser Service uuid", service_uuid);
                     let characteristics_result = service.GetCharacteristicsAsync()?.get()?;
@@ -140,13 +141,13 @@ impl WinBlueController {
                         debug!("Characteristic UUID: {} Properties: {:?}", char_uuid_str, props);
                         if (props & GattCharacteristicProperties::Write == GattCharacteristicProperties::Write ||
                             props & GattCharacteristicProperties::WriteWithoutResponse == GattCharacteristicProperties::WriteWithoutResponse) &&
-                            blue::WRITE_UUIDS.contains(&char_uuid_str.as_str()) {
+                            blue::blue::WRITE_UUIDS.contains(&char_uuid_str.as_str()) {
                             info!("Write UUID: {:?} Found Laser Service write uuid", char_uuid);
                                 self.write_char = Some(characteristic.clone());
                             }
                         if (props & GattCharacteristicProperties::Notify == GattCharacteristicProperties::Notify ||
                             props & GattCharacteristicProperties::Indicate == GattCharacteristicProperties::Indicate) &&
-                            blue::NOTIFY_UUIDS.contains(&char_uuid_str.as_str()) {
+                            blue::blue::NOTIFY_UUIDS.contains(&char_uuid_str.as_str()) {
                             info!("Notify UUID: {:?} Found Laser Service notification uuid", char_uuid);
                                 self.notify_char = Some(characteristic.clone());
                         }
@@ -649,7 +650,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
         let device_info: DeviceInformation = devices.GetAt(i)?;
         let device_name = device_info.Name()?;
         let device_name_str = device_name.to_string_lossy();
-        if !device_name_str.starts_with(blue::LASER_DEVICE_PREFIX) {
+        if !device_name_str.starts_with(blue::blue::LASER_DEVICE_PREFIX) {
             continue;
         }
 
@@ -661,7 +662,7 @@ pub async fn scan_laser_devices() -> Result<Vec<DeviceInformation>, Box<dyn Erro
             let service: GattDeviceService = services_result.Services()?.GetAt(j)?;
             let service_uuid = service.Uuid()?;
             let str = format!("{:?}", service_uuid).to_uppercase();
-            if blue::LASER_SERVICE_UUID.contains(&str.as_str()) {
+            if blue::blue::LASER_SERVICE_UUID.contains(&str.as_str()) {
                 info!("Found laser service: ({:?})", service_uuid);
                 device_list.push(device_info.clone());
             }

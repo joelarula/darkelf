@@ -1,7 +1,7 @@
 
 use darkelf::draw::DrawUtils;
-use darkelf::blueprotocol::BlueProtocol;
-use darkelf::model::EncodedCommandData;
+use darkelf::blue::blueprotocol::BlueProtocol;
+use darkelf::blue::model::EncodedCommandData;
 use ttf_parser::Face;
 
 struct PathPrinter;
@@ -20,7 +20,7 @@ fn test_glyphs() {
 
     let text_data = DrawUtils::get_text_lines(&face, "ABC");
 
-    let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
+    let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true);
 
 
     // Serialize text_data to JSON and write to file

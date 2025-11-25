@@ -1,4 +1,4 @@
-use crate::{model::{DrawCommandData, DrawConfig, DrawData, Point}, ui::{self, app::App, model::DeviceCommand}};
+use crate::{blue::model::{DrawCommandData, DrawConfig, DrawData, Point}, ui::{self, app::App, model::DeviceCommand}};
 use eframe::egui::*;
 
 

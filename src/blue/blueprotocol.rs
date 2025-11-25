@@ -1,7 +1,7 @@
-use crate::{draw::DrawUtils, ilda, model::{EncodedCommandData, Playback, PlaybackMode, Point}};
+use crate::{draw::DrawUtils, ilda, blue::model::{EncodedCommandData, Playback, PlaybackMode, Point}};
 use log::{debug, info};
 use ilda::model::ILDA_BLANK;
-use crate::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, BeamColor};
+use crate::blue::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, BeamColor};
 
 pub const HEADER: &str = "E0E1E2E3";
 pub const FOOTER: &str = "E4E5E6E7";
@@ -43,7 +43,7 @@ impl BlueProtocol {
         format!("{:0width$x}", rounded_value, width = width)
     }
 
-    fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
+    pub fn clamp_value<T: PartialOrd + Copy>(value: T, min: T, max: T, default: T) -> T {
         if value < min || value > max {
             default
         } else {
@@ -604,7 +604,7 @@ impl BlueProtocol {
         (true, Some(device_info))
     }
 
-    pub fn extract_project_item_bits(project_item: &crate::model::Playback) -> Vec<u8> {
+    pub fn extract_project_item_bits(project_item: &Playback) -> Vec<u8> {
         let mut bits = Vec::with_capacity(project_item.selected_plays.len() * 16);
         for &n in &project_item.selected_plays {
             for h in 0..16 {
@@ -632,14 +632,9 @@ impl BlueProtocol {
 
 
 
-pub fn pack_text_command(
-    segment_points: &Vec<(usize, Vec<Point>, f32, f32)>,
-    time: f32,
-) -> String {
+pub fn pack_text_command( segment_points: &Vec<(usize, Vec<Point>, f32, f32)>, time: f32,) -> String {
     info!("Packing text command with segment points: {:?} and time: {}", segment_points, time);
-    if let Some(encoded_command_data) = Self::encode_layout_to_command_data(
-        segment_points,
-        time, 
+    if let Some(encoded_command_data) = Self::encode_layout_to_command_data( segment_points,time, 
     ) {
         let result_cmd = format!(
             "{}{}{}{}{}{}{}{}{}{}{}{}{}",
@@ -663,11 +658,7 @@ pub fn pack_text_command(
 }
 
 
-    /// Encodes layout to command data, matching JS encodeLayoutToCommandData logic.
-pub fn encode_layout_to_command_data(
-        polyline_segments: &Vec<(usize, Vec<Point>, f32, f32)>,
-        segment_time: f32,
-    ) -> Option<EncodedCommandData> {
+pub fn encode_layout_to_command_data( polyline_segments: &Vec<(usize, Vec<Point>, f32, f32)>,  segment_time: f32,) -> Option<EncodedCommandData> {
         let a = 0;
         if polyline_segments.is_empty() {
             return None;
@@ -683,13 +674,13 @@ pub fn encode_layout_to_command_data(
         let scaling_factor = 0.5;
         let mut f = v;
         let mut segment_point_count = 0;
-        let mut time = Self::to_fixed_width_hex(segment_time.floor() as i32, 2);
+        let  time = Self::to_fixed_width_hex(segment_time.floor() as i32, 2);
       
         if v >= 8 {
             f = 0;
         }
 
-        let (xyss, grouped_segments, se1, se2, x_offset, _group_point_counts, _segment_widths) = {
+        let (xyss, se1, se2, x_offset, _group_point_counts, _segment_widths) = {
             let seg_data = DrawUtils::generate_segmented_layout_data(
                 polyline_segments,
                 scaling_factor,
@@ -697,7 +688,6 @@ pub fn encode_layout_to_command_data(
             );
             (
                 seg_data.0,
-                seg_data.1,
                 seg_data.2,
                 seg_data.3,
                 seg_data.4,
@@ -829,7 +819,6 @@ pub fn encode_layout_to_command_data(
 
     pub fn pack_play_shapes_command(config: &Vec<DrawConfig>) -> String {
         info!("Packing draw shapes command with {:?}", config);
-        // Segment count: 128 | len (JS: toFixedWidthHex(128 | e.length, 2))
         let segment_count = 128 | (config.len() as u8);
         let segment_count_hex = Self::to_fixed_width_hex(segment_count, 2);
         let segment_end_marker = "FF";

@@ -1,4 +1,4 @@
-use crate::{model::DeviceMode, ui::{app::App, model::DeviceCommand}};
+use crate::{blue::model::DeviceMode, ui::{app::App, model::DeviceCommand}};
 use eframe::egui::*;
 
 pub fn show_mode_buttons(app: &mut App, ctx: &eframe::egui::Context) {

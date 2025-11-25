@@ -6,18 +6,21 @@ use std::time::Duration;
 
 
 use darkelf::draw::DrawUtils;
-use darkelf::model::{DeviceMode, DeviceState, BeamColor, DrawConfig, EncodedCommandData, LegacyDrawData, Playback, PlaybackMode};
-use darkelf::winblue::{ self, WinBlueController};
+use darkelf::blue::model::{DeviceMode, DeviceState, BeamColor, DrawConfig, Playback, PlaybackMode};
+use darkelf::blue::winblue::{ self, WinBlueController};
 use darkelf::util;
-use darkelf::bluedevice::BlueLaserDevice;
-use darkelf::blueprotocol::BlueProtocol;
+use darkelf::blue::bluedevice::BlueLaserDevice;
+use darkelf::blue::blueprotocol::BlueProtocol;
 use anyhow::{anyhow, Ok};
 use ttf_parser::Face;
 use windows::Devices::Enumeration::DeviceInformation;
 use log::{error, info};
-use darkelf::model::{ Point, DrawCommandData};
+use darkelf::blue::model::{ Point};
 use std::fs;
+mod utils;
+use utils::prepare_draw_data;
 
+use crate::utils::LegacyDrawData;
 
 #[tokio::main]
 #[test]
@@ -738,7 +741,7 @@ async fn test_show_drawings(device: &mut BlueLaserDevice) {
             play_time: 5,
         };
 
-        let points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
+        let points = prepare_draw_data(&draw_data, 300.0);
         device.draw(points, draw_config).await;
 
         sleep(Duration::from_millis(1500));

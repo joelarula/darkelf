@@ -1,4 +1,4 @@
-use crate::model::{DeviceSettings, DrawCommandData, DrawConfig, MainCommandData, Point};
+use crate::blue::model::{DeviceSettings, DrawConfig, MainCommandData, Point};
 
 pub trait LaserDevice {
 

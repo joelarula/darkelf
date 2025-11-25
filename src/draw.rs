@@ -1,24 +1,19 @@
-use crate::blueprotocol::BlueProtocol;
-use crate::model::{
-    BeamColor, DrawItem, DrawMode, LegacyDrawData, PathCommand, Point, PolylineData
+use crate::blue::blueprotocol::BlueProtocol;
+use crate::blue::model::{
+    BeamColor, PathCommand, Point, PolylineData
 };
 use ttf_parser::Face;
 use ttf_parser::{OutlineBuilder};
 
-const REFERENCE_COORDINATE_SIZE: f64 = 800.0;
 
 pub struct DrawUtils;
 
 impl DrawUtils {
-    /// Normalizes and centers lines, similar to JS normalizeAndCenterLines.
-    pub fn normalize_and_center_lines(
-        lines_container: &PolylineData,
-        is_horizontal_adjustment: bool,
-        flip_horizontal: bool,
-    ) -> PolylineData {
+   
+    pub fn normalize_and_center_lines(lines_container: &PolylineData) -> PolylineData {
         let n = &lines_container.lines;
         let mut h = lines_container.w;
-        let mut a = lines_container.h;
+        let  a = lines_container.h;
         let mut left = 99999.0_f32;
         let mut top = 99999.0_f32;
         let mut right = -99999.0_f32;
@@ -62,24 +57,22 @@ impl DrawUtils {
                     color: BeamColor::Blank,
                     pen_state: pt.pen_state,
                 };
-                if is_horizontal_adjustment {
-                    if flip_horizontal {
-                        x.x = -x.x as f64 + 2.0 * x0 as f64 - left as f64 + 20.0;
-                    } else {
+                //if is_horizontal_adjustment {
+                 //   if flip_horizontal {
+                 //       x.x = -x.x as f64 + 2.0 * x0 as f64 - left as f64 + 20.0;
+                 //   } else {
                         x.x = x.x - left as f64 + 20.0;
-                    }
-                } else {
-                    x.y = x.y - top as f64 + 20.0;
-                }
+                 //   }
+                //} else {
+                //    x.y = x.y - top as f64 + 20.0;
+                //}
                 g.push(x);
             }
             p.push(g);
         }
-        if is_horizontal_adjustment {
-            h = width + 40.0;
-        } else {
-            a = height + 40.0;
-        }
+        
+        h = width + 40.0;
+         
         PolylineData {
             lines: p,
             w: h,
@@ -87,42 +80,37 @@ impl DrawUtils {
         }
     }
 
-    pub fn layout_and_simplify_shapes(
-        shapes: &[PolylineData],
-        mark_corners: bool,
-        is_horizontal_layout: bool,
-        simplify: bool,
-    ) -> Vec<(usize, Vec<Point>, f32, f32)> {
-        // 1. Normalize and center each shape (match JS logic)
+    pub fn layout_and_simplify_shapes( shapes: &[PolylineData],  mark_corners: bool, simplify: bool ) -> Vec<(usize, Vec<Point>, f32, f32)> {
+
         let normalized_shapes: Vec<PolylineData> = shapes
             .iter()
-            .map(|shape| Self::normalize_and_center_lines(shape, is_horizontal_layout, false))
+            .map(|shape| Self::normalize_and_center_lines(shape))
             .collect();
 
-        // 2. Calculate total width/height
+
         let (mut total_width, mut total_height) = (0.0, 0.0);
         for shape in &normalized_shapes {
-            if is_horizontal_layout {
+            //if is_horizontal_layout {
                 total_width += shape.w;
                 total_height = shape.h;
-            } else {
-                total_width = shape.w;
-                total_height += shape.h;
-            }
+           // } else {
+           //     total_width = shape.w;
+           //     total_height += shape.h;
+          //  }
         }
 
         let mut result = Vec::new();
-        let mut offset_x = -total_width / 2.0;
-        let mut offset_y = total_height / 2.0;
-        let mut layout_x = 0.0;
-        let mut layout_y = 0.0;
+        let  offset_x = -total_width / 2.0;
+        let  offset_y = total_height / 2.0;
+        let  mut layout_x = 0.0;
+        let  layout_y = 0.0;
 
         for (shape_iter, shape) in normalized_shapes.iter().enumerate() {
             let lines = &shape.lines;
-            if !is_horizontal_layout {
-                layout_x = -shape.w / 2.0;
-                offset_x = 0.0;
-            }
+           // if !is_horizontal_layout {
+           //     layout_x = -shape.w / 2.0;
+           //     offset_x = 0.0;
+          //  }
             for line in lines {
                 let mut line = line.clone();
                 let mut simplified_line = Vec::new();
@@ -227,11 +215,11 @@ impl DrawUtils {
                 };
                 result.push((shape_iter, vec![placeholder], shape.w, shape.h));
             }
-            if is_horizontal_layout {
+           // if is_horizontal_layout {
                 layout_x += shape.w;
-            } else {
-                layout_y -= shape.h;
-            }
+           // } else {
+           //     layout_y -= shape.h;
+           // }
         }
 
         // Final simplification pass (optional, as in JS)
@@ -393,279 +381,13 @@ impl DrawUtils {
         builder.commands
     }
 
-    pub fn prepare_draw_data(draw_data: &LegacyDrawData, width: f64) -> Vec<Point> {
-        let mut points = Vec::new();
-
-        for draw_object in &draw_data.draw_points {
-            let object_points = match draw_object.draw_mode {
-                DrawMode::Polylines => Self::draw_all_transformed_polylines(draw_object, width),
-                DrawMode::Text => Self::draw_transformed_text(draw_object, width),
-                _ => Self::draw_transformed_object(draw_object, width),
-            };
-
-            // Concatenate results (points = points.concat(currentDrawResult))
-            points.extend(object_points);
-        }
-
-        points
+   
+    fn append_to_array_or(arr: &mut Vec<Point>, pt: Point) -> bool {
+        arr.push(pt);
+        true
     }
 
-    fn draw_transformed_object(draw_object: &DrawItem, width: f64) -> Vec<Point> {
-        let rotated_points = Self::rotate_points_around_bounding_box_center(
-            &draw_object.get_all_points(),
-            draw_object.ang,
-        );
-
-        let mut result_points = Vec::new();
-        let scaling_factor = REFERENCE_COORDINATE_SIZE / width; // scalingFactor = REFERENCE_COORDINATE_SIZE / width
-        let center_offset_x = width / 2.0; // centerOffsetX = width / 2
-        let position_x = draw_object.x0; // positionX = drawObject.x0
-        let position_y = draw_object.y0; // positionY = drawObject.y0
-        let scale_z = draw_object.z; // scaleZ = drawObject.z
-
-        // Color calculation logic
-        let base_line_color = draw_object.line_color as i32; // baseLineColor = drawObject.lineColor
-        let color_segment_index = base_line_color - 9; // colorSegmentIndex = baseLineColor - 9
-        let mut current_color_index = if base_line_color >= 8 {
-            -1
-        } else {
-            base_line_color
-        }; // currentColorIndex = baseLineColor >= 8 ? -1 : baseLineColor
-
-        for (point_index, rotated_point) in rotated_points.iter().enumerate() {
-            if color_segment_index < 0 {
-                current_color_index = if base_line_color >= 8 {
-                    current_color_index + 1
-                } else {
-                    current_color_index
-                };
-                current_color_index = if current_color_index >= 8 {
-                    1
-                } else {
-                    current_color_index
-                };
-            } else {
-                current_color_index = 1;
-            }
-
-            let final_color = if rotated_point.color != BeamColor::Blank {
-                if color_segment_index < 0 {
-                    BeamColor::from_u8(current_color_index as u8).unwrap_or(BeamColor::Blank)
-                } else if color_segment_index == 0 {
-                    rotated_point.color // Keep original color
-                } else {
-                    BeamColor::from_u8(current_color_index as u8).unwrap_or(BeamColor::Blank)
-                }
-            } else {
-                rotated_point.color
-            };
-
-            let result_x = rotated_point.x * scaling_factor * scale_z
-                + (position_x - center_offset_x) * scaling_factor;
-            let result_y = rotated_point.y * scale_z * scaling_factor
-                + (-position_y + center_offset_x) * scaling_factor;
-            let result_color = if point_index == 0 { BeamColor::Blank } else { final_color };
-            let result_pen_state = rotated_point.pen_state;
-
-            result_points.push(Point::new(
-                result_x,
-                result_y,
-                result_color,
-                result_pen_state,
-            ));
-        }
-
-        result_points
-    }
-
-    fn draw_all_transformed_polylines(draw_object: &DrawItem, width: f64) -> Vec<Point> {
-        let mut accumulated_results = Vec::new();
-
-        if let crate::model::DrawPoints::Polylines(polylines) = &draw_object.ps {
-            for (index, _polyline) in polylines.iter().enumerate() {
-                let current_polyline_result =
-                    Self::draw_transformed_polyline(draw_object, index, width);
-                accumulated_results.extend(current_polyline_result);
-            }
-        }
-
-        accumulated_results
-    }
-
-    fn draw_transformed_polyline(draw_object: &DrawItem, index: usize, width: f64) -> Vec<Point> {
-        // Get the specific polyline at the given index
-        if let crate::model::DrawPoints::Polylines(polylines) = &draw_object.ps {
-            if let Some(polyline) = polylines.get(index) {
-                // Rotate points around bounding box center (passing true for polyline mode)
-                let rotated_points = Self::rotate_points_around_bounding_box_center_polyline(
-                    polyline,
-                    draw_object.ang,
-                );
-
-                let base_line_color = draw_object.line_color;
-                let mut current_color_index = if base_line_color >= 8 {
-                    1
-                } else {
-                    base_line_color
-                };
-                let color_segment_index = base_line_color.wrapping_sub(9); // This will wrap around for values < 9
-
-                let position_x = draw_object.x0;
-                let position_y = draw_object.y0;
-                let scale_z = draw_object.z;
-
-                let scaling_factor = REFERENCE_COORDINATE_SIZE / width;
-                let center_offset = width / 2.0;
-                let mut result_points = Vec::new();
-
-                for (k, rotated_point) in rotated_points.iter().enumerate() {
-                    // Transform the point coordinates
-                    let transformed_x = rotated_point.x * scale_z + position_x;
-                    let transformed_y = rotated_point.y * scale_z + position_y;
-
-                    // Handle color logic
-                    if base_line_color >= 8 {
-                        if color_segment_index < 0 {
-                            // This handles the wrapping case
-                            current_color_index += 1;
-                            if current_color_index >= 8 {
-                                current_color_index = 1;
-                            }
-                        }
-                        // TODO: Handle color segment array logic when we have color segments
-                    }
-
-                    // Create result point with coordinate transformation
-                    let final_x = (transformed_x - center_offset) * scaling_factor;
-                    let final_y = (center_offset - transformed_y) * scaling_factor;
-                    let color = if k == 0 { 0 } else { current_color_index };
-                    let pen_state = rotated_point.pen_state;
-
-                    result_points.push(Point::from_js_array(
-                        final_x,
-                        final_y,
-                        color as f64,
-                        pen_state as f64,
-                    ));
-                }
-
-                return result_points;
-            }
-        }
-
-        vec![]
-    }
-
-    /// Rotate points around bounding box center for a single polyline
-    fn rotate_points_around_bounding_box_center_polyline(
-        points: &[Point],
-        angle_degrees: f64,
-    ) -> Vec<Point> {
-        // This is similar to the regular rotation but for a single polyline
-        if points.is_empty() || angle_degrees == 0.0 {
-            return points.to_vec();
-        }
-
-        // Calculate bounding box
-        let min_x = points.iter().map(|p| p.x).fold(f64::INFINITY, f64::min);
-        let max_x = points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
-        let min_y = points.iter().map(|p| p.y).fold(f64::INFINITY, f64::min);
-        let max_y = points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
-
-        let center_x = (min_x + max_x) / 2.0;
-        let center_y = (min_y + max_y) / 2.0;
-
-        // Rotate each point around the bounding box center
-        points
-            .iter()
-            .map(|point| {
-                let (rotated_x, rotated_y) = Self::rotate_point_around_center(
-                    angle_degrees,
-                    center_x,
-                    center_y,
-                    point.x,
-                    point.y,
-                );
-                Point {
-                    x: rotated_x,
-                    y: rotated_y,
-                    color: point.color,
-                    pen_state: point.pen_state,
-                }
-            })
-            .collect()
-    }
-
-    /// Placeholder for drawTransformedText2 (drawMode == 9999)  
-    fn draw_transformed_text(_draw_object: &DrawItem, _width: f64) -> Vec<Point> {
-        // TODO: Implement text transformation
-        Vec::new()
-    }
-
-
-    fn rotate_points_around_bounding_box_center(
-        points: &[Point],
-        angle: f64,
-    ) -> Vec<Point> {
-        if points.is_empty() {
-            return Vec::new();
-        }
-
-        let mut rotated_points = Vec::new();
-        let mut left = f64::MAX;
-        let mut top = f64::MAX;
-        let mut right = f64::MIN;
-        let mut bottom = f64::MIN;
-
-        for point in points {
-            let x = point.x;
-            let y = -point.y; 
-            left = left.min(x);
-            top = top.min(y);
-            right = right.max(x);
-            bottom = bottom.max(y);
-        }
-
-        let center_x = (right - left) / 2.0 + left; 
-        let center_y = (bottom - top) / 2.0 + top; 
-
-
-        for point in points {
-            let x = point.x;
-            let y = -point.y; 
-
-            let rotated = Self::rotate_point_around_center(angle, center_x, center_y, x, y);
-            
-            rotated_points.push(Point::new(
-                rotated.0,  
-                -rotated.1, 
-                point.color,
-                point.pen_state,
-            ));
-        }
-
-        rotated_points
-    }
-
-
-    fn rotate_point_around_center(
-        angle: f64,
-        center_x: f64,
-        center_y: f64,
-        point_x: f64,
-        point_y: f64,
-    ) -> (f64, f64) {
-
-        let a = point_x - center_x;
-        let i = point_y - center_y;
-
-
-        let c = center_x + (a * angle.cos() - i * angle.sin());
-        let o = center_y + (a * angle.sin() + i * angle.cos());
-
-        (c, o)
-    }
-
+    
     fn sample_quadratic_bezier(
         start: &Point,
         control: &Point,
@@ -683,11 +405,6 @@ impl DrawUtils {
             points.push(Point { x, y, color: BeamColor::Blank, pen_state: 0 });
         }
         points
-    }
-
-    fn append_to_array_or(arr: &mut Vec<Point>, pt: Point) -> bool {
-        arr.push(pt);
-        true
     }
 
     fn parse_path_commands(
@@ -879,8 +596,10 @@ impl DrawUtils {
         let mut segment_count_hex = String::new();
 
         for (start, count) in split_horizontal_segments.iter() {
-            segment_start_hex += &Self::to_fixed_width_hex_b(*start as i32, 2);
-            segment_count_hex += &Self::to_fixed_width_hex_b(*count as i32, 2);
+            segment_start_hex += &BlueProtocol::to_fixed_width_hex(
+                BlueProtocol::clamp_value(*start as i32, 0, 255, 0), 2);
+            segment_count_hex += &BlueProtocol::to_fixed_width_hex(
+                BlueProtocol::clamp_value(*count as i32, 0, 255, 0), 2);
         }
 
     if mode == 127 {
@@ -907,8 +626,10 @@ impl DrawUtils {
             let mut v = String::new();
             let mut f = String::new();
             for (start, count) in splited_segments.iter() {
-                v += &Self::to_fixed_width_hex_b(*start as i32, 2);
-                f += &Self::to_fixed_width_hex_b(*count as i32, 2);
+                v += &BlueProtocol::to_fixed_width_hex(
+                    BlueProtocol::clamp_value(*start as i32, 0, 255, 0), 2);
+                f += &BlueProtocol::to_fixed_width_hex(
+                    BlueProtocol::clamp_value(*count as i32, 0, 255, 0), 2);
                 let group = out[*start..(*start + *count)].to_vec();
                 let mut merged_points = Vec::new();
                 let mut total_width = 0.0;
@@ -952,8 +673,10 @@ impl DrawUtils {
             let mut n_str = String::new();
             let mut h = String::new();
             for (start, count) in x.iter() {
-                n_str += &Self::to_fixed_width_hex_b(*start as i32, 2);
-                h += &Self::to_fixed_width_hex_b(*count as i32, 2);
+                n_str += &BlueProtocol::to_fixed_width_hex(
+                    BlueProtocol::clamp_value(*start as i32, 0, 255, 0), 2);
+                h += &BlueProtocol::to_fixed_width_hex(
+                    BlueProtocol::clamp_value(*count as i32, 0, 255, 0), 2);
                 let group = out[*start..(*start + *count)].to_vec();
                 let mut merged_points = Vec::new();
                 let mut total_width = 0.0;
@@ -1027,14 +750,7 @@ pub fn split_into_segments_by_sum_limit(numbers: &[f64], limit: f64) -> Vec<(usi
     result
 }
 
-    pub fn to_fixed_width_hex_b(val: i32, width: usize) -> String {
-        let clamped = if width == 2 {
-            val.max(0).min(255) as u32
-        } else {
-            val as u32
-        };
-        format!("{:0width$x}", clamped, width = width)
-    }
+
 
 
 

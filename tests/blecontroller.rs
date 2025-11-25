@@ -1,4 +1,4 @@
-use darkelf::{ util, winblue};
+use darkelf::{ util, blue::winblue};
 use log::{error, info};
 use windows::Devices::Enumeration::DeviceInformation;
 use anyhow::{anyhow, Ok};

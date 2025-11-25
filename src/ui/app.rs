@@ -1,15 +1,15 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use crate::model::{DeviceInfo, DeviceSettings, DrawData, MainCommandData, DrawCommandData, Playback, PlaybackMode, Point};
+use crate::dmx::device::DmxDevice;
+use crate::dmx::model::Fixture;
+use crate::blue::model::{DeviceInfo, DeviceSettings, DrawData, MainCommandData, Playback, PlaybackMode};
 use crate::ui::model::{DeviceCommand, DeviceMessage};
-use crate::winblue::DeviceList;
+use crate::blue::winblue::DeviceList;
 use eframe::egui; 
 use egui::Mesh;
-use log::info;
 use tokio::sync::{Mutex, mpsc};
-use windows::Devices::Enumeration::DeviceInformation;
 
-use crate::model::{DeviceState, DeviceMode};
+use crate::blue::model::{DeviceMode};
 
 use crate::ui::playback_selector::show_selector_grid;
 use crate::ui::{buttons, dmx, draw, playback_settings, settings, statusbar}; 
@@ -37,6 +37,10 @@ pub struct App {
     pub text_command: String,
     pub laser_device_initialized: bool,
     pub device_list: DeviceList,
+    pub fixture: Option<Fixture>,
+    pub dmx_ports: Vec<String>,
+    pub selected_dmx_port: Option<String>,
+    pub dmx_device: Option<Arc<DmxDevice>>
 }
 
 
@@ -45,7 +49,7 @@ impl App {
         pub fn new(device_channel: Arc<Mutex<mpsc::UnboundedReceiver<DeviceMessage>>>,device_command: mpsc::UnboundedSender<DeviceCommand>) -> Self {
             let mut playback_selections = HashMap::new();
             // Initialize with required playback modes, all bits 0
-            use crate::model::DeviceMode;
+            use crate::blue::model::DeviceMode;
             for key in [
                 DeviceMode::LineGeometryPlayback as u8,
                 DeviceMode::AnimationPlayback as u8,
@@ -71,6 +75,10 @@ impl App {
                 text_command: String::new(),
                 laser_device_initialized: false,
                 device_list: DeviceList { devices: Vec::new(), selected_index: None },
+                fixture: None,
+                dmx_ports: Vec::new(),
+                selected_dmx_port: None,
+                dmx_device: None,
             }
         }
     }

@@ -1,9 +1,9 @@
-use crate::model::DeviceInfo;
-use crate::model::DeviceSettings;
-use crate::model::DrawConfig;
-use crate::model::MainCommandData;
-use crate::model::{Point};
-use crate::winblue::DeviceList;
+use crate::blue::model::DeviceInfo;
+use crate::blue::model::DeviceSettings;
+use crate::blue::model::DrawConfig;
+use crate::blue::model::MainCommandData;
+use crate::blue::model::{Point};
+use crate::blue::winblue::DeviceList;
 
 
 

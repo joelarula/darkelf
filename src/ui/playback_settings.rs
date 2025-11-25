@@ -1,6 +1,6 @@
 use eframe::egui::{self, TopBottomPanel};
 use log::info;
-use crate::model::BeamColor;
+use crate::blue::model::BeamColor;
 use crate::ui::{app::App, model::DeviceCommand};
 
 pub fn show_playback_settings_ui(app: &mut App, ctx: &eframe::egui::Context) {

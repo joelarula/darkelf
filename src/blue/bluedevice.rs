@@ -1,13 +1,16 @@
-use crate::device::LaserDevice;
+use crate::blue::device::LaserDevice;
 use crate::draw::DrawUtils;
-use crate::model::{ DrawCommandData, DrawConfig, EncodedCommandData, MainCommandData, Point};
+use crate::blue::model::{ DrawCommandData, DrawConfig, EncodedCommandData, MainCommandData, Point};
 use log::{debug, info, error};
 use ttf_parser::Face;
 use std::sync::{Arc, Mutex};
 use rand;
-use crate::model::{ DeviceState, DeviceSettings};
-use crate::blueprotocol::{BlueProtocol, POWER_ON_CMD, POWER_OFF_CMD};
-use crate::blue::BlueController;
+// Adjust the path if 'model.rs' is in the same directory as 'bluedevice.rs'
+use super::model::{ DeviceState, DeviceSettings };
+// Or, if 'model.rs' is in the parent directory of 'blue', use:
+ // use crate::model::{ DeviceState, DeviceSettings};
+use crate::blue::blueprotocol::{BlueProtocol, POWER_ON_CMD, POWER_OFF_CMD};
+use crate::blue::blue::BlueController;
 
 
 pub struct BlueLaserDevice {
@@ -172,7 +175,7 @@ impl BlueLaserDevice {
     pub async fn text<'a>(&self, text: String, face: Face<'a>) {
 
         let text_data = DrawUtils::get_text_lines(&face, &text);
-        let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true, true);
+        let simplified_shapes = DrawUtils::layout_and_simplify_shapes(&text_data, false, true);
         let cmd_text = BlueProtocol::pack_text_command(&simplified_shapes, 5.0);
 
         let mut controller = self.device_controller.lock().unwrap();
@@ -241,7 +244,7 @@ impl LaserDevice for BlueLaserDevice {
         self.draw(points, config).await
     }
 
-    async fn draw_builtin_shape(&self, index: u8, config: crate::model::DrawConfig) {
+    async fn draw_builtin_shape(&self, index: u8, config: DrawConfig) {
         self.draw_builtin_shape(index, config).await
     }
 

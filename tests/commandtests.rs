@@ -1,9 +1,13 @@
 use std::{env, fs, path::Path};
 use log::info;
-use darkelf::{blueprotocol::BlueProtocol, draw::DrawUtils, model::{DeviceMode, DeviceSettings, BeamColor, DrawCommandData, DrawMode, DrawPoints, LegacyDrawData, Playback, PlaybackMode, Point}, util};
+use darkelf::{blue::blueprotocol::BlueProtocol, draw::DrawUtils, blue::model::{DeviceMode, DeviceSettings, BeamColor, DrawCommandData, Playback, PlaybackMode, Point}, util};
 use anyhow::{anyhow, Ok};
+mod utils;
+use utils::prepare_draw_data;
 
 use std::sync::Once;
+
+use crate::utils::LegacyDrawData;
 static INIT: Once = Once::new();
 
 fn init_logger() {
@@ -11,6 +15,8 @@ fn init_logger() {
         util::setup_logging();
     });
 }
+
+
 
 #[test]
 fn test_check_received_data() {
@@ -330,7 +336,7 @@ fn test_draw_data() {
     let draw_data = load_draw_data("./scripts/ruut.json")
         .expect("Should be able to load ruut.json DrawData");
     
-    let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
+    let prepared_points = prepare_draw_data(&draw_data, 300.0);
 
     let draw_config = draw_data.pis_obj.clone();
 
@@ -357,7 +363,7 @@ fn test_draw_data_polylines() {
     
     // Test prepare_draw_data function with width=300 for polylines
     info!("\nTesting prepare_draw_data function for polylines:");
-    let prepared_points = DrawUtils::prepare_draw_data(&draw_data, 300.0);
+    let prepared_points = prepare_draw_data(&draw_data, 300.0);
     info!("Total prepared points from polylines: {}", prepared_points.len());
     
    
@@ -439,7 +445,7 @@ fn test_point_array_shapes_command_generation() {
         
         
         // Generate command string for this shape
-        let command_string = darkelf::blueprotocol::BlueProtocol::pack_draw_points_cmd(&draw_points, &draw_config.to_draw_config());
+        let command_string = BlueProtocol::pack_draw_points_cmd(&draw_points, &draw_config.to_draw_config());
         info!("Generated command: {} ", command_string);
         
     }
@@ -452,7 +458,7 @@ fn load_draw_data<P: AsRef<Path>>(path: P) -> Result<LegacyDrawData, anyhow::Err
     let json_content = fs::read_to_string(path)
         .map_err(|e| anyhow!("Failed to read draw data file: {}", e))?;
     
-    let draw_data: LegacyDrawData = serde_json::from_str(&json_content)
+    let draw_data: utils::LegacyDrawData = serde_json::from_str(&json_content)
         .map_err(|e| anyhow!("Failed to parse draw data JSON: {}", e))?;
     
     Ok(draw_data)
