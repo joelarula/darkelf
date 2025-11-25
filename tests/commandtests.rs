@@ -1,6 +1,6 @@
 use std::{env, fs, path::Path};
 use log::info;
-use darkelf::{blue::blueprotocol::BlueProtocol, draw::DrawUtils, blue::model::{DeviceMode, DeviceSettings, BeamColor, DrawCommandData, Playback, PlaybackMode, Point}, util};
+use darkelf::{blue::blueprotocol::BlueProtocol, blue::draw::DrawUtils, blue::model::{DeviceMode, DeviceSettings, BeamColor, DrawCommandData, Playback, PlaybackMode, Point}, util};
 use anyhow::{anyhow, Ok};
 mod utils;
 use utils::prepare_draw_data;

@@ -1,14 +1,11 @@
 use crate::blue::device::LaserDevice;
-use crate::draw::DrawUtils;
-use crate::blue::model::{ DrawCommandData, DrawConfig, EncodedCommandData, MainCommandData, Point};
+use crate::blue::draw::DrawUtils;
+use crate::blue::model::{ DrawConfig, MainCommandData, Point};
 use log::{debug, info, error};
 use ttf_parser::Face;
 use std::sync::{Arc, Mutex};
 use rand;
-// Adjust the path if 'model.rs' is in the same directory as 'bluedevice.rs'
 use super::model::{ DeviceState, DeviceSettings };
-// Or, if 'model.rs' is in the parent directory of 'blue', use:
- // use crate::model::{ DeviceState, DeviceSettings};
 use crate::blue::blueprotocol::{BlueProtocol, POWER_ON_CMD, POWER_OFF_CMD};
 use crate::blue::blue::BlueController;
 

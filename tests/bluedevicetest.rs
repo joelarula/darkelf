@@ -5,7 +5,7 @@ use std::thread::sleep;
 use std::time::Duration;
 
 
-use darkelf::draw::DrawUtils;
+use darkelf::blue::draw::DrawUtils;
 use darkelf::blue::model::{DeviceMode, DeviceState, BeamColor, DrawConfig, Playback, PlaybackMode};
 use darkelf::blue::winblue::{ self, WinBlueController};
 use darkelf::util;

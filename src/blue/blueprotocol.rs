@@ -1,4 +1,4 @@
-use crate::{draw::DrawUtils, ilda, blue::model::{EncodedCommandData, Playback, PlaybackMode, Point}};
+use crate::{blue::draw::DrawUtils, ilda, blue::model::{EncodedCommandData, Playback, PlaybackMode, Point}};
 use log::{debug, info};
 use ilda::model::ILDA_BLANK;
 use crate::blue::model::{DeviceInfo, DeviceState, DeviceFeatures,DrawConfig, MainCommandData, DrawCommandData, DeviceSettings, PlaybackData, DeviceMode, BeamColor};

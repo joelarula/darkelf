@@ -1,5 +1,5 @@
 
-use darkelf::draw::DrawUtils;
+use darkelf::blue::draw::DrawUtils;
 use darkelf::blue::blueprotocol::BlueProtocol;
 use darkelf::blue::model::EncodedCommandData;
 use ttf_parser::Face;
