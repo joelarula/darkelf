@@ -3,7 +3,6 @@ use eframe::{egui};
 use std::sync::{Arc, Mutex};
 use darkelf::dmx::device::DmxDevice;
 use darkelf::dmx::model::Fixture;
-use egui::RichText;
 use egui_taffy::{TuiBuilderLogic, taffy, tid, tui};
 
 
