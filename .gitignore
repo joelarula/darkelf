@@ -2,6 +2,7 @@
 /lightelf
 /pics
 /scripts/node_modules
-/mcpserver
+/dac/node_modules
 /logs
-/heliosdac/example
+/heliosdac
+/dac/circuit
