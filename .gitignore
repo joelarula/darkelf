@@ -1,6 +1,7 @@
 /target
 /lightelf
 /pics
+/dac
 /scripts/node_modules
 /dac/node_modules
 /logs

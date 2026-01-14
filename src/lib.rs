@@ -1,6 +1,5 @@
 pub mod blue;
-pub mod util;
-pub mod ui;
 pub mod dmx;
 pub mod ilda;
-pub mod heliosdac;
+pub mod ui;
+pub mod util;

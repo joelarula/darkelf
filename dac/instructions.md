@@ -137,42 +137,51 @@ All three DACs share the same power and data bus, but listen for different Chip 
 ### Part 4: The Final Output (To Laser)
 To move a professional laser galvo, we need to convert the DAC's single-ended 0V to 5V signal into a differential -5V to +5V signal. This is called **"level shifting and scaling."**
 
-#### 1. The Schematic "Recipe"
-To get a $\pm 5V$ output from a $5V$ DAC, we use the amplifiers inside your **TL074 (U4)**. 
-- **The Goal:** When DAC is at $2.5V$, Laser is at $0V$. When DAC is at $5V$, Laser is at $+5V$. When DAC is at $0V$, Laser is at $-5V$.
+#### 1. The ILDA Standard: Differential Signaling
+The ILDA protocol uses balanced pairs for the X and Y axes (X+/X− and Y+/Y−). This is done to cancel out noise over long cable runs (e.g., a 50ft cable from your desk to the stage).
 
-#### 2. Pin-by-Pin Wiring (X-Axis)
-| From Component | Pin | To Component | Pin | Purpose |
-| :--- | :--- | :--- | :--- | :--- |
-| **DAC 1 (U1)** | 14 ($V_{outA}$) | Resistor **R1** | Input | X-Signal Source |
-| **Resistor R1** | Output | **TL074 (U4)** | 3 ($POS\_1$) | Input Signal |
-| **RECOM (PS1)** | 7 (COM) | Resistor **R2** | Input | Reference Ground |
-| **Resistor R2** | Output | **TL074 (U4)** | 3 ($POS\_1$) | Pull-down for Offset |
-| **TL074 (U4)** | 1 ($OUT1$) | Resistor **R3** | Input | Feedback Loop |
-| **Resistor R3** | Output | **TL074 (U4)** | 2 ($NEG\_1$) | Gain Control |
-| **TL074 (U4)** | 1 ($OUT1$) | **DB25 (J1)** | 1 (X+) | Final Laser Signal |
+*   **Single-Ended (Simple Setup):** You send X+ (signal) and connect X− to Ground. Range: ±5V (10V total swing).
+*   **Differential (Full ILDA):** You send X+ (e.g., +5V) and X− (e.g., −5V). The projector sees the difference between them. Range: ±10V (20V total swing).
 
-*Repeat this logic for the Y-Axis using DAC1 Out B (Pin 10) and TL074 Stage 2 (Pins 5, 6, 7).*
+#### 2. How many Op-Amps do you need?
+Since you have a TL074, you have four independent amplifiers in one chip. Here is how you should use them for a "Full ILDA" setup:
 
-#### 3. Creating the Differential Signal (X+ and X-)
-Professional ILDA lasers expect a **balanced signal**. This means if X+ is $+5V$, then X- must be $-5V$.
-- **The Pro Way:** Use a second Op-Amp stage (within the same TL074) as an "Inverter" to create the X- signal.
-- **The "Quick" Way:** Connect **DB25 Pin 14 (X-)** to your **Analog Ground (COM)**. 
-- *Note: The quick way works for hobbyist setups, but you lose half your voltage range (only $\pm 5V$ instead of $\pm 10V$ differential).*
+**Option A: The "Minimum" Setup (2 Op-Amps used)**
+You use one Op-Amp for X and one for Y.
+- **X+ (Pin 1):** From Op-Amp 1.
+- **X- (DB25 Pin 14):** Tied to Analog Ground (COM).
+- *Result:* Your laser will work, but the image will be half-size, and you might get "noise" lines in the projection.
 
-#### 4. Powering the Op-Amp (U4)
+**Option B: The "Pro" Setup (All 4 Op-Amps used)**
+You use two Op-Amps per axis to create a true balanced signal.
+- **Op-Amp 1:** Level shifts DAC-X to X+ (±5V).
+- **Op-Amp 2:** Inverts X+ to create X− (when X+ is +5V, X− is −5V).
+- **Op-Amp 3:** Level shifts DAC-Y to Y+ (±5V).
+- **Op-Amp 4:** Inverts Y+ to create Y− (when Y+ is +5V, Y− is −5V).
+
+#### 3. What about the Colors (RGB)?
+ILDA colors (Red, Green, Blue) are not differential. They are "Single-Ended" 0V to +5V.
+- **Do they need an Op-Amp?** Not necessarily. If your DAC outputs 0V to 5V, you can connect them directly to the DB25 connector.
+- **Safety Tip:** Using an Op-Amp as a "Buffer" is safer. It protects your expensive DAC from a short circuit in the laser cable.
+
+#### 4. Summary Table for DB25 (J1)
+Use your TL074 to drive the X and Y differential pairs like this for professional performance:
+
+| Signal | Component | Output Pin | DB25 Pin |
+| :--- | :--- | :--- | :--- |
+| **X+** | U4 (Amp 1) | Pin 1 | 1 |
+| **X-** | U4 (Amp 2) | Pin 7 | 14 |
+| **Y+** | U4 (Amp 3) | Pin 8 | 2 |
+| **Y-** | U4 (Amp 4) | Pin 14 | 15 |
+| **Red** | DAC 2 (U2) | VoutA | 3 |
+| **Green** | DAC 2 (U2) | VoutB | 4 |
+| **Blue** | DAC 3 (U7) | VoutA | 5 |
+
+#### 5. Powering the Op-Amp (U4)
 Since the Op-Amp needs to "swing" below zero to hit $-5V$, it must have a negative power supply:
 - **Pin 4 ($V_{CC}+$):** Connect to RECOM Pin 6 (+12V).
 - **Pin 11 ($V_{CC}-$):** Connect to RECOM Pin 8 (-12V).
 - **Bypass Caps:** Place a $100\text{nF}$ capacitor between Pin 4 and Ground, and another between Pin 11 and Ground to prevent high-frequency noise.
-
-#### 5. Color Mapping
-| Signal Name | DAC Source | DB25 Pin | Signal Range |
-| :--- | :--- | :--- | :--- |
-| **Red** | DAC 2 Out A | Pin 5 | 0 to +5V |
-| **Green** | DAC 2 Out B | Pin 6 | 0 to +5V |
-| **Blue** | DAC 3 Out A | Pin 7 | 0 to +5V |
-| **Intensity** | DAC 3 Out B | Pin 14 | 0 to +5V (Blanking) |
 
 ---
 

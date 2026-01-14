@@ -3,7 +3,7 @@
 	(generator "eeschema")
 	(generator_version "9.0")
 	(uuid "cb977c13-b743-4781-bc6a-341a97104904")
-	(paper "A4")
+	(paper "A3")
 	(lib_symbols
 		(symbol "ADUM1401BRWZ:ADUM1401BRWZ"
 			(pin_names
@@ -3994,10 +3994,28 @@
 		(uuid "33acf559-e6f8-4861-8338-a2e2ab283ee2")
 	)
 	(junction
+		(at 101.6 33.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "37a0aaf5-4217-41d2-89f0-cae23197a5ae")
+	)
+	(junction
 		(at 186.69 114.3)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "38a84499-7607-4fcf-8a8c-9e0da2e9f5d4")
+	)
+	(junction
+		(at 101.6 38.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "396fe802-e2cf-4b4d-a446-cebe10510a59")
+	)
+	(junction
+		(at 181.61 233.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3bc5bac8-245b-445c-835d-06054dcb58f6")
 	)
 	(junction
 		(at 128.27 80.01)
@@ -4024,12 +4042,6 @@
 		(uuid "4aae3a6d-9110-412e-ba7d-c8ac7ede1aa3")
 	)
 	(junction
-		(at 196.85 157.48)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "56d4ba20-f87b-4b7f-a638-bb860ae81321")
-	)
-	(junction
 		(at 186.69 77.47)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4054,12 +4066,6 @@
 		(uuid "6776453b-a3d7-4677-97fa-a04bffd342fb")
 	)
 	(junction
-		(at 181.61 157.48)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7f20c364-2f07-4ce9-879a-155524f842bf")
-	)
-	(junction
 		(at 186.69 72.39)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4070,6 +4076,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "91fa1242-dda1-48ac-9a44-39f78dc0eeff")
+	)
+	(junction
+		(at 196.85 233.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "97861d87-e98f-4b2c-8365-e7185e099756")
 	)
 	(junction
 		(at 194.31 92.71)
@@ -4088,12 +4100,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a3ff4b53-76a6-4889-861e-f418b46fefe9")
-	)
-	(junction
-		(at 102.87 27.94)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a461d171-8d0b-4e8d-9736-e264399ce49e")
 	)
 	(junction
 		(at 181.61 85.09)
@@ -4150,22 +4156,28 @@
 		(uuid "e4bc1cfc-2924-43bf-89ad-6d2ec96cd7f5")
 	)
 	(junction
+		(at 120.65 151.13)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f330da65-7337-4186-9c38-33035d47f2b2")
+	)
+	(junction
 		(at 212.09 46.99)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fd8d5581-1261-450c-9593-24ffdbdcd7bc")
 	)
 	(junction
+		(at 101.6 27.94)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fddcfddc-2b37-48c8-9fab-94af17dbb274")
+	)
+	(junction
 		(at 199.39 128.27)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fe9bea60-b611-4755-8d97-171cac2f5cc6")
-	)
-	(junction
-		(at 120.65 148.59)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ffbdd53a-2f8e-4f83-b943-f83b1ad178ab")
 	)
 	(wire
 		(pts
@@ -4229,6 +4241,16 @@
 	)
 	(wire
 		(pts
+			(xy 109.22 229.87) (xy 109.22 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14f2b4d9-7fa7-43f3-bbe7-e975cc409751")
+	)
+	(wire
+		(pts
 			(xy 128.27 80.01) (xy 128.27 55.88)
 		)
 		(stroke
@@ -4239,7 +4261,7 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 38.1) (xy 240.03 38.1)
+			(xy 101.6 38.1) (xy 240.03 38.1)
 		)
 		(stroke
 			(width 0)
@@ -4329,7 +4351,7 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 157.48) (xy 269.24 157.48)
+			(xy 196.85 233.68) (xy 309.88 233.68)
 		)
 		(stroke
 			(width 0)
@@ -4429,7 +4451,7 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 33.02) (xy 181.61 33.02)
+			(xy 101.6 33.02) (xy 181.61 33.02)
 		)
 		(stroke
 			(width 0)
@@ -4489,16 +4511,6 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 134.62) (xy 181.61 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4db9e662-231c-4429-ae3f-d84a11d5e27b")
-	)
-	(wire
-		(pts
 			(xy 105.41 21.59) (xy 105.41 27.94)
 		)
 		(stroke
@@ -4506,16 +4518,6 @@
 			(type default)
 		)
 		(uuid "4de1fb78-780f-424c-a54f-de50c2c1cd94")
-	)
-	(wire
-		(pts
-			(xy 120.65 132.08) (xy 120.65 148.59)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4f4efc19-fb82-4139-ba71-d88d8c5340ea")
 	)
 	(wire
 		(pts
@@ -4529,7 +4531,7 @@
 	)
 	(wire
 		(pts
-			(xy 110.49 157.48) (xy 181.61 157.48)
+			(xy 109.22 233.68) (xy 181.61 233.68)
 		)
 		(stroke
 			(width 0)
@@ -4539,7 +4541,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 148.59) (xy 120.65 148.59)
+			(xy 116.84 222.25) (xy 120.65 222.25)
 		)
 		(stroke
 			(width 0)
@@ -4619,13 +4621,13 @@
 	)
 	(wire
 		(pts
-			(xy 102.87 27.94) (xy 105.41 27.94)
+			(xy 120.65 222.25) (xy 120.65 151.13)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "60fa4cfd-1ff1-4663-8377-b0fd157dbea9")
+		(uuid "5ebbbd74-6475-4744-b450-1069f88be902")
 	)
 	(wire
 		(pts
@@ -4756,6 +4758,16 @@
 			(type default)
 		)
 		(uuid "6c8a9850-7c53-482a-9a85-a22541b274b5")
+	)
+	(wire
+		(pts
+			(xy 181.61 134.62) (xy 181.61 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6ea34f7a-6d45-4db2-a392-ee126a0431c5")
 	)
 	(wire
 		(pts
@@ -4929,6 +4941,16 @@
 	)
 	(wire
 		(pts
+			(xy 101.6 38.1) (xy 101.6 222.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e5a9ec6-fbcf-4e45-adcf-f25bab91bb69")
+	)
+	(wire
+		(pts
 			(xy 171.45 59.69) (xy 199.39 59.69)
 		)
 		(stroke
@@ -4979,7 +5001,7 @@
 	)
 	(wire
 		(pts
-			(xy 72.39 38.1) (xy 69.85 38.1)
+			(xy 72.39 38.1) (xy 71.12 38.1)
 		)
 		(stroke
 			(width 0)
@@ -5069,7 +5091,7 @@
 	)
 	(wire
 		(pts
-			(xy 38.1 27.94) (xy 69.85 27.94)
+			(xy 38.1 27.94) (xy 71.12 27.94)
 		)
 		(stroke
 			(width 0)
@@ -5129,6 +5151,16 @@
 	)
 	(wire
 		(pts
+			(xy 101.6 33.02) (xy 101.6 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bd95a20e-a06b-474e-810d-0df8addd0203")
+	)
+	(wire
+		(pts
 			(xy 171.45 109.22) (xy 193.04 109.22)
 		)
 		(stroke
@@ -5146,16 +5178,6 @@
 			(type default)
 		)
 		(uuid "c01f97bb-7dc2-47a7-acef-6bb9ea13282d")
-	)
-	(wire
-		(pts
-			(xy 181.61 157.48) (xy 196.85 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c31d141d-4085-4ad9-805c-c244cbae8cfa")
 	)
 	(wire
 		(pts
@@ -5179,7 +5201,7 @@
 	)
 	(wire
 		(pts
-			(xy 120.65 151.13) (xy 120.65 148.59)
+			(xy 120.65 132.08) (xy 120.65 151.13)
 		)
 		(stroke
 			(width 0)
@@ -5239,7 +5261,17 @@
 	)
 	(wire
 		(pts
-			(xy 102.87 27.94) (xy 102.87 148.59)
+			(xy 196.85 143.51) (xy 196.85 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cec0e2d0-2196-45bc-a9e3-aabacb72ae05")
+	)
+	(wire
+		(pts
+			(xy 101.6 27.94) (xy 101.6 33.02)
 		)
 		(stroke
 			(width 0)
@@ -5256,6 +5288,16 @@
 			(type default)
 		)
 		(uuid "d0334051-b822-4db2-ae03-974d0a2096ea")
+	)
+	(wire
+		(pts
+			(xy 181.61 233.68) (xy 196.85 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d156fa50-c7ca-4c86-bd57-e2385ca62078")
 	)
 	(wire
 		(pts
@@ -5349,26 +5391,6 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 143.51) (xy 196.85 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "eaabecf9-6f7d-41ff-be40-e3b4878f8a67")
-	)
-	(wire
-		(pts
-			(xy 110.49 156.21) (xy 110.49 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "eb0f4682-1e29-4399-9d3c-b4b8f69daa98")
-	)
-	(wire
-		(pts
 			(xy 128.27 80.01) (xy 135.89 80.01)
 		)
 		(stroke
@@ -5419,7 +5441,7 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 27.94) (xy 102.87 27.94)
+			(xy 101.6 27.94) (xy 105.41 27.94)
 		)
 		(stroke
 			(width 0)
@@ -5429,7 +5451,7 @@
 	)
 	(symbol
 		(lib_id "Regulator_Linear:L7805")
-		(at 110.49 148.59 0)
+		(at 109.22 222.25 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5438,7 +5460,7 @@
 		(fields_autoplaced yes)
 		(uuid "30894292-f546-459f-bbd9-4a1c50262b21")
 		(property "Reference" "U3"
-			(at 110.49 142.24 0)
+			(at 109.22 215.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5446,7 +5468,7 @@
 			)
 		)
 		(property "Value" "L7805"
-			(at 110.49 144.78 0)
+			(at 109.22 218.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5454,7 +5476,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 111.125 152.4 0)
+			(at 109.855 226.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5465,7 +5487,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf"
-			(at 110.49 149.86 0)
+			(at 109.22 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5474,7 +5496,7 @@
 			)
 		)
 		(property "Description" "Positive 1.5A 35V Linear Regulator, Fixed Output 5V, TO-220/TO-263/TO-252"
-			(at 110.49 148.59 0)
+			(at 109.22 222.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5712,7 +5734,7 @@
 	)
 	(symbol
 		(lib_id "RS-0512D:RS-0512D")
-		(at 85.09 35.56 0)
+		(at 86.36 35.56 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5721,7 +5743,7 @@
 		(fields_autoplaced yes)
 		(uuid "6e6b64af-0461-4de9-b8e5-e3d13494b8e3")
 		(property "Reference" "PS1"
-			(at 85.09 20.32 0)
+			(at 86.36 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5729,7 +5751,7 @@
 			)
 		)
 		(property "Value" "RS-0512D"
-			(at 85.09 22.86 0)
+			(at 86.36 22.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5737,7 +5759,7 @@
 			)
 		)
 		(property "Footprint" "RS-0512D:CONV_RS-0512D"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5747,7 +5769,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5756,7 +5778,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5765,7 +5787,7 @@
 			)
 		)
 		(property "DigiKey_Part_Number" "945-1310-ND"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5775,7 +5797,7 @@
 			)
 		)
 		(property "SnapEDA_Link" "https://www.snapeda.com/parts/RS-0512D/Recom+Power/view-part/?ref=snap"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5785,7 +5807,7 @@
 			)
 		)
 		(property "MAXIMUM_PACKAGE_HEIGHT" "11.10mm"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5795,7 +5817,7 @@
 			)
 		)
 		(property "Package" "None"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5805,7 +5827,7 @@
 			)
 		)
 		(property "Check_prices" "https://www.snapeda.com/parts/RS-0512D/Recom+Power/view-part/?ref=eda"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5815,7 +5837,7 @@
 			)
 		)
 		(property "STANDARD" "Manufacturer Recommendations"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5825,7 +5847,7 @@
 			)
 		)
 		(property "PARTREV" "3"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5835,7 +5857,7 @@
 			)
 		)
 		(property "MF" "Recom Power"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5845,7 +5867,7 @@
 			)
 		)
 		(property "MP" "RS-0512D"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5855,7 +5877,7 @@
 			)
 		)
 		(property "Description_1" "DC-DC Converter, Out -12, +12VDC, In 4.5 to 9VDC, Thru-Hole, Encapsulated, 2W | RECOM Power Inc. RS-0512D"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5865,7 +5887,7 @@
 			)
 		)
 		(property "MANUFACTURER" "RECOM"
-			(at 85.09 35.56 0)
+			(at 86.36 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6157,7 +6179,7 @@
 	)
 	(symbol
 		(lib_id "Connector:DB25_Socket")
-		(at 276.86 129.54 0)
+		(at 317.5 205.74 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6166,7 +6188,7 @@
 		(fields_autoplaced yes)
 		(uuid "a2dbb448-e042-4e09-9ffa-4becd8c79207")
 		(property "Reference" "J1"
-			(at 281.94 128.2699 0)
+			(at 322.58 204.4699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6175,7 +6197,7 @@
 			)
 		)
 		(property "Value" "DB25_Socket"
-			(at 281.94 130.8099 0)
+			(at 322.58 207.0099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6184,7 +6206,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 276.86 129.54 0)
+			(at 317.5 205.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6193,7 +6215,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 276.86 129.54 0)
+			(at 317.5 205.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6202,7 +6224,7 @@
 			)
 		)
 		(property "Description" "25-pin D-SUB connector, socket (female)"
-			(at 276.86 129.54 0)
+			(at 317.5 205.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
