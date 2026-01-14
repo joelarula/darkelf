@@ -1,7 +1,7 @@
 // Test max points capacity at 25 FPS
 // Sweeps through increasing PPS/Points configurations to find the limit
 
-use darkelf::heliosdac::{HeliosDacController, HeliosPoint};
+use darkelf::dac::helios::{HELIOS_FLAGS_DEFAULT, HeliosDacController, HeliosPoint};
 use std::time::{Duration, Instant};
 
 #[test]
@@ -91,7 +91,7 @@ fn test_max_points_ring_25fps() -> Result<(), Box<dyn std::error::Error>> {
             max_status_attempts = max_status_attempts.max(attempts);
 
             // 2. Write Frame
-            if let Err(e) = controller.write_frame(0, pps, 0, &frame) {
+            if let Err(e) = controller.write_frame_native(0, pps, HELIOS_FLAGS_DEFAULT, &frame) {
                 println!("  ERROR: Write frame failed: {}", e);
                 failed = true;
                 break;

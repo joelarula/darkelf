@@ -1,6 +1,6 @@
 // Minimal test to isolate the crash
 
-use darkelf::heliosdac::HeliosDacController;
+use darkelf::dac::helios::{HeliosDacController, HeliosPoint};
 
 #[test]
 fn test_helios_minimal() -> Result<(), Box<dyn std::error::Error>> {

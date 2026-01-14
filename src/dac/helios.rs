@@ -2,20 +2,21 @@
 // Based on the C++ SDK and C# implementations
 // Uses dynamic loading to avoid linking issues
 
-use std::os::raw::{c_int, c_uint, c_uchar};
-use std::sync::Arc;
+use crate::ilda::model::{IldaPoint, default_palette, status};
 use libloading;
+use std::os::raw::{c_int, c_uchar, c_uint};
+use std::sync::Arc;
 
 // Point structures matching the C++ definitions
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct HeliosPoint {
-    pub x: u16,  // 0 to 0xFFF for original model
-    pub y: u16,  // 0 to 0xFFF for original model
-    pub r: u8,   // 0 to 0xFF
-    pub g: u8,   // 0 to 0xFF
-    pub b: u8,   // 0 to 0xFF
-    pub i: u8,   // Intensity, 0 to 0xFF
+    pub x: u16, // 0 to 0xFFF for original model
+    pub y: u16, // 0 to 0xFFF for original model
+    pub r: u8,  // 0 to 0xFF
+    pub g: u8,  // 0 to 0xFF
+    pub b: u8,  // 0 to 0xFF
+    pub i: u8,  // Intensity, 0 to 0xFF
 }
 
 impl HeliosPoint {
@@ -27,11 +28,11 @@ impl HeliosPoint {
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct HeliosPointHighRes {
-    pub x: u16,  // 0 to 0xFFFF
-    pub y: u16,  // 0 to 0xFFFF
-    pub r: u16,  // 0 to 0xFFFF
-    pub g: u16,  // 0 to 0xFFFF
-    pub b: u16,  // 0 to 0xFFFF
+    pub x: u16, // 0 to 0xFFFF
+    pub y: u16, // 0 to 0xFFFF
+    pub r: u16, // 0 to 0xFFFF
+    pub g: u16, // 0 to 0xFFFF
+    pub b: u16, // 0 to 0xFFFF
 }
 
 impl HeliosPointHighRes {
@@ -72,8 +73,10 @@ const LIB_NAME: &str = "libHeliosLaserDAC.dylib";
 type OpenDevicesFn = unsafe extern "C" fn() -> c_int;
 type CloseDevicesFn = unsafe extern "C" fn() -> c_int;
 type GetStatusFn = unsafe extern "C" fn(c_uint) -> c_int;
-type WriteFrameFn = unsafe extern "C" fn(c_uint, c_uint, c_uchar, *const HeliosPoint, c_uint) -> c_int;
-type WriteFrameHighResFn = unsafe extern "C" fn(c_uint, c_uint, c_uchar, *const HeliosPointHighRes, c_uint) -> c_int;
+type WriteFrameFn =
+    unsafe extern "C" fn(c_uint, c_uint, c_uchar, *const HeliosPoint, c_uint) -> c_int;
+type WriteFrameHighResFn =
+    unsafe extern "C" fn(c_uint, c_uint, c_uchar, *const HeliosPointHighRes, c_uint) -> c_int;
 type StopFn = unsafe extern "C" fn(c_uint) -> c_int;
 type SetShutterFn = unsafe extern "C" fn(c_uint, c_uchar) -> c_int;
 type GetNameFn = unsafe extern "C" fn(c_uint) -> *const i8;
@@ -98,22 +101,30 @@ impl HeliosLib {
             let lib = libloading::Library::new(LIB_NAME)
                 .map_err(|e| format!("Failed to load library {}: {}", LIB_NAME, e))?;
 
-            let open_devices = *lib.get::<OpenDevicesFn>(b"OpenDevices")
+            let open_devices = *lib
+                .get::<OpenDevicesFn>(b"OpenDevices")
                 .map_err(|e| format!("Failed to load OpenDevices: {}", e))?;
-            let close_devices = *lib.get::<CloseDevicesFn>(b"CloseDevices")
+            let close_devices = *lib
+                .get::<CloseDevicesFn>(b"CloseDevices")
                 .map_err(|e| format!("Failed to load CloseDevices: {}", e))?;
-            let get_status = *lib.get::<GetStatusFn>(b"GetStatus")
+            let get_status = *lib
+                .get::<GetStatusFn>(b"GetStatus")
                 .map_err(|e| format!("Failed to load GetStatus: {}", e))?;
-            let write_frame = *lib.get::<WriteFrameFn>(b"WriteFrame")
+            let write_frame = *lib
+                .get::<WriteFrameFn>(b"WriteFrame")
                 .map_err(|e| format!("Failed to load WriteFrame: {}", e))?;
-            let write_frame_high_res = lib.get::<WriteFrameHighResFn>(b"WriteFrameHighResolution")
+            let write_frame_high_res = lib
+                .get::<WriteFrameHighResFn>(b"WriteFrameHighResolution")
                 .ok()
                 .map(|f| *f);
-            let stop = *lib.get::<StopFn>(b"Stop")
+            let stop = *lib
+                .get::<StopFn>(b"Stop")
                 .map_err(|e| format!("Failed to load Stop: {}", e))?;
-            let set_shutter = *lib.get::<SetShutterFn>(b"SetShutter")
+            let set_shutter = *lib
+                .get::<SetShutterFn>(b"SetShutter")
                 .map_err(|e| format!("Failed to load SetShutter: {}", e))?;
-            let get_name = *lib.get::<GetNameFn>(b"GetName")
+            let get_name = *lib
+                .get::<GetNameFn>(b"GetName")
                 .map_err(|e| format!("Failed to load GetName: {}", e))?;
 
             Ok(Self {
@@ -153,7 +164,10 @@ impl HeliosDacController {
         unsafe {
             self.num_devices = (self.lib.open_devices)();
             if self.num_devices < 0 {
-                Err(format!("Failed to open devices: error {}", self.num_devices))
+                Err(format!(
+                    "Failed to open devices: error {}",
+                    self.num_devices
+                ))
             } else {
                 Ok(self.num_devices)
             }
@@ -191,9 +205,9 @@ impl HeliosDacController {
         }
     }
 
-    /// Write a frame to the specified DAC
+    /// Write a frame to the specified DAC (native HeliosPoint format)
     /// This will block until the transfer is complete (unless HELIOS_FLAGS_DONT_BLOCK is set)
-    pub fn write_frame(
+    pub fn write_frame_native(
         &self,
         dac_num: u32,
         pps: u32,
@@ -218,7 +232,13 @@ impl HeliosDacController {
         }
 
         unsafe {
-            let result = (self.lib.write_frame)(dac_num, pps, flags, points.as_ptr(), points.len() as c_uint);
+            let result = (self.lib.write_frame)(
+                dac_num,
+                pps,
+                flags,
+                points.as_ptr(),
+                points.len() as c_uint,
+            );
             if result < 0 {
                 Err(format!("Failed to write frame: error {}", result))
             } else {
@@ -236,9 +256,11 @@ impl HeliosDacController {
         points: &[HeliosPointHighRes],
     ) -> Result<(), String> {
         // Check if high res function is available
-        let write_fn = self.lib.write_frame_high_res
+        let write_fn = self
+            .lib
+            .write_frame_high_res
             .ok_or("WriteFrameHighResolution is not available in this library version")?;
-            
+
         if points.is_empty() {
             return Err("Points array is empty".to_string());
         }
@@ -257,18 +279,67 @@ impl HeliosDacController {
         }
 
         unsafe {
-            let result = write_fn(
-                dac_num,
-                pps,
-                flags,
-                points.as_ptr(),
-                points.len() as c_uint,
-            );
+            let result = write_fn(dac_num, pps, flags, points.as_ptr(), points.len() as c_uint);
             if result < 0 {
                 Err(format!("Failed to write frame: error {}", result))
             } else {
                 Ok(())
             }
+        }
+    }
+
+    /// Write an ILDA frame (Vec<IldaPoint>) to the specified DAC
+    /// Automatically handles coordinate conversion and blanking
+    /// `shift` controls the scaling:
+    /// - 4: Standard 1:1 scaling (applies /16 divisor to fit 16-bit ILDA into 12-bit DAC)
+    /// - 3: 2x Zoom
+    /// - 2: 4x Zoom
+    /// - 1: 8x Zoom
+    /// - 0: 16x Zoom (Raw / Pixel-Perfect 1:1 mapping of ILDA units to DAC output)
+    pub fn write_frame(
+        &self,
+        dac_num: u32,
+        pps: u32,
+        flags: u8,
+        points: &[IldaPoint],
+        shift: u8,
+    ) -> Result<(), String> {
+        if points.is_empty() {
+            return Err("Points array is empty".to_string());
+        }
+
+        // Optimized Branching: Check capability ONCE and convert directly to the required format.
+        if let Some(write_fn) = self.lib.write_frame_high_res {
+            // High Resolution Path
+            // Upscale 8-bit ILDA colors to 16-bit for Helios HighRes
+            let high_res_points: Vec<HeliosPointHighRes> = points
+                .iter()
+                .map(|p| ilda_point_to_helios_high_res(p, shift))
+                .collect();
+
+            unsafe {
+                let result = write_fn(
+                    dac_num,
+                    pps,
+                    flags,
+                    high_res_points.as_ptr(),
+                    high_res_points.len() as std::ffi::c_uint,
+                );
+                if result < 0 {
+                    Err(format!("Failed to write high-res frame: error {}", result))
+                } else {
+                    Ok(())
+                }
+            }
+        } else {
+            // Low Resolution (Native) Path
+            // Standard 8-bit conversion
+            let helios_points: Vec<HeliosPoint> = points
+                .iter()
+                .map(|p| ilda_point_to_helios(p, shift))
+                .collect();
+
+            self.write_frame_native(dac_num, pps, flags, &helios_points)
         }
     }
 
@@ -336,5 +407,151 @@ impl Drop for HeliosDacController {
         if self.num_devices > 0 {
             let _ = self.close_devices();
         }
+    }
+}
+
+/// Helper function to convert an IldaPoint to a HeliosPointHighRes
+fn ilda_point_to_helios_high_res(p: &IldaPoint, shift: u8) -> HeliosPointHighRes {
+    let (x_ilda, y_ilda, _z_ilda, status_byte, r, g, b) = match p {
+        IldaPoint::Format0 {
+            x,
+            y,
+            z,
+            status,
+            color_index,
+        } => {
+            let palette = default_palette();
+            let color = palette
+                .get(*color_index as usize)
+                .copied()
+                .unwrap_or(palette[0]);
+            (*x, *y, *z, *status, color.red, color.green, color.blue)
+        }
+        IldaPoint::Format1 {
+            x,
+            y,
+            status,
+            color_index,
+        } => {
+            let palette = default_palette();
+            let color = palette
+                .get(*color_index as usize)
+                .copied()
+                .unwrap_or(palette[0]);
+            (*x, *y, 0, *status, color.red, color.green, color.blue)
+        }
+        IldaPoint::Format4 {
+            x,
+            y,
+            z,
+            status,
+            blue,
+            green,
+            red,
+        } => (*x, *y, *z, *status, *red, *green, *blue),
+        IldaPoint::Format5 {
+            x,
+            y,
+            status,
+            blue,
+            green,
+            red,
+        } => (*x, *y, 0, *status, *red, *green, *blue),
+    };
+
+    // Check for blanking
+    let is_blanked = (status_byte & status::BLANKED) != 0;
+
+    // Convert coordinates
+    let offset: i32 = 2048 << shift;
+    let x_helios = (((x_ilda as i32 + offset) >> shift).max(0).min(4095)) as u16;
+    let y_helios = (((y_ilda as i32 + offset) >> shift).max(0).min(4095)) as u16;
+
+    if is_blanked {
+        HeliosPointHighRes::new(x_helios, y_helios, 0, 0, 0)
+    } else {
+        // Upscale 8-bit color to 16-bit: (val * 257) maps 0->0, 255->65535, 128->32896
+        let r16 = (r as u16) * 257;
+        let g16 = (g as u16) * 257;
+        let b16 = (b as u16) * 257;
+        HeliosPointHighRes::new(x_helios, y_helios, r16, g16, b16)
+    }
+}
+
+/// Helper function to convert an IldaPoint to a HeliosPoint
+fn ilda_point_to_helios(p: &IldaPoint, shift: u8) -> HeliosPoint {
+    let (x_ilda, y_ilda, z_ilda, status_byte, r, g, b) = match p {
+        IldaPoint::Format0 {
+            x,
+            y,
+            z,
+            status,
+            color_index,
+        } => {
+            let palette = default_palette();
+            let color = palette
+                .get(*color_index as usize)
+                .copied()
+                .unwrap_or(palette[0]);
+            (*x, *y, *z, *status, color.red, color.green, color.blue)
+        }
+        IldaPoint::Format1 {
+            x,
+            y,
+            status,
+            color_index,
+        } => {
+            let palette = default_palette();
+            let color = palette
+                .get(*color_index as usize)
+                .copied()
+                .unwrap_or(palette[0]);
+            (*x, *y, 0, *status, color.red, color.green, color.blue)
+        }
+        IldaPoint::Format4 {
+            x,
+            y,
+            z,
+            status,
+            blue,
+            green,
+            red,
+        } => (*x, *y, *z, *status, *red, *green, *blue),
+        IldaPoint::Format5 {
+            x,
+            y,
+            status,
+            blue,
+            green,
+            red,
+        } => (*x, *y, 0, *status, *red, *green, *blue),
+    };
+
+    // Check for blanking
+    let is_blanked = (status_byte & status::BLANKED) != 0;
+
+    // Convert coordinates
+    // ILDA: signed 16-bit (-32768 to 32767)
+    // Helios: unsigned 12-bit (0 to 4095)
+    // Old Formula: (val + 32768) >> 4 (Fixed Shift 4)
+    // New Dynamic Formula: (val + offset) >> shift
+    // where offset = 2048 << shift
+
+    // Calculate scaling parameters
+    // Center point for 12-bit is 2048. We want 0 ILDA to map to 2048 Helios.
+    // The divisor is 2^shift.
+    // To map 0 (ILDA) -> 2048 (Helios), we need to add an offset before shifting.
+    // (0 + offset) >> shift = 2048  => offset = 2048 << shift
+    let offset: i32 = 2048 << shift;
+
+    let x_helios = (((x_ilda as i32 + offset) >> shift).max(0).min(4095)) as u16;
+    let y_helios = (((y_ilda as i32 + offset) >> shift).max(0).min(4095)) as u16;
+
+    if is_blanked {
+        HeliosPoint::new(x_helios, y_helios, 0, 0, 0, 0)
+    } else {
+        // Intensity is max (255) if not blanked for now.
+        // Some ILDA formats don't have explicit intensity, derived from color.
+        HeliosPoint::new(x_helios, y_helios, r, g, b, 255)
     }
 }

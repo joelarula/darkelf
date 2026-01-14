@@ -2,7 +2,6 @@
 members = [
     ".",
     "dac",
-    "dac/heliosdac",
 ]
 
 [package]

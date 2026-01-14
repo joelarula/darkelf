@@ -1,7 +1,7 @@
 // Test 25 fps with precise timing using sleep
 // This test uses sleep to control frame rate instead of relying solely on DAC buffer status
 
-use heliosdac::{HeliosDacController, HeliosPoint};
+use darkelf::dac::helios::{HELIOS_FLAGS_DEFAULT, HeliosDacController, HeliosPoint};
 use std::time::{Duration, Instant};
 
 #[test]
@@ -97,7 +97,12 @@ fn test_25fps_with_sleep() -> Result<(), Box<dyn std::error::Error>> {
 
             // Send the frame
             let frame_idx = i % 30;
-            if let Err(e) = controller.write_frame(device_id, *pps, 0, &frames[frame_idx]) {
+            if let Err(e) = controller.write_frame_native(
+                device_id,
+                25000,
+                HELIOS_FLAGS_DEFAULT,
+                &frames[frame_idx],
+            ) {
                 eprintln!("Error writing frame {}: {}", i, e);
             }
 
@@ -273,7 +278,7 @@ fn test_25fps_variable_patterns() -> Result<(), Box<dyn std::error::Error>> {
             status_sum += status_attempts;
 
             // Send frame
-            if let Err(e) = controller.write_frame(0, pps, 0, &frame) {
+            if let Err(e) = controller.write_frame_native(0, pps, 0, &frame) {
                 eprintln!("Error: {}", e);
             }
 
@@ -377,7 +382,7 @@ fn test_25fps_long_run() -> Result<(), Box<dyn std::error::Error>> {
 
         // Send frame
         let frame_idx = i % 30;
-        if let Err(e) = controller.write_frame(0, pps, 0, &frames[frame_idx]) {
+        if let Err(e) = controller.write_frame_native(0, pps, 0, &frames[frame_idx]) {
             eprintln!("Error at frame {}: {}", i, e);
         }
 
